@@ -52,6 +52,7 @@
 #include <pcl/types.h>
 #include <pcl/console/print.h>  // for PCL_WARN
 
+#include <cassert> // for assert
 #include <utility>
 #include <vector>
 

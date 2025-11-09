@@ -120,14 +120,16 @@ pcl::search::Search<PointT>::nearestKSearch (
   {
     k_indices.resize (cloud.size ());
     k_sqr_distances.resize (cloud.size ());
-    for (std::size_t i = 0; i < cloud.size (); i++)
+    #pragma omp parallel for num_threads(num_threads_) default(none) shared(cloud, k, k_indices, k_sqr_distances)
+    for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(cloud.size ()); i++)
       nearestKSearch (cloud, static_cast<index_t> (i), k, k_indices[i], k_sqr_distances[i]);
   }
   else
   {
     k_indices.resize (indices.size ());
     k_sqr_distances.resize (indices.size ());
-    for (std::size_t i = 0; i < indices.size (); i++)
+    #pragma omp parallel for num_threads(num_threads_) default(none) shared(cloud, indices, k, k_indices, k_sqr_distances)
+    for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(indices.size ()); i++)
       nearestKSearch (cloud, indices[i], k, k_indices[i], k_sqr_distances[i]);
   }
 }
@@ -172,14 +174,16 @@ pcl::search::Search<PointT>::radiusSearch (
   {
     k_indices.resize (cloud.size ());
     k_sqr_distances.resize (cloud.size ());
-    for (std::size_t i = 0; i < cloud.size (); i++)
+    #pragma omp parallel for num_threads(num_threads_) default(none) shared(cloud, radius, k_indices, k_sqr_distances, max_nn)
+    for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(cloud.size ()); i++)
       radiusSearch (cloud, static_cast<index_t> (i), radius,k_indices[i], k_sqr_distances[i], max_nn);
   }
   else
   {
     k_indices.resize (indices.size ());
     k_sqr_distances.resize (indices.size ());
-    for (std::size_t i = 0; i < indices.size (); i++)
+    #pragma omp parallel for num_threads(num_threads_) default(none) shared(cloud, indices, radius, k_indices, k_sqr_distances, max_nn)
+    for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(indices.size ()); i++)
       radiusSearch (cloud,indices[i],radius,k_indices[i],k_sqr_distances[i], max_nn);
   }
 }
@@ -194,7 +198,7 @@ pcl::search::Search<PointT>::sortResults (
     order [idx] = static_cast<index_t> (idx);
 
   Compare compare (distances);
-  sort (order.begin (), order.end (), compare);
+  std::sort (order.begin (), order.end (), compare);
 
   Indices sorted (indices.size ());
   for (std::size_t idx = 0; idx < order.size (); ++idx)
@@ -203,7 +207,7 @@ pcl::search::Search<PointT>::sortResults (
   indices = sorted;
 
   // sort  the according distances.
-  sort (distances.begin (), distances.end ());
+  std::sort (distances.begin (), distances.end ());
 }
 
 #define PCL_INSTANTIATE_Search(T) template class PCL_EXPORTS pcl::search::Search<T>;

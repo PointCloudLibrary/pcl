@@ -57,6 +57,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkTransform.h>
+#include <chrono>
 #include <cstdio>
 #include <list>
 #include <thread>

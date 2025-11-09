@@ -2,12 +2,22 @@
 cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 
 # Set target C++ standard and required compiler features
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "The target C++ standard. PCL requires C++14 or higher.")
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "The target C++ standard. PCL requires C++14 or higher.")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(PCL_CXX_COMPILE_FEATURES cxx_std_14)
+if("${CMAKE_CXX_STANDARD}" GREATER_EQUAL 17)
+  set(PCL_CXX_COMPILE_FEATURES cxx_std_17)
+  set(PCL__cplusplus 201703L)
+  set(PCL_REQUIRES_MSC_VER 1912)
+elseif("${CMAKE_CXX_STANDARD}" EQUAL 14)
+  set(PCL_CXX_COMPILE_FEATURES cxx_std_14)
+  set(PCL__cplusplus 201402L)
+  set(PCL_REQUIRES_MSC_VER 1900)
+else()
+  message(FATAL_ERROR "Unknown or unsupported C++ standard specified")
+endif()
 
-set(CMAKE_CUDA_STANDARD 14 CACHE STRING "The target CUDA/C++ standard. PCL requires CUDA/C++ 14 or higher.")
+set(CMAKE_CUDA_STANDARD 17 CACHE STRING "The target CUDA/C++ standard. PCL requires CUDA/C++ 14 or higher.")
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
@@ -17,7 +27,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif()
 
-project(PCL VERSION 1.14.1.99)
+project(PCL VERSION 1.15.1.99)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 if(MSVC AND ("${MSVC_VERSION}" LESS 1910))
@@ -54,6 +64,9 @@ elseif(MSVC)
 elseif(MINGW)
   set(CMAKE_COMPILER_IS_MINGW 1)
 endif()
+
+# Ensure try_compile sets the include paths (e.g. for Eigen3)
+set(CMAKE_TRY_COMPILE_CONFIGURATION ${CMAKE_BUILD_TYPE})
 
 # https://github.com/fish-shell/fish-shell/issues/5865
 include(CheckCXXSourceCompiles)
@@ -93,6 +106,10 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmake/custom_output.sh")
 endif()
+
+# check for allocation functions that return aligned memory
+include("${PCL_SOURCE_DIR}/cmake/pcl_alignment.cmake")
+PCL_CHECK_FOR_ALIGNMENT()
 
 # check for SSE flags
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake")
@@ -218,13 +235,14 @@ endif()
 
 if(CMAKE_COMPILER_IS_CLANG)
   if("${CMAKE_C_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    set(CMAKE_C_FLAGS "-Qunused-arguments")
+    string(APPEND CMAKE_C_FLAGS " -Wall -Wextra")
   endif()
   if("${CMAKE_CXX_FLAGS}" STREQUAL "")
-    set(CMAKE_CXX_FLAGS "-ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS} ${AVX_FLAGS}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
+    set(CMAKE_CXX_FLAGS "-ftemplate-depth=1024 -Wno-invalid-offsetof ${SSE_FLAGS} ${AVX_FLAGS}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
     if(APPLE AND WITH_CUDA AND CUDA_FOUND)
       string(APPEND CMAKE_CXX_FLAGS " -stdlib=libstdc++")
     endif()
+    string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra")
   endif()
   set(CLANG_LIBRARIES "stdc++")
 endif()
@@ -291,25 +309,21 @@ endif()
 option(WITH_OPENMP "Build with parallelization using OpenMP" TRUE)
 option(USE_HOMEBREW_FALLBACK "(macOS-only) also look in 'brew --prefix' for libraries (e.g. OpenMP)" TRUE)
 if(WITH_OPENMP)
-  if(APPLE)
-    find_package(OpenMP COMPONENTS C CXX)
-    if(NOT OpenMP_FOUND)
-      if(USE_HOMEBREW_FALLBACK)
-        # libomp 15.0+ from brew is keg-only, so have to search in other locations.
-        # See https://github.com/Homebrew/homebrew-core/issues/112107#issuecomment-1278042927.
-        execute_process(COMMAND brew --prefix libomp
-                        OUTPUT_VARIABLE HOMEBREW_LIBOMP_PREFIX
-                        OUTPUT_STRIP_TRAILING_WHITESPACE)
-        set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
-        set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
-        set(OpenMP_C_LIB_NAMES omp)
-        set(OpenMP_CXX_LIB_NAMES omp)
-        set(OpenMP_omp_LIBRARY ${HOMEBREW_LIBOMP_PREFIX}/lib/libomp.dylib)
-      endif()
+  find_package(OpenMP COMPONENTS C CXX)
+  if(APPLE AND NOT OpenMP_FOUND)
+    if(USE_HOMEBREW_FALLBACK)
+      # libomp 15.0+ from brew is keg-only, so have to search in other locations.
+      # See https://github.com/Homebrew/homebrew-core/issues/112107#issuecomment-1278042927.
+      execute_process(COMMAND brew --prefix libomp
+                      OUTPUT_VARIABLE HOMEBREW_LIBOMP_PREFIX
+                      OUTPUT_STRIP_TRAILING_WHITESPACE)
+      set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
+      set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
+      set(OpenMP_C_LIB_NAMES omp)
+      set(OpenMP_CXX_LIB_NAMES omp)
+      set(OpenMP_omp_LIBRARY ${HOMEBREW_LIBOMP_PREFIX}/lib/libomp.dylib)
       find_package(OpenMP COMPONENTS C CXX)
     endif()
-  else()
-    find_package(OpenMP COMPONENTS C CXX)
   endif()
 endif()
 if(OpenMP_FOUND)
@@ -332,7 +346,10 @@ endif()
 find_package(Threads REQUIRED)
 
 # Eigen3 (required)
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Eigen3 REQUIRED NO_MODULE)
+if (Eigen3_VERSION VERSION_LESS 3.3)
+  message(FATAL_ERROR "Eigen version>=3.3 is required, but found ${Eigen3_VERSION}")
+endif()
 if(NOT EIGEN3_FOUND AND Eigen3_FOUND)
     set(EIGEN3_FOUND ${Eigen3_FOUND})
 endif()
@@ -342,9 +359,18 @@ find_package(FLANN 1.9.1)
 if(NOT FLANN_FOUND)
   message(WARNING "Flann was not found, so many PCL modules will not be built!")
 else()
+  set(PCL_HAS_FLANN 1)
   if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
     message(FATAL_ERROR "Flann was selected with ${PCL_FLANN_REQUIRED_TYPE} but found as ${FLANN_LIBRARY_TYPE}")
   endif()
+endif()
+
+find_package(nanoflann 1.4.2 QUIET)
+if(TARGET nanoflann::nanoflann)
+  set(PCL_HAS_NANOFLANN 1)
+  message(STATUS "Found nanoflann")
+else()
+  message(STATUS "nanoflann was not found, so some PCL classes will not be available.")
 endif()
 
 # libusb
@@ -428,6 +454,8 @@ if(WITH_SYSTEM_ZLIB)
   if(ZLIB_FOUND)
     set(HAVE_ZLIB ON)
   endif()
+else()
+  message(WARNING "CMake will use a ZLIB version bundled with the PCL source code. However, that is an older version which may pose a risk and may be removed in a future PCL release. It is recommended to install an up-to-date version of ZLIB on your system and set WITH_SYSTEM_ZLIB=TRUE.")
 endif()
 
 option(WITH_SYSTEM_CJSON "Use system cJSON" TRUE)
@@ -455,6 +483,11 @@ else()
 endif()
 unset(CMAKE_REQUIRED_LIBRARIES)
 
+### --[ Set variables for pcl_config.h
+if (BUILD_visualization)
+  set(PCL_VISUALIZATION_AVAILABLE TRUE)
+endif()
+
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
 set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
@@ -462,6 +495,7 @@ configure_file("${pcl_config_h_in}" "${pcl_config_h}")
 PCL_ADD_INCLUDES(common "" "${pcl_config_h}")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 
+## ---[ PCL modules
 collect_subproject_directory_names("${PCL_SOURCE_DIR}" "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS doc)
 set(PCL_MODULES_NAMES_UNSORTED ${PCL_MODULES_NAMES})
 topological_sort(PCL_MODULES_NAMES PCL_ _DEPENDS)

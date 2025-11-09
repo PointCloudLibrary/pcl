@@ -46,7 +46,7 @@
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/console/print.h> // for PCL_ERROR
 #include <pcl/search/search.h>
-#include <pcl/search/kdtree.h>
+#include <pcl/search/auto.h>
 
 #include <queue>
 #include <cmath>
@@ -303,18 +303,22 @@ pcl::RegionGrowing<PointT, NormalT>::prepareForSegmentation ()
   if (neighbour_number_ == 0)
     return (false);
 
-  // if user didn't set search method
-  if (!search_)
-    search_.reset (new pcl::search::KdTree<PointT>);
-
   if (indices_)
   {
     if (indices_->empty ())
       PCL_ERROR ("[pcl::RegionGrowing::prepareForSegmentation] Empty given indices!\n");
-    search_->setInputCloud (input_, indices_);
+    if (!search_)
+      search_.reset (pcl::search::autoSelectMethod<PointT>(input_, indices_, true, pcl::search::Purpose::many_knn_search));
+    else
+      search_->setInputCloud (input_, indices_);
   }
   else
-    search_->setInputCloud (input_);
+  {
+    if (!search_)
+      search_.reset (pcl::search::autoSelectMethod<PointT>(input_, true, pcl::search::Purpose::many_knn_search));
+    else
+      search_->setInputCloud (input_);
+  }
 
   return (true);
 }
@@ -332,7 +336,7 @@ pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
     for (const auto& point_index: (*indices_))
     {
       neighbours.clear ();
-      search_->nearestKSearch (point_index, neighbour_number_, neighbours, distances);
+      search_->nearestKSearch ((*input_)[point_index], neighbour_number_, neighbours, distances);
       point_neighbours_[point_index].swap (neighbours);
     }
   }
@@ -343,7 +347,7 @@ pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
       if (!pcl::isFinite ((*input_)[point_index]))
         continue;
       neighbours.clear ();
-      search_->nearestKSearch (point_index, neighbour_number_, neighbours, distances);
+      search_->nearestKSearch ((*input_)[point_index], neighbour_number_, neighbours, distances);
       point_neighbours_[point_index].swap (neighbours);
     }
   }

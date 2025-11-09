@@ -142,7 +142,7 @@ public:
    * automatic)
    */
   void
-  setNumberOfThreads(unsigned int nr_threads)
+  setNumberOfThreads(const unsigned int nr_threads)
   {
 #ifdef _OPENMP
     num_threads_ = nr_threads != 0 ? nr_threads : omp_get_num_procs();
@@ -163,7 +163,7 @@ public:
 
   /** \brief Abstract method for setting the source normals */
   virtual void
-  setSourceNormals(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+  setSourceNormals(const pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
     PCL_WARN("[pcl::registration::%s::setSourceNormals] This class does not require "
              "input source normals\n",
@@ -179,7 +179,7 @@ public:
 
   /** \brief Abstract method for setting the target normals */
   virtual void
-  setTargetNormals(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+  setTargetNormals(const pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
     PCL_WARN("[pcl::registration::%s::setTargetNormals] This class does not require "
              "input target normals\n",
@@ -228,7 +228,7 @@ public:
    * confident that the tree will be set correctly.
    */
   inline void
-  setSearchMethodTarget(const KdTreePtr& tree, bool force_no_recompute = false)
+  setSearchMethodTarget(const KdTreePtr& tree, const bool force_no_recompute = false)
   {
     tree_ = tree;
     force_no_recompute_ = force_no_recompute;
@@ -253,7 +253,7 @@ public:
    */
   inline void
   setSearchMethodSource(const KdTreeReciprocalPtr& tree,
-                        bool force_no_recompute = false)
+                        const bool force_no_recompute = false)
   {
     tree_reciprocal_ = tree;
     force_no_recompute_reciprocal_ = force_no_recompute;
@@ -277,7 +277,7 @@ public:
   virtual void
   determineCorrespondences(
       pcl::Correspondences& correspondences,
-      double max_distance = std::numeric_limits<double>::max()) = 0;
+      const double max_distance = std::numeric_limits<double>::max()) = 0;
 
   /** \brief Determine the reciprocal correspondences between input and target cloud.
    * A correspondence is considered reciprocal if both Src_i has Tgt_i as a
@@ -290,7 +290,7 @@ public:
   virtual void
   determineReciprocalCorrespondences(
       pcl::Correspondences& correspondences,
-      double max_distance = std::numeric_limits<double>::max()) = 0;
+      const double max_distance = std::numeric_limits<double>::max()) = 0;
 
   /** \brief Provide a boost shared pointer to the PointRepresentation for target cloud
    * to be used when searching for nearest neighbors.
@@ -476,7 +476,7 @@ public:
   void
   determineCorrespondences(
       pcl::Correspondences& correspondences,
-      double max_distance = std::numeric_limits<double>::max()) override;
+      const double max_distance = std::numeric_limits<double>::max()) override;
 
   /** \brief Determine the reciprocal correspondences between input and target cloud.
    * A correspondence is considered reciprocal if both Src_i has Tgt_i as a
@@ -489,7 +489,7 @@ public:
   void
   determineReciprocalCorrespondences(
       pcl::Correspondences& correspondences,
-      double max_distance = std::numeric_limits<double>::max()) override;
+      const double max_distance = std::numeric_limits<double>::max()) override;
 
   /** \brief Clone and cast to CorrespondenceEstimationBase */
   typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr

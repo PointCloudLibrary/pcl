@@ -187,7 +187,7 @@ pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scal
   transformation_matrix.template topLeftCorner<3, 3>() = R;
   // transformation_matrix.block<3, 1>(0, 3) = source_mean.head<3>() - R *
   // target_mean.head<3>();
-  transformation_matrix.template block<3, 1>(0, 3) =
+  transformation_matrix.template block<3, 1>(0, 3).noalias() =
       target_mean.template head<3>() - R * source_mean.template head<3>();
 }
 

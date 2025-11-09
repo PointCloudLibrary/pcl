@@ -58,6 +58,7 @@
 #include <vtkHedgeHog.h>
 #include <vtkMatrix4x4.h>
 #include <algorithm>
+#include <chrono>
 #include <cstdio>
 #include <thread>
 #include <vector>

@@ -40,6 +40,7 @@
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 #include <iostream>
 

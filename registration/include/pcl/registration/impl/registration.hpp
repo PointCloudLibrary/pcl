@@ -148,7 +148,7 @@ Registration<PointSource, PointTarget, Scalar>::getFitnessScore(double max_range
     if (!input_->is_dense && !pcl::isXYZFinite(point))
       continue;
     // Find its nearest neighbor in the target
-    tree_->nearestKSearch(point, 1, nn_indices, nn_dists);
+    tree_->nearestKSearchT(point, 1, nn_indices, nn_dists);
 
     // Deal with occlusions (incomplete targets)
     if (nn_dists[0] <= max_range) {

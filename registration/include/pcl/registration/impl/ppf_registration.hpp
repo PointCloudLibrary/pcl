@@ -47,6 +47,7 @@
 #include <pcl/features/pfh_tools.h> // for computePairFeatures
 #include <pcl/features/ppf.h>
 #include <pcl/registration/ppf_registration.h>
+#include <pcl/search/auto.h>
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget>
 void
@@ -55,9 +56,8 @@ pcl::PPFRegistration<PointSource, PointTarget>::setInputTarget(
 {
   Registration<PointSource, PointTarget>::setInputTarget(cloud);
 
-  scene_search_tree_ =
-      typename pcl::KdTreeFLANN<PointTarget>::Ptr(new pcl::KdTreeFLANN<PointTarget>);
-  scene_search_tree_->setInputCloud(target_);
+  scene_search_tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
+      target_, true, pcl::search::Purpose::radius_search));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -250,7 +250,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses(
   PCL_DEBUG("[PPFRegistration] Clustering poses (initially got %zu poses)\n",
             poses.size());
   // Start off by sorting the poses by the number of votes
-  sort(poses.begin(), poses.end(), poseWithVotesCompareFunction);
+  std::sort(poses.begin(), poses.end(), poseWithVotesCompareFunction);
 
   std::vector<PoseWithVotesList> clusters;
   std::vector<std::pair<std::size_t, unsigned int>> cluster_votes;

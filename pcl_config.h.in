@@ -3,8 +3,8 @@
 // Ensure the compiler is meeting the minimum C++ standard
 // MSVC is not checked via __cplusplus due to
 // https://developercommunity.visualstudio.com/content/problem/120156/-cplusplus-macro-still-defined-as-pre-c11-value.html
-#if defined(__cplusplus) && ((!defined(_MSC_VER) && __cplusplus < 201402L) || (defined(_MSC_VER) && _MSC_VER < 1900))
-  #error PCL requires C++14 or above
+#if defined(__cplusplus) && ((!defined(_MSC_VER) && __cplusplus < ${PCL__cplusplus}) || (defined(_MSC_VER) && _MSC_VER < ${PCL_REQUIRES_MSC_VER}) || (defined(_MSVC_LANG) && _MSVC_LANG < ${PCL__cplusplus}))
+  #error C++ standard too low (PCL requires ${PCL__cplusplus} or above)
 #endif
 
 #define BUILD_@CMAKE_BUILD_TYPE@
@@ -48,6 +48,14 @@
 #cmakedefine HAVE_ENSENSO 1
 
 #cmakedefine HAVE_DAVIDSDK 1
+
+#ifndef PCL_HAS_NANOFLANN
+#cmakedefine PCL_HAS_NANOFLANN 1
+#endif
+
+#ifndef PCL_HAS_FLANN
+#cmakedefine PCL_HAS_FLANN 1
+#endif
 
 // SSE macros
 #cmakedefine HAVE_POSIX_MEMALIGN
@@ -100,3 +108,4 @@
 
 #cmakedefine HAVE_QVTK 1
 
+#cmakedefine PCL_VISUALIZATION_AVAILABLE

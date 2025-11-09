@@ -8,14 +8,15 @@ if(NOT BUILD_all_in_one_installer)
 endif()
 
 # get root directory of each dependency libraries to be copied to PCL/3rdParty
-get_filename_component(BOOST_ROOT "${Boost_INCLUDE_DIR}" PATH)  # ../Boost/include/boost-x_x/ -> ../Boost/include/
-get_filename_component(BOOST_ROOT "${BOOST_ROOT}" PATH)         # ../Boost/include/           -> ../Boost/
-get_filename_component(QHULL_ROOT "${Qhull_DIR}" PATH)          # ../qhull/lib/cmake/Qhull/   -> ../qhull/lib/cmake
-get_filename_component(QHULL_ROOT "${QHULL_ROOT}" PATH)         # ../qhull/lib/cmake/         -> ../qhull/lib/
-get_filename_component(QHULL_ROOT "${QHULL_ROOT}" PATH)         # ../qhull/lib/               -> ../qhull/
-get_filename_component(VTK_ROOT "${VTK_DIR}" PATH)              # ../VTK/lib/cmake/vtk-x.x/   -> ../VTK/lib/cmake/
-get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)             # ../VTK/lib/cmake/           -> ../VTK/lib/
-get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)             # ../VTK/lib/                 -> ../VTK/
+get_filename_component(BOOST_ROOT "${Boost_DIR}" PATH)  # ../Boost/lib/cmake/Boost-X.XX.X/ -> ../Boost/lib/cmake/
+get_filename_component(BOOST_ROOT "${BOOST_ROOT}" PATH) # ../Boost/lib/cmake/              -> ../Boost/lib/
+get_filename_component(BOOST_ROOT "${BOOST_ROOT}" PATH) # ../Boost/lib/                    -> ../Boost/
+get_filename_component(QHULL_ROOT "${Qhull_DIR}" PATH)  # ../qhull/lib/cmake/Qhull/        -> ../qhull/lib/cmake
+get_filename_component(QHULL_ROOT "${QHULL_ROOT}" PATH) # ../qhull/lib/cmake/              -> ../qhull/lib/
+get_filename_component(QHULL_ROOT "${QHULL_ROOT}" PATH) # ../qhull/lib/                    -> ../qhull/
+get_filename_component(VTK_ROOT "${VTK_DIR}" PATH)      # ../VTK/lib/cmake/vtk-x.x/        -> ../VTK/lib/cmake/
+get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)     # ../VTK/lib/cmake/                -> ../VTK/lib/
+get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)     # ../VTK/lib/                      -> ../VTK/
 
 set(PCL_3RDPARTY_COMPONENTS)
 foreach(dep Boost Qhull FLANN VTK)

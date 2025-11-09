@@ -42,7 +42,7 @@
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp> // for boykov_kolmogorov_max_flow
 #include <pcl/segmentation/min_cut_segmentation.h>
 #include <pcl/search/search.h>
-#include <pcl/search/kdtree.h>
+#include <pcl/search/auto.h>
 #include <cmath>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,7 +290,13 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
     return (false);
 
   if (!search_)
-    search_.reset (new pcl::search::KdTree<PointT>);
+  {
+    search_.reset (pcl::search::autoSelectMethod<PointT>(input_, indices_, true, pcl::search::Purpose::many_knn_search));
+  }
+  else
+  {
+    search_->setInputCloud (input_, indices_);
+  }
 
   graph_.reset (new mGraph);
 
@@ -325,7 +331,6 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
 
   pcl::Indices neighbours;
   std::vector<float> distances;
-  search_->setInputCloud (input_, indices_);
   for (std::size_t i_point = 0; i_point < number_of_indices; i_point++)
   {
     index_t point_index = (*indices_)[i_point];

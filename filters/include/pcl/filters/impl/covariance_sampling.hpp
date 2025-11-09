@@ -122,7 +122,7 @@ pcl::CovarianceSampling<PointT, PointNT>::computeCovarianceMatrix (Eigen::Matrix
   }
 
   // Compute the covariance matrix C and its 6 eigenvectors (initially complex, move them to a double matrix)
-  covariance_matrix = f_mat * f_mat.transpose ();
+  covariance_matrix.noalias() = f_mat * f_mat.transpose ();
   return true;
 }
 

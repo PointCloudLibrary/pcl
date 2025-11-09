@@ -50,15 +50,6 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::
 {
   reg_name_ = "NormalDistributionsTransform";
 
-  // Initializes the gaussian fitting parameters (eq. 6.8) [Magnusson 2009]
-  const double gauss_c1 = 10.0 * (1 - outlier_ratio_);
-  const double gauss_c2 = outlier_ratio_ / pow(resolution_, 3);
-  const double gauss_d3 = -std::log(gauss_c2);
-  gauss_d1_ = -std::log(gauss_c1 + gauss_c2) - gauss_d3;
-  gauss_d2_ =
-      -2 * std::log((-std::log(gauss_c1 * std::exp(-0.5) + gauss_c2) - gauss_d3) /
-                    gauss_d1_);
-
   transformation_epsilon_ = 0.1;
   max_iterations_ = 35;
 }
@@ -121,6 +112,15 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeTransform
     // 2009]
     Eigen::JacobiSVD<Eigen::Matrix<double, 6, 6>> sv(
         hessian, Eigen::ComputeFullU | Eigen::ComputeFullV);
+#if EIGEN_VERSION_AT_LEAST(3, 4, 0)
+    if (sv.info() != Eigen::ComputationInfo::Success) {
+      trans_likelihood_ = score / static_cast<double>(input_->size());
+      converged_ = 0;
+      PCL_ERROR("[%s::computeTransformation] JacobiSVD on hessian failed!\n",
+                getClassName().c_str());
+      return;
+    }
+#endif
     // Negative for maximization as opposed to minimization
     Eigen::Matrix<double, 6, 1> delta = sv.solve(-score_gradient);
 

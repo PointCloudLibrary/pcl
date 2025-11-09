@@ -169,9 +169,9 @@ class PointCoding
         PointT& point = (*outputCloud_arg)[beginIdx_arg + i];
 
         // decode point position
-        point.x = static_cast<float> (referencePoint_arg[0] + diffX * pointCompressionResolution_);
-        point.y = static_cast<float> (referencePoint_arg[1] + diffY * pointCompressionResolution_);
-        point.z = static_cast<float> (referencePoint_arg[2] + diffZ * pointCompressionResolution_);
+        point.x = static_cast<float> (referencePoint_arg[0] + (diffX+0.5) * pointCompressionResolution_);
+        point.y = static_cast<float> (referencePoint_arg[1] + (diffY+0.5) * pointCompressionResolution_);
+        point.z = static_cast<float> (referencePoint_arg[2] + (diffZ+0.5) * pointCompressionResolution_);
       }
     }
 

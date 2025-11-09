@@ -40,39 +40,40 @@
 
 #pragma once
 
-#include <QLineEdit>
+#include <pcl/apps/point_cloud_editor/statistics.h>
+
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
-#include <QVBoxLayout>
-#include <QLineEdit>
 #include <QLabel>
+#include <QLineEdit>
 #include <QTimer>
-#include <pcl/apps/point_cloud_editor/statistics.h>
+#include <QVBoxLayout>
 
-class StatisticsDialog : public QDialog
-{
+class StatisticsDialog : public QDialog {
   Q_OBJECT
 
-  public:
-    /// @brief Default Constructor
-    StatisticsDialog(QWidget *parent = nullptr);
-    /// @brief Destructor
-    ~StatisticsDialog () override;
-    
-  public Q_SLOTS:
-    /// @brief update the dialog box.
-    void update ();
-    
-  private Q_SLOTS:
-    void accept () override;
-    
-  private:
-    /// The button box.
-    QDialogButtonBox *button_box_;
+public:
+  /// @brief Default Constructor
+  StatisticsDialog(QWidget* parent = nullptr);
+  /// @brief Destructor
+  ~StatisticsDialog() override;
 
-    QLabel *stat_label_;
+public Q_SLOTS:
+  /// @brief update the dialog box.
+  void
+  update();
 
-    /// A timer used for periodically update the statistics in the dialog.
-    QTimer timer_;
+private Q_SLOTS:
+  void
+  accept() override;
+
+private:
+  /// The button box.
+  QDialogButtonBox* button_box_;
+
+  QLabel* stat_label_;
+
+  /// A timer used for periodically update the statistics in the dialog.
+  QTimer timer_;
 };

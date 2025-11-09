@@ -181,10 +181,10 @@ namespace pcl
     int OctNode<NodeData,Real>::maxDepth(void) const{
       if(!children){return 0;}
       else{
-        int c,d;
+        int c = std::numeric_limits<int>::lowest();
         for(int i=0;i<Cube::CORNERS;i++){
-          d=children[i].maxDepth();
-          if(!i || d>c){c=d;}
+          const int d=children[i].maxDepth();
+          if(d>c){c=d;}
         }
         return c+1;
       }

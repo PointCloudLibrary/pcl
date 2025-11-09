@@ -328,8 +328,6 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
     return;
   }
 
-  Eigen::Vector4f plane_parameters;
-
   // Use Least-Squares to fit the plane through all the given sample points and find out its coefficients
   EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f xyz_centroid;

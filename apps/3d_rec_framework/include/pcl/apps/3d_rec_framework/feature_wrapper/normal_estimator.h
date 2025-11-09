@@ -12,8 +12,9 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/memory.h> // for pcl::make_shared
-#include <pcl/types.h>  // for pcl::index_t
+#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/memory.h>        // for pcl::make_shared
+#include <pcl/types.h>         // for pcl::index_t
 
 namespace pcl {
 namespace rec_3d_framework {

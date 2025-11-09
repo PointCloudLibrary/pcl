@@ -114,7 +114,7 @@ namespace pcl
         homMatrix = transformPC.matrix ();
 
         Eigen::Matrix4f trans_copy = trans.inverse ();
-        trans = trans_copy * center_mat * homMatrix;
+        trans.noalias() = trans_copy * center_mat * homMatrix;
         return trans;
       }
 

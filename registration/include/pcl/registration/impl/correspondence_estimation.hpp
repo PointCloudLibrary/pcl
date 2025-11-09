@@ -145,7 +145,7 @@ pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Ind
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorrespondences(
-    pcl::Correspondences& correspondences, double max_distance)
+    pcl::Correspondences& correspondences, const double max_distance)
 {
   if (!initCompute())
     return;
@@ -158,7 +158,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
   for (auto& corrs : per_thread_correspondences) {
     corrs.reserve(2 * indices_->size() / num_threads_);
   }
-  double max_dist_sqr = max_distance * max_distance;
+  const double max_dist_sqr = max_distance * max_distance;
 
 #pragma omp parallel for default(none)                                                 \
     shared(max_dist_sqr, per_thread_correspondences) firstprivate(index, distance)     \
@@ -221,7 +221,7 @@ template <typename PointSource, typename PointTarget, typename Scalar>
 void
 CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     determineReciprocalCorrespondences(pcl::Correspondences& correspondences,
-                                       double max_distance)
+                                       const double max_distance)
 {
   if (!initCompute())
     return;
@@ -230,7 +230,6 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
   // Set the internal point representation of choice
   if (!initComputeReciprocal())
     return;
-  double max_dist_sqr = max_distance * max_distance;
 
   correspondences.resize(indices_->size());
   pcl::Indices index(1);
@@ -241,6 +240,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
   for (auto& corrs : per_thread_correspondences) {
     corrs.reserve(2 * indices_->size() / num_threads_);
   }
+  const double max_dist_sqr = max_distance * max_distance;
 
 #pragma omp parallel for default(none)                                                 \
     shared(max_dist_sqr, per_thread_correspondences)                                   \

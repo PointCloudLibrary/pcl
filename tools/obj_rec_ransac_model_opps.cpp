@@ -52,6 +52,7 @@
 #include <vtkDataArray.h>
 #include <vtkPointData.h>
 #include <vtkHedgeHog.h>
+#include <chrono>
 #include <cstdio>
 #include <thread>
 

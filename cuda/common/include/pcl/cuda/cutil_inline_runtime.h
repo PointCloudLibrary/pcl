@@ -25,14 +25,11 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <cufft.h>
-
 // We define these calls here, so the user doesn't need to include __FILE__ and __LINE__
 // The advantage is the developers gets to use the inline function so they can debug
 #define cutilSafeCallNoSync(err)     __cudaSafeCallNoSync(err, __FILE__, __LINE__)
 #define cutilSafeCall(err)           __cudaSafeCall      (err, __FILE__, __LINE__)
 #define cutilSafeThreadSync()        __cudaSafeThreadSync(__FILE__, __LINE__)
-#define cufftSafeCall(err)           __cufftSafeCall     (err, __FILE__, __LINE__)
 #define cutilCheckError(err)         __cutilCheckError   (err, __FILE__, __LINE__)
 #define cutilCheckMsg(msg)           __cutilGetLastError (msg, __FILE__, __LINE__)
 #define cutilCheckMsgAndSync(msg)    __cutilGetLastErrorAndSync (msg, __FILE__, __LINE__)
@@ -110,6 +107,7 @@ inline int cutGetMaxGflopsDeviceId()
     int max_perf_device  = 0;
     int device_count     = 0;
     int best_SM_arch     = 0;
+    int clock_rate       = 0;
 
 	cudaGetDeviceCount( &device_count );
 	// Find the best major SM Architecture GPU device
@@ -129,7 +127,8 @@ inline int cutGetMaxGflopsDeviceId()
 		cudaGetDeviceProperties( &deviceProp, current_device );
               int sm_per_multiproc = (deviceProp.major == 9999 && deviceProp.minor == 9999) ? 1 : _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
 
-		int compute_perf  = deviceProp.multiProcessorCount * sm_per_multiproc * deviceProp.clockRate;
+        cudaDeviceGetAttribute(&clock_rate, cudaDevAttrClockRate, current_device);
+        int compute_perf  = deviceProp.multiProcessorCount * sm_per_multiproc * clock_rate;
 		if( compute_perf  > max_compute_perf ) {
             // If we find GPU with SM major > 2, search only these
 			if ( best_SM_arch > 2 ) {
@@ -156,7 +155,8 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
     int max_perf_device  = 0;
     int device_count     = 0;
     int best_SM_arch     = 0;
-    int bTCC = 0;
+    int bTCC             = 0;
+    int clock_rate       = 0;
 
 	cudaGetDeviceCount( &device_count );
 	// Find the best major SM Architecture GPU device that is graphics capable
@@ -185,7 +185,8 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 
 		if (!bTCC) // Is this GPU running the TCC driver?  If so we pass on this
 		{
-			int compute_perf  = deviceProp.multiProcessorCount * sm_per_multiproc * deviceProp.clockRate;
+            cudaDeviceGetAttribute(&clock_rate, cudaDevAttrClockRate, current_device);
+            int compute_perf  = deviceProp.multiProcessorCount * sm_per_multiproc * clock_rate;
 			if( compute_perf  > max_compute_perf ) {
 				// If we find GPU with SM major > 2, search only these
 				if ( best_SM_arch > 2 ) {
@@ -266,15 +267,6 @@ inline void __cudaSafeThreadSync( const char *file, const int line )
     if ( cudaSuccess != err) {
         FPRINTF((stderr, "%s(%i) : cudaDeviceSynchronize() Runtime API error : %s.\n",
                 file, line, cudaGetErrorString( err) ));
-        exit(-1);
-    }
-}
-
-inline void __cufftSafeCall( cufftResult err, const char *file, const int line )
-{
-    if( CUFFT_SUCCESS != err) {
-        FPRINTF((stderr, "%s(%i) : cufftSafeCall() CUFFT error.\n",
-                file, line));
         exit(-1);
     }
 }

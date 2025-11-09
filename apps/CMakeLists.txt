@@ -124,7 +124,7 @@ if(VTK_FOUND)
       src/pcd_video_player/pcd_video_player.ui
       BUNDLE)
 
-    target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
+    target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_registration pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
     target_include_directories(pcl_pcd_video_player PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
   endif()
 
@@ -244,7 +244,7 @@ if(VTK_FOUND)
     target_include_directories(pcl_ni_trajkovic PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     PCL_ADD_EXECUTABLE(pcl_openni_klt COMPONENT ${SUBSYS_NAME} SOURCES src/openni_klt.cpp BUNDLE)
-    target_link_libraries(pcl_openni_klt pcl_common pcl_io pcl_visualization pcl_tracking)
+    target_link_libraries(pcl_openni_klt pcl_common pcl_io pcl_keypoints pcl_visualization pcl_tracking)
   endif() # WITH_OPENNI
 endif() # VTK_FOUND
 

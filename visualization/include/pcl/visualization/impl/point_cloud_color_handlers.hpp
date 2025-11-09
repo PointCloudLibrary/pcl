@@ -39,6 +39,7 @@
 
 #include <set>
 #include <map>
+#include <stdexcept>
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/colors.h>
@@ -361,86 +362,6 @@ PointCloudColorHandlerHSVField<PointT>::getColor () const
   return scalars;
 }
 
-
-template <typename PointT> void
-PointCloudColorHandlerGenericField<PointT>::setInputCloud (
-    const PointCloudConstPtr &cloud)
-{
-  PointCloudColorHandler<PointT>::setInputCloud (cloud);
-  field_idx_  = pcl::getFieldIndex<PointT> (field_name_, fields_);
-  if (field_idx_ == -1) {
-    capable_ = false;
-    return;
-  }
-  if (fields_[field_idx_].datatype != pcl::PCLPointField::PointFieldTypes::FLOAT32) {
-    capable_ = false;
-    PCL_ERROR("[pcl::PointCloudColorHandlerGenericField::setInputCloud] This currently only works with float32 fields, but field %s has a different type.\n", field_name_.c_str());
-    return;
-  }
-  capable_ = true;
-}
-
-
-template <typename PointT> vtkSmartPointer<vtkDataArray>
-PointCloudColorHandlerGenericField<PointT>::getColor () const
-{
-  if (!capable_ || !cloud_)
-    return nullptr;
-
-  auto scalars = vtkSmartPointer<vtkFloatArray>::New ();
-  scalars->SetNumberOfComponents (1);
-
-  vtkIdType nr_points = cloud_->size ();
-  scalars->SetNumberOfTuples (nr_points);
-
-  using FieldList = typename pcl::traits::fieldList<PointT>::type;
-
-  float* colors = new float[nr_points];
-  float field_data;
-
-  int j = 0;
-  // If XYZ present, check if the points are invalid
-  int x_idx = -1;
-  for (std::size_t d = 0; d < fields_.size (); ++d)
-    if (fields_[d].name == "x")
-      x_idx = static_cast<int> (d);
-
-  if (x_idx != -1)
-  {
-    // Color every point
-    for (vtkIdType cp = 0; cp < nr_points; ++cp)
-    {
-      // Copy the value at the specified field
-      if (!pcl::isXYZFinite((*cloud_)[cp]))
-        continue;
-
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud_)[cp]);
-      memcpy (&field_data, pt_data + fields_[field_idx_].offset, pcl::getFieldSize (fields_[field_idx_].datatype));
-
-      colors[j] = field_data;
-      j++;
-    }
-  }
-  else
-  {
-    // Color every point
-    for (vtkIdType cp = 0; cp < nr_points; ++cp)
-    {
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud_)[cp]);
-      memcpy (&field_data, pt_data + fields_[field_idx_].offset, pcl::getFieldSize (fields_[field_idx_].datatype));
-
-      if (!std::isfinite (field_data))
-        continue;
-
-      colors[j] = field_data;
-      j++;
-    }
-  }
-  scalars->SetArray (colors, j, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
-  return scalars;
-}
-
-
 template <typename PointT> void
 PointCloudColorHandlerRGBAField<PointT>::setInputCloud (
     const PointCloudConstPtr &cloud)
@@ -564,6 +485,158 @@ PointCloudColorHandlerLabelField<PointT>::getColor () const
   return scalars;
 }
 
+// ----
+// template specializations for PointCloud and PCLPointCloud2 to access certain
+// data from PointCloudColorHandlerGenericField without needing to know the
+// cloud type
+
+template <typename CloudT> inline int getPointStep(const CloudT&)
+{
+  return sizeof(typename CloudT::PointType);
+}
+
+template <> inline int
+getPointStep<pcl::PCLPointCloud2>(const pcl::PCLPointCloud2& cloud) {
+  return cloud.point_step;
+}
+
+// Get cloud data blob
+template <typename CloudT> inline const std::uint8_t* getCloudData(const CloudT& cloud)
+{
+  return reinterpret_cast<const std::uint8_t*>(cloud.data());
+}
+
+template <> inline const std::uint8_t* getCloudData<pcl::PCLPointCloud2>(const typename pcl::PCLPointCloud2& cloud) {
+  return cloud.data.data();
+}
+
+// copy of pcl::getFieldIndex() from impl/io.hpp, without the unused template
+// parameter
+static int getFieldIndex(const std::string& field_name,
+              const std::vector<pcl::PCLPointField>& fields)
+{
+  const auto result =
+      std::find_if(fields.begin(), fields.end(), [&field_name](const auto& field) {
+        return field.name == field_name;
+      });
+  if (result == fields.end()) {
+    return -1;
+  }
+  return std::distance(fields.begin(), result);
+}
+
+// Cloud type agnostic isXYZFinite wrappers to check if pointcloud or PCLPointCloud2 at
+// given index is finite
+template <typename CloudT> inline bool isXYZFiniteAt(const CloudT& cloud, int index)
+{
+  return pcl::isXYZFinite(cloud.at(index));
+}
+
+template <> inline bool isXYZFiniteAt(const PCLPointCloud2& cloud, int index)
+{
+  // get x,y,z field indices
+  const auto x_field_idx = getFieldIndex("x", cloud.fields);
+  const auto y_field_idx = getFieldIndex("y", cloud.fields);
+  const auto z_field_idx = getFieldIndex("z", cloud.fields);
+
+  // if any missing, error
+  if (x_field_idx == -1 || y_field_idx == -1 || z_field_idx == -1) {
+    throw std::out_of_range("isXYZFiniteAt(): input cloud missing at least one of x, y, z fields");
+  }
+  // get x,y,z field values
+  const auto position_x = index * cloud.point_step + cloud.fields[x_field_idx].offset;
+  const auto position_y = index * cloud.point_step + cloud.fields[y_field_idx].offset;
+  const auto position_z = index * cloud.point_step + cloud.fields[z_field_idx].offset;
+  if (cloud.data.size () >= (position_x + sizeof(float)) &&
+      cloud.data.size () >= (position_y + sizeof(float)) &&
+      cloud.data.size () >= (position_z + sizeof(float))) {
+    const float x = *reinterpret_cast<const float*>(&cloud.data[position_x]);
+    const float y = *reinterpret_cast<const float*>(&cloud.data[position_y]);
+    const float z = *reinterpret_cast<const float*>(&cloud.data[position_z]);
+    return isXYZFinite(PointXYZ(x, y, z));
+  } else {
+    // the last of the three is out of range
+    throw std::out_of_range("isXYZFiniteAt(): requested for index larger than number of points");
+  }
+}
+
+template <typename PointT>
+PointCloudColorHandlerGenericField<PointT>::PointCloudColorHandlerGenericField(
+    const PointCloudConstPtr& cloud, const std::string& field_name)
+: PointCloudColorHandler<PointT>(cloud), field_name_(field_name)
+{
+  this->setInputCloud(cloud);
+}
+
+template <typename PointT>
+PointCloudColorHandlerGenericField<PointT>::PointCloudColorHandlerGenericField(const std::string& field_name)
+  : PointCloudColorHandler<PointT>(), field_name_(field_name) {}
+
+template <typename PointT> void PointCloudColorHandlerGenericField<PointT>::setInputCloud(
+    const PointCloudConstPtr& cloud)
+{
+  PointCloudColorHandler<PointT>::setInputCloud(cloud);
+  this->fields_ = getFields(*cloud);
+  this->field_idx_ = getFieldIndex(field_name_, this->fields_);
+  this->capable_ = this->field_idx_ != -1;
+}
+
+template <typename PointT> std::string PointCloudColorHandlerGenericField<PointT>::getFieldName() const
+{
+  return field_name_;
+}
+
+template <typename PointT> vtkSmartPointer<vtkDataArray> PointCloudColorHandlerGenericField<PointT>::getColor() const
+{
+  if (!this->capable_ || !this->cloud_) {
+    return nullptr;
+  }
+
+  auto scalars = vtkSmartPointer<vtkFloatArray>::New();
+  scalars->SetNumberOfComponents(1);
+
+  const vtkIdType nr_points = this->cloud_->width * this->cloud_->height;
+  scalars->SetNumberOfTuples(nr_points);
+
+  // per-point color as a float value. vtk turns that into rgb somehow
+  float* colors = new float[nr_points];
+
+  // Find X channel
+  int x_channel_idx = -1;
+  for (std::size_t channel_idx = 0; channel_idx < this->fields_.size(); ++channel_idx) {
+    if (this->fields_[channel_idx].name == "x") {
+      x_channel_idx = static_cast<int>(channel_idx);
+    }
+  }
+
+  size_t point_offset = this->fields_[this->field_idx_].offset;
+  const int point_step = getPointStep<PointCloud>(*this->cloud_);
+  const std::uint8_t* p_data = getCloudData<PointCloud>(*this->cloud_);
+  const std::uint8_t field_type = this->fields_[this->field_idx_].datatype;
+
+  // current index into colors array
+  int pt_idx = 0;
+
+  // Color every point
+  for (vtkIdType cp = 0; cp < nr_points; ++cp, point_offset += point_step) {
+
+    if (x_channel_idx != -1 && !isXYZFiniteAt(*this->cloud_, cp)) {
+        // no x channel in the cloud, or point is infinite
+        continue;
+    } else {
+      // point data at index, field offset already baked into point_offset
+      const std::uint8_t* pt_data = &p_data[point_offset];
+
+      colors[pt_idx] = point_field_as<float>(pt_data, field_type);
+
+    }
+
+    ++pt_idx;
+  }
+
+  scalars->SetArray(colors, pt_idx, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
+  return scalars;
+}
+
 } // namespace visualization
 } // namespace pcl
-

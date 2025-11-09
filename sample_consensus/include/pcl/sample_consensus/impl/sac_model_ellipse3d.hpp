@@ -16,7 +16,6 @@
 #include <pcl/common/concatenate.h>
 
 #include <Eigen/Eigenvalues>
-#include <complex>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -163,22 +162,22 @@ pcl::SampleConsensusModelEllipse3D<PointT>::computeModelCoefficients (const Indi
   const float con_F(neigvec(5));
 
   // Build matrix M0
-  const Eigen::MatrixXf M0 = (Eigen::MatrixXf(3, 3)
+  const Eigen::Matrix3f M0 = (Eigen::Matrix3f()
     << con_F, con_D/2.0, con_E/2.0,
       con_D/2.0, con_A, con_B/2.0,
       con_E/2.0, con_B/2.0, con_C)
     .finished();
 
   // Build matrix M
-  const Eigen::MatrixXf M = (Eigen::MatrixXf(2, 2)
+  const Eigen::Matrix2f M = (Eigen::Matrix2f()
     << con_A, con_B/2.0,
       con_B/2.0, con_C)
     .finished();
 
   // Calculate the eigenvalues and eigenvectors of matrix M
-  Eigen::EigenSolver<Eigen::MatrixXf> solver_M(M);
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix2f> solver_M(M, Eigen::EigenvaluesOnly);
 
-  Eigen::VectorXf eigvals_M = solver_M.eigenvalues().real();
+  Eigen::Vector2f eigvals_M = solver_M.eigenvalues();
 
   // Order the eigenvalues so that |lambda_0 - con_A| <= |lambda_0 - con_C|
   float aux_eigval(0.0);
@@ -200,12 +199,12 @@ pcl::SampleConsensusModelEllipse3D<PointT>::computeModelCoefficients (const Indi
   Eigen::Vector3f p_ctr;
   float aux_par(0.0);
   if (par_a > par_b) {
-    p_ctr = p0 + Rot * Eigen::Vector3f(par_h, par_k, 0.0);
+    p_ctr.noalias() = p0 + Rot * Eigen::Vector3f(par_h, par_k, 0.0);
   } else {
     aux_par = par_a;
     par_a = par_b;
     par_b = aux_par;
-    p_ctr = p0 + Rot * Eigen::Vector3f(par_k, par_h, 0.0);
+    p_ctr.noalias() = p0 + Rot * Eigen::Vector3f(par_k, par_h, 0.0);
   }
 
   // Center (x, y, z)

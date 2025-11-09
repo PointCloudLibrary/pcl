@@ -3,7 +3,7 @@ set(SUBSYS_DESC "Point cloud visualization library")
 set(SUBSYS_DEPS common io kdtree geometry search octree)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
 
 if(ANDROID)
   message("VTK was found, but cannot be compiled for Android. Please use VES instead.")
@@ -138,7 +138,7 @@ if(APPLE)
   target_link_libraries("${LIB_NAME}" "-framework Cocoa")
 endif()
 
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${OPENGL_LIBRARIES})
+target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree pcl_geometry pcl_search ${OPENGL_LIBRARIES})
 
 if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
   #Some libs are referenced through depending on IO
@@ -212,27 +212,7 @@ if(HAVE_QVTK)
   endif()
 endif()
 
-set(EXT_DEPS "")
-if(WITH_OPENNI)
-  list(APPEND EXT_DEPS libopenni)
-endif()
-if(WITH_OPENNI2)
-  list(APPEND EXT_DEPS libopenni2)
-endif()
-if(WITH_ENSENSO)
-  list(APPEND EXT_DEPS ensenso)
-endif()
-if(WITH_DAVIDSDK)
-  list(APPEND EXT_DEPS davidSDK)
-endif()
-if(WITH_DSSDK)
-  list(APPEND EXT_DEPS dssdk)
-endif()
-if(WITH_RSSDK)
-  list(APPEND EXT_DEPS rssdk)
-endif()
-
-PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
+PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})

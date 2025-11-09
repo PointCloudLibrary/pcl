@@ -73,8 +73,8 @@ namespace pcl
         {
           double sum = 0;
 
-          std::deque<double>::const_iterator it = buffer_.begin ();
-          std::deque<double>::const_iterator it_end = buffer_.end ();
+          auto it = buffer_.cbegin ();
+          auto it_end = buffer_.cend ();
 
           while (it != it_end)
           {

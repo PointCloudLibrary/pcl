@@ -372,9 +372,6 @@ namespace pcl
 
       using PointCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
 
-      using KdTree = pcl::KdTree<PointNT>;
-      using KdTreePtr = typename KdTree::Ptr;
-
       /** \brief Constructor. */
       MarchingCubes (const float percentage_extend_grid = 0.0f,
                      const float iso_level = 0.0f) :

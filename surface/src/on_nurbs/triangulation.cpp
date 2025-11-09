@@ -296,8 +296,6 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
 
   for (auto &v : *cloud)
   {
-    Eigen::Vector3d tu, tv;
-
     double point[3];
     nurbs.Evaluate (v.x, v.y, 0, 3, point);
 

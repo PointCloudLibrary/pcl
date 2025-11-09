@@ -89,10 +89,8 @@ stages:
       vmImage: 'ubuntu-latest'
     strategy:
       matrix:
-        # Only ROS Melodic works with current releases of PCL
-        # Kinetic has stopped supporting any version later than PCL 1.7.2
-        ROS Melodic:
-          flavor: "melodic"
+        ROS Noetic:
+          flavor: "noetic"
     variables:
       tag: "ros"
     steps:

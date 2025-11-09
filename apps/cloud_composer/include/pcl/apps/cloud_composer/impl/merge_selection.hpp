@@ -1,4 +1,4 @@
- /*
+/*
  * Software License Agreement  (BSD License)
  *
  *  Point Cloud Library  (PCL) - www.pointclouds.org
@@ -38,81 +38,85 @@
 #ifndef IMPL_MERGE_SELECTION_H_
 #define IMPL_MERGE_SELECTION_H_
 
-#include <pcl/apps/cloud_composer/merge_selection.h>
-#include <pcl/point_cloud.h>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
+#include <pcl/apps/cloud_composer/merge_selection.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/point_cloud.h>
 
-template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::MergeSelection::performTemplatedAction (const QList <const CloudComposerItem*>& input_data)
+template <typename PointT>
+QList<pcl::cloud_composer::CloudComposerItem*>
+pcl::cloud_composer::MergeSelection::performTemplatedAction(
+    const QList<const CloudComposerItem*>& input_data)
 {
-  QList <CloudComposerItem*> output;  
-  
-  foreach (const CloudComposerItem* input_item, input_data)
-  {
-    QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
-    if ( ! variant.canConvert <typename PointCloud<PointT>::Ptr> () )
-    {  
-      qWarning () << "Attempted to cast to template type which does not exist in this item! (input list)";
+  QList<CloudComposerItem*> output;
+
+  foreach (const CloudComposerItem* input_item, input_data) {
+    QVariant variant = input_item->data(ItemDataRole::CLOUD_TEMPLATED);
+    if (!variant.canConvert<typename PointCloud<PointT>::Ptr>()) {
+      qWarning() << "Attempted to cast to template type which does not exist in this "
+                    "item! (input list)";
       return output;
     }
   }
-  foreach (const CloudItem* input_item, selected_item_index_map_.keys ())
-  {
-    QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
-    if ( ! variant.canConvert <typename PointCloud<PointT>::Ptr> () )
-    {  
-      qWarning () << "Attempted to cast to template type which does not exist in this item! (selected list)";
+  foreach (const CloudItem* input_item, selected_item_index_map_.keys()) {
+    QVariant variant = input_item->data(ItemDataRole::CLOUD_TEMPLATED);
+    if (!variant.canConvert<typename PointCloud<PointT>::Ptr>()) {
+      qWarning() << "Attempted to cast to template type which does not exist in this "
+                    "item! (selected list)";
       return output;
     }
-  }  
+  }
 
   pcl::ExtractIndices<PointT> filter;
-  typename PointCloud<PointT>::Ptr merged_cloud (new PointCloud<PointT>);
+  typename PointCloud<PointT>::Ptr merged_cloud(new PointCloud<PointT>);
 
-  foreach (const CloudItem* input_cloud_item, selected_item_index_map_.keys ())
-  {
-    input_cloud_item->printNumPoints <PointT> ();
-    //If this cloud hasn't been completely selected 
-    if (!input_data.contains (input_cloud_item))
-    {
-      typename PointCloud<PointT>::Ptr input_cloud = input_cloud_item->data (ItemDataRole::CLOUD_TEMPLATED).value <typename PointCloud<PointT>::Ptr> ();
-      qDebug () << "Extracting "<<selected_item_index_map_.value(input_cloud_item)->indices.size() << " points out of "<<input_cloud->width;
-      filter.setInputCloud (input_cloud);
-      filter.setIndices (selected_item_index_map_.value (input_cloud_item));
-      typename PointCloud<PointT>::Ptr original_minus_indices (new PointCloud<PointT>);
-      filter.setNegative (true);
-      filter.filter (*original_minus_indices);
-      filter.setNegative (false);
-      typename PointCloud<PointT>::Ptr selected_points (new PointCloud<PointT>);
-      filter.filter (*selected_points);
-      
-      qDebug () << "Original minus indices is "<<original_minus_indices->width;
-      
-      CloudItem*  new_cloud_item = CloudItem::createCloudItemFromTemplate<PointT>(input_cloud_item->text (),original_minus_indices);
-      
-      output.append (new_cloud_item);
+  foreach (const CloudItem* input_cloud_item, selected_item_index_map_.keys()) {
+    input_cloud_item->printNumPoints<PointT>();
+    // If this cloud hasn't been completely selected
+    if (!input_data.contains(input_cloud_item)) {
+      typename PointCloud<PointT>::Ptr input_cloud =
+          input_cloud_item->data(ItemDataRole::CLOUD_TEMPLATED)
+              .value<typename PointCloud<PointT>::Ptr>();
+      qDebug() << "Extracting "
+               << selected_item_index_map_.value(input_cloud_item)->indices.size()
+               << " points out of " << input_cloud->width;
+      filter.setInputCloud(input_cloud);
+      filter.setIndices(selected_item_index_map_.value(input_cloud_item));
+      typename PointCloud<PointT>::Ptr original_minus_indices(new PointCloud<PointT>);
+      filter.setNegative(true);
+      filter.filter(*original_minus_indices);
+      filter.setNegative(false);
+      typename PointCloud<PointT>::Ptr selected_points(new PointCloud<PointT>);
+      filter.filter(*selected_points);
+
+      qDebug() << "Original minus indices is " << original_minus_indices->width;
+
+      CloudItem* new_cloud_item = CloudItem::createCloudItemFromTemplate<PointT>(
+          input_cloud_item->text(), original_minus_indices);
+
+      output.append(new_cloud_item);
       *merged_cloud += *selected_points;
     }
-    //Append the input item to the original list
-    //input_data.append (input_cloud_item);
+    // Append the input item to the original list
+    // input_data.append (input_cloud_item);
   }
-  //Just concatenate for all fully selected clouds
-  foreach (const CloudComposerItem* input_item, input_data)
-  {
-    typename PointCloud<PointT>::Ptr input_cloud = input_item->data (ItemDataRole::CLOUD_TEMPLATED).value <typename PointCloud<PointT>::Ptr> ();
+  // Just concatenate for all fully selected clouds
+  foreach (const CloudComposerItem* input_item, input_data) {
+    typename PointCloud<PointT>::Ptr input_cloud =
+        input_item->data(ItemDataRole::CLOUD_TEMPLATED)
+            .value<typename PointCloud<PointT>::Ptr>();
     *merged_cloud += *input_cloud;
   }
-  CloudItem* cloud_item = CloudItem::createCloudItemFromTemplate<PointT>("Cloud from Selection",merged_cloud);
-      
-  output.append (cloud_item);
-    
+  CloudItem* cloud_item = CloudItem::createCloudItemFromTemplate<PointT>(
+      "Cloud from Selection", merged_cloud);
+
+  output.append(cloud_item);
+
   return output;
-  
 }
 
+#define PCL_INSTANTIATE_performTemplatedAction(T)                                      \
+  template void pcl::cloud_composer::MergeSelection::performTemplatedAction<T>(        \
+      QList<const CloudComposerItem*>);
 
-#define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::MergeSelection::performTemplatedAction<T> (QList <const CloudComposerItem*>);
-
-
-
-#endif //IMPL_MERGE_SELECTION_H_
+#endif // IMPL_MERGE_SELECTION_H_

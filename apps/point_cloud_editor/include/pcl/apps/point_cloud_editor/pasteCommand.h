@@ -42,54 +42,53 @@
 
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
+#include <pcl/memory.h> // for pcl::shared_ptr
 
-#include <pcl/memory.h>  // for pcl::shared_ptr
+class PasteCommand : public Command {
+public:
+  /// The type for shared pointer pointing to a selection buffer
+  using SelectionPtr = pcl::shared_ptr<Selection>;
 
-class PasteCommand : public Command
-{
-  public:
-    /// The type for shared pointer pointing to a selection buffer
-    using SelectionPtr = pcl::shared_ptr<Selection>;
+  /// @brief Constructor
+  /// @param copy_buffer_ptr a shared pointer pointing to the copy buffer.
+  /// @param selection_ptr a shared pointer pointing to the selection object.
+  /// @param cloud_ptr a shared pointer pointing to the cloud object.
+  PasteCommand(ConstCopyBufferPtr copy_buffer_ptr,
+               SelectionPtr selection_ptr,
+               CloudPtr cloud_ptr);
+  // comment that the selection is updated (also resets the matrix in cloud)
 
-    /// @brief Constructor
-    /// @param copy_buffer_ptr a shared pointer pointing to the copy buffer.
-    /// @param selection_ptr a shared pointer pointing to the selection object.
-    /// @param cloud_ptr a shared pointer pointing to the cloud object.
-    PasteCommand (ConstCopyBufferPtr copy_buffer_ptr,
-                  SelectionPtr selection_ptr, CloudPtr cloud_ptr);
-    // comment that the selection is updated (also resets the matrix in cloud)
+  /// @brief Copy constructor - commands are non-copyable
+  PasteCommand(const PasteCommand&) = delete;
 
-    /// @brief Copy constructor - commands are non-copyable
-    PasteCommand (const PasteCommand&) = delete;
+  /// @brief Equal operator - commands are non-copyable
+  PasteCommand&
+  operator=(const PasteCommand&) = delete;
 
-    /// @brief Equal operator - commands are non-copyable
-    PasteCommand&
-    operator= (const PasteCommand&) = delete;
-  
-  protected:
-    /// @brief Appends the points in the copy buffer into the cloud.
-    /// @details After appending the points to the cloud, this function also
-    /// updates the selection object to point to the newly pasted points.  This
-    /// also updates the selection object to point to the newly pasted points.
-    void
-    execute () override;
+protected:
+  /// @brief Appends the points in the copy buffer into the cloud.
+  /// @details After appending the points to the cloud, this function also
+  /// updates the selection object to point to the newly pasted points.  This
+  /// also updates the selection object to point to the newly pasted points.
+  void
+  execute() override;
 
-    /// @brief Removes the points that were pasted to the cloud.
-    void
-    undo () override;
+  /// @brief Removes the points that were pasted to the cloud.
+  void
+  undo() override;
 
-  private:
-    /// a pointer pointing to the copy buffer.
-    ConstCopyBufferPtr copy_buffer_ptr_;
+private:
+  /// a pointer pointing to the copy buffer.
+  ConstCopyBufferPtr copy_buffer_ptr_;
 
-    /// A shared pointer pointing to the selection object.
-    SelectionPtr selection_ptr_;
+  /// A shared pointer pointing to the selection object.
+  SelectionPtr selection_ptr_;
 
-    /// a pointer pointing to the cloud
-    CloudPtr cloud_ptr_;
+  /// a pointer pointing to the cloud
+  CloudPtr cloud_ptr_;
 
-    /// The size of the cloud before new points are pasted. This value is used
-    /// to mark the point where points were added to the cloud. In order to
-    /// support undo, one only has to resize the cloud using this value.
-    unsigned int prev_cloud_size_;
+  /// The size of the cloud before new points are pasted. This value is used
+  /// to mark the point where points were added to the cloud. In order to
+  /// support undo, one only has to resize the cloud using this value.
+  unsigned int prev_cloud_size_;
 };

@@ -439,7 +439,7 @@ protected:
   template <typename PointT>
   void
   computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud,
-                     const typename pcl::search::KdTree<PointT>::Ptr tree,
+                     const typename pcl::search::Search<PointT>::Ptr tree,
                      MatricesVector& cloud_covariances);
 
   /** \return trace of mat1 . mat2

@@ -70,7 +70,7 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud(
       if (!std::isfinite(pt[0]) || !std::isfinite(pt[1]) || !std::isfinite(pt[2]))
         continue;
 
-      pt_t = tr * pt;
+      pt_t.noalias() = tr * pt;
 
       memcpy(data_out + x_idx_offset_, &pt_t[0], sizeof(float));
       memcpy(data_out + y_idx_offset_, &pt_t[1], sizeof(float));
@@ -83,7 +83,7 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud(
       if (!std::isfinite(nt[0]) || !std::isfinite(nt[1]) || !std::isfinite(nt[2]))
         continue;
 
-      nt_t = rot * nt;
+      nt_t.noalias() = rot * nt;
 
       memcpy(data_out + nx_idx_offset_, &nt_t[0], sizeof(float));
       memcpy(data_out + ny_idx_offset_, &nt_t[1], sizeof(float));
@@ -101,7 +101,7 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud(
       if (!std::isfinite(pt[0]) || !std::isfinite(pt[1]) || !std::isfinite(pt[2]))
         continue;
 
-      pt_t = tr * pt;
+      pt_t.noalias() = tr * pt;
 
       memcpy(data_out + x_idx_offset_, &pt_t[0], sizeof(float));
       memcpy(data_out + y_idx_offset_, &pt_t[1], sizeof(float));

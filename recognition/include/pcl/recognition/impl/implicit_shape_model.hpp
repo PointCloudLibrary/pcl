@@ -44,6 +44,7 @@
 #include "../implicit_shape_model.h"
 #include <pcl/filters/voxel_grid.h> // for VoxelGrid
 #include <pcl/filters/extract_indices.h> // for ExtractIndices
+#include <pcl/search/kdtree.h> // for KdTree
 
 #include <pcl/memory.h>  // for dynamic_pointer_cast
 
@@ -171,7 +172,7 @@ pcl::features::ISMVoteList<PointT>::findStrongestPeaks (
   {
     // find best peak with taking into consideration peak flags
     double best_density = -1.0;
-    Eigen::Vector3f strongest_peak;
+    Eigen::Vector3f strongest_peak = Eigen::Vector3f::Constant (-1);
     int best_peak_ind (-1);
     int peak_counter (0);
     for (int i = 0; i < NUM_INIT_PTS; i++)
@@ -188,7 +189,8 @@ pcl::features::ISMVoteList<PointT>::findStrongestPeaks (
       }
     }
 
-    if( peak_counter == 0 )
+    if( best_density == -1.0 || strongest_peak == Eigen::Vector3f::Constant (-1) ||
+        best_peak_ind == -1 || peak_counter == 0 )
       break;// no peaks
 
     pcl::ISMPeak peak;
@@ -1185,7 +1187,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::alignYCoor
                           B,      A,   0.0f,
                        0.0f,   0.0f,   1.0f;
 
-  result = rotation_matrix_X * rotation_matrix_Z;
+  result.noalias() = rotation_matrix_X * rotation_matrix_Z;
 
   return (result);
 }

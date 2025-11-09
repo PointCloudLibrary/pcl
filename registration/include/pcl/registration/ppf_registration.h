@@ -67,11 +67,18 @@ public:
     std::size_t
     operator()(const HashKeyStruct& s) const noexcept
     {
-      const std::size_t h1 = std::hash<int>{}(s.first);
-      const std::size_t h2 = std::hash<int>{}(s.second.first);
-      const std::size_t h3 = std::hash<int>{}(s.second.second.first);
-      const std::size_t h4 = std::hash<int>{}(s.second.second.second);
-      return h1 ^ (h2 << 1) ^ (h3 << 2) ^ (h4 << 3);
+      /// RS hash function https://www.partow.net/programming/hashfunctions/index.html
+      std::size_t b_ = 378551;
+      std::size_t a_ = 63689;
+      std::size_t hash = 0;
+      hash = hash * a_ + s.first;
+      a_ = a_ * b_;
+      hash = hash * a_ + s.second.first;
+      a_ = a_ * b_;
+      hash = hash * a_ + s.second.second.first;
+      a_ = a_ * b_;
+      hash = hash * a_ + s.second.second.second;
+      return hash;
     }
   };
   using FeatureHashMapType =
@@ -328,7 +335,7 @@ private:
 
   /** \brief use a kd-tree with range searches of range max_dist to skip an O(N) pass
    * through the point cloud */
-  typename pcl::KdTreeFLANN<PointTarget>::Ptr scene_search_tree_;
+  typename pcl::search::Search<PointTarget>::Ptr scene_search_tree_;
 
   /** \brief List with the most promising pose candidates, after clustering. The pose
    * with the most votes is returned as the registration result. */

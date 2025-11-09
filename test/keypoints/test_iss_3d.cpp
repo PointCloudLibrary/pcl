@@ -39,6 +39,7 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/iss_3d.h>
+#include <pcl/search/kdtree.h>
 
 using namespace pcl;
 using namespace pcl::io;

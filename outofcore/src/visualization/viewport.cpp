@@ -44,7 +44,7 @@ Viewport::Viewport (vtkSmartPointer<vtkRenderWindow> window, double xmin/*=0.0*/
   camera_hud_actor_->GetTextProperty ()->SetColor (0.8, 0.8, 0.8);
   camera_hud_actor_->GetTextProperty ()->SetJustificationToCentered ();
   camera_hud_actor_->SetPosition ((viewport_xmax - viewport_xmin) / 2, 10);
-  renderer_->AddActor2D (camera_hud_actor_);
+  renderer_->AddViewProp (camera_hud_actor_);
 
   // HUD - FPS
   fps_hud_actor_ = vtkSmartPointer<vtkTextActor>::New ();
@@ -53,7 +53,7 @@ Viewport::Viewport (vtkSmartPointer<vtkRenderWindow> window, double xmin/*=0.0*/
   fps_hud_actor_->GetTextProperty ()->SetJustificationToRight ();
   fps_hud_actor_->SetInput ("fps");
   fps_hud_actor_->SetPosition ((viewport_xmax - viewport_xmin) - 10, 10);
-  renderer_->AddActor2D (fps_hud_actor_);
+  renderer_->AddViewProp (fps_hud_actor_);
 
   // HUD - Points Loaded
   points_hud_actor_ = vtkSmartPointer<vtkTextActor>::New ();
@@ -62,7 +62,7 @@ Viewport::Viewport (vtkSmartPointer<vtkRenderWindow> window, double xmin/*=0.0*/
   points_hud_actor_->GetTextProperty ()->SetJustificationToRight ();
   points_hud_actor_->SetInput ("points/mb");
   points_hud_actor_->SetPosition ((viewport_xmax - viewport_xmin) - 10, viewport_ymax - 20);
-  renderer_->AddActor2D (points_hud_actor_);
+  renderer_->AddViewProp (points_hud_actor_);
 
   // Callback - Viewport Modified - Window Resize
   viewport_modified_callback_ = vtkSmartPointer<vtkCallbackCommand>::New ();

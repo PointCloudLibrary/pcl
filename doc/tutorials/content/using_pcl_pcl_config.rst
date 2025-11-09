@@ -21,12 +21,9 @@ CMakeLists.txt that contains:
 
 .. code-block:: cmake
    
-   cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+   cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
    project(MY_GRAND_PROJECT)
    find_package(PCL 1.3 REQUIRED)
-   include_directories(${PCL_INCLUDE_DIRS})
-   link_directories(${PCL_LIBRARY_DIRS})
-   add_definitions(${PCL_DEFINITIONS})
    add_executable(pcd_write_test pcd_write.cpp)
    target_link_libraries(pcd_write_test ${PCL_LIBRARIES})
 
@@ -37,7 +34,7 @@ Now, let's see what we did.
 
 .. code-block:: cmake
    
-   cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+   cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
    
 This is mandatory for cmake, and since we are making a very basic
 project we don't need features from cmake 2.8 or higher.
@@ -65,29 +62,6 @@ gracefully if it can't be found. As PCL is modular one can request:
 
 .. code-block:: cmake
 
-   include_directories(${PCL_INCLUDE_DIRS})
-   link_directories(${PCL_LIBRARY_DIRS})
-   add_definitions(${PCL_DEFINITIONS})
-   
-When PCL is found, several related variables are set:
-
-* `PCL_FOUND`: set to 1 if PCL is found, otherwise unset
-* `PCL_INCLUDE_DIRS`: set to the paths to PCL installed headers and
-  the dependency headers
-* `PCL_LIBRARIES`: set to the file names of the built and installed PCL libraries
-* `PCL_LIBRARY_DIRS`: set to the paths to where PCL libraries and 3rd
-  party dependencies reside
-* `PCL_VERSION`: the version of the found PCL 
-* `PCL_COMPONENTS`: lists all available components
-* `PCL_DEFINITIONS`: lists the needed preprocessor definitions and compiler flags
-
-To let cmake know about external headers you include in your project,
-one needs to use ``include_directories()`` macro. In our case
-``PCL_INCLUDE_DIRS``, contains exactly what we need, thus we ask cmake
-to search the paths it contains for a header potentially included.
-
-.. code-block:: cmake
-
    add_executable(pcd_write_test pcd_write.cpp)
 
 Here, we tell cmake that we are trying to make an executable file
@@ -110,6 +84,23 @@ PCLConfig.cmake uses a CMake special feature named `EXPORT` which
 allows for using others' projects targets as if you built them
 yourself. When you are using such targets they are called `imported
 targets` and act just like any other target.
+
+CMake variables defined after finding PCL
+=========================================
+
+When PCL is found, several related variables are set:
+
+* `PCL_FOUND`: set to 1 if PCL is found, otherwise unset
+* `PCL_INCLUDE_DIRS`: set to the paths to PCL installed headers and
+  the dependency headers
+* `PCL_LIBRARIES`: set to the file names of the built and installed PCL libraries
+* `PCL_LIBRARY_DIRS`: set to the paths to where PCL libraries and 3rd
+  party dependencies reside
+* `PCL_VERSION`: the version of the found PCL 
+* `PCL_COMPONENTS`: lists all available components
+* `PCL_DEFINITIONS`: lists the needed preprocessor definitions and compiler flags
+
+In older PCL versions, it was necessary to explicitly tell CMake about `PCL_INCLUDE_DIRS`, `PCL_LIBRARY_DIRS`, and `PCL_DEFINITIONS`, but in newer PCL versions, the `target_link_libraries` call handles that automatically.
 
 Compiling and running the project
 ---------------------------------

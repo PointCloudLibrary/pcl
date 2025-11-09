@@ -1,3 +1,4 @@
+#include <chrono>
 #include <thread>
 
 #include <pcl/stereo/stereo_matching.h>

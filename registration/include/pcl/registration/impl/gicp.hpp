@@ -72,7 +72,7 @@ template <typename PointT>
 void
 GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovariances(
     typename pcl::PointCloud<PointT>::ConstPtr cloud,
-    const typename pcl::search::KdTree<PointT>::Ptr kdtree,
+    const typename pcl::search::Search<PointT>::Ptr kdtree,
     MatricesVector& cloud_covariances)
 {
   if (k_correspondences_ > static_cast<int>(cloud->size())) {
@@ -144,7 +144,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
       double v = 1.; // biggest 2 singular values replaced by 1
       if (k == 2)    // smallest singular value replaced by gicp_epsilon
         v = gicp_epsilon_;
-      cov += v * col * col.transpose();
+      cov.noalias() += v * col * col.transpose();
     }
     cloud_covariances[i] = cov;
   }
@@ -429,8 +429,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
       else
         inverted_eigenvalues(i, i) = 1.0 / ev;
     }
-    delta = eigensolver.eigenvectors() * inverted_eigenvalues *
-            eigensolver.eigenvectors().transpose() * gradient;
+    delta.noalias() = eigensolver.eigenvectors() * inverted_eigenvalues *
+                      eigensolver.eigenvectors().transpose() * gradient;
 
     // simple line search to guarantee a decrease in the function value
     double alpha = 1.0;
@@ -542,9 +542,9 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     // closes)
     g.head<3>() += Md;
     // Increment rotation gradient
-    p_trans_src = gicp_->base_transformation_.template cast<float>() * p_src;
+    p_trans_src.noalias() = gicp_->base_transformation_.template cast<float>() * p_src;
     Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
-    dCost_dR_T += p_base_src * Md.transpose();
+    dCost_dR_T.noalias() += p_base_src * Md.transpose();
   }
   g.head<3>() *= 2.0 / m;
   dCost_dR_T *= 2.0 / m;
@@ -584,10 +584,10 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     // g.head<3> ()+= 2*M*d/num_matches (we postpone 2/num_matches after the loop
     // closes)
     g.head<3>() += Md;
-    p_trans_src = gicp_->base_transformation_.template cast<float>() * p_src;
+    p_trans_src.noalias() = gicp_->base_transformation_.template cast<float>() * p_src;
     Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
     // Increment rotation gradient
-    dCost_dR_T += p_base_src * Md.transpose();
+    dCost_dR_T.noalias() += p_base_src * Md.transpose();
   }
   f /= static_cast<double>(m);
   g.head<3>() *= (2.0 / m);
@@ -661,7 +661,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     const Eigen::Vector3d Md(M * d);    // Md = M*d
     gradient.head<3>() += Md;           // translation gradient
     hessian.topLeftCorner<3, 3>() += M; // translation-translation hessian
-    p_trans_src = base_transformation_float * p_src;
+    p_trans_src.noalias() = base_transformation_float * p_src;
     const Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
     dCost_dR_T.noalias() += p_base_src * Md.transpose();
     dCost_dR_T1b += p_base_src[0] * M;
@@ -790,11 +790,20 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   base_transformation_ = Matrix4::Identity();
   nr_iterations_ = 0;
   converged_ = false;
-  double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
   pcl::Indices nn_indices(1);
   std::vector<float> nn_dists(1);
 
   pcl::transformPointCloud(output, output, guess);
+  pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>
+      corr_estimation;
+  corr_estimation.setNumberOfThreads(threads_);
+  // setSearchMethodSource is not necessary because we do not use
+  // determineReciprocalCorrespondences
+  corr_estimation.setSearchMethodTarget(this->getSearchMethodTarget());
+  corr_estimation.setInputTarget(target_);
+  auto output_transformed = pcl::make_shared<PointCloudSource>();
+  output_transformed->resize(output.size());
+  pcl::Correspondences correspondences;
 
   while (!converged_) {
     std::size_t cnt = 0;
@@ -811,36 +820,19 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
 
     Eigen::Matrix3d R = transform_R.topLeftCorner<3, 3>();
 
-    for (std::size_t i = 0; i < N; i++) {
-      PointSource query = output[i];
-      query.getVector4fMap() =
-          transformation_.template cast<float>() * query.getVector4fMap();
-
-      if (!searchForNeighbors(query, nn_indices, nn_dists)) {
-        PCL_ERROR("[pcl::%s::computeTransformation] Unable to find a nearest neighbor "
-                  "in the target dataset for point %d in the source!\n",
-                  getClassName().c_str(),
-                  (*indices_)[i]);
-        return;
-      }
-
-      // Check if the distance to the nearest neighbor is smaller than the user imposed
-      // threshold
-      if (nn_dists[0] < dist_threshold) {
-        Eigen::Matrix3d& C1 = (*input_covariances_)[i];
-        Eigen::Matrix3d& C2 = (*target_covariances_)[nn_indices[0]];
-        Eigen::Matrix3d& M = mahalanobis_[i];
-        // M = R*C1
-        M = R * C1;
-        // temp = M*R' + C2 = R*C1*R' + C2
-        Eigen::Matrix3d temp = M * R.transpose();
-        temp += C2;
-        // M = temp^-1
-        M = temp.inverse();
-        source_indices[cnt] = static_cast<int>(i);
-        target_indices[cnt] = nn_indices[0];
-        cnt++;
-      }
+    transformPointCloud(
+        output, *output_transformed, transformation_.template cast<float>(), false);
+    corr_estimation.setInputSource(output_transformed);
+    corr_estimation.determineCorrespondences(correspondences, corr_dist_threshold_);
+    cnt = 0;
+    for (const auto& corr : correspondences) {
+      source_indices[cnt] = corr.index_query;
+      target_indices[cnt] = corr.index_match;
+      const Eigen::Matrix3d& C1 = (*input_covariances_)[corr.index_query];
+      const Eigen::Matrix3d& C2 = (*target_covariances_)[corr.index_match];
+      pcl::invert3x3SymMatrix<Eigen::Matrix3d>(R * C1 * R.transpose() + C2,
+                                               mahalanobis_[corr.index_query]);
+      ++cnt;
     }
     // Resize to the actual number of valid correspondences
     source_indices.resize(cnt);
@@ -895,7 +887,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
       PCL_DEBUG("[pcl::%s::computeTransformation] Convergence failed\n",
                 getClassName().c_str());
   }
-  final_transformation_ = previous_transformation_ * guess;
+  final_transformation_.noalias() = previous_transformation_ * guess;
 
   PCL_DEBUG("Transformation "
             "is:\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%"

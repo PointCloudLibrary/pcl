@@ -11,9 +11,11 @@ if(NOT build)
   return()
 endif()
 
-set(srcs
-  src/kdtree_flann.cpp
-)
+if(FLANN_FOUND)
+  set(srcs
+    src/kdtree_flann.cpp
+  )
+endif()
 
 set(incs
   "include/pcl/${SUBSYS_NAME}/kdtree.h"
@@ -27,9 +29,14 @@ set(impl_incs
 )
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
-target_link_libraries("${LIB_NAME}" pcl_common FLANN::FLANN)
-set(EXT_DEPS flann)
+if(FLANN_FOUND)
+  PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
+  target_link_libraries("${LIB_NAME}" pcl_common FLANN::FLANN)
+  set(EXT_DEPS flann)
+else()
+  PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} INCLUDES ${incs} ${impl_incs})
+  target_link_libraries("${LIB_NAME}" INTERFACE pcl_common)
+endif()
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
 
 # Install include files

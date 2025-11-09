@@ -371,9 +371,14 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   KR_ = projection_matrix_.topLeftCorner <3, 3> ();
 
   // precalculate KR * KR^T needed by calculations during nn-search
-  KR_KRT_ = KR_ * KR_.transpose ();
+  KR_KRT_.noalias() = KR_ * KR_.transpose ();
+  return true;
+}
 
-  // final test: project a few points at known image coordinates and test if the projected coordinates are close
+template<typename PointT> bool
+pcl::search::OrganizedNeighbor<PointT>::testProjectionMatrix () const
+{
+  // test: project a few points at known image coordinates and test if the projected coordinates are close
   for(std::size_t i=0; i<11; ++i) {
     const std::size_t test_index = input_->size()*i/11u;
     if (!mask_[test_index])
@@ -381,7 +386,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
     const auto& test_point = (*input_)[test_index];
     pcl::PointXY q;
     if (!projectPoint(test_point, q) || std::abs(q.x-test_index%input_->width)>1 || std::abs(q.y-test_index/input_->width)>1) {
-      PCL_WARN ("[pcl::%s::estimateProjectionMatrix] Input dataset does not seem to be from a projective device! (point %zu (%g,%g,%g) projected to pixel coordinates (%g,%g), but actual pixel coordinates are (%zu,%zu))\n",
+      PCL_WARN ("[pcl::%s::testProjectionMatrix] Input dataset does not seem to be from a projective device! (point %zu (%g,%g,%g) projected to pixel coordinates (%g,%g), but actual pixel coordinates are (%zu,%zu))\n",
                 this->getName ().c_str (), test_index, test_point.x, test_point.y, test_point.z, q.x, q.y, static_cast<std::size_t>(test_index%input_->width), static_cast<std::size_t>(test_index/input_->width));
       return false;
     }

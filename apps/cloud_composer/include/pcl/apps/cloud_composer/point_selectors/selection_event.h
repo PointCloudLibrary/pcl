@@ -39,57 +39,68 @@
 
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 
-#include <vtkSmartPointer.h>
-#include <vtkPolyData.h>
 #include <vtkActor.h>
 #include <vtkDataSetMapper.h>
+#include <vtkPolyData.h>
 #include <vtkRenderer.h>
+#include <vtkSmartPointer.h>
 
-namespace pcl
-{
-  namespace cloud_composer
+namespace pcl {
+namespace cloud_composer {
+class RectangularFrustumSelector;
+
+class SelectionEvent {
+
+public:
+  SelectionEvent(vtkSmartPointer<vtkPolyData> selected_points,
+                 vtkSmartPointer<vtkActor> selected_actor,
+                 vtkSmartPointer<vtkDataSetMapper> selected_mapper,
+                 QMap<QString, vtkPolyData*> id_selected_map,
+                 vtkRenderer* renderer)
+  : selected_points_(std::move(selected_points))
+  , selected_actor_(std::move(selected_actor))
+  , selected_mapper_(std::move(selected_mapper))
+  , id_selected_data_map_(std::move(id_selected_map))
+  , renderer_(renderer)
+  {}
+
+  ~SelectionEvent();
+
+  inline vtkIdType
+  getNumPoints() const
   {
-    class RectangularFrustumSelector;  
-    
-    class SelectionEvent
-    {
-      
-      public:
-        SelectionEvent (vtkSmartPointer <vtkPolyData> selected_points, vtkSmartPointer<vtkActor> selected_actor, vtkSmartPointer<vtkDataSetMapper> selected_mapper, QMap < QString, vtkPolyData* > id_selected_map, vtkRenderer* renderer) 
-        : selected_points_ (std::move(selected_points)) 
-        , selected_actor_ (std::move(selected_actor))
-        , selected_mapper_ (std::move(selected_mapper))
-        , id_selected_data_map_ (std::move(id_selected_map))
-        , renderer_ (renderer) 
-        {}
-        
-        ~SelectionEvent ();
-        
-        inline vtkIdType
-        getNumPoints () const { return selected_points_->GetNumberOfPoints (); }
-        
-        vtkSmartPointer <vtkPolyData>
-        getPolyData () const { return selected_points_; }
-        
-        vtkSmartPointer <vtkDataSetMapper>
-        getMapper () const { return selected_mapper_; }
-        
-        vtkSmartPointer <vtkActor>
-        getActor () const { return selected_actor_; }
-        
-        void
-        findIndicesInItem (CloudItem* cloud_item, const pcl::PointIndices::Ptr& indices);
-        
-      private:
-      
-        vtkSmartPointer <vtkPolyData> selected_points_;
-        vtkSmartPointer<vtkActor> selected_actor_;
-        vtkSmartPointer<vtkDataSetMapper> selected_mapper_;
-        QMap < QString, vtkPolyData* > id_selected_data_map_;
-        vtkRenderer* renderer_;
-       
-    };
-    
+    return selected_points_->GetNumberOfPoints();
   }
-  
-}
+
+  vtkSmartPointer<vtkPolyData>
+  getPolyData() const
+  {
+    return selected_points_;
+  }
+
+  vtkSmartPointer<vtkDataSetMapper>
+  getMapper() const
+  {
+    return selected_mapper_;
+  }
+
+  vtkSmartPointer<vtkActor>
+  getActor() const
+  {
+    return selected_actor_;
+  }
+
+  void
+  findIndicesInItem(CloudItem* cloud_item, const pcl::PointIndices::Ptr& indices);
+
+private:
+  vtkSmartPointer<vtkPolyData> selected_points_;
+  vtkSmartPointer<vtkActor> selected_actor_;
+  vtkSmartPointer<vtkDataSetMapper> selected_mapper_;
+  QMap<QString, vtkPolyData*> id_selected_data_map_;
+  vtkRenderer* renderer_;
+};
+
+} // namespace cloud_composer
+
+} // namespace pcl

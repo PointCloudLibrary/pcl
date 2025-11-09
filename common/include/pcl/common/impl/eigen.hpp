@@ -912,8 +912,8 @@ transformBetween2CoordinateSystems (const Eigen::Matrix<Scalar, Eigen::Dynamic, 
   // Identity matrix = transform to CS2 to CS3
   // Note: if CS1 == CS2 --> transformation = T3
   transformation = Eigen::Transform<Scalar, 3, Eigen::Affine>::Identity ();
-  transformation.linear () = T3.linear () * T2.linear ().inverse ();
-  transformation.translation () = to0 - (transformation.linear () * fr0);
+  transformation.linear ().noalias () = T3.linear () * T2.linear ().inverse ();
+  transformation.translation ().noalias () = to0 - (transformation.linear () * fr0);
   return (true);
 }
 

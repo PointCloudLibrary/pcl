@@ -42,4 +42,3 @@
 #include <pcl/point_types.h>
 PCL_INSTANTIATE_PRODUCT(SampleConsensusModelTorus, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::Normal)))
 #endif    // PCL_NO_PRECOMPILE
-

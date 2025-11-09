@@ -211,6 +211,8 @@ endif()
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 target_link_libraries(pcl_io_ply pcl_common Boost::boost)
 
+PCL_MAKE_PKGCONFIG(pcl_io_ply COMPONENT ${SUBSYS_NAME} DESC "${SUBSYS_DESC}, PLY" PCL_DEPS common)
+
 set(srcs
   src/debayer.cpp
   src/pcd_grabber.cpp
@@ -336,7 +338,7 @@ add_definitions(${VTK_DEFINES})
 
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
 
-target_link_libraries("${LIB_NAME}" Boost::boost Boost::iostreams pcl_common pcl_io_ply)
+target_link_libraries("${LIB_NAME}" Boost::boost Boost::iostreams pcl_common pcl_io_ply pcl_octree)
 if(TARGET Boost::filesystem)
   target_link_libraries("${LIB_NAME}" Boost::filesystem)
 endif()
@@ -428,6 +430,7 @@ endif()
 if(WITH_ENSENSO)
   list(APPEND EXT_DEPS ensenso)
 endif()
+list(APPEND EXT_DEPS pcl_io_ply)
 
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
 

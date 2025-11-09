@@ -41,65 +41,64 @@
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
-#include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
-
-#include <pcl/memory.h>  // for pcl::shared_ptr
+#include <pcl/apps/point_cloud_editor/localTypes.h>
+#include <pcl/memory.h> // for pcl::shared_ptr
 
 class Selection;
 
-class CopyCommand : public Command
-{
-  public:
-    /// The type for shared pointer pointing to a constant selection buffer
-    using ConstSelectionPtr = pcl::shared_ptr<const Selection>;
+class CopyCommand : public Command {
+public:
+  /// The type for shared pointer pointing to a constant selection buffer
+  using ConstSelectionPtr = pcl::shared_ptr<const Selection>;
 
-    /// @brief Constructor
-    /// @param copy_buffer_ptr a shared pointer pointing to the copy buffer.
-    /// @param selection_ptr a shared pointer pointing to the selection object.
-    /// @param cloud_ptr a shared pointer pointing to the cloud object.
-    CopyCommand (CopyBufferPtr copy_buffer_ptr,
-                 ConstSelectionPtr selection_ptr,
-                 ConstCloudPtr cloud_ptr)
-      : copy_buffer_ptr_(std::move(copy_buffer_ptr)), selection_ptr_(std::move(selection_ptr)),
-        cloud_ptr_(std::move(cloud_ptr))
-    {
-      has_undo_ = false;
-    }
+  /// @brief Constructor
+  /// @param copy_buffer_ptr a shared pointer pointing to the copy buffer.
+  /// @param selection_ptr a shared pointer pointing to the selection object.
+  /// @param cloud_ptr a shared pointer pointing to the cloud object.
+  CopyCommand(CopyBufferPtr copy_buffer_ptr,
+              ConstSelectionPtr selection_ptr,
+              ConstCloudPtr cloud_ptr)
+  : copy_buffer_ptr_(std::move(copy_buffer_ptr))
+  , selection_ptr_(std::move(selection_ptr))
+  , cloud_ptr_(std::move(cloud_ptr))
+  {
+    has_undo_ = false;
+  }
 
-    /// @brief Copy constructor - commands are non-copyable
-    CopyCommand (const CopyCommand&) = delete;
+  /// @brief Copy constructor - commands are non-copyable
+  CopyCommand(const CopyCommand&) = delete;
 
-    /// @brief Equal operator - commands are non-copyable
-    CopyCommand&
-    operator= (const CopyCommand&) = delete;
+  /// @brief Equal operator - commands are non-copyable
+  CopyCommand&
+  operator=(const CopyCommand&) = delete;
 
-  protected:
-    /// @brief Copy the selected points into the copy buffer.
-    /// @pre Assumes the constructor was given appropriate pointers to the
-    /// required objects.
-    void
-    execute () override
-    {
-      if (!cloud_ptr_)
-        return;
-      copy_buffer_ptr_ -> set(cloud_ptr_, *selection_ptr_);
-    }
+protected:
+  /// @brief Copy the selected points into the copy buffer.
+  /// @pre Assumes the constructor was given appropriate pointers to the
+  /// required objects.
+  void
+  execute() override
+  {
+    if (!cloud_ptr_)
+      return;
+    copy_buffer_ptr_->set(cloud_ptr_, *selection_ptr_);
+  }
 
-    /// @brief undo is not supported for this command.
-    void
-    undo () override
-    {
-      assert(false);
-    }
+  /// @brief undo is not supported for this command.
+  void
+  undo() override
+  {
+    assert(false);
+  }
 
-  private:
-    /// a pointer to the copy buffer.
-    CopyBufferPtr copy_buffer_ptr_;
+private:
+  /// a pointer to the copy buffer.
+  CopyBufferPtr copy_buffer_ptr_;
 
-    /// a shared pointer pointing to the selection
-    ConstSelectionPtr selection_ptr_;
+  /// a shared pointer pointing to the selection
+  ConstSelectionPtr selection_ptr_;
 
-    /// a shared pointer pointing to the cloud
-    ConstCloudPtr cloud_ptr_;
+  /// a shared pointer pointing to the cloud
+  ConstCloudPtr cloud_ptr_;
 };

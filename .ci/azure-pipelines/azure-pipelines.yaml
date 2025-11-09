@@ -27,6 +27,9 @@ resources:
     - container: env2404
       image: pointcloudlibrary/env:24.04
 
+variables:
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+
 stages:
   - stage: formatting
     displayName: Formatting
@@ -48,7 +51,7 @@ stages:
               CC: gcc
               CXX: g++
               BUILD_GPU: ON
-              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
+              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON -DCMAKE_CXX_STANDARD=14 -DCMAKE_CUDA_STANDARD=14'
             24.04 GCC:  # latest Ubuntu
               CONTAINER: env2404
               CC: gcc
@@ -74,12 +77,12 @@ stages:
           vmImage: '$(VMIMAGE)'
         strategy:
           matrix:
-            Ventura 13:
-              VMIMAGE: 'macOS-13'
-              OSX_VERSION: '13'
             Sonoma 14:
               VMIMAGE: 'macOS-14'
               OSX_VERSION: '14'
+            Sequoia 15:
+              VMIMAGE: 'macOS-15'
+              OSX_VERSION: '15'
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: '$(Agent.WorkFolder)/build'
@@ -156,7 +159,7 @@ stages:
               CONTAINER: winx64
               PLATFORM: 'x64'
               ARCHITECTURE: 'x86_amd64'
-              GENERATOR: '"Visual Studio 16 2019" -A x64'
+              GENERATOR: '"Visual Studio 17 2022" -A x64'
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:

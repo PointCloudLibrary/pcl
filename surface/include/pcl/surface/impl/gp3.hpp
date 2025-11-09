@@ -91,9 +91,6 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
 
   // 2D coordinates of points
   const Eigen::Vector2f uvn_nn_qp_zero = Eigen::Vector2f::Zero();
-  Eigen::Vector2f uvn_current;
-  Eigen::Vector2f uvn_prev;
-  Eigen::Vector2f uvn_next;
 
   // initializing fields
   already_connected_ = false; // see declaration for comments :P

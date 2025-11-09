@@ -845,9 +845,6 @@ TEST (PCL, computeCentroidAndOBB)
   PointXYZ point;
   Indices indices;
   Eigen::Vector3f centroid = Eigen::Vector3f::Random();
-  Eigen::Vector3f major_axis;
-  Eigen::Vector3f middle_axis;
-  Eigen::Vector3f minor_axis;
   Eigen::Matrix<float, 3, 1> obb_position;
   Eigen::Matrix<float, 3, 1> obb_dimensions;
   Eigen::Matrix3f obb_rotational_matrix= Eigen::Matrix3f::Random();

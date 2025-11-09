@@ -44,6 +44,10 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/point_cloud_color_handlers.h>
+#include <cstddef>
+#include <limits>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;
@@ -221,6 +225,142 @@ TEST(PCL, PCLVisualizer_updateColorHandlerIndex) {
   EXPECT_TRUE(viewer_ptr->updateColorHandlerIndex(cloud_name, 0));
 }
 
+struct PointWithRandomTypes {
+  PCL_ADD_POINT4D
+  double a;
+  int b;
+  std::int16_t c;
+  bool d;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
+
+// define a point type with a random collection of types
+POINT_CLOUD_REGISTER_POINT_STRUCT(PointWithRandomTypes,
+                                  (float, x, x)(float, y, y)(float, z, z)(double, a, a)(
+                                      int, b, b)(std::int16_t, c, c)(bool, d, d))
+
+TEST(PCL, ColorHandlerGenericField_datatypes)
+{
+  auto cloud = pcl::make_shared<pcl::PointCloud<PointWithRandomTypes>>();
+
+  // use random values for the points, some negative, some positive
+  std::vector<float> xs{0, 1, 2, 3}, ys{0, 1, 2, 3}, zs{0, 1, 2, 3};
+  std::vector<double> as{2.5, 4.5, -2.5, -4.5};
+  std::vector<int> bs{1, -1, 0, 99};
+  std::vector<std::int16_t> cs{2, 3, -10, std::numeric_limits<std::int16_t>::max()};
+  std::vector<bool> ds{true, false, true, false};
+
+  // fill point cloud
+  for (size_t i = 0; i < xs.size(); ++i) {
+    PointWithRandomTypes p;
+    p.x = xs[i];
+    p.y = ys[i];
+    p.z = zs[i];
+    p.a = as[i];
+    p.b = bs[i];
+    p.c = cs[i];
+    p.d = ds[i];
+    cloud->push_back(p);
+  }
+
+  // Now we test if PointCloudColorHandlerGenericField::getColor() transforms all types
+  // to reasonable values
+  constexpr float max_error = 1e-8;
+  using ColorHandlerPointCloud =
+      pcl::visualization::PointCloudColorHandlerGenericField<PointWithRandomTypes>;
+
+  // scope for testing regular point cloud
+  {
+    // test float field "y"
+    ColorHandlerPointCloud color_handler_x(cloud, "x");
+    vtkSmartPointer<vtkDataArray> colors_x = color_handler_x.getColor();
+
+    for (size_t i = 0; i < xs.size(); ++i) {
+      EXPECT_NEAR(*(colors_x->GetTuple(i)), static_cast<double>(xs[i]), max_error);
+    }
+
+    // test double field "a"
+    ColorHandlerPointCloud color_handler_a(cloud, "a");
+    vtkSmartPointer<vtkDataArray> colors_a = color_handler_a.getColor();
+
+    for (size_t i = 0; i < xs.size(); ++i) {
+      EXPECT_NEAR(*(colors_a->GetTuple(i)), static_cast<double>(as[i]), max_error);
+    }
+
+    // test int field "b"
+    ColorHandlerPointCloud color_handler_b(cloud, "b");
+    vtkSmartPointer<vtkDataArray> colors_b = color_handler_b.getColor();
+
+    for (size_t i = 0; i < xs.size(); ++i) {
+      EXPECT_NEAR(*(colors_b->GetTuple(i)), static_cast<double>(bs[i]), max_error);
+    }
+
+    // test int16_t field "c"
+    ColorHandlerPointCloud color_handler_c(cloud, "c");
+    vtkSmartPointer<vtkDataArray> colors_c = color_handler_c.getColor();
+
+    for (size_t i = 0; i < xs.size(); ++i) {
+      EXPECT_NEAR(*(colors_c->GetTuple(i)), static_cast<double>(cs[i]), max_error);
+    }
+
+    // test bool field "d"
+    ColorHandlerPointCloud color_handler_d(cloud, "d");
+    vtkSmartPointer<vtkDataArray> colors_d = color_handler_d.getColor();
+
+    for (size_t i = 0; i < xs.size(); ++i) {
+      EXPECT_NEAR(*(colors_d->GetTuple(i)), static_cast<double>(ds[i]), max_error);
+    }
+  }
+
+  using ColorHandlerPCLPointCloud2 =
+      pcl::visualization::PointCloudColorHandlerGenericField<PCLPointCloud2>;
+  PCLPointCloud2::Ptr cloud_pcl = pcl::make_shared<PCLPointCloud2>();
+  toPCLPointCloud2(*cloud, *cloud_pcl);
+
+  // scope for testing PCLPointCloud2
+  {
+    // test float field "y"
+    ColorHandlerPCLPointCloud2 color_handler_x(cloud_pcl, "x");
+    vtkSmartPointer<vtkDataArray> colors_x = color_handler_x.getColor();
+
+    for (size_t i = 0; i < xs.size(); ++i) {
+      EXPECT_NEAR(*(colors_x->GetTuple(i)), static_cast<double>(xs[i]), max_error);
+    }
+
+    // test double field "a"
+    ColorHandlerPCLPointCloud2 color_handler_a(cloud_pcl, "a");
+    vtkSmartPointer<vtkDataArray> colors_a = color_handler_a.getColor();
+
+    for (size_t i = 0; i < xs.size(); ++i) {
+      EXPECT_NEAR(*(colors_a->GetTuple(i)), static_cast<double>(as[i]), max_error);
+    }
+
+    // test int field "b"
+    ColorHandlerPCLPointCloud2 color_handler_b(cloud_pcl, "b");
+    vtkSmartPointer<vtkDataArray> colors_b = color_handler_b.getColor();
+
+    for (size_t i = 0; i < xs.size(); ++i) {
+      EXPECT_NEAR(*(colors_b->GetTuple(i)), static_cast<double>(bs[i]), max_error);
+    }
+
+    // test int16_t field "c"
+    ColorHandlerPCLPointCloud2 color_handler_c(cloud_pcl, "c");
+    vtkSmartPointer<vtkDataArray> colors_c = color_handler_c.getColor();
+
+    for (size_t i = 0; i < xs.size(); ++i) {
+      EXPECT_NEAR(*(colors_c->GetTuple(i)), static_cast<double>(cs[i]), max_error);
+    }
+
+    // test bool field "d"
+    ColorHandlerPCLPointCloud2 color_handler_d(cloud_pcl, "d");
+    vtkSmartPointer<vtkDataArray> colors_d = color_handler_d.getColor();
+
+    for (size_t i = 0; i < xs.size(); ++i) {
+      EXPECT_NEAR(*(colors_d->GetTuple(i)), static_cast<double>(ds[i]), max_error);
+    }
+  }
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
@@ -251,7 +391,7 @@ main (int argc, char** argv)
 
   // Concatenate XYZ and normal information
   pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
-      
+
   // Create search tree
   tree2.reset (new search::KdTree<PointNormal>);
   tree2->setInputCloud (cloud_with_normals);

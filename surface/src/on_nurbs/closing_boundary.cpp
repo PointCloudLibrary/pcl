@@ -233,7 +233,6 @@ ClosingBoundary::sampleUniform (ON_NurbsSurface *nurbs, vector_vec3d &point_list
   double maxV = nurbs->Knot (1, nurbs->KnotCount (1) - 1);
 
   Eigen::Vector2d params;
-  Eigen::Vector3d point;
 
   double points[3];
 
@@ -258,7 +257,6 @@ ClosingBoundary::sampleRandom (ON_NurbsSurface *nurbs, vector_vec3d &point_list,
   double maxV = nurbs->Knot (1, nurbs->KnotCount (1) - 1);
 
   Eigen::Vector2d params;
-  Eigen::Vector3d point;
 
   double points[3];
 
@@ -283,7 +281,6 @@ ClosingBoundary::sampleFromBoundary (ON_NurbsSurface *nurbs, vector_vec3d &point
   double maxV = nurbs->Knot (1, nurbs->KnotCount (1) - 1);
 
   Eigen::Vector2d params;
-  Eigen::Vector3d point;
 
   double points[3];
 

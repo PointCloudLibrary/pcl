@@ -39,11 +39,7 @@
 #include "pcl/gpu/utils/safe_call.hpp"
 #include "pcl/gpu/utils/device/warp.hpp"
 #include "pcl/gpu/utils/device/functional.hpp"
-#include "pcl/gpu/utils/device/funcattrib.hpp"
-#include "pcl/gpu/utils/timers_cuda.hpp"
 #include "pcl/gpu/features/device/pair_features.hpp"
-
-#include <iostream>
 
 using namespace pcl::gpu;
 using namespace pcl::device;
@@ -124,7 +120,7 @@ namespace pcl
 
                 float hist_incr = 100.f / (float)(size - 1); // or 100/(size - 1) ???
 
-                //now [inds, inds + size) contains indices of neighb points for idx-th point in cloud
+                //now [inds, inds + size) contains indices of neighboring points for idx-th point in cloud
                 //this list also contains idx itseelf.               
 
                 for(int i = lane; i < size; i += Warp::STRIDE)

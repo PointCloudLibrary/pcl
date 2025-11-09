@@ -1,10 +1,23 @@
 # ------------------------------------------------------------------------------------
 # Helper to use PCL from outside project
 #
-# target_link_libraries(my_fabulous_target PCL_XXX_LIBRARIES) where XXX is the
-# upper cased xxx from :
+# Search for PCL:
+# Request all PCL modules:
+#   find_package(PCL CONFIG REQUIRED)
+# Or request only specific PCL modules:
+#   find_package(PCL CONFIG REQUIRED COMPONENTS xxx yyy)
+#
+# Link to PCL:
+# Link to all found PCL modules:
+#   target_link_libraries(my_fabulous_target ${PCL_LIBRARIES})
+# Or link only to specific modules:
+#   target_link_libraries(my_fabulous_target pcl_xxx pcl_yyy)
+#
+# Where xxx and yyy are module names from the following list:
 # @PCLCONFIG_AVAILABLE_COMPONENTS_LIST@
 #
+# Some additional variables are set by PCLConfig.cmake, which are not needed when
+# using the (modern) linking approach described above:
 # PCL_INCLUDE_DIRS is filled with PCL and available 3rdparty headers
 # PCL_LIBRARY_DIRS is filled with PCL components libraries install directory and
 # 3rdparty libraries paths
@@ -12,8 +25,13 @@
 #                                   www.pointclouds.org
 #------------------------------------------------------------------------------------
 
+
 # Set default policy behavior similar to minimum requirement version
 cmake_policy(VERSION 3.16.3)
+
+if(POLICY CMP0144)
+  cmake_policy(SET CMP0144 NEW)
+endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")
 
@@ -100,7 +118,10 @@ macro(find_eigen3)
   if(PCL_ALL_IN_ONE_INSTALLER)
     set(Eigen3_DIR "${PCL_ROOT}/3rdParty/Eigen3/share/eigen3/cmake/")
   endif()
-  find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+  find_package(Eigen3 REQUIRED NO_MODULE)
+  if (Eigen3_VERSION VERSION_LESS 3.3)
+    message(FATAL_ERROR "Eigen version>=3.3 is required, but found ${Eigen3_VERSION}")
+  endif()
   if(NOT EIGEN3_FOUND AND Eigen3_FOUND)
     set(EIGEN3_FOUND ${Eigen3_FOUND})
   endif()
@@ -436,6 +457,10 @@ list(APPEND PCL_COMPILE_OPTIONS @PCLCONFIG_SSE_COMPILE_OPTIONS@)
 list(APPEND PCL_COMPILE_OPTIONS @PCLCONFIG_AVX_COMPILE_OPTIONS@)
 
 set(pcl_all_components @PCLCONFIG_AVAILABLE_COMPONENTS@)
+# insert "io_ply" before "io"
+list(FIND pcl_all_components "io" pcl_pos_io)
+list(INSERT pcl_all_components ${pcl_pos_io} "io_ply")
+unset(pcl_pos_io)
 list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 
 #list each component dependencies IN PCL
@@ -445,6 +470,11 @@ list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 @PCLCONFIG_EXTERNAL_DEPENDENCIES@
 
 @PCLCONFIG_OPTIONAL_DEPENDENCIES@
+
+# io_ply subcomponent
+list(APPEND pcl_io_int_dep io_ply)
+set(pcl_io_ply_int_dep common)
+set(pcl_io_ply_ext_dep boost)
 
 # VTK components required by PCL
 set(PCL_VTK_COMPONENTS "@PCL_VTK_COMPONENTS@")
@@ -503,18 +533,21 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
 
   string(REGEX REPLACE "^cuda_(.*)$" "\\1" cuda_component "${component}")
   string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}")
+  string(REGEX REPLACE "^io_(.*)$" "\\1" io_component "${component}")
 
   find_path(PCL_${COMPONENT}_INCLUDE_DIR
     NAMES pcl/${component}
           pcl/apps/${component}
           pcl/cuda/${cuda_component} pcl/cuda/${component}
           pcl/gpu/${gpu_component} pcl/gpu/${component}
+          pcl/io/${io_component}
     HINTS ${PCL_INCLUDE_DIRS}
     PATH_SUFFIXES
           ${component}/include
           apps/${component}/include
           cuda/${cuda_component}/include
           gpu/${gpu_component}/include
+          io/${io_component}/include
     DOC "path to ${component} headers"
     NO_DEFAULT_PATH)
   mark_as_advanced(PCL_${COMPONENT}_INCLUDE_DIR)

@@ -108,7 +108,6 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   {
     NormalEstimation<PointXYZ, Normal> ne;
     ne.setInputCloud (xyz);
-    ne.setSearchMethod (search::KdTree<PointXYZ>::Ptr (new search::KdTree<PointXYZ>));
     ne.setKSearch (k);
     ne.setRadiusSearch (radius);
     ne.compute (normals);

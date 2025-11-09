@@ -2179,7 +2179,7 @@ void
 pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
 {
   vtkSmartPointer<vtkMatrix4x4> camera_pose;
-  const CloudActorMap::iterator it = cloud_actor_map_->find(id);
+  const auto it = cloud_actor_map_->find(id);
   if (it != cloud_actor_map_->end ())
     camera_pose = it->second.viewpoint_transformation_;
   else

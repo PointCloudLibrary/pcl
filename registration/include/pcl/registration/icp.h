@@ -463,4 +463,5 @@ protected:
 extern template class pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ>;
 extern template class pcl::IterativeClosestPoint<pcl::PointXYZI, pcl::PointXYZI>;
 extern template class pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB>;
+extern template class pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointNormal>;
 #endif // PCL_NO_PRECOMPILE

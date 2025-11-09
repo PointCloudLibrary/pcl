@@ -42,8 +42,6 @@
 // PCL includes
 #include <pcl/surface/reconstruction.h>
 
-#include <pcl/kdtree/kdtree.h>
-
 #include <fstream>
 
 #include <Eigen/Geometry> // for cross
@@ -137,9 +135,6 @@ namespace pcl
       using MeshConstruction<PointInT>::tree_;
       using MeshConstruction<PointInT>::input_;
       using MeshConstruction<PointInT>::indices_;
-
-      using KdTree = pcl::KdTree<PointInT>;
-      using KdTreePtr = typename KdTree::Ptr;
 
       using PointCloudIn = pcl::PointCloud<PointInT>;
       using PointCloudInPtr = typename PointCloudIn::Ptr;

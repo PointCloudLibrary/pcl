@@ -102,6 +102,18 @@ getFields ()
   return fields;
 }
 
+template <typename CloudT> inline std::vector<pcl::PCLPointField>
+getFields (const CloudT& /*cloud*/)
+{
+  return pcl::getFields<typename CloudT::PointType>();
+}
+
+// Template specialization for PCLPointCloud2
+template <> inline std::vector<pcl::PCLPointField>
+getFields<pcl::PCLPointCloud2> (const pcl::PCLPointCloud2& cloud) {
+  return cloud.fields;
+}
+
 
 template <typename PointT> std::string
 getFieldsList (const pcl::PointCloud<PointT> &)
@@ -114,6 +126,60 @@ getFieldsList (const pcl::PointCloud<PointT> &)
   result += fields[fields.size () - 1].name;
   return (result);
 }
+
+/**
+ * \brief reinterpret a pointer as a type, dereference it, and return result as target
+ * type
+ *
+ * \tparam DType Pointer type of the data
+ * \tparam RType Return type which the dereferenced result is cast to
+ *
+ * \return value
+ */
+template <typename DType, typename RType> RType reinterpret_and_cast (const std::uint8_t* p)
+{
+  return static_cast<RType>(*reinterpret_cast<const DType*>(p));
+}
+
+template <typename T> T point_field_as (const std::uint8_t* data, const std::uint8_t type)
+{
+  switch (type) {
+  case pcl::PCLPointField::PointFieldTypes::FLOAT32:
+    return reinterpret_and_cast<float, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT8:
+    return reinterpret_and_cast<std::uint8_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT16:
+    return reinterpret_and_cast<std::uint16_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT32:
+    return reinterpret_and_cast<std::uint32_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT64:
+    return reinterpret_and_cast<std::uint64_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::BOOL:
+    return reinterpret_and_cast<bool, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::FLOAT64:
+    return reinterpret_and_cast<double, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::INT16:
+    return reinterpret_and_cast<std::int16_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::INT32:
+    return reinterpret_and_cast<std::int32_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::INT64:
+    return reinterpret_and_cast<std::int64_t, T>(data);
+    break;
+  default:
+    return 0;
+    break;
+  }
+}
+
 
 namespace detail
 {
@@ -459,4 +525,3 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
 }
 
 } // namespace pcl
-

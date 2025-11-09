@@ -2,7 +2,7 @@ jobs:
   - job: tutorials
     displayName: Building Tutorials
     pool:
-      vmImage: 'Ubuntu 20.04'
+      vmImage: 'ubuntu-22.04'
     container: env2204
     timeoutInMinutes: 0
     variables:
