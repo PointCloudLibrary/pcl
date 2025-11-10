@@ -39,6 +39,7 @@
 #define PCL_REGISTRATION_IMPL_FRICP_HPP_
 
 #include <pcl/common/transforms.h>
+#include <pcl/types.h>
 
 #include <Eigen/Eigenvalues>
 #include <Eigen/SVD>
@@ -394,7 +395,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   const Eigen::Matrix3d R = transform.block<3, 3>(0, 0);
   const Eigen::Vector3d t = transform.block<3, 1>(0, 3);
   pcl::PointXYZ query;
-  std::vector<int> nn_indices(1);
+  pcl::Indices nn_indices(1);
   std::vector<float> nn_sqr_dists(1);
 
   for (int i = 0; i < source.cols(); ++i) {
@@ -404,8 +405,8 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     query.z = static_cast<float>(current.z());
     if (tree.nearestKSearch(query, 1, nn_indices, nn_sqr_dists) != 1)
       return false;
-    const int idx = nn_indices[0];
-    matched_targets.col(i) = target.col(idx);
+    const auto idx = nn_indices[0];
+    matched_targets.col(i) = target.col(static_cast<int>(idx));
     residuals[i] = (current - matched_targets.col(i)).norm();
   }
   return true;
@@ -495,7 +496,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::findKNearestM
     return 0.0;
 
   std::vector<double> local_medians(cloud.size(), 0.0);
-  std::vector<int> nn_indices(k);
+  pcl::Indices nn_indices(k);
   std::vector<float> nn_sqr_dists(k);
   std::vector<double> dists;
   dists.reserve(k - 1);
