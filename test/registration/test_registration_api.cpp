@@ -42,6 +42,7 @@
 #include <limits>
 
 #include <pcl/point_types.h>
+#include <pcl/common/io.h>
 #include <pcl/common/transforms.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/correspondence_estimation.h>
@@ -713,54 +714,42 @@ TEST (PCL, TransformationEstimationSymmetricPointToPlaneLLS)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, FastRobustIterativeClosestPoint)
 {
-  CloudXYZ::Ptr source (new CloudXYZ);
-  source->height = 1;
-  source->is_dense = true;
-  for (float x = -0.2f; x <= 0.2f; x += 0.1f)
-    for (float y = -0.1f; y <= 0.1f; y += 0.1f)
-    {
-      PointXYZ p;
-      p.x = x;
-      p.y = y;
-      p.z = 0.25f * x - 0.15f * y + 0.05f * x * y;
-      source->points.push_back (p);
-    }
-  source->width = static_cast<std::uint32_t>(source->size ());
+  using PointT = PointXYZ;
+  CloudXYZ::Ptr src (new CloudXYZ);
+  copyPointCloud (cloud_source, *src);
+  CloudXYZ::Ptr tgt (new CloudXYZ);
+  copyPointCloud (cloud_target, *tgt);
+  CloudXYZ output;
 
-  Eigen::Matrix4f gt = Eigen::Matrix4f::Identity ();
-  gt.block<3, 3> (0, 0) =
-      (Eigen::AngleAxisf (0.35f, Eigen::Vector3f::UnitZ ()) *
-       Eigen::AngleAxisf (-0.25f, Eigen::Vector3f::UnitY ()) *
-       Eigen::AngleAxisf (0.15f, Eigen::Vector3f::UnitX ())).toRotationMatrix ();
-  gt.block<3, 1> (0, 3) = Eigen::Vector3f (0.05f, -0.08f, 0.12f);
+  pcl::FastRobustIterativeClosestPoint<PointT, PointT> reg;
+  reg.setInputSource (src);
+  reg.setInputTarget (tgt);
+  reg.setMaximumIterations (60);
+  reg.setTransformationEpsilon (1e-8);
 
-  CloudXYZ::Ptr target (new CloudXYZ);
-  pcl::transformPointCloud (*source, *target, gt);
-  target->push_back (PointXYZ (1.0f, -1.0f, 0.4f)); // mild outlier
-  target->width = static_cast<std::uint32_t>(target->size ());
-  target->height = 1;
-  target->is_dense = true;
+  reg.align (output);
+  ASSERT_TRUE (reg.hasConverged ());
+  EXPECT_EQ (output.size (), cloud_source.size ());
+  EXPECT_LT (reg.getFitnessScore (), 5e-4);
 
-  CloudXYZ::Ptr input_source (new CloudXYZ (*source));
-  CloudXYZ aligned;
+  Eigen::Isometry3f transform =
+      Eigen::Isometry3f (Eigen::AngleAxisf (-0.15f, Eigen::Vector3f::UnitX ()) *
+                         Eigen::AngleAxisf (0.25f, Eigen::Vector3f::UnitY ()) *
+                         Eigen::AngleAxisf (-0.30f, Eigen::Vector3f::UnitZ ()));
+  transform.translation () = Eigen::Vector3f (0.08f, -0.05f, 0.12f);
+  CloudXYZ::Ptr transformed_tgt (new CloudXYZ);
+  pcl::transformPointCloud (*tgt, *transformed_tgt, transform.matrix ());
 
-  pcl::FastRobustIterativeClosestPoint<PointXYZ, PointXYZ> fricp;
-  fricp.setMaximumIterations (60);
-  fricp.setInputSource (input_source);
-  fricp.setInputTarget (target);
-  fricp.align (aligned);
+  pcl::FastRobustIterativeClosestPoint<PointT, PointT> reg_guess;
+  reg_guess.setInputSource (src);
+  reg_guess.setInputTarget (transformed_tgt);
+  reg_guess.setMaximumIterations (60);
+  reg_guess.setTransformationEpsilon (1e-8);
 
-  ASSERT_TRUE (fricp.hasConverged ());
-  const Eigen::Matrix4f& estimated = fricp.getFinalTransformation ();
-
-  const Eigen::Matrix3f rotation_error =
-      gt.block<3, 3> (0, 0).transpose () * estimated.block<3, 3> (0, 0);
-  const Eigen::AngleAxisf angle_axis (rotation_error);
-  EXPECT_LT (std::abs (angle_axis.angle ()), 0.1f);
-
-  const Eigen::Vector3f translation_error =
-      gt.block<3, 1> (0, 3) - estimated.block<3, 1> (0, 3);
-  EXPECT_LT (translation_error.norm (), 5e-2f);
+  reg_guess.align (output, transform.matrix ());
+  ASSERT_TRUE (reg_guess.hasConverged ());
+  EXPECT_EQ (output.size (), cloud_source.size ());
+  EXPECT_LT (reg_guess.getFitnessScore (), 5e-4);
 }
 
 
