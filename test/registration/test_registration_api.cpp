@@ -62,6 +62,7 @@
 #include <pcl/registration/transformation_estimation_symmetric_point_to_plane_lls.h>
 #include <pcl/registration/fricp.h>
 #include <Eigen/Geometry>
+#include <random>
 #include <pcl/features/normal_3d.h>
 
 #include "test_registration_api_data.h"
@@ -739,6 +740,28 @@ TEST (PCL, FastRobustIterativeClosestPoint)
   transform.translation () = Eigen::Vector3f (0.08f, -0.05f, 0.12f);
   CloudXYZ::Ptr transformed_tgt (new CloudXYZ);
   pcl::transformPointCloud (*tgt, *transformed_tgt, transform.matrix ());
+
+  std::mt19937 rng (1337u);
+  std::normal_distribution<float> gaussian (0.0f, 0.004f);
+  for (auto& p : *transformed_tgt)
+  {
+    p.x += gaussian (rng);
+    p.y += gaussian (rng);
+    p.z += gaussian (rng);
+  }
+
+  std::uniform_real_distribution<float> uniform (-0.4f, 0.4f);
+  for (int i = 0; i < 20; ++i)
+  {
+    PointT outlier;
+    outlier.x = uniform (rng);
+    outlier.y = uniform (rng);
+    outlier.z = uniform (rng) + 0.4f;
+    transformed_tgt->push_back (outlier);
+  }
+  transformed_tgt->width = static_cast<std::uint32_t>(transformed_tgt->size ());
+  transformed_tgt->height = 1;
+  transformed_tgt->is_dense = false;
 
   pcl::FastRobustIterativeClosestPoint<PointT, PointT> reg_guess;
   reg_guess.setInputSource (src);
