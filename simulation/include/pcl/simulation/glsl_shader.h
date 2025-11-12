@@ -44,7 +44,7 @@ public:
 
   /** Add a new shader object to the program.  */
   bool
-  addShaderFile(const std::string& text, ShaderType shader_type);
+  addShaderFile(const std::string& text, ShaderType shader_type) const;
 
   /** Link the program.  */
   bool
@@ -60,31 +60,31 @@ public:
 
   // Set uniforms
   void
-  setUniform(const std::string& name, const Eigen::Vector2f& v);
+  setUniform(const std::string& name, const Eigen::Vector2f& v) const;
 
   void
-  setUniform(const std::string& name, const Eigen::Vector3f& v);
+  setUniform(const std::string& name, const Eigen::Vector3f& v) const;
 
   void
-  setUniform(const std::string& name, const Eigen::Vector4f& v);
+  setUniform(const std::string& name, const Eigen::Vector4f& v) const;
 
   void
-  setUniform(const std::string& name, const Eigen::Matrix2f& v);
+  setUniform(const std::string& name, const Eigen::Matrix2f& v) const;
 
   void
-  setUniform(const std::string& name, const Eigen::Matrix3f& v);
+  setUniform(const std::string& name, const Eigen::Matrix3f& v) const;
 
   void
-  setUniform(const std::string& name, const Eigen::Matrix4f& v);
+  setUniform(const std::string& name, const Eigen::Matrix4f& v) const;
 
   void
-  setUniform(const std::string& name, float v);
+  setUniform(const std::string& name, float v) const;
 
   void
-  setUniform(const std::string& name, int v);
+  setUniform(const std::string& name, int v) const;
 
   void
-  setUniform(const std::string& name, bool v);
+  setUniform(const std::string& name, bool v) const;
 
   int
   getUniformLocation(const std::string& name) const;
