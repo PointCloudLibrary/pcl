@@ -244,7 +244,7 @@ namespace pcl
 
       /** \brief Get the sphere radius used for determining the k-nearest neighbors. */
       inline double
-      getRadiusSearch ()
+      getRadiusSearch () const
       {
         return (search_radius_);
       }
@@ -263,7 +263,7 @@ namespace pcl
         * considered an inlier and avoid being filtered.
         */
       inline double
-      getMinNeighborsInRadius ()
+      getMinNeighborsInRadius () const
       {
         return (min_pts_radius_);
       }
