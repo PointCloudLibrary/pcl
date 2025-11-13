@@ -232,7 +232,7 @@ namespace pcl
       /** @brief Clear the extrinsic calibration stored in the EEPROM by writing an identity matrix
        * @return True if successful, false otherwise */
       bool
-      clearEEPROMExtrinsicCalibration ();
+      clearEEPROMExtrinsicCalibration () const;
 
       /** @brief Update Link node in NxLib tree
        * @param[in] target "Hand" or "Workspace" for example

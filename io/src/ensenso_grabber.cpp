@@ -559,7 +559,7 @@ pcl::EnsensoGrabber::storeEEPROMExtrinsicCalibration () const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EnsensoGrabber::clearEEPROMExtrinsicCalibration ()
+pcl::EnsensoGrabber::clearEEPROMExtrinsicCalibration () const
 {
   try
   {
@@ -611,7 +611,7 @@ pcl::EnsensoGrabber::setExtrinsicCalibration (const double euler_angle,
 }
 
 bool
-pcl::EnsensoGrabber::setExtrinsicCalibration (const std::string target)
+pcl::EnsensoGrabber::setExtrinsicCalibration (const std::string target) const
 {
   if (!device_open_)
     return (false);
@@ -623,7 +623,7 @@ pcl::EnsensoGrabber::setExtrinsicCalibration (const std::string target)
 
 bool
 pcl::EnsensoGrabber::setExtrinsicCalibration (const Eigen::Affine3d &transformation,
-                                              const std::string target)
+                                              const std::string target) const
 {
   std::string json;
   if (!matrixTransformationToJson (transformation, json))
