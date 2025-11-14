@@ -2076,7 +2076,7 @@ namespace pcl
             pcl_visualizer = src.pcl_visualizer;
             decimated = src.decimated;
             last_fps = src.last_fps;
-            return (*this);
+            return *this;
           }
 
           void

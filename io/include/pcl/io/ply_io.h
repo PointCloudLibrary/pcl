@@ -107,7 +107,7 @@ namespace pcl
         orientation_ = p.orientation_;
         range_grid_ = p.range_grid_;
         polygons_ = p.polygons_;
-        return (*this);
+        return *this;
       }
 
       ~PLYReader () override { delete range_grid_; }

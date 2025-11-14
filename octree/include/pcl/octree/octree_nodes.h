@@ -201,7 +201,7 @@ public:
         child_node_array_[i] = source.child_node_array_[i]->deepCopy();
       }
     }
-    return (*this);
+    return *this;
   }
 
   /** \brief Octree deep copy method */

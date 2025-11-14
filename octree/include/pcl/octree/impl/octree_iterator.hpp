@@ -158,7 +158,7 @@ OctreeDepthFirstIterator<OctreeT>::operator++()
     }
   }
 
-  return (*this);
+  return *this;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,7 +252,7 @@ OctreeBreadthFirstIterator<OctreeT>::operator++()
     }
   }
 
-  return (*this);
+  return *this;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -358,7 +358,7 @@ OctreeLeafNodeBreadthFirstIterator<OctreeT>::operator++()
   } while ((this->current_state_) &&
            (this->current_state_->node_->getNodeType() != LEAF_NODE));
 
-  return (*this);
+  return *this;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

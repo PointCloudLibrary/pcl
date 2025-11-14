@@ -116,7 +116,7 @@ public:
   {
     idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex(
         mesh_->getOppositeHalfEdgeIndex(idx_outgoing_half_edge_));
-    return (*this);
+    return *this;
   }
 
   /** \brief Decrement operators (with boost::operators): -- (pre and post) */
@@ -125,7 +125,7 @@ public:
   {
     idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
         mesh_->getPrevHalfEdgeIndex(idx_outgoing_half_edge_));
-    return (*this);
+    return *this;
   }
 
   /** \brief Get the index to the target vertex. */
@@ -223,7 +223,7 @@ public:
   {
     idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex(
         mesh_->getOppositeHalfEdgeIndex(idx_outgoing_half_edge_));
-    return (*this);
+    return *this;
   }
 
   /** \brief Decrement operators (with boost::operators): -- (pre and post) */
@@ -232,7 +232,7 @@ public:
   {
     idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
         mesh_->getPrevHalfEdgeIndex(idx_outgoing_half_edge_));
-    return (*this);
+    return *this;
   }
 
   /** \brief Get the index to the outgoing half-edge. */
@@ -330,7 +330,7 @@ public:
   {
     idx_incoming_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
         mesh_->getNextHalfEdgeIndex(idx_incoming_half_edge_));
-    return (*this);
+    return *this;
   }
 
   /** \brief Decrement operators (with boost::operators): -- (pre and post) */
@@ -339,7 +339,7 @@ public:
   {
     idx_incoming_half_edge_ = mesh_->getPrevHalfEdgeIndex(
         mesh_->getOppositeHalfEdgeIndex(idx_incoming_half_edge_));
-    return (*this);
+    return *this;
   }
 
   /** \brief Get the index to the incoming half-edge. */
@@ -434,7 +434,7 @@ public:
   {
     idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex(
         mesh_->getOppositeHalfEdgeIndex(idx_outgoing_half_edge_));
-    return (*this);
+    return *this;
   }
 
   /** \brief Decrement operators (with boost::operators): -- (pre and post) */
@@ -443,7 +443,7 @@ public:
   {
     idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
         mesh_->getPrevHalfEdgeIndex(idx_outgoing_half_edge_));
-    return (*this);
+    return *this;
   }
 
   /** \brief Get the index to the target face. */
@@ -536,7 +536,7 @@ public:
   operator++()
   {
     idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
-    return (*this);
+    return *this;
   }
 
   /** \brief Decrement operators (with boost::operators): -- (pre and post) */
@@ -544,7 +544,7 @@ public:
   operator--()
   {
     idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
-    return (*this);
+    return *this;
   }
 
   /** \brief Get the index to the target vertex. */
@@ -637,7 +637,7 @@ public:
   operator++()
   {
     idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
-    return (*this);
+    return *this;
   }
 
   /** \brief Decrement operators (with boost::operators): -- (pre and post) */
@@ -645,7 +645,7 @@ public:
   operator--()
   {
     idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
-    return (*this);
+    return *this;
   }
 
   /** \brief Get the index to the inner half-edge. */
@@ -738,7 +738,7 @@ public:
   operator++()
   {
     idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
-    return (*this);
+    return *this;
   }
 
   /** \brief Decrement operators (with boost::operators): -- (pre and post) */
@@ -746,7 +746,7 @@ public:
   operator--()
   {
     idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
-    return (*this);
+    return *this;
   }
 
   /** \brief Get the index to the outer half-edge. */
@@ -838,7 +838,7 @@ public:
   operator++()
   {
     idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
-    return (*this);
+    return *this;
   }
 
   /** \brief Decrement operators (with boost::operators): -- (pre and post) */
@@ -846,7 +846,7 @@ public:
   operator--()
   {
     idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
-    return (*this);
+    return *this;
   }
 
   /** \brief Get the index to the target face. */

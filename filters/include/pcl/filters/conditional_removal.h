@@ -163,7 +163,7 @@ namespace pcl
           return *this;
         compare_val_ = src.compare_val_;
         point_data_  = src.point_data_;
-        return (*this);
+        return *this;
       }
 
       /** \brief Destructor. */

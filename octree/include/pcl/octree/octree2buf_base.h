@@ -75,7 +75,7 @@ public:
         }
       }
     }
-    return (*this);
+    return *this;
   }
 
   /** \brief Empty constructor. */
@@ -354,7 +354,7 @@ public:
     tree_dirty_flag_ = source.tree_dirty_flag_;
     octree_depth_ = source.octree_depth_;
     dynamic_depth_enabled_ = source.dynamic_depth_enabled_;
-    return (*this);
+    return *this;
   }
 
   /** \brief Set the maximum amount of voxels per dimension.

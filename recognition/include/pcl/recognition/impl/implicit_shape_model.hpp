@@ -524,7 +524,7 @@ pcl::features::ISMModel::operator = (const pcl::features::ISMModel& other)
       for (unsigned int i_dim = 0; i_dim < this->descriptors_dimension_; i_dim++)
         this->clusters_centers_ (i_cluster, i_dim) = other.clusters_centers_ (i_cluster, i_dim);
   }
-  return (*this);
+  return *this;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -60,7 +60,7 @@ namespace pcl
         inline Point3D  operator +  ( Point3D p ) const { Point3D q ; q.coords[0] = coords[0] + p.coords[0] , q.coords[1] = coords[1] + p.coords[1] , q.coords[2] = coords[2] + p.coords[2] ; return q; }
         inline Point3D  operator -  ( Point3D p ) const { Point3D q ; q.coords[0] = coords[0] - p.coords[0] , q.coords[1] = coords[1] - p.coords[1] , q.coords[2] = coords[2] - p.coords[2] ; return q; }
         inline Point3D  operator *  ( Real r ) const { Point3D q ; q.coords[0] = coords[0] * r , q.coords[1] = coords[1] * r , q.coords[2] = coords[2] * r ; return q; }
-        inline Point3D  operator /  ( Real r ) const { return (*this) * ( Real(1.)/r ); }
+        inline Point3D  operator /  ( Real r ) const { return *this * ( Real(1.)/r ); }
     };
 
     template<class Real>

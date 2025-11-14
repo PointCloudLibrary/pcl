@@ -174,7 +174,7 @@ namespace pcl
         history_ = new he[histsize_];
         for (std::size_t i = 0; i < histsize_; i++)
           history_[i] = src.history_[i];
-        return (*this);
+        return *this;
       }
 
       /** \brief Set the voxel grid leaf size.

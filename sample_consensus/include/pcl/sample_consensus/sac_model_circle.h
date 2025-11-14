@@ -127,7 +127,7 @@ namespace pcl
       operator = (const SampleConsensusModelCircle2D &source)
       {
         SampleConsensusModel<PointT>::operator=(source);
-        return (*this);
+        return *this;
       }
 
       /** \brief Check whether the given index samples can form a valid 2D circle model, compute the model coefficients

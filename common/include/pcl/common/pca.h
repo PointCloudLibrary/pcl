@@ -113,7 +113,7 @@ namespace pcl
         coefficients_ = pca.coefficients_;
         eigenvalues_  = pca.eigenvalues_;
         mean_         = pca.mean_;
-        return (*this);
+        return *this;
       }
 
       /** \brief Provide a pointer to the input dataset

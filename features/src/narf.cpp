@@ -77,9 +77,9 @@ const Narf&
 Narf::operator= (const Narf& other)
 {
   if (this == &other)
-    return (*this);
+    return *this;
   deepCopy (other);
-  return (*this);
+  return *this;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -89,6 +89,6 @@ private:
   operator=(const Command&)
   {
     assert(false);
-    return (*this);
+    return *this;
   }
 };

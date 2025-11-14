@@ -72,7 +72,7 @@ class ply_to_raw_converter
     operator = (const ply_to_raw_converter &f)
     {
       if (this == &f)
-        return (*this);
+        return *this;
       ostream_ = f.ostream_;
       vertex_x_ = f.vertex_x_;
       vertex_y_ = f.vertex_y_;
@@ -80,7 +80,7 @@ class ply_to_raw_converter
       face_vertex_indices_element_index_ = f.face_vertex_indices_element_index_;
       face_vertex_indices_first_element_ = f.face_vertex_indices_first_element_;
       face_vertex_indices_previous_element_ = f.face_vertex_indices_previous_element_;
-      return (*this);
+      return *this;
     }
 
     bool 

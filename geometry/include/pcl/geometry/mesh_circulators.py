@@ -229,7 +229,7 @@ for c in classes:
     f.write ('        operator ++ ()\n')
     f.write ('        {\n')
     f.write ('          ' + current_he_idx_ + ' = ' + tmp + ';\n')
-    f.write ('          return (*this);\n')
+    f.write ('          return *this;\n')
     f.write ('        }\n\n')
 
     tmp = 'mesh_->get' + dec1 + 'HalfEdgeIndex (' + current_he_idx_ + ')'
@@ -241,7 +241,7 @@ for c in classes:
     f.write ('        operator -- ()\n')
     f.write ('        {\n')
     f.write ('          ' + current_he_idx_ + ' = ' + tmp + ';\n')
-    f.write ('          return (*this);\n')
+    f.write ('          return *this;\n')
     f.write ('        }\n\n')
 
     if deref:
