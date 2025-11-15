@@ -63,7 +63,7 @@ namespace pcl
 
             __device__ __host__ __forceinline__ bool operator()(const float4& point) const
             {
-                return *this(make_float3(point.x, point.y, point.z));
+                return (*this)(make_float3(point.x, point.y, point.z));
             }
         };
     }
