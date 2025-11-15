@@ -83,8 +83,7 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   init_Rcam_ = Eigen::Matrix3f::Identity ();// * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
   init_tcam_ = volume_size * 0.5f - Vector3f (0, 0, volume_size (2) / 2 * 1.2f);
 
-  const int iters[] = {10, 5, 4};
-  std::copy (iters, iters + LEVELS, icp_iterations_);
+  icp_iterations_ = {10, 5, 4};
 
   const float default_distThres = 0.10f; //meters
   const float default_angleThres = sin (20.f * 3.14159254f / 180.f);
@@ -93,7 +92,7 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   setIcpCorespFilteringParams (default_distThres, default_angleThres);
   tsdf_volume_->setTsdfTruncDist (default_tranc_dist);
 
-  allocateBufffers (rows, cols);
+  allocateBuffers (rows, cols);
 
   rmats_.reserve (30000);
   tvecs_.reserve (30000);
@@ -188,37 +187,27 @@ pcl::gpu::KinfuTracker::reset()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
-{    
-  depths_curr_.resize (LEVELS);
-  vmaps_g_curr_.resize (LEVELS);
-  nmaps_g_curr_.resize (LEVELS);
-
-  vmaps_g_prev_.resize (LEVELS);
-  nmaps_g_prev_.resize (LEVELS);
-
-  vmaps_curr_.resize (LEVELS);
-  nmaps_curr_.resize (LEVELS);
-
-  coresps_.resize (LEVELS);
-
-  for (int i = 0; i < LEVELS; ++i)
+pcl::gpu::KinfuTracker::allocateBuffers (int rows, int cols)
+{
+  for (int i = 0; i < pyramid_buffer_.size(); ++i)
   {
     int pyr_rows = rows >> i;
     int pyr_cols = cols >> i;
 
-    depths_curr_[i].create (pyr_rows, pyr_cols);
+    auto &pb = pyramid_buffer_[i];
 
-    vmaps_g_curr_[i].create (pyr_rows*3, pyr_cols);
-    nmaps_g_curr_[i].create (pyr_rows*3, pyr_cols);
+    pb.depth_curr.create (pyr_rows, pyr_cols);
 
-    vmaps_g_prev_[i].create (pyr_rows*3, pyr_cols);
-    nmaps_g_prev_[i].create (pyr_rows*3, pyr_cols);
+    pb.vmap_g_curr.create (pyr_rows*3, pyr_cols);
+    pb.nmap_g_curr.create (pyr_rows*3, pyr_cols);
 
-    vmaps_curr_[i].create (pyr_rows*3, pyr_cols);
-    nmaps_curr_[i].create (pyr_rows*3, pyr_cols);
+    pb.vmap_g_prev.create (pyr_rows*3, pyr_cols);
+    pb.nmap_g_prev.create (pyr_rows*3, pyr_cols);
 
-    coresps_[i].create (pyr_rows, pyr_cols);
+    pb.vmap_curr.create (pyr_rows*3, pyr_cols);
+    pb.nmap_curr.create (pyr_rows*3, pyr_cols);
+
+    pb.coresp.create (pyr_rows, pyr_cols);
   }  
   depthRawScaled_.create (rows, cols);
   // see estimate transform for the magic numbers
@@ -236,21 +225,18 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
   if (!disable_icp_)
   {
       {
-        //ScopeTime time(">>> Bilateral, pyr-down-all, create-maps-all");
-        //depth_raw.copyTo(depths_curr[0]);
-        device::bilateralFilter (depth_raw, depths_curr_[0]);
+        device::bilateralFilter (depth_raw, pyramid_buffer_[0].depth_curr);
 
         if (max_icp_distance_ > 0)
-          device::truncateDepth(depths_curr_[0], max_icp_distance_);
+          device::truncateDepth(pyramid_buffer_[0].depth_curr, max_icp_distance_);
 
         for (int i = 1; i < LEVELS; ++i)
-          device::pyrDown (depths_curr_[i-1], depths_curr_[i]);
+          device::pyrDown (pyramid_buffer_[i-1].depth_curr, pyramid_buffer_[i].depth_curr);
 
         for (int i = 0; i < LEVELS; ++i)
         {
-          device::createVMap (intr(i), depths_curr_[i], vmaps_curr_[i]);
-          //device::createNMap(vmaps_curr_[i], nmaps_curr_[i]);
-          computeNormalsEigen (vmaps_curr_[i], nmaps_curr_[i]);
+          device::createVMap (intr(i), pyramid_buffer_[i].depth_curr, pyramid_buffer_[i].vmap_curr);
+          computeNormalsEigen (pyramid_buffer_[i].vmap_curr, pyramid_buffer_[i].nmap_curr);
         }
         pcl::device::sync ();
       }
@@ -271,8 +257,8 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
         //integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcam_inv, device_tcam, tranc_dist, volume_);    
         device::integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcam_inv, device_tcam, tsdf_volume_->getTsdfTruncDist(), tsdf_volume_->data(), depthRawScaled_);
 
-        for (int i = 0; i < LEVELS; ++i)
-          device::tranformMaps (vmaps_curr_[i], nmaps_curr_[i], device_Rcam, device_tcam, vmaps_g_prev_[i], nmaps_g_prev_[i]);
+        for (auto &pb : pyramid_buffer_)
+          device::tranformMaps (pb.vmap_curr, pb.nmap_curr, device_Rcam, device_tcam, pb.vmap_g_prev, pb.nmap_g_prev);
 
         ++global_time_;
         return (false);
@@ -303,18 +289,9 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
         //ScopeTime time("icp-all");
         for (int level_index = LEVELS-1; level_index>=0; --level_index)
         {
+          auto &pb = pyramid_buffer_[level_index];
+            
           int iter_num = icp_iterations_[level_index];
-
-          MapArr& vmap_curr = vmaps_curr_[level_index];
-          MapArr& nmap_curr = nmaps_curr_[level_index];
-
-          //MapArr& vmap_g_curr = vmaps_g_curr_[level_index];
-          //MapArr& nmap_g_curr = nmaps_g_curr_[level_index];
-
-          MapArr& vmap_g_prev = vmaps_g_prev_[level_index];
-          MapArr& nmap_g_prev = nmaps_g_prev_[level_index];
-
-          //CorespMap& coresp = coresps_[level_index];
 
           for (int iter = 0; iter < iter_num; ++iter)
           {
@@ -323,19 +300,8 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
 
             Eigen::Matrix<double, 6, 6, Eigen::RowMajor> A;
             Eigen::Matrix<double, 6, 1> b;
-    #if 0
-            device::tranformMaps(vmap_curr, nmap_curr, device_Rcurr, device_tcurr, vmap_g_curr, nmap_g_curr);
-            findCoresp(vmap_g_curr, nmap_g_curr, device_Rprev_inv, device_tprev, intr(level_index), vmap_g_prev, nmap_g_prev, distThres_, angleThres_, coresp);
-            device::estimateTransform(vmap_g_prev, nmap_g_prev, vmap_g_curr, coresp, gbuf_, sumbuf_, A.data(), b.data());
-
-            //cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, coresp.ptr(), coresp.step());
-            //cv::Mat cpu;
-            //ma.download(cpu);
-            //cv::imshow(names[level_index] + string(" --- coresp white == -1"), cpu == -1);
-    #else
-            estimateCombined (device_Rcurr, device_tcurr, vmap_curr, nmap_curr, device_Rprev_inv, device_tprev, intr (level_index),
-                              vmap_g_prev, nmap_g_prev, distThres_, angleThres_, gbuf_, sumbuf_, A.data (), b.data ());
-    #endif
+            estimateCombined (device_Rcurr, device_tcurr, pb.vmap_curr, pb.nmap_curr, device_Rprev_inv, device_tprev, intr (level_index),
+                              pb.vmap_g_prev, pb.nmap_g_prev, distThres_, angleThres_, gbuf_, sumbuf_, A.data (), b.data ());
             //checking nullspace
             double det = A.determinant ();
 
@@ -346,10 +312,8 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
               reset ();
               return (false);
             }
-            //float maxc = A.maxCoeff();
 
             Eigen::Matrix<float, 6, 1> result = A.llt ().solve (b).cast<float>();
-            //Eigen::Matrix<float, 6, 1> result = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
 
             float alpha = result (0);
             float beta  = result (1);
@@ -416,11 +380,11 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
   Mat33& device_Rcurr = device_cast<Mat33> (Rcurr);
   {
     //ScopeTime time("ray-cast-all");
-    raycast (intr, device_Rcurr, device_tcurr, tsdf_volume_->getTsdfTruncDist(), device_volume_size, tsdf_volume_->data(), vmaps_g_prev_[0], nmaps_g_prev_[0]);
+    raycast (intr, device_Rcurr, device_tcurr, tsdf_volume_->getTsdfTruncDist(), device_volume_size, tsdf_volume_->data(), pyramid_buffer_[0].vmap_g_prev, pyramid_buffer_[0].nmap_g_prev);
     for (int i = 1; i < LEVELS; ++i)
     {
-      resizeVMap (vmaps_g_prev_[i-1], vmaps_g_prev_[i]);
-      resizeNMap (nmaps_g_prev_[i-1], nmaps_g_prev_[i]);
+      resizeVMap (pyramid_buffer_[i-1].vmap_g_prev, pyramid_buffer_[i].vmap_g_prev);
+      resizeNMap (pyramid_buffer_[i-1].nmap_g_prev, pyramid_buffer_[i].nmap_g_prev);
     }
     pcl::device::sync ();
   }
@@ -493,7 +457,7 @@ pcl::gpu::KinfuTracker::getImage (View& view) const
   light.pos[0] = device_cast<const float3>(light_source_pose);
 
   view.create (rows_, cols_);
-  generateImage (vmaps_g_prev_[0], nmaps_g_prev_[0], light, view);
+  generateImage (pyramid_buffer_[0].vmap_g_prev, pyramid_buffer_[0].nmap_g_prev, light, view);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -502,7 +466,7 @@ pcl::gpu::KinfuTracker::getLastFrameCloud (DeviceArray2D<PointType>& cloud) cons
 {
   cloud.create (rows_, cols_);
   DeviceArray2D<float4>& c = (DeviceArray2D<float4>&)cloud;
-  device::convert (vmaps_g_prev_[0], c);
+  device::convert (pyramid_buffer_[0].vmap_g_prev, c);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -511,7 +475,7 @@ pcl::gpu::KinfuTracker::getLastFrameNormals (DeviceArray2D<NormalType>& normals)
 {
   normals.create (rows_, cols_);
   DeviceArray2D<float8>& n = (DeviceArray2D<float8>&)normals;
-  device::convert (nmaps_g_prev_[0], n);
+  device::convert (pyramid_buffer_[0].nmap_g_prev, n);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -544,7 +508,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth, const View& colors)
     Mat33&  device_Rcurr_inv = device_cast<Mat33> (R_inv);
     float3& device_tcurr = device_cast<float3> (t);
     
-    device::updateColorVolume(intr, tsdf_volume_->getTsdfTruncDist(), device_Rcurr_inv, device_tcurr, vmaps_g_prev_[0], 
+    device::updateColorVolume(intr, tsdf_volume_->getTsdfTruncDist(), device_Rcurr_inv, device_tcurr, pyramid_buffer_[0].vmap_g_prev, 
         colors, device_volume_size, color_volume_->data(), color_volume_->getMaxWeight());
   }
 
