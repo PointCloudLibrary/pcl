@@ -147,7 +147,7 @@ namespace pcl
         eps_angle_ = source.eps_angle_;
         min_angle_ = source.min_angle_;
         max_angle_ = source.max_angle_;
-        return (*this);
+        return *this;
       }
 
       /** \brief Set the angle epsilon (delta) threshold.

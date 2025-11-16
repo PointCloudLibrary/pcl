@@ -631,14 +631,14 @@ pcl::HDLGrabber::setMinimumDistanceThreshold (float &minThreshold)
 
 /////////////////////////////////////////////////////////////////////////////
 float
-pcl::HDLGrabber::getMaximumDistanceThreshold ()
+pcl::HDLGrabber::getMaximumDistanceThreshold () const
 {
   return (max_distance_threshold_);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 float
-pcl::HDLGrabber::getMinimumDistanceThreshold ()
+pcl::HDLGrabber::getMinimumDistanceThreshold () const
 {
   return (min_distance_threshold_);
 }

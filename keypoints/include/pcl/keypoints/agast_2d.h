@@ -146,7 +146,7 @@ namespace pcl
 
           /** \brief Get the threshold for corner detection, as set by the user. */
           inline double
-          getThreshold ()
+          getThreshold () const
           {
             return (threshold_);
           }
@@ -162,8 +162,8 @@ namespace pcl
           }
 
           /** \brief Get the maximum number of keypoints to return, as set by the user. */
-          inline unsigned int 
-          getMaxKeypoints ()
+          inline unsigned int
+          getMaxKeypoints () const
           {
             return (nr_max_keypoints_);
           }

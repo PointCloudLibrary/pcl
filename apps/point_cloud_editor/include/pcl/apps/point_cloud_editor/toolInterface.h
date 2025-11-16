@@ -107,6 +107,6 @@ private:
   operator=(const ToolInterface&)
   {
     assert(false);
-    return (*this);
+    return *this;
   }
 };

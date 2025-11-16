@@ -75,7 +75,7 @@ public:
         }
       }
     }
-    return (*this);
+    return *this;
   }
 
   /** \brief Empty constructor. */
@@ -343,6 +343,8 @@ public:
   inline Octree2BufBase&
   operator=(const Octree2BufBase& source)
   {
+    if (this == &source)
+      return *this;
     leaf_count_ = source.leaf_count_;
     branch_count_ = source.branch_count_;
     root_node_ = new (BranchNode)(*(source.root_node_));
@@ -352,7 +354,7 @@ public:
     tree_dirty_flag_ = source.tree_dirty_flag_;
     octree_depth_ = source.octree_depth_;
     dynamic_depth_enabled_ = source.dynamic_depth_enabled_;
-    return (*this);
+    return *this;
   }
 
   /** \brief Set the maximum amount of voxels per dimension.

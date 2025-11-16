@@ -89,28 +89,28 @@ namespace cuda
     {
       xyz += rhs.xyz;
       rgb += rhs.rgb;
-      return (*this);
+      return *this;
     }
 
     inline __host__ __device__ PointXYZRGB& operator -= (const PointXYZRGB &rhs)
     {
       xyz -= rhs.xyz;
       rgb -= rhs.rgb;
-      return (*this);
+      return *this;
     }
 
     inline __host__ __device__ PointXYZRGB& operator *= (const PointXYZRGB &rhs)
     {
       xyz *= rhs.xyz;
       rgb *= rhs.rgb;
-      return (*this);
+      return *this;
     }
 
     inline __host__ __device__ PointXYZRGB& operator /= (const PointXYZRGB &rhs)
     {
       xyz /= rhs.xyz;
       rgb /= rhs.rgb;
-      return (*this);
+      return *this;
     }
   };
 
@@ -171,7 +171,7 @@ namespace cuda
       xyz += rhs.xyz;
       rgb += rhs.rgb;
       normal += rhs.normal;
-      return (*this);
+      return *this;
     }
 
     inline __host__ __device__ PointXYZRGBNormal& operator -= (const PointXYZRGBNormal &rhs)
@@ -179,7 +179,7 @@ namespace cuda
       xyz -= rhs.xyz;
       rgb -= rhs.rgb;
       normal -= rhs.normal;
-      return (*this);
+      return *this;
     }
 
     inline __host__ __device__ PointXYZRGBNormal& operator *= (const PointXYZRGBNormal &rhs)
@@ -187,7 +187,7 @@ namespace cuda
       xyz *= rhs.xyz;
       rgb *= rhs.rgb;
       normal *= rhs.normal;
-      return (*this);
+      return *this;
     }
 
     inline __host__ __device__ PointXYZRGBNormal& operator /= (const PointXYZRGBNormal &rhs)
@@ -195,7 +195,7 @@ namespace cuda
       xyz /= rhs.xyz;
       rgb /= rhs.rgb;
       normal /= rhs.normal;
-      return (*this);
+      return *this;
     }
   };
 } // namespace

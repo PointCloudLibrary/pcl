@@ -132,7 +132,7 @@ public:
   operator=(const SampleConsensusModelTorus& source)
   {
     SampleConsensusModelFromNormals<PointT, PointNT>::operator=(source);
-    return (*this);
+    return *this;
   }
   /** \brief Check whether the given index samples can form a valid torus model, compute
    * the model coefficients from these samples and store them in model_coefficients. The

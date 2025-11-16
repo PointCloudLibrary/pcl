@@ -142,7 +142,7 @@ namespace pcl
           width    = rhs.width;
           height   = rhs.height;
           is_dense = rhs.is_dense;
-          return (*this);
+          return *this;
         }
   
         //////////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +156,7 @@ namespace pcl
           width    = rhs.width;
           height   = rhs.height;
           is_dense = rhs.is_dense;
-          return (*this);
+          return *this;
         }
   
         //////////////////////////////////////////////////////////////////////////////////////
@@ -219,7 +219,7 @@ namespace pcl
           width    = rhs.width;
           height   = rhs.height;
           is_dense = rhs.is_dense;
-          return (*this);
+          return *this;
         }
   
         //////////////////////////////////////////////////////////////////////////////////////
@@ -232,7 +232,7 @@ namespace pcl
           width    = rhs.width;
           height   = rhs.height;
           is_dense = rhs.is_dense;
-          return (*this);
+          return *this;
         }
   
         /** \brief Resize the internal point data vectors.

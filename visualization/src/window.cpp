@@ -129,6 +129,8 @@ pcl::visualization::Window::Window (const pcl::visualization::Window &src)
 pcl::visualization::Window&
 pcl::visualization::Window::operator = (const pcl::visualization::Window &src)
 {
+  if (this == &src)
+    return *this;
   stopped_ = src.stopped_;
   timer_id_ = src.timer_id_;
   //mouse_signal_ = src.mouse_signal_;
@@ -141,7 +143,7 @@ pcl::visualization::Window::operator = (const pcl::visualization::Window &src)
   rens_ = src.rens_;
   exit_main_loop_timer_callback_ = src.exit_main_loop_timer_callback_;
   exit_callback_ = src.exit_callback_;
-  return (*this);
+  return *this;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

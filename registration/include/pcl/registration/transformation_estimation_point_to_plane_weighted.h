@@ -105,6 +105,8 @@ public:
   TransformationEstimationPointToPlaneWeighted&
   operator=(const TransformationEstimationPointToPlaneWeighted& src)
   {
+    if (this == &src)
+      return *this;
     tmp_src_ = src.tmp_src_;
     tmp_tgt_ = src.tmp_tgt_;
     tmp_idx_src_ = src.tmp_idx_src_;
@@ -112,7 +114,7 @@ public:
     warp_point_ = src.warp_point_;
     correspondence_weights_ = src.correspondence_weights_;
     use_correspondence_weights_ = src.use_correspondence_weights_;
-    return (*this);
+    return *this;
   }
 
   /** \brief Destructor. */
@@ -280,9 +282,11 @@ protected:
     inline OptimizationFunctor&
     operator=(const OptimizationFunctor& src)
     {
+      if (this == &src)
+        return *this;
       Functor<MatScalar>::operator=(src);
       estimator_ = src.estimator_;
-      return (*this);
+      return *this;
     }
 
     /** \brief Destructor. */
@@ -328,9 +332,11 @@ protected:
     inline OptimizationFunctorWithIndices&
     operator=(const OptimizationFunctorWithIndices& src)
     {
+      if (this == &src)
+        return *this;
       Functor<MatScalar>::operator=(src);
       estimator_ = src.estimator_;
-      return (*this);
+      return *this;
     }
 
     /** \brief Destructor. */

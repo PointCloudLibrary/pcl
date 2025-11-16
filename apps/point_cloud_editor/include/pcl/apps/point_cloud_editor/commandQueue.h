@@ -101,7 +101,7 @@ private:
   operator=(const CommandQueue&)
   {
     assert(false);
-    return (*this);
+    return *this;
   }
 
   /// @brief Enforces the depth limit of the command queue. If the depth is

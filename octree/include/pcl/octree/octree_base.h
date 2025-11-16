@@ -328,6 +328,8 @@ public:
   OctreeBase&
   operator=(const OctreeBase& source)
   {
+    if (this == &source)
+      return *this;
     leaf_count_ = source.leaf_count_;
     branch_count_ = source.branch_count_;
     delete root_node_;
@@ -337,7 +339,7 @@ public:
     max_key_ = source.max_key_;
     octree_depth_ = source.octree_depth_;
     dynamic_depth_enabled_ = source.dynamic_depth_enabled_;
-    return (*this);
+    return *this;
   }
 
   /** \brief Set the maximum amount of voxels per dimension.

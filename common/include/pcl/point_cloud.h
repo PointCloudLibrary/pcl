@@ -215,7 +215,7 @@ namespace pcl
       operator += (const PointCloud& rhs)
       {
         concatenate((*this), rhs);
-        return (*this);
+        return *this;
       }
 
       /** \brief Add a point cloud to another cloud.
