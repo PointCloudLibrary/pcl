@@ -712,6 +712,7 @@ TEST (PCL, TransformationEstimationSymmetricPointToPlaneLLS)
       EXPECT_NEAR (estimated_transform (i, j), ground_truth_tform (i, j), 1e-2);
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, FastRobustIterativeClosestPoint)
 {
