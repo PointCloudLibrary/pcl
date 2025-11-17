@@ -152,11 +152,11 @@ private:
   matrixLog(const Matrix4d& transform) const;
 
   RobustFunction robust_function_;
-  bool use_anderson_;
-  std::size_t anderson_history_;
-  double nu_begin_ratio_;
+  bool use_anderson_ = true;
+  std::size_t anderson_history_ = 5;
+  double nu_begin_ratio_ = 3.0;
   double nu_end_ratio_;
-  double nu_decay_ratio_;
+  double nu_decay_ratio_ = 0.5;
 
   static constexpr double same_threshold_ = 1e-6;
 

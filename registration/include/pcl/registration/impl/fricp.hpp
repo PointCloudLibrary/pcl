@@ -437,9 +437,10 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeWeight
     nu = same_threshold_;
   const double denom = 2.0 * nu * nu;
   VectorXd weights(residuals.size());
-  for (int i = 0; i < residuals.size(); ++i) {
-    const double dist2 = residuals[i] * residuals[i];
-    weights[i] = std::exp(-dist2 / denom);
+  int idx = 0;
+  for (const auto residual : residuals) {
+    const double dist2 = residual * residual;
+    weights[idx++] = std::exp(-dist2 / denom);
   }
   return weights;
 }
