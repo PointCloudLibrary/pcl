@@ -38,12 +38,14 @@
 
 #pragma once
 
+#include <pcl/array_types.h>            // for pcl::Array* types
 #include <pcl/memory.h>                 // for PCL_MAKE_ALIGNED_OPERATOR_NEW
 #include <pcl/pcl_config.h>             // for PCL_XYZ_POINT_TYPES, PCL_NORMAL_POINT_TYPES
 #include <pcl/pcl_macros.h>             // for PCL_EXPORTS
 #include <pcl/PCLPointField.h>          // for PCLPointField
 #include <pcl/point_types.h>            // implementee
 #include <pcl/register_point_struct.h>  // for POINT_CLOUD_REGISTER_POINT_STRUCT, POINT_CLOUD_REGISTER_POINT_WRAPPER
+#include <pcl/vector_types.h>           // for pcl::Vector* types
 
 #include <boost/mpl/and.hpp>            // for boost::mpl::and_
 #include <boost/mpl/bool.hpp>           // for boost::mpl::bool_
@@ -184,29 +186,10 @@ namespace pcl
       template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
       template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
 
-
       template<typename FeaturePointT>
       static constexpr int descriptorSize_v = descriptorSize<FeaturePointT>::value;
     }
   }
-  
-  using Vector2fMap = Eigen::Map<Eigen::Vector2f>;
-  using Vector2fMapConst = const Eigen::Map<const Eigen::Vector2f>;
-  using Array3fMap = Eigen::Map<Eigen::Array3f>;
-  using Array3fMapConst = const Eigen::Map<const Eigen::Array3f>;
-  using Array4fMap = Eigen::Map<Eigen::Array4f, Eigen::Aligned>;
-  using Array4fMapConst = const Eigen::Map<const Eigen::Array4f, Eigen::Aligned>;
-  using Vector3fMap = Eigen::Map<Eigen::Vector3f>;
-  using Vector3fMapConst = const Eigen::Map<const Eigen::Vector3f>;
-  using Vector4fMap = Eigen::Map<Eigen::Vector4f, Eigen::Aligned>;
-  using Vector4fMapConst = const Eigen::Map<const Eigen::Vector4f, Eigen::Aligned>;
-
-  using Vector3c = Eigen::Matrix<std::uint8_t, 3, 1>;
-  using Vector3cMap = Eigen::Map<Vector3c>;
-  using Vector3cMapConst = const Eigen::Map<const Vector3c>;
-  using Vector4c = Eigen::Matrix<std::uint8_t, 4, 1>;
-  using Vector4cMap = Eigen::Map<Vector4c, Eigen::Aligned>;
-  using Vector4cMapConst = const Eigen::Map<const Vector4c, Eigen::Aligned>;
 
 #define PCL_ADD_UNION_POINT4D \
   union EIGEN_ALIGN16 { \
