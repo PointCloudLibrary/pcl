@@ -58,11 +58,7 @@ template <typename PointSource, typename PointTarget, typename Scalar>
 FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     FastRobustIterativeClosestPoint()
 : robust_function_(RobustFunction::WELSCH)
-, use_anderson_(true)
-, anderson_history_(5)
-, nu_begin_ratio_(3.0)
 , nu_end_ratio_(1.0 / (3.0 * std::sqrt(3.0)))
-, nu_decay_ratio_(0.5)
 {
   this->reg_name_ = "FastRobustIterativeClosestPoint";
   this->max_iterations_ = 50;
@@ -437,9 +433,9 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeWeight
     nu = same_threshold_;
   const double denom = 2.0 * nu * nu;
   VectorXd weights(residuals.size());
-  int idx = 0;
-  for (const auto residual : residuals) {
-    const double dist2 = residual * residual;
+  Eigen::Index idx = 0;
+  for (const auto residual : residuals.array()) {
+    const double dist2 = static_cast<double>(residual) * static_cast<double>(residual);
     weights[idx++] = std::exp(-dist2 / denom);
   }
   return weights;
