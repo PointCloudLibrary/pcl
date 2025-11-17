@@ -74,7 +74,7 @@ int
 FittingCurve2d::findElement (double xi, const std::vector<double> &elements)
 {
   if (xi >= elements.back ())
-    return (int (elements.size ()) - 2);
+    return (static_cast<int>(elements.size ()) - 2);
 
   for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
@@ -120,7 +120,7 @@ FittingCurve2d::assemble (const Parameter &parameter)
 {
   int ncp = m_nurbs.m_cv_count;
   int nCageReg = m_nurbs.m_cv_count - 2;
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
 
   double wInt = 1.0;
   if (!m_data->interior_weight.empty ())
@@ -290,7 +290,7 @@ FittingCurve2d::initNurbsPCA (int order, NurbsDataCurve2d *data, int ncps)
   if (ncps < order)
     ncps = order;
 
-  unsigned s = static_cast<unsigned> (data->interior.size ());
+  auto s = static_cast<unsigned> (data->interior.size ());
   data->interior_param.clear ();
 
   NurbsTools::pca (data->interior, mean, eigenvectors, eigenvalues);
@@ -399,7 +399,7 @@ FittingCurve2d::getElementVector (const ON_NurbsCurve &nurbs)
 void
 FittingCurve2d::assembleInterior (double wInt, double rScale, unsigned &row)
 {
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
   m_data->interior_error.clear ();
   m_data->interior_normals.clear ();
   m_data->interior_line_start.clear ();
@@ -413,7 +413,7 @@ FittingCurve2d::assembleInterior (double wInt, double rScale, unsigned &row)
     double param;
     Eigen::Vector2d pt, t;
     double error;
-    if (p < int (m_data->interior_param.size ()))
+    if (p < static_cast<int>(m_data->interior_param.size ()))
     {
       param = findClosestElementMidPoint (m_nurbs, pcp, m_data->interior_param[p]);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);
@@ -428,7 +428,7 @@ FittingCurve2d::assembleInterior (double wInt, double rScale, unsigned &row)
 
     m_data->interior_error.push_back (error);
 
-    if (p < int (m_data->interior_weight.size ()))
+    if (p < static_cast<int>(m_data->interior_weight.size ()))
       wInt = m_data->interior_weight[p];
 
     m_data->interior_line_start.push_back (pcp);
