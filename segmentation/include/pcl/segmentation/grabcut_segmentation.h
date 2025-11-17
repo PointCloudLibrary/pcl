@@ -268,7 +268,7 @@ namespace pcl
         fit (Gaussian& g, std::size_t total_count, bool compute_eigens = false) const;
         /// \return epsilon
         float
-        getEpsilon () { return (epsilon_); }
+        getEpsilon () const { return (epsilon_); }
         /** set epsilon which will be added to the covariance matrix diagonal which avoids singular
           * covariance matrix
           * \param[in] epsilon user defined epsilon

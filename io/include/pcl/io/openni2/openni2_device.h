@@ -128,11 +128,11 @@ namespace pcl
           stopDepthStream ();
 
           bool
-          isIRStreamStarted ();
+          isIRStreamStarted () const;
           bool
-          isColorStreamStarted ();
+          isColorStreamStarted () const;
           bool
-          isDepthStreamStarted ();
+          isDepthStreamStarted () const;
 
           bool
           isImageRegistrationModeSupported () const;
@@ -192,11 +192,11 @@ namespace pcl
 
           // Baseline between sensors. Returns 0 if this value does not exist.
           float
-          getBaseline();
+          getBaseline() const;
 
           // Value of pixels in shadow or that have no valid measurement
           std::uint64_t
-          getShadowValue();
+          getShadowValue() const;
 
           void
           setAutoExposure (bool enable);

@@ -82,7 +82,7 @@ namespace cuda
       g += rhs.g;
       b += rhs.b;
       alpha += rhs.alpha;
-      return (*this);
+      return *this;
     }
 
     inline __host__ __device__ RGB& operator -= (const RGB &rhs)
@@ -91,7 +91,7 @@ namespace cuda
       g -= rhs.g;
       b -= rhs.b;
       alpha -= rhs.alpha;
-      return (*this);
+      return *this;
     }
 
     inline __host__ __device__ RGB& operator *= (const RGB &rhs)
@@ -100,7 +100,7 @@ namespace cuda
       g *= rhs.g;
       b *= rhs.b;
       alpha *= rhs.alpha;
-      return (*this);
+      return *this;
     }
 
     inline __host__ __device__ RGB& operator /= (const RGB &rhs)
@@ -109,7 +109,7 @@ namespace cuda
       g /= rhs.g;
       b /= rhs.b;
       alpha /= rhs.alpha;
-      return (*this);
+      return *this;
     }
   };
 

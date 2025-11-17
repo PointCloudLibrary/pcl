@@ -197,13 +197,13 @@ pcl::io::openni2::OpenNI2Device::getDepthFocalLength () const
 }
 
 float
-pcl::io::openni2::OpenNI2Device::getBaseline()
+pcl::io::openni2::OpenNI2Device::getBaseline() const
 {
   return (baseline_);
 }
 
 std::uint64_t
-pcl::io::openni2::OpenNI2Device::getShadowValue()
+pcl::io::openni2::OpenNI2Device::getShadowValue() const
 {
   return (shadow_value_);
 }
@@ -369,17 +369,17 @@ pcl::io::openni2::OpenNI2Device::shutdown ()
 }
 
 bool
-pcl::io::openni2::OpenNI2Device::isIRStreamStarted ()
+pcl::io::openni2::OpenNI2Device::isIRStreamStarted () const
 {
   return (ir_video_started_);
 }
 bool
-pcl::io::openni2::OpenNI2Device::isColorStreamStarted ()
+pcl::io::openni2::OpenNI2Device::isColorStreamStarted () const
 {
   return (color_video_started_);
 }
 bool
-pcl::io::openni2::OpenNI2Device::isDepthStreamStarted ()
+pcl::io::openni2::OpenNI2Device::isDepthStreamStarted () const
 {
   return (depth_video_started_);
 }

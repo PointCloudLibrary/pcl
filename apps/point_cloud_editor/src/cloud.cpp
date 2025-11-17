@@ -137,7 +137,7 @@ Cloud::operator= (const Cloud &cloud)
   select_translate_x_ = cloud.select_translate_x_;
   select_translate_y_ = cloud.select_translate_y_;
   select_translate_z_ = cloud.select_translate_z_;
-  return (*this);
+  return *this;
 }
 
 Point3D&

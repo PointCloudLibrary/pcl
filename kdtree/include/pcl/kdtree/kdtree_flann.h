@@ -170,6 +170,9 @@ public:
   inline KdTreeFLANN<PointT, Dist>&
   operator=(const KdTreeFLANN<PointT, Dist>& k)
   {
+    if (this == &k)
+      return *this;
+
     KdTree<PointT>::operator=(k);
     flann_index_ = k.flann_index_;
     cloud_ = k.cloud_;
@@ -179,7 +182,7 @@ public:
     total_nr_points_ = k.total_nr_points_;
     param_k_ = k.param_k_;
     param_radius_ = k.param_radius_;
-    return (*this);
+    return *this;
   }
 
   /** \brief Set the search epsilon precision (error bound) for nearest neighbors

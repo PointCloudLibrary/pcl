@@ -86,7 +86,7 @@ public:
    * \return Amount of points
    */
   uindex_t
-  getPointCounter()
+  getPointCounter() const
   {
     return (point_counter_);
   }

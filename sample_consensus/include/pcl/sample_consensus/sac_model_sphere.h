@@ -133,7 +133,7 @@ namespace pcl
       operator = (const SampleConsensusModelSphere &source)
       {
         SampleConsensusModel<PointT>::operator=(source);
-        return (*this);
+        return *this;
       }
 
       /** \brief Check whether the given index samples can form a valid sphere model, compute the model 

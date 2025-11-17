@@ -48,7 +48,7 @@ Selection::operator= (const Selection& selection)
 {
   cloud_ptr_ = selection.cloud_ptr_;
   selected_indices_ = selection.selected_indices_;
-  return (*this);
+  return *this;
 }
 
 void

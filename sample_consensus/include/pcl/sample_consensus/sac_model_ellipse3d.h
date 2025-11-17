@@ -102,7 +102,7 @@ namespace pcl
       operator = (const SampleConsensusModelEllipse3D &source)
       {
         SampleConsensusModel<PointT>::operator=(source);
-        return (*this);
+        return *this;
       }
 
       /** \brief Check whether the given index samples can form a valid 3D ellipse model, compute the model coefficients

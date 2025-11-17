@@ -133,7 +133,7 @@ namespace pcl
             }	
              __device__ __host__ __forceinline__ Morton::code_t operator()(const float4& p) const
             {			
-                return (*this)(make_float3(p.x, p.y, p.z));                
+                return (*this)(make_float3(p.x, p.y, p.z));
             }	
         };
 

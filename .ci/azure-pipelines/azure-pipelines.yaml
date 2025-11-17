@@ -43,7 +43,7 @@ stages:
       - job: ubuntu
         displayName: Ubuntu
         pool:
-          vmImage: 'ubuntu-22.04'
+          vmImage: 'ubuntu-24.04'
         strategy:
           matrix:
             20.04 GCC:  # oldest LTS
@@ -99,7 +99,7 @@ stages:
         dependsOn: osx
         condition: succeededOrFailed()
         pool:
-          vmImage: 'ubuntu-22.04'
+          vmImage: 'ubuntu-24.04'
         strategy:
           matrix:
             22.04 Clang:
@@ -122,7 +122,7 @@ stages:
         dependsOn: osx
         condition: succeededOrFailed()
         pool:
-          vmImage: 'ubuntu-22.04'
+          vmImage: 'ubuntu-24.04'
         strategy:
           matrix:
             22.04 Clang:

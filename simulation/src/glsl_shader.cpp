@@ -42,7 +42,7 @@ pcl::simulation::gllib::Program::getUniformLocation(const std::string& name) con
 
 void
 pcl::simulation::gllib::Program::setUniform(const std::string& name,
-                                            const Eigen::Vector2f& v)
+                                            const Eigen::Vector2f& v) const
 {
   GLuint loc = getUniformLocation(name);
   glUniform2f(loc, v(0), v(1));
@@ -50,7 +50,7 @@ pcl::simulation::gllib::Program::setUniform(const std::string& name,
 
 void
 pcl::simulation::gllib::Program::setUniform(const std::string& name,
-                                            const Eigen::Vector3f& v)
+                                            const Eigen::Vector3f& v) const
 {
   GLuint loc = getUniformLocation(name);
   glUniform3f(loc, v(0), v(1), v(2));
@@ -58,7 +58,7 @@ pcl::simulation::gllib::Program::setUniform(const std::string& name,
 
 void
 pcl::simulation::gllib::Program::setUniform(const std::string& name,
-                                            const Eigen::Vector4f& v)
+                                            const Eigen::Vector4f& v) const
 {
   GLuint loc = getUniformLocation(name);
   glUniform4f(loc, v(0), v(1), v(2), v(4));
@@ -66,7 +66,7 @@ pcl::simulation::gllib::Program::setUniform(const std::string& name,
 
 void
 pcl::simulation::gllib::Program::setUniform(const std::string& name,
-                                            const Eigen::Matrix3f& v)
+                                            const Eigen::Matrix3f& v) const
 {
   GLuint loc = getUniformLocation(name);
   glUniformMatrix3fv(loc, 1, false, v.data());
@@ -74,28 +74,28 @@ pcl::simulation::gllib::Program::setUniform(const std::string& name,
 
 void
 pcl::simulation::gllib::Program::setUniform(const std::string& name,
-                                            const Eigen::Matrix4f& v)
+                                            const Eigen::Matrix4f& v) const
 {
   GLuint loc = getUniformLocation(name);
   glUniformMatrix4fv(loc, 1, false, v.data());
 }
 
 void
-pcl::simulation::gllib::Program::setUniform(const std::string& name, float v)
+pcl::simulation::gllib::Program::setUniform(const std::string& name, float v) const
 {
   GLuint loc = getUniformLocation(name);
   glUniform1f(loc, v);
 }
 
 void
-pcl::simulation::gllib::Program::setUniform(const std::string& name, int v)
+pcl::simulation::gllib::Program::setUniform(const std::string& name, int v) const
 {
   GLuint loc = getUniformLocation(name);
   glUniform1i(loc, v);
 }
 
 void
-pcl::simulation::gllib::Program::setUniform(const std::string& name, bool v)
+pcl::simulation::gllib::Program::setUniform(const std::string& name, bool v) const
 {
   GLuint loc = getUniformLocation(name);
   glUniform1i(loc, (v ? 1 : 0));
@@ -127,7 +127,7 @@ pcl::simulation::gllib::Program::addShaderText(const std::string& text,
 
 bool
 pcl::simulation::gllib::Program::addShaderFile(const std::string& filename,
-                                               ShaderType shader_type)
+                                               ShaderType shader_type) const
 {
   char* text = readTextFile(filename.c_str());
   if (text == nullptr)

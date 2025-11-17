@@ -136,7 +136,7 @@ namespace pcl
         * Points will be classified as inlier or outlier if their average neighbor distance is below or above this threshold respectively.
         */
       inline double
-      getStddevMulThresh ()
+      getStddevMulThresh () const
       {
         return (std_mul_);
       }
@@ -180,7 +180,7 @@ namespace pcl
       /** \brief The number of points to use for mean distance estimation. */
       int mean_k_{1};
 
-      /** \brief Standard deviations threshold (i.e., points outside of 
+      /** \brief Standard deviations threshold (i.e., points outside of
         * \f$ \mu \pm \sigma \cdot std\_mul \f$ will be marked as outliers). */
       double std_mul_{0.0};
   };
@@ -229,7 +229,7 @@ namespace pcl
 
       /** \brief Get the number of points to use for mean distance estimation. */
       inline int
-      getMeanK ()
+      getMeanK () const
       {
         return (mean_k_);
       }
@@ -248,7 +248,7 @@ namespace pcl
 
       /** \brief Get the standard deviation multiplier threshold as set by the user. */
       inline double
-      getStddevMulThresh ()
+      getStddevMulThresh () const
       {
         return (std_mul_);
       }
@@ -257,8 +257,8 @@ namespace pcl
       /** \brief The number of points to use for mean distance estimation. */
       int mean_k_{2};
 
-      /** \brief Standard deviations threshold (i.e., points outside of 
-        * \f$ \mu \pm \sigma \cdot std\_mul \f$ will be marked as outliers). 
+      /** \brief Standard deviations threshold (i.e., points outside of
+        * \f$ \mu \pm \sigma \cdot std\_mul \f$ will be marked as outliers).
         */
       double std_mul_{0.0};
 

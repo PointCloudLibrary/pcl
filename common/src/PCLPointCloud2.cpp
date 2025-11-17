@@ -168,7 +168,7 @@ pcl::PCLPointCloud2::operator += (const PCLPointCloud2& rhs)
 {
   if (concatenate((*this), rhs))
   {
-    return (*this);
+    return *this;
   }
   PCL_THROW_EXCEPTION(ComputeFailedException, "Field or Endian mismatch. Please check log for more details");
 }

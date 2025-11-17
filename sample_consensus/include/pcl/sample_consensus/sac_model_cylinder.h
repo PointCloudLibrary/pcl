@@ -143,7 +143,7 @@ namespace pcl
         SampleConsensusModelFromNormals<PointT, PointNT>::operator=(source);
         axis_ = source.axis_;
         eps_angle_ = source.eps_angle_;
-        return (*this);
+        return *this;
       }
 
       /** \brief Set the angle epsilon (delta) threshold.

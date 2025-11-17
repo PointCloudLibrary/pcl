@@ -440,7 +440,7 @@ public:
       this->current_state_ = 0;
     }
 
-    return (*this);
+    return *this;
   }
 
   /** \brief Reset the iterator to the root node of the octree
@@ -544,7 +544,7 @@ public:
       this->current_state_ = 0;
     }
 
-    return (*this);
+    return *this;
   }
 
   /** \brief Reset the iterator to the root node of the octree
@@ -637,7 +637,7 @@ public:
     OctreeBreadthFirstIterator<OctreeT>::operator=(src);
     this->fixed_depth_ = src.fixed_depth_;
 
-    return (*this);
+    return *this;
   }
 
   /** \brief Reset the iterator to the first node at the depth given as parameter
@@ -732,7 +732,7 @@ public:
     } while ((this->current_state_) &&
              (this->current_state_->node_->getNodeType() != LEAF_NODE));
 
-    return (*this);
+    return *this;
   }
 
   /** \brief postincrement operator.

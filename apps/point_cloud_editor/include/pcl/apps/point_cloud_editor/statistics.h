@@ -70,7 +70,7 @@ protected:
   operator=(const Statistics&)
   {
     assert(false);
-    return (*this);
+    return *this;
   }
 
   /// @brief Returns the statistics in string.
