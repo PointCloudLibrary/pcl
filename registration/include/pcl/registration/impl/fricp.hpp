@@ -57,8 +57,7 @@ namespace pcl {
 template <typename PointSource, typename PointTarget, typename Scalar>
 FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     FastRobustIterativeClosestPoint()
-: robust_function_(RobustFunction::WELSCH)
-, nu_end_ratio_(1.0 / (3.0 * std::sqrt(3.0)))
+: robust_function_(RobustFunction::WELSCH), nu_end_ratio_(1.0 / (3.0 * std::sqrt(3.0)))
 {
   this->reg_name_ = "FastRobustIterativeClosestPoint";
   this->max_iterations_ = 50;
@@ -417,8 +416,8 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeEnergy
     nu = same_threshold_;
   const double denom = 2.0 * nu * nu;
   double energy = 0.0;
-  for (int i = 0; i < residuals.size(); ++i) {
-    const double dist2 = residuals[i] * residuals[i];
+  for (double r : residuals.array()) {
+    const double dist2 = r * r;
     energy += 1.0 - std::exp(-dist2 / denom);
   }
   return energy;
