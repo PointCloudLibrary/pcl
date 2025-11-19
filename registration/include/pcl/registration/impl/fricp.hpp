@@ -419,7 +419,6 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeEnergy
   return (1.0 - (-dist2 / denom).exp()).sum();
 }
 
-
 template <typename PointSource, typename PointTarget, typename Scalar>
 typename FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::VectorXd
 FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeWeights(
@@ -430,7 +429,6 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeWeight
   const double denom = 2.0 * nu * nu;
   return (-residuals.array().square() / denom).exp().matrix();
 }
-
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 typename FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4d
