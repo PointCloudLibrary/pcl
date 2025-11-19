@@ -17,6 +17,7 @@ jobs:
           cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_COMPILER=/usr/bin/clang-18 -DCMAKE_C_COMPILER=/usr/bin/clang-18 . \
             -DBUILD_benchmarks=ON \
             -DBUILD_examples=ON \
+            -DBUILD_surface_on_nurbs=ON \
             -DBUILD_simulation=ON \
             -DBUILD_global_tests=ON
         

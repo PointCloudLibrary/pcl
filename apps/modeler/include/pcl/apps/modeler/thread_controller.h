@@ -49,7 +49,7 @@ class ThreadController : public QObject {
 
 public:
   ThreadController();
-  ~ThreadController();
+  ~ThreadController() override;
 
   bool
   runWorker(AbstractWorker* worker);

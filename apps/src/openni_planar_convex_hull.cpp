@@ -192,7 +192,7 @@ main(int argc, char** argv)
     return 1;
   }
 
-  std::string device_id = "";
+  std::string device_id;
   double threshold = 0.05;
 
   if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&

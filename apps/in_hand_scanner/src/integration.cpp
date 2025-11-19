@@ -51,12 +51,8 @@
 
 pcl::ihs::Integration::Integration()
 : kd_tree_(new pcl::KdTreeFLANN<PointXYZ>())
-, max_squared_distance_(0.04f)
-, // 0.2cm
-max_angle_(45.f)
-, min_weight_(.3f)
-, max_age_(30)
-, min_directions_(5)
+, 
+ 
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -506,7 +502,7 @@ pcl::ihs::Integration::addToMesh(const PointIHS& pt_0,
   // 2 - 1
   // |   |
   // 3 - 0
-  const unsigned char is_finite =
+  const auto is_finite =
       static_cast<unsigned char>((1 * !std::isnan(pt_0.x)) | (2 * !std::isnan(pt_1.x)) |
                                  (4 * !std::isnan(pt_2.x)) | (8 * !std::isnan(pt_3.x)));
 

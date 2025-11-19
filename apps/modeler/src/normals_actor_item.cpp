@@ -51,8 +51,8 @@ pcl::modeler::NormalsActorItem::NormalsActorItem(
     const vtkSmartPointer<vtkRenderWindow>& render_window)
 : ChannelActorItem(
       parent, cloud_mesh, render_window, vtkSmartPointer<vtkLODActor>::New(), "Normals")
-, level_(10)
-, scale_(0.1)
+, 
+ 
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,11 +70,11 @@ pcl::modeler::NormalsActorItem::createNormalLines()
   if (points->GetData() == nullptr)
     points->SetData(vtkSmartPointer<vtkFloatArray>::New());
 
-  vtkFloatArray* data = dynamic_cast<vtkFloatArray*>(points->GetData());
+  auto* data = dynamic_cast<vtkFloatArray*>(points->GetData());
   data->SetNumberOfComponents(3);
 
   if (cloud->is_dense) {
-    vtkIdType nr_normals = static_cast<vtkIdType>((cloud->size() - 1) / level_ + 1);
+    auto nr_normals = static_cast<vtkIdType>((cloud->size() - 1) / level_ + 1);
     data->SetNumberOfValues(2 * 3 * nr_normals);
     for (vtkIdType i = 0, j = 0; j < nr_normals;
          j++, i = static_cast<vtkIdType>(j * level_)) {
@@ -82,9 +82,9 @@ pcl::modeler::NormalsActorItem::createNormalLines()
       data->SetValue(2 * j * 3 + 0, p.x);
       data->SetValue(2 * j * 3 + 1, p.y);
       data->SetValue(2 * j * 3 + 2, p.z);
-      data->SetValue(2 * j * 3 + 3, float(p.x + p.normal_x * scale_));
-      data->SetValue(2 * j * 3 + 4, float(p.y + p.normal_y * scale_));
-      data->SetValue(2 * j * 3 + 5, float(p.z + p.normal_z * scale_));
+      data->SetValue(2 * j * 3 + 3, static_cast<float>(p.x + p.normal_x * scale_));
+      data->SetValue(2 * j * 3 + 4, static_cast<float>(p.y + p.normal_y * scale_));
+      data->SetValue(2 * j * 3 + 5, static_cast<float>(p.z + p.normal_z * scale_));
 
       lines->InsertNextCell(2);
       lines->InsertCellPoint(2 * j);
@@ -95,7 +95,7 @@ pcl::modeler::NormalsActorItem::createNormalLines()
     pcl::IndicesPtr indices(new pcl::Indices());
     pcl::removeNaNFromPointCloud(*cloud, *indices);
 
-    vtkIdType nr_normals = static_cast<vtkIdType>((indices->size() - 1) / level_ + 1);
+    auto nr_normals = static_cast<vtkIdType>((indices->size() - 1) / level_ + 1);
     data->SetNumberOfValues(2 * 3 * nr_normals);
     for (vtkIdType i = 0, j = 0; j < nr_normals;
          j++, i = static_cast<vtkIdType>(j * level_)) {
@@ -103,9 +103,9 @@ pcl::modeler::NormalsActorItem::createNormalLines()
       data->SetValue(2 * j * 3 + 0, p.x);
       data->SetValue(2 * j * 3 + 1, p.y);
       data->SetValue(2 * j * 3 + 2, p.z);
-      data->SetValue(2 * j * 3 + 3, float(p.x + p.normal_x * scale_));
-      data->SetValue(2 * j * 3 + 4, float(p.y + p.normal_y * scale_));
-      data->SetValue(2 * j * 3 + 5, float(p.z + p.normal_z * scale_));
+      data->SetValue(2 * j * 3 + 3, static_cast<float>(p.x + p.normal_x * scale_));
+      data->SetValue(2 * j * 3 + 4, static_cast<float>(p.y + p.normal_y * scale_));
+      data->SetValue(2 * j * 3 + 5, static_cast<float>(p.z + p.normal_z * scale_));
 
       lines->InsertNextCell(2);
       lines->InsertCellPoint(2 * j);

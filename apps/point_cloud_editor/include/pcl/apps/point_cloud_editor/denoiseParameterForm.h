@@ -103,5 +103,5 @@ private:
   /// The standard deviation multiplier threshold
   float std_dev_thresh_;
   /// The flag indicating whether the OK button was pressed
-  bool ok_;
+  bool ok_{false};
 };

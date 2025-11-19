@@ -73,10 +73,7 @@
 #include <pcl/apps/point_cloud_editor/mainWindow.h>
 
 CloudEditorWidget::CloudEditorWidget (QWidget *parent)
-  : QOpenGLWidget(parent),
-    point_size_(2.0f), selected_point_size_(4.0f),
-    cam_fov_(60.0), cam_aspect_(1.0), cam_near_(0.0001), cam_far_(100.0),
-    color_scheme_(COLOR_BY_PURE), is_colored_(false)
+  : QOpenGLWidget(parent)
 {
   setFocusPolicy(Qt::StrongFocus);
   command_queue_ptr_ = CommandQueuePtr(new CommandQueue());
@@ -91,7 +88,7 @@ void
 CloudEditorWidget::loadFile(const std::string &filename)
 {
   std::string ext = filename.substr(filename.find_last_of('.')+1);
-  FileLoadMap::iterator it = cloud_load_func_map_.find(ext);
+  auto it = cloud_load_func_map_.find(ext);
   if (it != cloud_load_func_map_.end())
     (it->second)(this, filename);
   else
@@ -328,8 +325,8 @@ CloudEditorWidget::undo ()
 void
 CloudEditorWidget::increasePointSize ()
 {
-  ((MainWindow*) parentWidget()) -> increaseSpinBoxValue();
-  point_size_ = ((MainWindow*) parentWidget()) -> getSpinBoxValue();
+  (dynamic_cast<MainWindow*>( parentWidget())) -> increaseSpinBoxValue();
+  point_size_ = (dynamic_cast<MainWindow*>( parentWidget())) -> getSpinBoxValue();
   if (!cloud_ptr_)
     return;
   cloud_ptr_->setPointSize(point_size_);
@@ -339,8 +336,8 @@ CloudEditorWidget::increasePointSize ()
 void
 CloudEditorWidget::decreasePointSize ()
 {
-  ((MainWindow*) parentWidget()) -> decreaseSpinBoxValue();
-  point_size_ = ((MainWindow*) parentWidget()) -> getSpinBoxValue();
+  (dynamic_cast<MainWindow*>( parentWidget())) -> decreaseSpinBoxValue();
+  point_size_ = (dynamic_cast<MainWindow*>( parentWidget())) -> getSpinBoxValue();
   if (!cloud_ptr_)
     return;
   cloud_ptr_->setPointSize(point_size_);
@@ -350,9 +347,9 @@ CloudEditorWidget::decreasePointSize ()
 void
 CloudEditorWidget::increaseSelectedPointSize ()
 {
-  ((MainWindow*) parentWidget()) -> increaseSelectedSpinBoxValue();
+  (dynamic_cast<MainWindow*>( parentWidget())) -> increaseSelectedSpinBoxValue();
   selected_point_size_ =
-    ((MainWindow*) parentWidget()) -> getSelectedSpinBoxValue();
+    (dynamic_cast<MainWindow*>( parentWidget())) -> getSelectedSpinBoxValue();
   if (!cloud_ptr_)
     return;
   cloud_ptr_->setHighlightPointSize(selected_point_size_);
@@ -362,9 +359,9 @@ CloudEditorWidget::increaseSelectedPointSize ()
 void
 CloudEditorWidget::decreaseSelectedPointSize ()
 {
-  ((MainWindow*) parentWidget()) -> decreaseSelectedSpinBoxValue();
+  (dynamic_cast<MainWindow*>( parentWidget())) -> decreaseSelectedSpinBoxValue();
   selected_point_size_ =
-    ((MainWindow*) parentWidget()) -> getSelectedSpinBoxValue();
+    (dynamic_cast<MainWindow*>( parentWidget())) -> getSelectedSpinBoxValue();
   if (!cloud_ptr_)
     return;
   cloud_ptr_->setHighlightPointSize(selected_point_size_);
@@ -480,7 +477,7 @@ CloudEditorWidget::resizeGL (int width, int height)
   height = static_cast<int>(height*ratio);
   glViewport(0, 0, width, height);
   viewport_ = {0, 0, width, height};
-  cam_aspect_ = double(width) / double(height);
+  cam_aspect_ = static_cast<double>(width) / static_cast<double>(height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(cam_fov_, cam_aspect_, cam_near_, cam_far_);
@@ -535,7 +532,7 @@ void
 CloudEditorWidget::keyPressEvent (QKeyEvent *event)
 {
   int key = event->key() + static_cast<int>(event->modifiers());
-  std::map<int, KeyMapFunc>::iterator it = key_map_.find(key);
+  auto it = key_map_.find(key);
   if (it != key_map_.end())
   {
     (it->second)(this);
@@ -620,23 +617,23 @@ CloudEditorWidget::initKeyMap ()
   key_map_[Qt::Key_3] = &CloudEditorWidget::colorByY;
   key_map_[Qt::Key_4] = &CloudEditorWidget::colorByZ;
   key_map_[Qt::Key_5] = &CloudEditorWidget::colorByRGB;
-  key_map_[Qt::Key_C + (int) Qt::ControlModifier] = &CloudEditorWidget::copy;
-  key_map_[Qt::Key_X + (int) Qt::ControlModifier] = &CloudEditorWidget::cut;
-  key_map_[Qt::Key_V + (int) Qt::ControlModifier] = &CloudEditorWidget::paste;
+  key_map_[Qt::Key_C + static_cast<int>(Qt::ControlModifier)] = &CloudEditorWidget::copy;
+  key_map_[Qt::Key_X + static_cast<int>(Qt::ControlModifier)] = &CloudEditorWidget::cut;
+  key_map_[Qt::Key_V + static_cast<int>(Qt::ControlModifier)] = &CloudEditorWidget::paste;
   key_map_[Qt::Key_S] = &CloudEditorWidget::select2D;
   key_map_[Qt::Key_E] = &CloudEditorWidget::select1D;
   key_map_[Qt::Key_T] = &CloudEditorWidget::transform;
   key_map_[Qt::Key_V] = &CloudEditorWidget::view;
   key_map_[Qt::Key_Delete] = &CloudEditorWidget::remove;
-  key_map_[Qt::Key_Z + (int) Qt::ControlModifier] = &CloudEditorWidget::undo;
+  key_map_[Qt::Key_Z + static_cast<int>(Qt::ControlModifier)] = &CloudEditorWidget::undo;
   key_map_[Qt::Key_Equal] = &CloudEditorWidget::increasePointSize;
   key_map_[Qt::Key_Plus] = &CloudEditorWidget::increasePointSize;
   key_map_[Qt::Key_Minus] = &CloudEditorWidget::decreasePointSize;
-  key_map_[Qt::Key_Equal + (int) Qt::ControlModifier] =
+  key_map_[Qt::Key_Equal + static_cast<int>(Qt::ControlModifier)] =
     &CloudEditorWidget::increaseSelectedPointSize;
-  key_map_[Qt::Key_Plus + (int) Qt::ControlModifier] =
+  key_map_[Qt::Key_Plus + static_cast<int>(Qt::ControlModifier)] =
     &CloudEditorWidget::increaseSelectedPointSize;
-  key_map_[Qt::Key_Minus + (int) Qt::ControlModifier] =
+  key_map_[Qt::Key_Minus + static_cast<int>(Qt::ControlModifier)] =
     &CloudEditorWidget::decreaseSelectedPointSize;
   key_map_[Qt::Key_Escape] = &CloudEditorWidget::cancelSelect;
 }

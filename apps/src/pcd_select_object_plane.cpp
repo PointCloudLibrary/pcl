@@ -71,7 +71,7 @@ template <typename PointT>
 class ObjectSelection {
 public:
   ObjectSelection()
-  : plane_comparator_(new EdgeAwarePlaneComparator<PointT, Normal>), rgb_data_()
+  : plane_comparator_(new EdgeAwarePlaneComparator<PointT, Normal>), 
   {
     // Set the parameters for planar segmentation
     plane_comparator_->setDistanceThreshold(0.01f, false);
@@ -650,7 +650,7 @@ private:
   // Segmentation
   typename EdgeAwarePlaneComparator<PointT, Normal>::Ptr plane_comparator_;
   PointIndices::Ptr plane_indices_;
-  unsigned char* rgb_data_;
+  unsigned char* rgb_data_{};
   std::vector<float> distance_map_;
 
   // Results

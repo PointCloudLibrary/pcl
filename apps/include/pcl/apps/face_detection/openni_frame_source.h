@@ -31,9 +31,9 @@ protected:
 
   pcl::OpenNIGrabber grabber_;
   PointCloudPtr most_recent_frame_;
-  int frame_counter_;
+  int frame_counter_{0};
   std::mutex mutex_;
-  bool active_;
+  bool active_{true};
 };
 
 } // namespace OpenNIFrameSource

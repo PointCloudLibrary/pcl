@@ -265,16 +265,16 @@ public:
     for (const auto& region_index : region_indices) {
       if (region_index.indices.size() > 1000) {
 
-        for (std::size_t j = 0; j < region_index.indices.size(); j++) {
-          pcl::PointXYZ ground_pt((*cloud)[region_index.indices[j]].x,
-                                  (*cloud)[region_index.indices[j]].y,
-                                  (*cloud)[region_index.indices[j]].z);
+        for (int indice : region_index.indices) {
+          pcl::PointXYZ ground_pt((*cloud)[indice].x,
+                                  (*cloud)[indice].y,
+                                  (*cloud)[indice].z);
           ground_cloud->points.push_back(ground_pt);
-          (*ground_image)[region_index.indices[j]].g = static_cast<std::uint8_t>(
-              ((*cloud)[region_index.indices[j]].g + 255) / 2);
-          (*label_image)[region_index.indices[j]].r = 0;
-          (*label_image)[region_index.indices[j]].g = 255;
-          (*label_image)[region_index.indices[j]].b = 0;
+          (*ground_image)[indice].g = static_cast<std::uint8_t>(
+              ((*cloud)[indice].g + 255) / 2);
+          (*label_image)[indice].r = 0;
+          (*label_image)[indice].g = 255;
+          (*label_image)[indice].b = 0;
         }
 
         // Compute plane info
@@ -346,21 +346,21 @@ public:
     pcl::PointCloud<PointT> extended_ground_cloud;
     for (const auto& region_index : region_indices) {
       if (region_index.indices.size() > 1000) {
-        for (std::size_t j = 0; j < region_index.indices.size(); j++) {
+        for (int indice : region_index.indices) {
           // Check to see if it has already been labeled
-          if ((*ground_image)[region_index.indices[j]].g ==
-              (*ground_image)[region_index.indices[j]].b) {
-            pcl::PointXYZ ground_pt((*cloud)[region_index.indices[j]].x,
-                                    (*cloud)[region_index.indices[j]].y,
-                                    (*cloud)[region_index.indices[j]].z);
+          if ((*ground_image)[indice].g ==
+              (*ground_image)[indice].b) {
+            pcl::PointXYZ ground_pt((*cloud)[indice].x,
+                                    (*cloud)[indice].y,
+                                    (*cloud)[indice].z);
             ground_cloud->points.push_back(ground_pt);
-            (*ground_image)[region_index.indices[j]].r = static_cast<std::uint8_t>(
-                ((*cloud)[region_index.indices[j]].r + 255) / 2);
-            (*ground_image)[region_index.indices[j]].g = static_cast<std::uint8_t>(
-                ((*cloud)[region_index.indices[j]].g + 255) / 2);
-            (*label_image)[region_index.indices[j]].r = 128;
-            (*label_image)[region_index.indices[j]].g = 128;
-            (*label_image)[region_index.indices[j]].b = 0;
+            (*ground_image)[indice].r = static_cast<std::uint8_t>(
+                ((*cloud)[indice].r + 255) / 2);
+            (*ground_image)[indice].g = static_cast<std::uint8_t>(
+                ((*cloud)[indice].g + 255) / 2);
+            (*label_image)[indice].r = 128;
+            (*label_image)[indice].g = 128;
+            (*label_image)[indice].b = 0;
           }
         }
       }
@@ -425,11 +425,11 @@ public:
 
             if ((ptp_dist > 0.5) && (ptp_dist < 3.0)) {
 
-              for (std::size_t j = 0; j < euclidean_label_index.indices.size(); j++) {
-                (*ground_image)[euclidean_label_index.indices[j]].r = 255;
-                (*label_image)[euclidean_label_index.indices[j]].r = 255;
-                (*label_image)[euclidean_label_index.indices[j]].g = 0;
-                (*label_image)[euclidean_label_index.indices[j]].b = 0;
+              for (int indice : euclidean_label_index.indices) {
+                (*ground_image)[indice].r = 255;
+                (*label_image)[indice].r = 255;
+                (*label_image)[indice].g = 0;
+                (*label_image)[indice].b = 0;
               }
             }
           }

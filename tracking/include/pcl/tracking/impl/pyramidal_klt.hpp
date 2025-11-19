@@ -196,7 +196,7 @@ PyramidalKLTTracker<PointInT, IntensityT>::derivatives(const FloatImage& src,
   ++trow0;
   float* trow1 = row1;
   ++trow1;
-  const float* src_ptr = &(src[0]);
+  const float* src_ptr = src.data();
 
   for (int y = 0; y < height; y++) {
     const float* srow0 = src_ptr + (y > 0 ? y - 1 : height > 1 ? 1 : 0) * width;
@@ -486,9 +486,9 @@ PyramidalKLTTracker<PointInT, IntensityT>::spatialGradient(
   covariance.setZero();
 
   for (int y = 0; y < track_height_; y++) {
-    const float* img_ptr = &(img[0]) + (y + location[1]) * step + location[0];
-    const float* grad_x_ptr = &(grad_x[0]) + (y + location[1]) * step + location[0];
-    const float* grad_y_ptr = &(grad_y[0]) + (y + location[1]) * step + location[0];
+    const float* img_ptr = img.data() + (y + location[1]) * step + location[0];
+    const float* grad_x_ptr = grad_x.data() + (y + location[1]) * step + location[0];
+    const float* grad_y_ptr = grad_y.data() + (y + location[1]) * step + location[0];
 
     float* win_ptr = win.data() + y * win.cols();
     float* grad_x_win_ptr = grad_x_win.data() + y * grad_x_win.cols();
@@ -527,7 +527,7 @@ PyramidalKLTTracker<PointInT, IntensityT>::mismatchVector(
   const int step = next.width;
   b.setZero();
   for (int y = 0; y < track_height_; y++) {
-    const float* next_ptr = &(next[0]) + (y + location[1]) * step + location[0];
+    const float* next_ptr = next.data() + (y + location[1]) * step + location[0];
     const float* prev_ptr = prev.data() + y * prev.cols();
     const float* prev_grad_x_ptr = prev_grad_x.data() + y * prev_grad_x.cols();
     const float* prev_grad_y_ptr = prev_grad_y.data() + y * prev_grad_y.cols();
@@ -587,9 +587,9 @@ PyramidalKLTTracker<PointInT, IntensityT>::track(
       iprev_point[1] = std::floor(prev_pt[1]);
 
       if (iprev_point[0] < -track_width_ ||
-          (std::uint32_t)iprev_point[0] >= grad_x.width ||
+          static_cast<std::uint32_t>(iprev_point[0]) >= grad_x.width ||
           iprev_point[1] < -track_height_ ||
-          (std::uint32_t)iprev_point[1] >= grad_y.height) {
+          static_cast<std::uint32_t>(iprev_point[1]) >= grad_y.height) {
         if (level == 0)
           status[ptidx] = -1;
         continue;
@@ -633,8 +633,8 @@ PyramidalKLTTracker<PointInT, IntensityT>::track(
       for (unsigned int j = 0; j < max_iterations_; j++) {
         Eigen::Array2i inext_pt = next_pt.floor().cast<int>();
 
-        if (inext_pt[0] < -track_width_ || (std::uint32_t)inext_pt[0] >= next.width ||
-            inext_pt[1] < -track_height_ || (std::uint32_t)inext_pt[1] >= next.height) {
+        if (inext_pt[0] < -track_width_ || static_cast<std::uint32_t>(inext_pt[0]) >= next.width ||
+            inext_pt[1] < -track_height_ || static_cast<std::uint32_t>(inext_pt[1]) >= next.height) {
           if (level == 0)
             status[ptidx] = -1;
           break;
@@ -679,9 +679,9 @@ PyramidalKLTTracker<PointInT, IntensityT>::track(
         inext_point[1] = std::floor(next_point[1]);
 
         if (inext_point[0] < -track_width_ ||
-            (std::uint32_t)inext_point[0] >= next.width ||
+            static_cast<std::uint32_t>(inext_point[0]) >= next.width ||
             inext_point[1] < -track_height_ ||
-            (std::uint32_t)inext_point[1] >= next.height) {
+            static_cast<std::uint32_t>(inext_point[1]) >= next.height) {
           status[ptidx] = -1;
           continue;
         }

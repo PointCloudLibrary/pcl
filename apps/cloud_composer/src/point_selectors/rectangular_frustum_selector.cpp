@@ -39,7 +39,7 @@ pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp()
   vtkInteractorStyleRubberBandPick::OnLeftButtonUp();
 
   vtkPlanes* frustum =
-      static_cast<vtkAreaPicker*>(this->GetInteractor()->GetPicker())->GetFrustum();
+      dynamic_cast<vtkAreaPicker*>(this->GetInteractor()->GetPicker())->GetFrustum();
 
 #if VTK_MAJOR_VERSION > 9 || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 4)
   vtkSmartPointer<vtkGenerateIds> id_filter = vtkSmartPointer<vtkGenerateIds>::New();
@@ -91,7 +91,7 @@ pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp()
   this->HighlightProp(nullptr);
 
   if (all_points->GetNumberOfPoints() > 0) {
-    SelectionEvent* selected = new SelectionEvent(all_points,
+    auto* selected = new SelectionEvent(all_points,
                                                   selected_actor,
                                                   selected_mapper,
                                                   id_selected_data_map,

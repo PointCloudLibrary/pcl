@@ -284,7 +284,7 @@ public:
         std::make_shared<std::pair<std::vector<std::string>, std::vector<float>>>();
     result->first.reserve(classes_.size());
     result->second.reserve(classes_.size());
-    for (std::vector<float>::const_iterator it = sqr_distances->begin();
+    for (auto it = sqr_distances->begin();
          it != sqr_distances->end();
          ++it)
       if (*it != std::numeric_limits<float>::max()) {
@@ -322,7 +322,7 @@ public:
         std::make_shared<std::pair<std::vector<std::string>, std::vector<float>>>();
     result->first.reserve(classes_.size());
     result->second.reserve(classes_.size());
-    for (std::vector<float>::const_iterator it = sqr_distances->begin();
+    for (auto it = sqr_distances->begin();
          it != sqr_distances->end();
          ++it)
       if (*it != std::numeric_limits<float>::max()) {

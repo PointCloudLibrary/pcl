@@ -18,7 +18,7 @@ pcl::cloud_composer::OrganizedSegmentationTool::performAction(
     ConstItemList input_data, PointTypeFlags::PointType type)
 {
   if (type != PointTypeFlags::NONE) {
-    switch ((std::uint8_t)type) {
+    switch (static_cast<std::uint8_t>(type)) {
     case (PointTypeFlags::XYZ):
       return this->performTemplatedAction<pcl::PointXYZ>(input_data);
     case (PointTypeFlags::XYZ | PointTypeFlags::RGB):
@@ -40,7 +40,7 @@ pcl::cloud_composer::PropertiesModel*
 pcl::cloud_composer::OrganizedSegmentationToolFactory::createToolParameterModel(
     QObject* parent)
 {
-  PropertiesModel* parameter_model = new PropertiesModel(parent);
+  auto* parameter_model = new PropertiesModel(parent);
 
   parameter_model->addProperty(
       "Min Inliers", 1000, Qt::ItemIsEditable | Qt::ItemIsEnabled);

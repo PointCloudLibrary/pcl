@@ -4,7 +4,7 @@
 #include <QDebug>
 
 pcl::cloud_composer::NormalsItem::NormalsItem (QString name, const pcl::PointCloud<pcl::Normal>::Ptr& normals_ptr, double radius)
-  : CloudComposerItem (std::move(name))
+  : CloudComposerItem (name)
   , normals_ptr_ (normals_ptr)
 
 {
@@ -22,7 +22,7 @@ pcl::cloud_composer::NormalsItem::clone () const
 {
   pcl::PointCloud<pcl::Normal>::Ptr normals_copy (new pcl::PointCloud<pcl::Normal> (*normals_ptr_));
   //Vector4f and Quaternionf do deep copies using copy constructor
-  NormalsItem* new_item = new NormalsItem (this->text (), normals_copy, 0);
+  auto* new_item = new NormalsItem (this->text (), normals_copy, 0);
   
   PropertiesModel* new_item_properties = new_item->getPropertiesModel ();
   new_item_properties->copyProperties (properties_);
@@ -37,7 +37,7 @@ pcl::cloud_composer::NormalsItem::paintView (pcl::visualization::PCLVisualizer::
   if (parent ()->type () == CLOUD_ITEM)
   {
     QVariant cloud_ptr = parent ()->data (ItemDataRole::CLOUD_BLOB);
-    pcl::PCLPointCloud2::ConstPtr cloud_blob = cloud_ptr.value<pcl::PCLPointCloud2::ConstPtr> ();
+    auto cloud_blob = cloud_ptr.value<pcl::PCLPointCloud2::ConstPtr> ();
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromPCLPointCloud2 (*cloud_blob, *cloud);
     double scale = properties_->getProperty ("Scale").toDouble ();

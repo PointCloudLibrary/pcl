@@ -24,7 +24,7 @@ pcl::cloud_composer::SanitizeCloudTool::performAction(ConstItemList input_data,
   input_item = input_data.value(0);
 
   if (input_item->type() == CloudComposerItem::CLOUD_ITEM) {
-    pcl::PCLPointCloud2::ConstPtr input_cloud =
+    auto input_cloud =
         input_item->data(ItemDataRole::CLOUD_BLOB)
             .value<pcl::PCLPointCloud2::ConstPtr>();
 
@@ -43,12 +43,12 @@ pcl::cloud_composer::SanitizeCloudTool::performAction(ConstItemList input_data,
 
     //////////////////////////////////////////////////////////////////
     // Get copies of the original origin and orientation
-    Eigen::Vector4f source_origin =
+    auto source_origin =
         input_item->data(ItemDataRole::ORIGIN).value<Eigen::Vector4f>();
-    Eigen::Quaternionf source_orientation =
+    auto source_orientation =
         input_item->data(ItemDataRole::ORIENTATION).value<Eigen::Quaternionf>();
     // Put the modified cloud into an item, stick in output
-    CloudItem* cloud_item = new CloudItem(input_item->text() + tr(" sanitized"),
+    auto* cloud_item = new CloudItem(input_item->text() + tr(" sanitized"),
                                           cloud_filtered,
                                           source_origin,
                                           source_orientation);
@@ -66,7 +66,7 @@ pcl::cloud_composer::SanitizeCloudTool::performAction(ConstItemList input_data,
 pcl::cloud_composer::PropertiesModel*
 pcl::cloud_composer::SanitizeCloudToolFactory::createToolParameterModel(QObject* parent)
 {
-  PropertiesModel* parameter_model = new PropertiesModel(parent);
+  auto* parameter_model = new PropertiesModel(parent);
 
   parameter_model->addProperty(
       "Keep Organized", false, Qt::ItemIsEditable | Qt::ItemIsEnabled);
