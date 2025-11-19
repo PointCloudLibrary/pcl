@@ -415,13 +415,10 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeEnergy
   if (nu < same_threshold_)
     nu = same_threshold_;
   const double denom = 2.0 * nu * nu;
-  double energy = 0.0;
-  for (double r : residuals.array()) {
-    const double dist2 = r * r;
-    energy += 1.0 - std::exp(-dist2 / denom);
-  }
-  return energy;
+  const Eigen::ArrayXd dist2 = residuals.array().square();
+  return (1.0 - (-dist2 / denom).exp()).sum();
 }
+
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 typename FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::VectorXd
@@ -431,14 +428,9 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeWeight
   if (nu < same_threshold_)
     nu = same_threshold_;
   const double denom = 2.0 * nu * nu;
-  VectorXd weights(residuals.size());
-  Eigen::Index idx = 0;
-  for (double r : residuals.array()) {
-    const double dist2 = r * r;
-    weights[idx++] = std::exp(-dist2 / denom);
-  }
-  return weights;
+  return (-residuals.array().square() / denom).exp().matrix();
 }
+
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 typename FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4d
