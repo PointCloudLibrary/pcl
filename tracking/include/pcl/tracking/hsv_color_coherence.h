@@ -21,8 +21,7 @@ public:
    * default to 1.0 and v_weight_ defaults to 0.0.
    */
   HSVColorCoherence()
-  : PointCoherence<PointInT>()
-  {}
+  : PointCoherence<PointInT>() {}
 
   /** \brief set the weight of coherence
    * \param[in] weight the weight of coherence.

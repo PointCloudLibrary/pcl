@@ -121,10 +121,8 @@ public:
                         bool use_fixed)
   : viewer_("PCL OpenNI Tracking Viewer")
   , device_id_(device_id)
-  , 
-   ne_(thread_nr)
-  , 
-   use_convex_hull_(use_convex_hull)
+  , ne_(thread_nr)
+  , use_convex_hull_(use_convex_hull)
   , visualize_non_downsample_(visualize_non_downsample)
   , visualize_particles_(visualize_particles)
   , downsampling_grid_size_(downsampling_grid_size)
@@ -339,7 +337,9 @@ public:
     FPS_CALC_BEGIN;
     double start = pcl::getTime();
     pcl::VoxelGrid<PointType> grid;
-    grid.setLeafSize(static_cast<float>(leaf_size), static_cast<float>(leaf_size), static_cast<float>(leaf_size));
+    grid.setLeafSize(static_cast<float>(leaf_size),
+                     static_cast<float>(leaf_size),
+                     static_cast<float>(leaf_size));
     grid.setInputCloud(cloud);
     grid.filter(result);
     double end = pcl::getTime();
@@ -549,7 +549,8 @@ public:
           double segment_distance = c[0] * c[0] + c[1] * c[1];
           for (std::size_t i = 1; i < cluster_indices.size(); i++) {
             temp_cloud.reset(new Cloud);
-            extractSegmentCluster(target_cloud, cluster_indices, static_cast<int>(i), *temp_cloud);
+            extractSegmentCluster(
+                target_cloud, cluster_indices, static_cast<int>(i), *temp_cloud);
             pcl::compute3DCentroid<RefPointType>(*temp_cloud, c);
             double distance = c[0] * c[0] + c[1] * c[1];
             if (distance < segment_distance) {

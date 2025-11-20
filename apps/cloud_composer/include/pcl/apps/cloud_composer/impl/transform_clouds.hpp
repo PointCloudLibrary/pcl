@@ -68,8 +68,7 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction(
   foreach (const CloudComposerItem* input_item, input_data) {
     qDebug() << "Transforming cloud " << input_item->getId();
     QVariant variant = input_item->data(ItemDataRole::CLOUD_TEMPLATED);
-    auto input_cloud =
-        variant.value<typename PointCloud<PointT>::Ptr>();
+    auto input_cloud = variant.value<typename PointCloud<PointT>::Ptr>();
 
     Eigen::Matrix4f transform;
     if (transform_map_.contains("AllSelectedClouds"))

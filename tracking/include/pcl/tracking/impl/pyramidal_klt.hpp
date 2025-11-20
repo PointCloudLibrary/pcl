@@ -633,8 +633,10 @@ PyramidalKLTTracker<PointInT, IntensityT>::track(
       for (unsigned int j = 0; j < max_iterations_; j++) {
         Eigen::Array2i inext_pt = next_pt.floor().cast<int>();
 
-        if (inext_pt[0] < -track_width_ || static_cast<std::uint32_t>(inext_pt[0]) >= next.width ||
-            inext_pt[1] < -track_height_ || static_cast<std::uint32_t>(inext_pt[1]) >= next.height) {
+        if (inext_pt[0] < -track_width_ ||
+            static_cast<std::uint32_t>(inext_pt[0]) >= next.width ||
+            inext_pt[1] < -track_height_ ||
+            static_cast<std::uint32_t>(inext_pt[1]) >= next.height) {
           if (level == 0)
             status[ptidx] = -1;
           break;

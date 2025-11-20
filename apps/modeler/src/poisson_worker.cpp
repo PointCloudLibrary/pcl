@@ -46,8 +46,6 @@
 pcl::modeler::PoissonReconstructionWorker::PoissonReconstructionWorker(
     const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)
 : AbstractWorker(cloud_mesh_items, parent)
-, 
- 
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////

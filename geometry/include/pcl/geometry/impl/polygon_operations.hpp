@@ -289,9 +289,7 @@ pcl::approximatePolygon2D(const typename pcl::PointCloud<PointT>::VectorType& po
   }
   else {
     // we have a new polygon in results, but inverted (clockwise <-> counter-clockwise)
-    for (auto it = result.rbegin();
-         it != result.rend();
-         ++it)
+    for (auto it = result.rbegin(); it != result.rend(); ++it)
       approx_polygon.push_back(polygon[*it]);
   }
 }

@@ -92,10 +92,10 @@ pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp()
 
   if (all_points->GetNumberOfPoints() > 0) {
     auto* selected = new SelectionEvent(all_points,
-                                                  selected_actor,
-                                                  selected_mapper,
-                                                  id_selected_data_map,
-                                                  this->CurrentRenderer);
+                                        selected_actor,
+                                        selected_mapper,
+                                        id_selected_data_map,
+                                        this->CurrentRenderer);
     this->InvokeEvent(this->selection_complete_event_, selected);
   }
 }

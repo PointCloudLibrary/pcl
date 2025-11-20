@@ -69,7 +69,6 @@ pcl::ihs::InHandScanner::InHandScanner(Base* parent)
 , integration_(new Integration())
 , mesh_processing_(new MeshProcessing())
 , mesh_model_(new Mesh())
-, 
 {
   // http://doc.qt.digia.com/qt/qmetatype.html#qRegisterMetaType
   qRegisterMetaType<pcl::ihs::InHandScanner::RunningMode>("RunningMode");
@@ -239,7 +238,8 @@ pcl::ihs::InHandScanner::reset()
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::InHandScanner::saveAs(const std::string& filename, const FileType& filetype) const
+pcl::ihs::InHandScanner::saveAs(const std::string& filename,
+                                const FileType& filetype) const
 {
   std::lock_guard<std::mutex> lock(mutex_);
   if (destructor_called_)

@@ -13,7 +13,6 @@ pcl::cloud_composer::ToolBoxModel::ToolBoxModel(QTreeView* tool_view,
 : QStandardItemModel(parent)
 , tool_view_(tool_view)
 , parameter_view_(parameter_view_)
-, 
 {}
 
 pcl::cloud_composer::ToolBoxModel::ToolBoxModel(const ToolBoxModel&)
@@ -25,8 +24,7 @@ pcl::cloud_composer::ToolBoxModel::addTool(ToolFactory* tool_factory)
 {
   // qDebug () << "Icon name:"<< tool_factory->getIconName ();
   QIcon new_tool_icon = QIcon(tool_factory->getIconName());
-  auto* new_tool_item =
-      new QStandardItem(new_tool_icon, tool_factory->getPluginName());
+  auto* new_tool_item = new QStandardItem(new_tool_icon, tool_factory->getPluginName());
   new_tool_item->setEditable(false);
 
   new_tool_item->setData(QVariant::fromValue(tool_factory), FACTORY);

@@ -398,8 +398,7 @@ void
 pcl::modeler::SceneTree::slotUpdateOnInsertOrRemove()
 {
   for (int i = 0, i_end = topLevelItemCount(); i < i_end; ++i) {
-    auto* render_window_item =
-        dynamic_cast<RenderWindowItem*>(topLevelItem(i));
+    auto* render_window_item = dynamic_cast<RenderWindowItem*>(topLevelItem(i));
     if (render_window_item == nullptr)
       continue;
 

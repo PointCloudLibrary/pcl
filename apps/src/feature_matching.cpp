@@ -166,8 +166,6 @@ ICCVTutorial<FeatureType>::ICCVTutorial(
 , source_features_(new pcl::PointCloud<FeatureType>)
 , target_features_(new pcl::PointCloud<FeatureType>)
 , correspondences_(new pcl::Correspondences)
-, 
- 
 {
   visualizer_.registerKeyboardCallback(
       &ICCVTutorial::keyboard_callback, *this, nullptr);
@@ -599,9 +597,8 @@ main(int argc, char** argv)
     keypoint_detector.reset(sift3D);
   }
   else {
-    auto* harris3D =
-        new pcl::HarrisKeypoint3D<pcl::PointXYZRGB, pcl::PointXYZI>(
-            pcl::HarrisKeypoint3D<pcl::PointXYZRGB, pcl::PointXYZI>::HARRIS);
+    auto* harris3D = new pcl::HarrisKeypoint3D<pcl::PointXYZRGB, pcl::PointXYZI>(
+        pcl::HarrisKeypoint3D<pcl::PointXYZRGB, pcl::PointXYZI>::HARRIS);
     harris3D->setNonMaxSupression(true);
     harris3D->setRadius(0.01f);
     harris3D->setRadiusSearch(0.01f);
@@ -643,8 +640,7 @@ main(int argc, char** argv)
   pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstruction;
 
   if (surface_type == 1) {
-    auto* gp3 =
-        new pcl::GreedyProjectionTriangulation<pcl::PointXYZRGBNormal>;
+    auto* gp3 = new pcl::GreedyProjectionTriangulation<pcl::PointXYZRGBNormal>;
 
     // Set the maximum distance between connected points (maximum edge length)
     gp3->setSearchRadius(0.025);

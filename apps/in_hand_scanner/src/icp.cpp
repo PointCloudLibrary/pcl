@@ -51,12 +51,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::ICP::ICP()
-: kd_tree_(new pcl::KdTreeFLANN<PointNormal>())
-,
-
-
- 
+pcl::ihs::ICP::ICP() : kd_tree_(new pcl::KdTreeFLANN<PointNormal>())
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -226,8 +221,7 @@ pcl::ihs::ICP::findTransformation(const MeshConstPtr& mesh_model,
     cloud_model_corr.clear();
     cloud_data_corr.clear();
     sw.reset();
-    for (auto it_d = cloud_data_selected->begin();
-         it_d != cloud_data_selected->end();
+    for (auto it_d = cloud_data_selected->begin(); it_d != cloud_data_selected->end();
          ++it_d) {
       // Transform the data point
       pt_d = *it_d;

@@ -55,7 +55,6 @@ pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(
 , y_max_(std::numeric_limits<double>::min())
 , z_min_(std::numeric_limits<double>::max())
 , z_max_(std::numeric_limits<double>::min())
-, 
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////

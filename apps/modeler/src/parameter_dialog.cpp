@@ -62,7 +62,7 @@ pcl::modeler::ParameterDialog::addParameter(pcl::modeler::Parameter* parameter)
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::ParameterDialog::ParameterDialog(const std::string& title,
                                                QWidget* parent)
-: QDialog(parent), 
+: QDialog(parent)
 {
   setModal(false);
   setWindowTitle(QString(title.c_str()) + " Parameters");
@@ -72,7 +72,8 @@ pcl::modeler::ParameterDialog::ParameterDialog(const std::string& title,
 int
 pcl::modeler::ParameterDialog::exec()
 {
-  pcl::modeler::ParameterModel parameterModel(static_cast<int>(name_parameter_map_.size()), 2, this);
+  pcl::modeler::ParameterModel parameterModel(
+      static_cast<int>(name_parameter_map_.size()), 2, this);
   parameter_model_ = &parameterModel;
 
   QStringList headerLabels;
@@ -85,10 +86,12 @@ pcl::modeler::ParameterDialog::exec()
 
   std::size_t currentRow = 0;
   for (const auto& name_parameter : name_parameter_map_) {
-    QModelIndex name = parameterModel.index(static_cast<int>(currentRow), 0, QModelIndex());
+    QModelIndex name = parameterModel.index(
+        static_cast<int>(currentRow), 0, QModelIndex());
     parameterModel.setData(name, QVariant(name_parameter.first.c_str()));
 
-    QModelIndex value = parameterModel.index(static_cast<int>(currentRow), 1, QModelIndex());
+    QModelIndex value = parameterModel.index(
+        static_cast<int>(currentRow), 1, QModelIndex());
     std::pair<QVariant, int> model_data = name_parameter.second->toModelData();
     parameterModel.setData(value, model_data.first, model_data.second);
 
@@ -137,7 +140,8 @@ pcl::modeler::ParameterDialog::reset()
   for (auto& name_parameter : name_parameter_map_) {
     name_parameter.second->reset();
 
-    QModelIndex value = parameter_model_->index(static_cast<int>(currentRow), 1, QModelIndex());
+    QModelIndex value =
+        parameter_model_->index(static_cast<int>(currentRow), 1, QModelIndex());
     std::pair<QVariant, int> model_data = name_parameter.second->toModelData();
     parameter_model_->setData(value, model_data.first, model_data.second);
 

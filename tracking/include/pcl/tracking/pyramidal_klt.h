@@ -85,8 +85,6 @@ public:
   , nb_levels_(nb_levels)
   , track_width_(tracking_window_width)
   , track_height_(tracking_window_height)
-  , 
-   
   {
     tracker_name_ = "PyramidalKLTTracker";
     accuracy_ = 0.1;

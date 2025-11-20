@@ -102,9 +102,8 @@ pcl::cloud_composer::MergeSelection::performTemplatedAction(
   }
   // Just concatenate for all fully selected clouds
   foreach (const CloudComposerItem* input_item, input_data) {
-    auto input_cloud =
-        input_item->data(ItemDataRole::CLOUD_TEMPLATED)
-            .value<typename PointCloud<PointT>::Ptr>();
+    auto input_cloud = input_item->data(ItemDataRole::CLOUD_TEMPLATED)
+                           .value<typename PointCloud<PointT>::Ptr>();
     *merged_cloud += *input_cloud;
   }
   CloudItem* cloud_item = CloudItem::createCloudItemFromTemplate<PointT>(

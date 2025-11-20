@@ -485,8 +485,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
 
   if (use_cache_) {
     std::pair<std::string, int> pair_model_view = std::make_pair(model.id_, view_id);
-    auto it =
-        keypoints_cache_.find(pair_model_view);
+    auto it = keypoints_cache_.find(pair_model_view);
 
     if (it != keypoints_cache_.end()) {
       keypoints_cloud = it->second;
