@@ -78,7 +78,8 @@ struct PointIHS : public pcl::ihs::_PointIHS {
     this->directions = 0;
   }
 
-  inline PointIHS(const PointIHS& other) : _PointIHS(other) {
+  inline PointIHS(const PointIHS& other) : _PointIHS(other)
+  {
     this->x = other.x;
     this->y = other.y;
     this->z = other.z;

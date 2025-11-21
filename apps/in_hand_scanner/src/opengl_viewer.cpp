@@ -63,7 +63,6 @@
 // FaceVertexMesh
 ////////////////////////////////////////////////////////////////////////////////
 
-
 : transformation(Eigen::Isometry3d::Identity())
 = default;
 
@@ -105,12 +104,9 @@ pcl::ihs::OpenGLViewer::OpenGLViewer(QWidget* parent)
 : QOpenGLWidget(parent)
 , timer_vis_(new QTimer(this))
 , colormap_(Colormap::Constant(255))
-, 
- R_cam_(1., 0., 0., 0.)
+, R_cam_(1., 0., 0., 0.)
 , t_cam_(0., 0., 0.)
 , cam_pivot_(0., 0., 0.)
-, 
- 
 {
   // Timer: Defines the update rate for the visualization
   connect(timer_vis_.get(), SIGNAL(timeout()), this, SLOT(timerCallback()));
@@ -131,11 +127,11 @@ pcl::ihs::OpenGLViewer::OpenGLViewer(QWidget* parent)
   // colormap).
   //////////////////////////////////////////////////////////////////////////////
 
-  //#include <cstdlib>
-  //#include <iomanip>
+  // #include <cstdlib>
+  // #include <iomanip>
 
-  //#include <vtkColorTransferFunction.h>
-  //#include <vtkSmartPointer.h>
+  // #include <vtkColorTransferFunction.h>
+  // #include <vtkSmartPointer.h>
 
   // int
   // main()

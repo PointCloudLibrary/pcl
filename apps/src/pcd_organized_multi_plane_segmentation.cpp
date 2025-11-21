@@ -57,9 +57,7 @@ private:
 public:
   PCDOrganizedMultiPlaneSegmentation(typename pcl::PointCloud<PointT>::ConstPtr cloud_,
                                      bool refine)
-  : viewer("Viewer")
-  , cloud(cloud_)
-  , refine_(refine)
+  : viewer("Viewer"), cloud(cloud_), refine_(refine)
   {
     viewer.setBackgroundColor(0, 0, 0);
     viewer.addCoordinateSystem(1.0, "global");

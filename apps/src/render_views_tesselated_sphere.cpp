@@ -122,10 +122,9 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
       sphere->GetPoint(ptIds_com[1], p2_com);
       sphere->GetPoint(ptIds_com[2], p3_com);
       vtkTriangle::TriangleCenter(p1_com, p2_com, p3_com, center);
-      cam_positions[i] =
-          Eigen::Vector3f(static_cast<float>(center[0]),
-                          static_cast<float>(center[1]),
-                          static_cast<float>(center[2]));
+      cam_positions[i] = Eigen::Vector3f(static_cast<float>(center[0]),
+                                         static_cast<float>(center[1]),
+                                         static_cast<float>(center[2]));
       i++;
     }
   }
@@ -134,10 +133,9 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
     for (vtkIdType i = 0; i < sphere->GetNumberOfPoints(); i++) {
       double cam_pos[3];
       sphere->GetPoint(i, cam_pos);
-      cam_positions[i] =
-          Eigen::Vector3f(static_cast<float>(cam_pos[0]),
-                          static_cast<float>(cam_pos[1]),
-                          static_cast<float>(cam_pos[2]));
+      cam_positions[i] = Eigen::Vector3f(static_cast<float>(cam_pos[0]),
+                                         static_cast<float>(cam_pos[1]),
+                                         static_cast<float>(cam_pos[2]));
     }
   }
 
@@ -449,8 +447,8 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
 
     for (int x = 0; x < 4; x++)
       for (int y = 0; y < 4; y++)
-        pose_view(x, y) = static_cast<float>(
-            transOCtoCC->GetMatrix()->GetElement(x, y));
+        pose_view(x, y) =
+            static_cast<float>(transOCtoCC->GetMatrix()->GetElement(x, y));
 
     poses_.push_back(pose_view);
   }

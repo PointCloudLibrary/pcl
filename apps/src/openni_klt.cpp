@@ -111,8 +111,7 @@ public:
   using Cloud = pcl::PointCloud<PointType>;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  OpenNIViewer(pcl::Grabber& grabber)
-  : grabber_(grabber) {}
+  OpenNIViewer(pcl::Grabber& grabber) : grabber_(grabber) {}
 
   void
   detect_keypoints(const CloudConstPtr& cloud)

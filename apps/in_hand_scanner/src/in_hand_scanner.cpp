@@ -62,8 +62,7 @@
 
 pcl::ihs::InHandScanner::InHandScanner(Base* parent)
 : Base(parent)
-, 
- input_data_processing_(new InputDataProcessing())
+, input_data_processing_(new InputDataProcessing())
 , icp_(new ICP())
 , transformation_(Eigen::Matrix4f::Identity())
 , integration_(new Integration())

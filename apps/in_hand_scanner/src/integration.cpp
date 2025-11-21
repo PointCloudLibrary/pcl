@@ -49,8 +49,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::Integration::Integration()
-: kd_tree_(new pcl::KdTreeFLANN<PointXYZ>()) {}
+pcl::ihs::Integration::Integration() : kd_tree_(new pcl::KdTreeFLANN<PointXYZ>()) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -339,8 +338,8 @@ pcl::ihs::Integration::merge(const CloudXYZRGBNormalConstPtr& cloud_data,
                                    pt_m.directions);
 
           } // dot normals
-        }   // squared distance
-      }     // !isnan && min weight
+        } // squared distance
+      } // !isnan && min weight
 
       // Connect
       // 4   2 - 1  //

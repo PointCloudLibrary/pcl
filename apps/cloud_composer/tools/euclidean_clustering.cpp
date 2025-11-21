@@ -84,10 +84,11 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction(ConstItemList input_
         filter.filter(*cloud_filtered);
 
         qDebug() << "Cluster has " << cloud_filtered->width << " data points.";
-        auto* cloud_item = new CloudItem(input_item->text() + tr("-Clstr %1").arg(cluster_count),
-                                         cloud_filtered,
-                                         source_origin,
-                                         source_orientation);
+        auto* cloud_item =
+            new CloudItem(input_item->text() + tr("-Clstr %1").arg(cluster_count),
+                          cloud_filtered,
+                          source_origin,
+                          source_orientation);
         output.append(cloud_item);
         ++cluster_count;
       }
@@ -103,9 +104,9 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction(ConstItemList input_
       qDebug() << "Cloud has " << remainder_cloud->width
                << " data points after clusters removed.";
       auto* cloud_item = new CloudItem(input_item->text() + " unclustered",
-                                            remainder_cloud,
-                                            source_origin,
-                                            source_orientation);
+                                       remainder_cloud,
+                                       source_origin,
+                                       source_orientation);
       output.push_front(cloud_item);
     }
     else

@@ -86,12 +86,12 @@ pcl::modeler::ParameterDialog::exec()
 
   std::size_t currentRow = 0;
   for (const auto& name_parameter : name_parameter_map_) {
-    QModelIndex name = parameterModel.index(
-        static_cast<int>(currentRow), 0, QModelIndex());
+    QModelIndex name =
+        parameterModel.index(static_cast<int>(currentRow), 0, QModelIndex());
     parameterModel.setData(name, QVariant(name_parameter.first.c_str()));
 
-    QModelIndex value = parameterModel.index(
-        static_cast<int>(currentRow), 1, QModelIndex());
+    QModelIndex value =
+        parameterModel.index(static_cast<int>(currentRow), 1, QModelIndex());
     std::pair<QVariant, int> model_data = name_parameter.second->toModelData();
     parameterModel.setData(value, model_data.first, model_data.second);
 

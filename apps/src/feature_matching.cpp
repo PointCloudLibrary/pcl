@@ -590,8 +590,7 @@ main(int argc, char** argv)
   pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI>::Ptr keypoint_detector;
 
   if (keypoint_type == 1) {
-    auto* sift3D =
-        new pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>;
+    auto* sift3D = new pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>;
     sift3D->setScales(0.01f, 3, 2);
     sift3D->setMinimumContrast(0.0);
     keypoint_detector.reset(sift3D);
