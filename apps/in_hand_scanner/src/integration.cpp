@@ -338,8 +338,8 @@ pcl::ihs::Integration::merge(const CloudXYZRGBNormalConstPtr& cloud_data,
                                    pt_m.directions);
 
           } // dot normals
-        } // squared distance
-      } // !isnan && min weight
+        }   // squared distance
+      }     // !isnan && min weight
 
       // Connect
       // 4   2 - 1  //
