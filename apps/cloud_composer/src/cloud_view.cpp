@@ -105,7 +105,7 @@ void
 pcl::cloud_composer::CloudView::itemChanged (QStandardItem* changed_item)
 {
   qDebug () << "Item Changed - Redrawing!";
-  auto* item = dynamic_cast<CloudComposerItem*> (changed_item);
+  CloudComposerItem* item = dynamic_cast<CloudComposerItem*> (changed_item);
   if (item)
   {
     item->paintView (vis_);
@@ -127,7 +127,7 @@ pcl::cloud_composer::CloudView::rowsInserted (const QModelIndex& parent, int sta
   for (int row = start; row <= end; ++row)
   {
     QStandardItem* new_item = parent_item->child(row);
-    auto* item = dynamic_cast<CloudComposerItem*> (new_item);
+    CloudComposerItem* item = dynamic_cast<CloudComposerItem*> (new_item);
     if (item)
       item->paintView (vis_);
     
@@ -155,7 +155,7 @@ pcl::cloud_composer::CloudView::rowsAboutToBeRemoved (const QModelIndex& parent,
     QStandardItem* item_to_remove = parent_item->child(row);
     if (item_to_remove)
       qDebug () << "Removing "<<item_to_remove->text ();
-    auto* item = dynamic_cast<CloudComposerItem*> (item_to_remove);
+    CloudComposerItem* item = dynamic_cast<CloudComposerItem*> (item_to_remove);
     if (item )
       item->removeFromView (vis_);
     

@@ -190,7 +190,7 @@ public Q_SLOTS:
    * \note The extension of the filename is ignored!
    */
   void
-  saveAs(const std::string& filename, const FileType& filetype) const;
+  saveAs(const std::string& filename, const FileType& filetype);
 
   /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
   void
@@ -272,16 +272,16 @@ private:
   VisualizationFPS visualization_fps_;
 
   /** \brief Switch between different branches of the scanning pipeline. */
-  RunningMode running_mode_{RM_UNPROCESSED};
+  RunningMode running_mode_;
 
   /** \brief The iteration of the scanning pipeline (grab - register - integrate). */
-  unsigned int iteration_{0};
+  unsigned int iteration_;
 
   /** \brief Used to get new data from the sensor. */
   GrabberPtr grabber_;
 
   /** \brief This variable is true if the grabber is starting. */
-  bool starting_grabber_{false};
+  bool starting_grabber_;
 
   /** \brief Connection of the grabber signal with the data processing thread. */
   boost::signals2::connection new_data_connection_;
@@ -305,7 +305,7 @@ private:
   MeshPtr mesh_model_;
 
   /** \brief Prevent the application to crash while closing. */
-  bool destructor_called_{false};
+  bool destructor_called_;
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW

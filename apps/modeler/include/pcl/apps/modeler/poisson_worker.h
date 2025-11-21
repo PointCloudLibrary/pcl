@@ -48,7 +48,7 @@ class PoissonReconstructionWorker : public AbstractWorker {
 public:
   PoissonReconstructionWorker(const QList<CloudMeshItem*>& cloud_mesh_items,
                               QWidget* parent = nullptr);
-  ~PoissonReconstructionWorker() override;
+  ~PoissonReconstructionWorker();
 
 protected:
   std::string
@@ -68,12 +68,12 @@ protected:
   processImpl(CloudMeshItem* cloud_mesh_item) override;
 
 private:
-  IntParameter* depth_{nullptr};
-  IntParameter* solver_divide_{nullptr};
-  IntParameter* iso_divide_{nullptr};
-  IntParameter* degree_{nullptr};
-  DoubleParameter* scale_{nullptr};
-  DoubleParameter* samples_per_node_{nullptr};
+  IntParameter* depth_;
+  IntParameter* solver_divide_;
+  IntParameter* iso_divide_;
+  IntParameter* degree_;
+  DoubleParameter* scale_;
+  DoubleParameter* samples_per_node_;
 };
 
 } // namespace modeler

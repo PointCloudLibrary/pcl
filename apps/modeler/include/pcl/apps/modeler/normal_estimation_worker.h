@@ -47,7 +47,7 @@ class NormalEstimationWorker : public AbstractWorker {
 public:
   NormalEstimationWorker(const QList<CloudMeshItem*>& cloud_mesh_items,
                          QWidget* parent = nullptr);
-  ~NormalEstimationWorker() override;
+  ~NormalEstimationWorker();
 
 protected:
   std::string
@@ -70,7 +70,7 @@ private:
   double y_min_, y_max_;
   double z_min_, z_max_;
 
-  DoubleParameter* search_radius_{nullptr};
+  DoubleParameter* search_radius_;
 };
 
 } // namespace modeler

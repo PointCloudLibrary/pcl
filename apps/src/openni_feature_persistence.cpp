@@ -44,7 +44,6 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/search/kdtree.h> // for KdTree
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -62,7 +61,7 @@ using namespace std::chrono_literals;
     double now = pcl::getTime();                                                       \
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << (_WHAT_) << "): "                             \
+      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
                 << double(count) / double(now - last) << " Hz" << std::endl;           \
       count = 0;                                                                       \
       last = now;                                                                      \
@@ -285,7 +284,7 @@ main(int argc, char** argv)
     return 1;
   }
 
-  std::string device_id;
+  std::string device_id = "";
   float subsampling_leaf_size = default_subsampling_leaf_size;
   double normal_search_radius = default_normal_search_radius;
   std::vector<double> scales_vector_double = default_scales_vector;
@@ -300,7 +299,7 @@ main(int argc, char** argv)
       argc, argv, "-normal_search_radius", normal_search_radius);
   pcl::console::parse_multiple_arguments(argc, argv, "-scales", scales_vector_double);
   for (std::size_t i = 0; i < scales_vector_double.size(); ++i)
-    scales_vector[i] = static_cast<float>(scales_vector_double[i]);
+    scales_vector[i] = float(scales_vector_double[i]);
   pcl::console::parse_argument(argc, argv, "-persistence_alpha", alpha);
   /////////////////////////////////////////////////////////////////////
 

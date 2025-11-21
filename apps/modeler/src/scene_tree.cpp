@@ -103,7 +103,7 @@ pcl::modeler::SceneTree::selectedRenderWindowItems() const
 void
 pcl::modeler::SceneTree::contextMenuEvent(QContextMenuEvent* event)
 {
-  auto* item = dynamic_cast<AbstractItem*>(currentItem());
+  AbstractItem* item = dynamic_cast<AbstractItem*>(currentItem());
   item->showContextMenu(&(event->globalPos()));
 }
 
@@ -111,7 +111,7 @@ pcl::modeler::SceneTree::contextMenuEvent(QContextMenuEvent* event)
 void
 pcl::modeler::SceneTree::slotOnItemDoubleClicked(QTreeWidgetItem* item)
 {
-  auto* abstract_item = dynamic_cast<AbstractItem*>(item);
+  AbstractItem* abstract_item = dynamic_cast<AbstractItem*>(item);
   abstract_item->showPropertyEditor();
 }
 
@@ -285,7 +285,7 @@ pcl::modeler::SceneTree::slotICPRegistration()
 
   AbstractWorker* worker = new ICPRegistrationWorker(
       result, selected_cloud_mesh_items, &MainWindow::getInstance());
-  auto* thread_controller = new ThreadController();
+  ThreadController* thread_controller = new ThreadController();
 
   QList<RenderWindowItem*> selected_render_window_items = selectedRenderWindowItems();
   for (auto& selected_render_window_item : selected_render_window_items) {
@@ -307,7 +307,7 @@ pcl::modeler::SceneTree::slotVoxelGridDownsampleFilter()
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
   AbstractWorker* worker = new VoxelGridDownampleWorker(selected_cloud_mesh_items,
                                                         &MainWindow::getInstance());
-  auto* thread_controller = new ThreadController();
+  ThreadController* thread_controller = new ThreadController();
   connect(worker,
           SIGNAL(dataUpdated(CloudMeshItem*)),
           thread_controller,
@@ -322,7 +322,7 @@ pcl::modeler::SceneTree::slotStatisticalOutlierRemovalFilter()
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
   AbstractWorker* worker = new StatisticalOutlierRemovalWorker(
       selected_cloud_mesh_items, &MainWindow::getInstance());
-  auto* thread_controller = new ThreadController();
+  ThreadController* thread_controller = new ThreadController();
   connect(worker,
           SIGNAL(dataUpdated(CloudMeshItem*)),
           thread_controller,
@@ -337,7 +337,7 @@ pcl::modeler::SceneTree::slotEstimateNormal()
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
   AbstractWorker* worker =
       new NormalEstimationWorker(selected_cloud_mesh_items, &MainWindow::getInstance());
-  auto* thread_controller = new ThreadController();
+  ThreadController* thread_controller = new ThreadController();
   connect(worker,
           SIGNAL(dataUpdated(CloudMeshItem*)),
           thread_controller,
@@ -352,7 +352,7 @@ pcl::modeler::SceneTree::slotPoissonReconstruction()
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
   AbstractWorker* worker = new PoissonReconstructionWorker(selected_cloud_mesh_items,
                                                            &MainWindow::getInstance());
-  auto* thread_controller = new ThreadController();
+  ThreadController* thread_controller = new ThreadController();
   connect(worker,
           SIGNAL(dataUpdated(CloudMeshItem*)),
           thread_controller,
@@ -398,7 +398,8 @@ void
 pcl::modeler::SceneTree::slotUpdateOnInsertOrRemove()
 {
   for (int i = 0, i_end = topLevelItemCount(); i < i_end; ++i) {
-    auto* render_window_item = dynamic_cast<RenderWindowItem*>(topLevelItem(i));
+    RenderWindowItem* render_window_item =
+        dynamic_cast<RenderWindowItem*>(topLevelItem(i));
     if (render_window_item == nullptr)
       continue;
 

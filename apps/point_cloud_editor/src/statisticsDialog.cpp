@@ -47,7 +47,7 @@ StatisticsDialog::StatisticsDialog(QWidget *)
   connect(button_box_, SIGNAL(accepted()), this, SLOT(accept()));
 
   stat_label_ = new QLabel(tr(""));
-  auto *main_layout_ = new QVBoxLayout;
+  QVBoxLayout *main_layout_ = new QVBoxLayout;
   main_layout_ -> addWidget(stat_label_);
   main_layout_ -> addWidget(button_box_);
   setLayout(main_layout_);

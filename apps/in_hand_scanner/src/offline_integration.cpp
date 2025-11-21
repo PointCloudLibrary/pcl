@@ -64,6 +64,7 @@ pcl::ihs::OfflineIntegration::OfflineIntegration(Base* parent)
 , mesh_model_(new Mesh())
 , normal_estimation_(new NormalEstimation())
 , integration_(new Integration())
+, destructor_called_(false)
 {
   normal_estimation_->setNormalEstimationMethod(NormalEstimation::AVERAGE_3D_GRADIENT);
   normal_estimation_->setMaxDepthChangeFactor(0.02f); // in meters

@@ -40,47 +40,55 @@
 
 #pragma once
 
+#include <vector>
+#include <string>
+#include <cassert>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
-#include <cassert>
-#include <string>
-#include <vector>
+class Statistics
+{
+  public:
+    /// @brief Destructor
+    virtual ~Statistics ()
+    = default;
 
-class Statistics {
-public:
-  /// @brief Destructor
-  virtual ~Statistics() = default;
+    /// @brief Returns the strings of the statistics.
+    static
+    std::string
+    getStats();
+    
+    static
+    void
+    clear();
+    
+  protected:
+    /// @brief The default constructor.
+    Statistics ()
+    = default;
 
-  /// @brief Returns the strings of the statistics.
-  static std::string
-  getStats();
+    /// @brief Copy Constructor
+    Statistics (const Statistics&)
+    {
+      assert(false); 
+    }
 
-  static void
-  clear();
+    /// @brief Equal Operator
+    virtual
+    Statistics&
+    operator= (const Statistics&)
+    {
+      assert(false); return (*this);
+    }
 
-protected:
-  /// @brief The default constructor.
-  Statistics() = default;
+    /// @brief Returns the statistics in string.
+    virtual
+    std::string
+    getStat () const = 0;
 
-  /// @brief Copy Constructor
-  Statistics(const Statistics&) { assert(false); }
-
-  /// @brief Equal Operator
-  virtual Statistics&
-  operator=(const Statistics&)
-  {
-    assert(false);
-    return *this;
-  }
-
-  /// @brief Returns the statistics in string.
-  virtual std::string
-  getStat() const = 0;
-
-  /// @brief Register a statistics
-  void
-  registerStats();
-
-private:
-  static std::vector<Statistics*> stat_vec_;
+    /// @brief Register a statistics
+    void
+    registerStats ();
+    
+  private:
+    static std::vector<Statistics*> stat_vec_;
 };

@@ -229,25 +229,25 @@ private:
   KdTreePtr kd_tree_;
 
   /** \brief Maximum squared distance below which points are averaged out. */
-  float max_squared_distance_{0.04f};
+  float max_squared_distance_;
 
   /** \brief Maximum angle between normals below which points are averaged out. In
    * degrees.
    */
-  float max_angle_{45.f};
+  float max_angle_;
 
   /** \brief Minimum weight above which points are added. */
-  float min_weight_{.3f};
+  float min_weight_;
 
   /** \brief Once a point reaches the maximum age it is decided if the point is removed
    * or kept in the mesh.
    */
-  unsigned int max_age_{30};
+  unsigned int max_age_;
 
   /** \brief A point is removed if it has not been observed from a minimum number of
    * directions.
    */
-  unsigned int min_directions_{5};
+  unsigned int min_directions_;
 };
 } // End namespace ihs
 } // End namespace pcl

@@ -12,7 +12,6 @@
 #include <pcl/keypoints/harris_3d.h>
 #include <pcl/keypoints/sift_keypoint.h>
 #include <pcl/keypoints/susan.h>
-#include <pcl/search/auto.h>
 #include <pcl/surface/mls.h>
 
 #include <memory>
@@ -87,8 +86,11 @@ private:
     pcl::PointCloud<int> filtered_keypoints;
     // create a search object
     typename pcl::search::Search<PointInT>::Ptr tree;
-    tree.reset(pcl::search::autoSelectMethod<PointInT>(
-        input, false, pcl::search::Purpose::radius_search));
+    if (input->isOrganized())
+      tree.reset(new pcl::search::OrganizedNeighbor<PointInT>());
+    else
+      tree.reset(new pcl::search::KdTree<PointInT>(false));
+    tree->setInputCloud(input);
 
     neighborhood_indices_.reset(new std::vector<pcl::Indices>);
     neighborhood_indices_->resize(keypoints_cloud->size());

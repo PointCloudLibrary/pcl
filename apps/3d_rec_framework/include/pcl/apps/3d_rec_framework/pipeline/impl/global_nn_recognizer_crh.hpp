@@ -22,7 +22,11 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::getP
     using mv_pair = std::pair<std::string, int>;
     mv_pair pair_model_view = std::make_pair(model.id_, view_id);
 
-    auto it = poses_cache_.find(pair_model_view);
+    std::map<mv_pair,
+             Eigen::Matrix4f,
+             std::less<>,
+             Eigen::aligned_allocator<std::pair<const mv_pair, Eigen::Matrix4f>>>::
+        iterator it = poses_cache_.find(pair_model_view);
 
     if (it != poses_cache_.end()) {
       pose_matrix = it->second;

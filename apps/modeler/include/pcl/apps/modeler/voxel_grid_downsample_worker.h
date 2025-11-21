@@ -47,7 +47,7 @@ class VoxelGridDownampleWorker : public AbstractWorker {
 public:
   VoxelGridDownampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items,
                            QWidget* parent = nullptr);
-  ~VoxelGridDownampleWorker() override;
+  ~VoxelGridDownampleWorker();
 
 protected:
   std::string
@@ -70,9 +70,9 @@ private:
   double y_min_, y_max_;
   double z_min_, z_max_;
 
-  DoubleParameter* leaf_size_x_{nullptr};
-  DoubleParameter* leaf_size_y_{nullptr};
-  DoubleParameter* leaf_size_z_{nullptr};
+  DoubleParameter* leaf_size_x_;
+  DoubleParameter* leaf_size_y_;
+  DoubleParameter* leaf_size_z_;
 };
 
 } // namespace modeler

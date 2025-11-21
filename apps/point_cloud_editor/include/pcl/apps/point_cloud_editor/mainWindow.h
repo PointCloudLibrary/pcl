@@ -42,201 +42,201 @@
 
 #pragma once
 
-#include <pcl/apps/point_cloud_editor/localTypes.h>
-
-#include <QActionGroup>
+#include <QtGui>
 #include <QMainWindow>
+#include <QActionGroup>
+#include <QSpinBox>
+#include <QSlider>
+#include <QMessageBox>
 #include <QMenu>
 #include <QMenuBar>
-#include <QMessageBox>
-#include <QSlider>
-#include <QSpinBox>
-#include <QtGui>
 #include <QToolBar>
+#include <pcl/apps/point_cloud_editor/localTypes.h>
 
 // Forward declaration to prevent circular inclusion
 class CloudEditorWidget;
 
 /// @brief the class for point cloud editor
-class MainWindow : public QMainWindow {
-  Q_OBJECT
+class MainWindow : public QMainWindow
+{
+   Q_OBJECT
 
-public:
-  /// @brief Constructor
-  MainWindow();
+  public:
+    /// @brief Constructor
+    MainWindow ();
+    
+    /// @brief Constructor
+    /// @param argc The number of c-strings to be expected in argv
+    /// @param argv An array of c-strings.  The zero entry is expected to be
+    /// the name of the application.  Any additional strings will be interpreted
+    /// as filenames designating point clouds to be loaded.
+    MainWindow (int argc, char **argv);
 
-  /// @brief Constructor
-  /// @param argc The number of c-strings to be expected in argv
-  /// @param argv An array of c-strings.  The zero entry is expected to be
-  /// the name of the application.  Any additional strings will be interpreted
-  /// as filenames designating point clouds to be loaded.
-  MainWindow(int argc, char** argv);
+    /// @brief Destructor
+    ~MainWindow () override;
 
-  /// @brief Destructor
-  ~MainWindow() override;
+    /// @brief Increase the value of the spinbox by 1.
+    void
+    increaseSpinBoxValue ();
 
-  /// @brief Increase the value of the spinbox by 1.
-  void
-  increaseSpinBoxValue();
+    /// @brief Decrease the value of the spinbox by 1.
+    void
+    decreaseSpinBoxValue ();
 
-  /// @brief Decrease the value of the spinbox by 1.
-  void
-  decreaseSpinBoxValue();
+    /// @brief Gets the value of the spinbox.
+    int
+    getSpinBoxValue();
 
-  /// @brief Gets the value of the spinbox.
-  int
-  getSpinBoxValue();
+    /// @brief Increase the value of the selected pts size spinbox by 1.
+    void
+    increaseSelectedSpinBoxValue ();
 
-  /// @brief Increase the value of the selected pts size spinbox by 1.
-  void
-  increaseSelectedSpinBoxValue();
+    /// @brief Decrease the value of the selected pts size  spinbox by 1.
+    void
+    decreaseSelectedSpinBoxValue ();
 
-  /// @brief Decrease the value of the selected pts size  spinbox by 1.
-  void
-  decreaseSelectedSpinBoxValue();
+    /// @brief Gets the value of the selected pts size  spinbox.
+    int
+    getSelectedSpinBoxValue ();
 
-  /// @brief Gets the value of the selected pts size  spinbox.
-  int
-  getSelectedSpinBoxValue();
+  private Q_SLOTS:
+    void
+    about ();
 
-private Q_SLOTS:
-  void
-  about();
+    void
+    help ();
 
-  void
-  help();
+  private:
+    /// Initialization function.  This handles the initialization of the widget,
+    /// menus, actions, etc.
+    void
+    initWindow ();
+    
+    /// create actions which are connected to file menus
+    void 
+    createActions ();
 
-private:
-  /// Initialization function.  This handles the initialization of the widget,
-  /// menus, actions, etc.
-  void
-  initWindow();
+    /// create menus such as file and help
+    void
+    createMenus ();
 
-  /// create actions which are connected to file menus
-  void
-  createActions();
+    /// create buttons in the tool bar
+    void
+    createToolBars ();
 
-  /// create menus such as file and help
-  void
-  createMenus();
+    /// create spin boxes used in the tool bar.
+    void
+    createSpinBoxes ();
 
-  /// create buttons in the tool bar
-  void
-  createToolBars();
+    /// create sliders used in the tool bar.
+    void
+    createSliders ();
 
-  /// create spin boxes used in the tool bar.
-  void
-  createSpinBoxes();
+    /// the cloud editor GL widget
+    CloudEditorWidget *cloud_editor_widget_;
 
-  /// create sliders used in the tool bar.
-  void
-  createSliders();
+    /// the action group for making actions checkable.
+    QActionGroup* action_group_;
 
-  /// the cloud editor GL widget
-  CloudEditorWidget* cloud_editor_widget_;
+    /// action for exit the cloud editor
+    QAction *exit_action_;
 
-  /// the action group for making actions checkable.
-  QActionGroup* action_group_;
+    /// action for opening file
+    QAction *open_action_;
 
-  /// action for exit the cloud editor
-  QAction* exit_action_;
+    /// action for saving file
+    QAction *save_action_;
 
-  /// action for opening file
-  QAction* open_action_;
+    /// action for copying selected points
+    QAction *copy_action_;
 
-  /// action for saving file
-  QAction* save_action_;
+    /// action for pasting copied points
+    QAction *paste_action_;
 
-  /// action for copying selected points
-  QAction* copy_action_;
+    /// action for cutting selected points
+    QAction *cut_action_;
 
-  /// action for pasting copied points
-  QAction* paste_action_;
+    /// action for deleting selected points
+    QAction *delete_action_;
 
-  /// action for cutting selected points
-  QAction* cut_action_;
+    /// action for viewing the software information
+    QAction *about_action_;
 
-  /// action for deleting selected points
-  QAction* delete_action_;
+    /// action for viewing the software use/control information
+    QAction *help_action_;
 
-  /// action for viewing the software information
-  QAction* about_action_;
+    /// action for toggling the pseudo distance display
+    QAction *toggle_blend_action_;
 
-  /// action for viewing the software use/control information
-  QAction* help_action_;
+    /// action for switching to view mode
+    QAction *view_action_;
 
-  /// action for toggling the pseudo distance display
-  QAction* toggle_blend_action_;
+    /// action for undo
+    QAction *undo_action_;
 
-  /// action for switching to view mode
-  QAction* view_action_;
+    /// action for point selection
+    QAction *select_action_;
 
-  /// action for undo
-  QAction* undo_action_;
+    /// action for 2D point selection
+    QAction *select_2D_action_;
 
-  /// action for point selection
-  QAction* select_action_;
+    /// action for 3D point selection
+    //QAction *select_3D_action_;
 
-  /// action for 2D point selection
-  QAction* select_2D_action_;
+    /// action for box edit
+    QAction *box_edit_action_;
 
-  /// action for 3D point selection
-  // QAction *select_3D_action_;
+    /// action for invert selection
+    QAction *invert_select_action_;
 
-  /// action for box edit
-  QAction* box_edit_action_;
+    /// action for transforming the cloud
+    QAction *transform_action_;
 
-  /// action for invert selection
-  QAction* invert_select_action_;
+    /// action for denoising the cloud
+    QAction *denoise_action_;
 
-  /// action for transforming the cloud
-  QAction* transform_action_;
+    /// action for showing the statistics of the editor
+    QAction *show_stat_action_;
 
-  /// action for denoising the cloud
-  QAction* denoise_action_;
+    /// the file menu
+    QMenu *file_menu_;
 
-  /// action for showing the statistics of the editor
-  QAction* show_stat_action_;
+    /// the menu for editing tools
+    QMenu *edit_menu_;
 
-  /// the file menu
-  QMenu* file_menu_;
+    /// the menu for display options
+    QMenu *display_menu_;
 
-  /// the menu for editing tools
-  QMenu* edit_menu_;
+    /// the menu for visualization tools
+    QMenu *view_menu_;
 
-  /// the menu for display options
-  QMenu* display_menu_;
+    /// the menu for select tools
+    QMenu *select_menu_;
 
-  /// the menu for visualization tools
-  QMenu* view_menu_;
+    /// the menu for other algorithmic tools
+    QMenu *tool_menu_;
 
-  /// the menu for select tools
-  QMenu* select_menu_;
+    /// the help menu
+    QMenu *help_menu_;
 
-  /// the menu for other algorithmic tools
-  QMenu* tool_menu_;
+    /// the spin box for adjusting point size.
+    QSpinBox *point_size_spin_box_;
 
-  /// the help menu
-  QMenu* help_menu_;
+    /// the spin box for adjusting the size of the selected point.
+    QSpinBox *selected_point_size_spin_box_;
 
-  /// the spin box for adjusting point size.
-  QSpinBox* point_size_spin_box_;
+    /// the tool bar containing all the cloud editing buttons.
+    QToolBar *edit_tool_bar_;
 
-  /// the spin box for adjusting the size of the selected point.
-  QSpinBox* selected_point_size_spin_box_;
+    /// the tool bar containing all the visualization function buttons
+    QToolBar *view_tool_bar_;
 
-  /// the tool bar containing all the cloud editing buttons.
-  QToolBar* edit_tool_bar_;
+    /// the width of the main window.
+    int window_width_;
 
-  /// the tool bar containing all the visualization function buttons
-  QToolBar* view_tool_bar_;
+    /// the height of the main window.
+    int window_height_;
 
-  /// the width of the main window.
-  int window_width_;
-
-  /// the height of the main window.
-  int window_height_;
-
-  /// the slider used for adjusting moving speed.
-  QSlider* move_speed_slider_;
+    /// the slider used for adjusting moving speed.
+     QSlider *move_speed_slider_;
 };

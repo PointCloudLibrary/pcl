@@ -224,8 +224,8 @@ PCDVideoPlayer::selectFilesButtonPressed()
     return;
   }
 
-  for (const auto& qt_pcd_file : qt_pcd_files) {
-    pcd_files_.push_back(qt_pcd_file.toStdString());
+  for (int i = 0; i < qt_pcd_files.size(); i++) {
+    pcd_files_.push_back(qt_pcd_files.at(i).toStdString());
   }
 
   current_frame_ = 0;

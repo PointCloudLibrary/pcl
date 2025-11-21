@@ -40,7 +40,7 @@
 
 #include <pcl/apps/point_cloud_editor/denoiseParameterForm.h>
 
-DenoiseParameterForm::DenoiseParameterForm ()
+DenoiseParameterForm::DenoiseParameterForm () : ok_(false)
 {
   mean_K_line_ = new QLineEdit;
   std_dev_mul_thresh_line_ = new QLineEdit;

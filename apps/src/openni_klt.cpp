@@ -56,7 +56,7 @@
     double now = pcl::getTime();                                                       \
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << (_WHAT_) << "): "                             \
+      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
                 << double(count) / double(now - last) << " Hz" << std::endl;           \
       count = 0;                                                                       \
       last = now;                                                                      \
@@ -111,7 +111,9 @@ public:
   using Cloud = pcl::PointCloud<PointType>;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  OpenNIViewer(pcl::Grabber& grabber) : grabber_(grabber) {}
+  OpenNIViewer(pcl::Grabber& grabber)
+  : grabber_(grabber), rgb_data_(nullptr), rgb_data_size_(0), counter_(0)
+  {}
 
   void
   detect_keypoints(const CloudConstPtr& cloud)
@@ -286,13 +288,13 @@ public:
 
   CloudConstPtr cloud_;
   openni_wrapper::Image::Ptr image_;
-  unsigned char* rgb_data_{nullptr};
-  unsigned rgb_data_size_{0};
+  unsigned char* rgb_data_;
+  unsigned rgb_data_size_;
   typename pcl::tracking::PyramidalKLTTracker<PointType>::Ptr tracker_;
   pcl::PointCloud<pcl::PointUV>::ConstPtr keypoints_;
   pcl::PointIndicesConstPtr points_;
   pcl::shared_ptr<const std::vector<int>> points_status_;
-  int counter_{0};
+  int counter_;
 };
 
 // Create the PCLVisualizer object

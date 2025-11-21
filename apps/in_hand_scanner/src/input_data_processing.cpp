@@ -46,6 +46,22 @@
 
 pcl::ihs::InputDataProcessing::InputDataProcessing()
 : normal_estimation_(new NormalEstimation())
+, x_min_(-15.f)
+, x_max_(15.f)
+, y_min_(-15.f)
+, y_max_(15.f)
+, z_min_(48.f)
+, z_max_(70.f)
+, h_min_(210.f)
+, h_max_(270.f)
+, s_min_(0.2f)
+, s_max_(1.f)
+, v_min_(0.2f)
+, v_max_(1.f)
+, hsv_inverted_(false)
+, hsv_enabled_(true)
+, size_dilate_(3)
+, size_erode_(3)
 {
   // Normal estimation
   normal_estimation_->setNormalEstimationMethod(NormalEstimation::AVERAGE_3D_GRADIENT);
@@ -204,8 +220,8 @@ pcl::ihs::InputDataProcessing::calculateNormals(const CloudXYZRGBAConstPtr& clou
   cloud_out->height = cloud_in->height;
   cloud_out->is_dense = false;
 
-  auto it_n = cloud_normals->begin();
-  auto it_out = cloud_out->begin();
+  CloudNormals::const_iterator it_n = cloud_normals->begin();
+  CloudXYZRGBNormal::iterator it_out = cloud_out->begin();
 
   PointXYZRGBNormal invalid_pt;
   invalid_pt.x = invalid_pt.y = invalid_pt.z = std::numeric_limits<float>::quiet_NaN();

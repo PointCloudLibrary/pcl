@@ -144,7 +144,7 @@ public:
         ne.setInputCloud(prev_cloud);
         ne.compute(*normal_cloud);
         double normal_end = pcl::getTime();
-        std::cout << "Normal Estimation took " << (normal_end - normal_start)
+        std::cout << "Normal Estimation took " << double(normal_end - normal_start)
                   << std::endl;
 
         double plane_extract_start = pcl::getTime();
@@ -153,8 +153,9 @@ public:
         mps.segmentAndRefine(regions);
         double plane_extract_end = pcl::getTime();
         std::cout << "Plane extraction took "
-                  << (plane_extract_end - plane_extract_start) << std::endl;
-        std::cout << "Frame took " << (plane_extract_end - normal_start) << std::endl;
+                  << double(plane_extract_end - plane_extract_start) << std::endl;
+        std::cout << "Frame took " << double(plane_extract_end - normal_start)
+                  << std::endl;
 
         pcl::PointCloud<PointT>::Ptr cluster(new pcl::PointCloud<PointT>);
 

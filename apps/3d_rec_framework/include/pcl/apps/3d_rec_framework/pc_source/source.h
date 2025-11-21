@@ -51,7 +51,8 @@ public:
     if (resolution <= 0)
       return assembled_;
 
-    auto it = voxelized_assembled_.find(resolution);
+    typename std::map<float, PointTPtrConst>::iterator it =
+        voxelized_assembled_.find(resolution);
     if (it == voxelized_assembled_.end()) {
       PointTPtr voxelized(new pcl::PointCloud<PointT>);
       pcl::VoxelGrid<PointT> grid_;

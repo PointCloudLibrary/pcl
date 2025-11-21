@@ -52,7 +52,7 @@
     double now = pcl::getTime();                                                       \
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << (_WHAT_) << "): "                             \
+      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
                 << double(count) / double(now - last) << " Hz" << std::endl;           \
       count = 0;                                                                       \
       last = now;                                                                      \
@@ -187,7 +187,7 @@ main(int argc, char** argv)
     return 1;
   }
 
-  std::string device_id;
+  std::string device_id = "";
   float min_v = 0.0f, max_v = 5.0f;
   std::string field_name = "z";
   float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;

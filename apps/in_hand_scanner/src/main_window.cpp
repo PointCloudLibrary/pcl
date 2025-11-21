@@ -66,14 +66,14 @@ pcl::ihs::MainWindow::MainWindow(QWidget* parent)
 {
   ui_->setupUi(this);
 
-  auto* spacer = new QWidget();
+  QWidget* spacer = new QWidget();
   spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   ui_->toolBar->insertWidget(ui_->actionHelp, spacer);
 
   constexpr double max = std::numeric_limits<double>::max();
 
   // In hand scanner
-  auto* layout = new QHBoxLayout(ui_->placeholder_in_hand_scanner);
+  QHBoxLayout* layout = new QHBoxLayout(ui_->placeholder_in_hand_scanner);
   layout->addWidget(ihs_);
   // ui_->centralWidget->setLayout (layout);
 

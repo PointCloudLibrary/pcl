@@ -108,7 +108,7 @@ char usage[] = "\n"
     double now = pcl::getTime();                                                       \
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << (_WHAT_) << "): "                             \
+      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
                 << double(count) / double(now - last) << " Hz" << std::endl;           \
       count = 0;                                                                       \
       last = now;                                                                      \
@@ -351,7 +351,7 @@ main(int argc, char** argv)
 
       // apply profile settings
       pointResolution = selectedProfile.pointResolution;
-      octreeResolution = static_cast<float>(selectedProfile.octreeResolution);
+      octreeResolution = float(selectedProfile.octreeResolution);
       doVoxelGridDownDownSampling = selectedProfile.doVoxelGridDownSampling;
       iFrameRate = selectedProfile.iFrameRate;
       doColorEncoding = selectedProfile.doColorEncoding;
@@ -415,7 +415,7 @@ main(int argc, char** argv)
     if (bEnDecode) {
       // ENCODING
       try {
-        boost::asio::io_context io_service;
+        boost::asio::io_service io_service;
         tcp::endpoint endpoint(tcp::v4(), 6666);
         tcp::acceptor acceptor(io_service, endpoint);
 
@@ -423,7 +423,7 @@ main(int argc, char** argv)
 
         std::cout << "Waiting for connection.." << std::endl;
 
-        acceptor.accept(socketStream.rdbuf()->socket());
+        acceptor.accept(*socketStream.rdbuf());
 
         std::cout << "Connected!" << std::endl;
 

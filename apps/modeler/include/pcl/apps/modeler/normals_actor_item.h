@@ -76,8 +76,8 @@ protected:
   setProperties() override;
 
 private:
-  double level_{10};
-  double scale_{0.1};
+  double level_;
+  double scale_;
 };
 
 } // namespace modeler

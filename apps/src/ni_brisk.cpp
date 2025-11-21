@@ -107,8 +107,8 @@ public:
   inline PointT
   bilinearInterpolation(const CloudConstPtr& cloud, float x, float y)
   {
-    int u = static_cast<int>(x);
-    int v = static_cast<int>(y);
+    int u = int(x);
+    int v = int(y);
 
     PointT pt;
     pt.x = pt.y = pt.z = 0;
@@ -118,7 +118,7 @@ public:
     const PointT& p3 = (*cloud)(u, v + 1);
     const PointT& p4 = (*cloud)(u + 1, v + 1);
 
-    float fx = x - static_cast<float>(u), fy = y - static_cast<float>(v);
+    float fx = x - float(u), fy = y - float(v);
     float fx1 = 1.0f - fx, fy1 = 1.0f - fy;
 
     float w1 = fx1 * fy1, w2 = fx * fy1, w3 = fx1 * fy, w4 = fx * fy;
@@ -236,8 +236,8 @@ public:
 
         image_viewer_.removeLayer(getStrBool(keypts));
         for (std::size_t i = 0; i < keypoints->size(); ++i) {
-          int u = static_cast<int>((*keypoints)[i].x);
-          int v = static_cast<int>((*keypoints)[i].y);
+          int u = int((*keypoints)[i].x);
+          int v = int((*keypoints)[i].y);
           image_viewer_.markPoint(u,
                                   v,
                                   visualization::red_color,

@@ -46,67 +46,76 @@
 #include <cassert>
 
 /// @brief the parent class of all the select and the transform tool classes
-class ToolInterface {
-public:
-  /// @brief Destructor.
-  virtual ~ToolInterface() = default;
+class ToolInterface
+{
+  public:
+    /// @brief Destructor.
+    virtual ~ToolInterface ()
+    = default;
 
-  /// @brief set the initial state of the tool from the screen coordinates
-  /// of the mouse as well as the value of the modifier.
-  /// @param x the x coordinate of the mouse screen coordinates.
-  /// @param y the y coordinate of the mouse screen coordinates.
-  /// @param modifiers The keyboard modifiers. We use modifier to change the
-  /// behavior of a tool. Values of a modifier can be control key, alt key
-  /// shift key, or no key is pressed. See the subclasses of this class
-  /// for specific usages of the modifiers.
-  /// @param buttons The state of the mouse buttons
-  virtual void
-  start(int x, int y, BitMask modifiers, BitMask buttons) = 0;
+    /// @brief set the initial state of the tool from the screen coordinates
+    /// of the mouse as well as the value of the modifier.
+    /// @param x the x coordinate of the mouse screen coordinates.
+    /// @param y the y coordinate of the mouse screen coordinates.
+    /// @param modifiers The keyboard modifiers. We use modifier to change the
+    /// behavior of a tool. Values of a modifier can be control key, alt key
+    /// shift key, or no key is pressed. See the subclasses of this class
+    /// for specific usages of the modifiers.
+    /// @param buttons The state of the mouse buttons
+    virtual
+    void
+    start (int x, int y, BitMask modifiers, BitMask buttons) = 0;
 
-  /// @brief update the state of the tool from the screen coordinates
-  /// of the mouse as well as the value of the modifier.
-  /// @param x the x coordinate of the mouse screen coordinates.
-  /// @param y the y coordinate of the mouse screen coordinates.
-  /// @param modifiers The keyboard modifiers. We use modifier to change the
-  /// behavior of a tool. Values of a modifier can be control key, alt key
-  /// shift key, or no key is pressed. See the subclasses of this class
-  /// for specific usages of the modifiers.
-  /// @param buttons The state of the mouse buttons
-  virtual void
-  update(int x, int y, BitMask modifiers, BitMask buttons) = 0;
+    /// @brief update the state of the tool from the screen coordinates
+    /// of the mouse as well as the value of the modifier.
+    /// @param x the x coordinate of the mouse screen coordinates.
+    /// @param y the y coordinate of the mouse screen coordinates.
+    /// @param modifiers The keyboard modifiers. We use modifier to change the
+    /// behavior of a tool. Values of a modifier can be control key, alt key
+    /// shift key, or no key is pressed. See the subclasses of this class
+    /// for specific usages of the modifiers.
+    /// @param buttons The state of the mouse buttons
+    virtual
+    void
+    update (int x, int y, BitMask modifiers, BitMask buttons) = 0;
 
-  /// @brief set final state of the tool from the screen coordinates
-  /// of the mouse as well as the value of the modifier. Also performs the
-  /// corresponding functionalities of the tool.
-  /// @param x the x coordinate of the mouse screen coordinates.
-  /// @param y the y coordinate of the mouse screen coordinates.
-  /// @param modifiers The keyboard modifiers. We use modifier to change the
-  /// behavior of a tool. Values of a modifier can be control key, alt key
-  /// shift key, or no key is pressed. See the subclasses of this class
-  /// for specific usages of the modifiers.
-  /// @param buttons The state of the mouse buttons
-  virtual void
-  end(int x, int y, BitMask modifiers, BitMask buttons) = 0;
+    /// @brief set final state of the tool from the screen coordinates
+    /// of the mouse as well as the value of the modifier. Also performs the
+    /// corresponding functionalities of the tool.
+    /// @param x the x coordinate of the mouse screen coordinates.
+    /// @param y the y coordinate of the mouse screen coordinates.
+    /// @param modifiers The keyboard modifiers. We use modifier to change the
+    /// behavior of a tool. Values of a modifier can be control key, alt key
+    /// shift key, or no key is pressed. See the subclasses of this class
+    /// for specific usages of the modifiers.
+    /// @param buttons The state of the mouse buttons
+    virtual
+    void
+    end (int x, int y, BitMask modifiers, BitMask buttons) = 0;
+  
+    /// @brief a rendering facility used by a tool. For instance, if this tool
+    /// is a selection tool, this function draws highlighted points as well as
+    /// selection region, e.g., rubberband, box, etc.
+    virtual
+    void
+    draw () const = 0;
+    
+  protected:
+    /// @brief Default constructor
+    ToolInterface ()
+    = default;
 
-  /// @brief a rendering facility used by a tool. For instance, if this tool
-  /// is a selection tool, this function draws highlighted points as well as
-  /// selection region, e.g., rubberband, box, etc.
-  virtual void
-  draw() const = 0;
+  private:
+    /// @brief Copy constructor - tools are non-copyable
+    ToolInterface (const ToolInterface&)
+    {
+      assert(false);
+    }
 
-protected:
-  /// @brief Default constructor
-  ToolInterface() = default;
-
-private:
-  /// @brief Copy constructor - tools are non-copyable
-  ToolInterface(const ToolInterface&) { assert(false); }
-
-  /// @brief Equal operator - tools are non-copyable
-  ToolInterface&
-  operator=(const ToolInterface&)
-  {
-    assert(false);
-    return *this;
-  }
+    /// @brief Equal operator - tools are non-copyable
+    ToolInterface&
+    operator= (const ToolInterface&)
+    {
+      assert(false); return (*this);
+    }
 };

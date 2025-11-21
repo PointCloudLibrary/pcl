@@ -152,7 +152,7 @@ pcl::modeler::CloudMeshItem::prepareContextMenu(QMenu* menu) const
 void
 pcl::modeler::CloudMeshItem::createChannels()
 {
-  auto* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
   vtkRenderWindow* win =
       getRenderWindowCompat(*(render_window_item->getRenderWindow()));
 
@@ -161,7 +161,7 @@ pcl::modeler::CloudMeshItem::createChannels()
   addChild(new SurfaceActorItem(this, cloud_mesh_, win));
 
   for (int i = 0, i_end = childCount(); i < i_end; ++i) {
-    auto* child_item = dynamic_cast<ChannelActorItem*>(child(i));
+    ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
     child_item->init();
   }
 
@@ -177,11 +177,11 @@ pcl::modeler::CloudMeshItem::updateChannels()
   cloud_mesh_->updateVtkPolygons();
 
   for (int i = 0, i_end = childCount(); i < i_end; ++i) {
-    auto* child_item = dynamic_cast<ChannelActorItem*>(child(i));
+    ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
     child_item->update();
   }
 
-  auto* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
   render_window_item->getRenderWindow()->updateAxes();
 }
 
@@ -236,9 +236,9 @@ pcl::modeler::CloudMeshItem::setProperties()
 void
 pcl::modeler::CloudMeshItem::updateRenderWindow()
 {
-  auto* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
   for (int i = 0, i_end = childCount(); i < i_end; ++i) {
-    auto* child_item = dynamic_cast<ChannelActorItem*>(child(i));
+    ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
     child_item->switchRenderWindow(
         getRenderWindowCompat(*render_window_item->getRenderWindow()));
   }

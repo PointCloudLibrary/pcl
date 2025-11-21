@@ -302,7 +302,7 @@ protected:
   /** \brief Please have a look at the documentation of calcFPS. */
   class FPS {
   public:
-    FPS() : {}
+    FPS() : fps_(0.) {}
 
     inline double&
     value()
@@ -327,7 +327,7 @@ protected:
     ~FPS() = default;
 
   private:
-    double fps_{0.};
+    double fps_;
   };
 
   /** Measures the performance of the current thread (selected by passing the
@@ -391,7 +391,7 @@ private:
 
   /** \brief Draw a wireframe box. */
   void
-  drawBox() const;
+  drawBox();
 
   /** \see http://doc.qt.digia.com/qt/qglwidget.html#initializeGL */
   void
@@ -431,25 +431,25 @@ private:
   Colormap colormap_;
 
   /** \brief The visibility confidence is normalized with this value. */
-  float vis_conf_norm_{1};
+  float vis_conf_norm_;
 
   /** \brief Meshes stored for visualization. */
   FaceVertexMeshMap drawn_meshes_;
 
   /** \brief How to draw the mesh. */
-  MeshRepresentation mesh_representation_{MR_POINTS};
+  MeshRepresentation mesh_representation_;
 
   /** \brief How to color the shapes. */
-  Coloring coloring_{COL_RGB};
+  Coloring coloring_;
 
   /** \brief A box is drawn if this value is true. */
-  bool draw_box_{false};
+  bool draw_box_;
 
   /** \brief Coefficients of the drawn box. */
   BoxCoefficients box_coefficients_;
 
   /** \brief Scaling factor to convert from meters to the unit of the drawn files. */
-  double scaling_factor_{1.};
+  double scaling_factor_;
 
   /** \brief Rotation of the camera. */
   Eigen::Quaterniond R_cam_;
@@ -465,13 +465,13 @@ private:
 
   /** \brief Set to true right after the mouse got pressed and false if the mouse got
    * moved. */
-  bool mouse_pressed_begin_{false};
+  bool mouse_pressed_begin_;
 
   /** \brief Mouse x-position of the previous mouse move event. */
-  int x_prev_{0};
+  int x_prev_;
 
   /** \brief Mouse y-position of the previous mouse move event. */
-  int y_prev_{0};
+  int y_prev_;
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW

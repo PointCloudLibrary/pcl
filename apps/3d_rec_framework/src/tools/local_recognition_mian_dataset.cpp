@@ -102,7 +102,7 @@ recognizeAndVisualize(
     for (std::size_t i = 0; i < files.size(); i++) {
       std::cout << files[i] << std::endl;
       if (scene != -1)
-        if (static_cast<std::size_t>(scene) != i)
+        if ((std::size_t)scene != i)
           continue;
 
       const std::string file = ply_files_dir.string() + files[i];

@@ -82,7 +82,7 @@
     double end_time = pcl::getTime();                                                  \
     static unsigned count = 0;                                                         \
     if (++count == 10) {                                                               \
-      std::cout << "Average framerate(" << (_WHAT_) << "): "                             \
+      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
                 << double(count) / double(duration) << " Hz" << std::endl;             \
       count = 0;                                                                       \
       duration = 0.0;                                                                  \
@@ -121,7 +121,9 @@ public:
                         bool use_fixed)
   : viewer_("PCL OpenNI Tracking Viewer")
   , device_id_(device_id)
+  , new_cloud_(false)
   , ne_(thread_nr)
+  , counter_(0)
   , use_convex_hull_(use_convex_hull)
   , visualize_non_downsample_(visualize_non_downsample)
   , visualize_particles_(visualize_particles)
@@ -337,9 +339,7 @@ public:
     FPS_CALC_BEGIN;
     double start = pcl::getTime();
     pcl::VoxelGrid<PointType> grid;
-    grid.setLeafSize(static_cast<float>(leaf_size),
-                     static_cast<float>(leaf_size),
-                     static_cast<float>(leaf_size));
+    grid.setLeafSize(float(leaf_size), float(leaf_size), float(leaf_size));
     grid.setInputCloud(cloud);
     grid.filter(result);
     double end = pcl::getTime();
@@ -549,12 +549,11 @@ public:
           double segment_distance = c[0] * c[0] + c[1] * c[1];
           for (std::size_t i = 1; i < cluster_indices.size(); i++) {
             temp_cloud.reset(new Cloud);
-            extractSegmentCluster(
-                target_cloud, cluster_indices, static_cast<int>(i), *temp_cloud);
+            extractSegmentCluster(target_cloud, cluster_indices, int(i), *temp_cloud);
             pcl::compute3DCentroid<RefPointType>(*temp_cloud, c);
             double distance = c[0] * c[0] + c[1] * c[1];
             if (distance < segment_distance) {
-              segment_index = static_cast<int>(i);
+              segment_index = int(i);
               segment_distance = distance;
             }
           }
@@ -631,10 +630,10 @@ public:
 
   std::string device_id_;
   std::mutex mtx_;
-  bool new_cloud_{false};
+  bool new_cloud_;
   pcl::NormalEstimationOMP<PointType, pcl::Normal> ne_; // to store threadpool
   ParticleFilter::Ptr tracker_;
-  int counter_{0};
+  int counter_;
   bool use_convex_hull_;
   bool visualize_non_downsample_;
   bool visualize_particles_;
@@ -670,7 +669,7 @@ main(int argc, char** argv)
     return 1;
   }
 
-  std::string device_id;
+  std::string device_id = "";
   bool use_convex_hull = true;
   bool visualize_non_downsample = false;
   bool visualize_particles = true;

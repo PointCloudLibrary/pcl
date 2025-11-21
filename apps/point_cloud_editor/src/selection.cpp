@@ -48,7 +48,7 @@ Selection::operator= (const Selection& selection)
 {
   cloud_ptr_ = selection.cloud_ptr_;
   selected_indices_ = selection.selected_indices_;
-  return *this;
+  return (*this);
 }
 
 void
@@ -95,7 +95,7 @@ Selection::isSelected (unsigned int index) const
 {
   if (index >= cloud_ptr_->size())
     return (false);
-  auto it = selected_indices_.find(index);
+  iterator it = selected_indices_.find(index);
   if (it != selected_indices_.end())
       return (true);
   return (false);

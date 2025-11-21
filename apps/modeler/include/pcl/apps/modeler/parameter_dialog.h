@@ -73,7 +73,7 @@ public:
 
 protected:
   std::map<std::string, Parameter*> name_parameter_map_;
-  ParameterModel* parameter_model_{nullptr};
+  ParameterModel* parameter_model_;
 
 protected Q_SLOTS:
   void

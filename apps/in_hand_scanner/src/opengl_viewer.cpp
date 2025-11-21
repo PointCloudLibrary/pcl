@@ -63,8 +63,9 @@
 // FaceVertexMesh
 ////////////////////////////////////////////////////////////////////////////////
 
+pcl::ihs::detail::FaceVertexMesh::FaceVertexMesh()
 : transformation(Eigen::Isometry3d::Identity())
-= default;
+{}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -104,9 +105,18 @@ pcl::ihs::OpenGLViewer::OpenGLViewer(QWidget* parent)
 : QOpenGLWidget(parent)
 , timer_vis_(new QTimer(this))
 , colormap_(Colormap::Constant(255))
+, vis_conf_norm_(1)
+, mesh_representation_(MR_POINTS)
+, coloring_(COL_RGB)
+, draw_box_(false)
+, scaling_factor_(1.)
 , R_cam_(1., 0., 0., 0.)
 , t_cam_(0., 0., 0.)
 , cam_pivot_(0., 0., 0.)
+, cam_pivot_id_("")
+, mouse_pressed_begin_(false)
+, x_prev_(0)
+, y_prev_(0)
 {
   // Timer: Defines the update rate for the visualization
   connect(timer_vis_.get(), SIGNAL(timeout()), this, SLOT(timerCallback()));
@@ -127,11 +137,11 @@ pcl::ihs::OpenGLViewer::OpenGLViewer(QWidget* parent)
   // colormap).
   //////////////////////////////////////////////////////////////////////////////
 
-  // #include <cstdlib>
-  // #include <iomanip>
+  //#include <cstdlib>
+  //#include <iomanip>
 
-  // #include <vtkColorTransferFunction.h>
-  // #include <vtkSmartPointer.h>
+  //#include <vtkColorTransferFunction.h>
+  //#include <vtkSmartPointer.h>
 
   // int
   // main()
@@ -650,7 +660,7 @@ pcl::ihs::OpenGLViewer::setVisibilityConfidenceNormalization(const float vis_con
 QSize
 pcl::ihs::OpenGLViewer::minimumSizeHint() const
 {
-  return ({160, 120});
+  return (QSize(160, 120));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -658,7 +668,7 @@ pcl::ihs::OpenGLViewer::minimumSizeHint() const
 QSize
 pcl::ihs::OpenGLViewer::sizeHint() const
 {
-  return ({640, 480});
+  return (QSize(640, 480));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -961,7 +971,7 @@ pcl::ihs::OpenGLViewer::drawMeshes()
       case COL_VISCONF: {
         for (std::size_t i = 0; i < mesh.vertices.size(); ++i) {
           const unsigned int n = pcl::ihs::countDirections(mesh.vertices[i].directions);
-          const auto index =
+          const unsigned int index =
               static_cast<unsigned int>(static_cast<float>(colormap_.cols()) *
                                         static_cast<float>(n) / vis_conf_norm_);
 
@@ -986,7 +996,7 @@ pcl::ihs::OpenGLViewer::drawMeshes()
           glDrawElements(GL_TRIANGLES,
                          3 * mesh.triangles.size(),
                          GL_UNSIGNED_INT,
-                         mesh.triangles.data());
+                         &mesh.triangles[0]);
           break;
         }
         }
@@ -1004,7 +1014,7 @@ pcl::ihs::OpenGLViewer::drawMeshes()
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::OpenGLViewer::drawBox() const
+pcl::ihs::OpenGLViewer::drawBox()
 {
   BoxCoefficients coeffs;
   {
