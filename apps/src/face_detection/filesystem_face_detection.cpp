@@ -98,7 +98,7 @@ run(pcl::RFFaceDetectorTrainer& fdrf,
     bool result = face_detection_apps_utils::readMatrixFromFile(pose_file, pose_mat);
 
     if (result) {
-      Eigen::Vector3f ea = pose_mat.topLeftCorner<3, 3>().eulerAngles(0, 1, 2);
+      Eigen::Vector3f ea = pose_mat.block<3, 3>(0, 0).eulerAngles(0, 1, 2);
       Eigen::Vector3f trans_vector =
           Eigen::Vector3f(pose_mat(0, 3), pose_mat(1, 3), pose_mat(2, 3));
       std::cout << ea << std::endl;
@@ -127,7 +127,7 @@ run(pcl::RFFaceDetectorTrainer& fdrf,
                  Eigen::AngleAxisf(ea[1], Eigen::Vector3f::UnitY()) *
                  Eigen::AngleAxisf(ea[2], Eigen::Vector3f::UnitZ());
 
-      // matrixxx = pose_mat.topLeftCorner<3,3>();
+      // matrixxx = pose_mat.block<3,3>(0,0);
       vec = matrixxx * vec;
 
       cylinder_coeff.values[3] = vec[0];

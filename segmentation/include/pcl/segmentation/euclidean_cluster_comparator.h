@@ -155,11 +155,11 @@ namespace pcl
           const std::uint32_t &label1 = (*labels_)[idx1].label;
           const std::uint32_t &label2 = (*labels_)[idx2].label;
 
-          const std::set<std::uint32_t>::const_iterator it1 = exclude_labels_->find (label1);
+          const auto it1 = exclude_labels_->find (label1);
           if (it1 == exclude_labels_->end ())
             return false;
 
-          const std::set<std::uint32_t>::const_iterator it2 = exclude_labels_->find (label2);
+          const auto it2 = exclude_labels_->find (label2);
           if (it2 == exclude_labels_->end ())
             return false;
         }

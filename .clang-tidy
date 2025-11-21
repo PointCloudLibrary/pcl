@@ -1,7 +1,11 @@
 ---
 Checks: >
     -*,
+    bugprone-assert-side-effect,
     bugprone-copy-constructor-init,
+    bugprone-dangling-handle,
+    bugprone-forward-declaration-namespace,
+    bugprone-inaccurate-erase,
     bugprone-macro-parentheses,
     bugprone-unhandled-self-assignment,
     bugprone-unused-raii,

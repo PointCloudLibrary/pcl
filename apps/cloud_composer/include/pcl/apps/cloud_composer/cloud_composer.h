@@ -37,7 +37,7 @@
 
 #pragma once
 
-// PCL
+//PCL
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -45,122 +45,125 @@
 
 class QTreeView;
 
-namespace pcl {
-namespace cloud_composer {
-class ProjectModel;
-class CloudViewer;
-class CloudCommand;
-class ToolFactory;
-class ToolBoxModel;
-class SignalMultiplexer;
+namespace pcl
+{
+  namespace cloud_composer
+  {
+    class ProjectModel;
+    class CloudViewer;
+    class CloudCommand;
+    class ToolFactory;
+    class ToolBoxModel;
+    class SignalMultiplexer;
+    
+    /** \brief MainWindow of cloud_composer application
+     * \author Jeremie Papon
+     * \ingroup cloud_composer
+     * The following member objects are defined in the ui file and can be manipulated:
+     *    * cloud_viewer_ is the view which contains the PCLVisualizer & QVTKWidget
+     *    * cloud_browser_ is the tree view in the left dock
+     *    * item_inspector_ is the details view in the left dock
+     *    * tool_box_view_ is the tool box in right dock
+     *    * tool_parameter_view_ shows adjustable parameters for currently selected tool
+     *    * undo_view_ is the undo stack view in the right dock
+     */
+    class ComposerMainWindow : public QMainWindow, private Ui::ComposerMainWindow
+    {
+      Q_OBJECT
+      public:
+        explicit ComposerMainWindow (QWidget *parent = nullptr);
+        ~ComposerMainWindow ();
+  
+      Q_SIGNALS:
+        /** \brief Signal emitted when the active project is switched - ie a different project tab is selected */
+        void
+        activeProjectChanged (ProjectModel* new_model, ProjectModel* previous_model);
+        
+        /** \brief This signal tells the current project to insert a cloud using a file dialog box */
+        void 
+        insertNewCloudFromFile ();
+        
+        /** \brief This signal tells the current project to insert a cloud from and RGB and Depth image using a file dialog box */
+        void 
+        insertNewCloudFromRGBandDepth ();
+        
+        /** \brief This signal tells the current project to save currently selected cloud to file */
+        void 
+        saveSelectedCloudToFile ();
+        
+      public Q_SLOTS:
+      //Slots for File Menu Actions
+        void
+        on_action_new_project__triggered (/*QString name = "unsaved project"*/);
+        void
+        on_action_open_cloud_as_new_project__triggered ();
+        void
+        on_action_open_project__triggered ();
+        void
+        on_action_save_project__triggered ();
+        void
+        on_action_save_project_as__triggered ();
+        void 
+        on_action_save_selected_cloud__triggered ();
+        void
+        on_action_exit__triggered ();
 
-/** \brief MainWindow of cloud_composer application
- * \author Jeremie Papon
- * \ingroup cloud_composer
- * The following member objects are defined in the ui file and can be manipulated:
- *    * cloud_viewer_ is the view which contains the PCLVisualizer & QVTKWidget
- *    * cloud_browser_ is the tree view in the left dock
- *    * item_inspector_ is the details view in the left dock
- *    * tool_box_view_ is the tool box in right dock
- *    * tool_parameter_view_ shows adjustable parameters for currently selected tool
- *    * undo_view_ is the undo stack view in the right dock
- */
-class ComposerMainWindow : public QMainWindow, private Ui::ComposerMainWindow {
-  Q_OBJECT
-public:
-  explicit ComposerMainWindow(QWidget* parent = nullptr);
-  ~ComposerMainWindow();
+        //Slots for Edit Menu Actions
+        void
+        on_action_insert_from_file__triggered ();
+        void
+        on_action_insert_from_openNi_source__triggered ();
+        void
+        on_action_insert_from_rgb_depth__triggered ();
 
-Q_SIGNALS:
-  /** \brief Signal emitted when the active project is switched - ie a different project
-   * tab is selected */
-  void
-  activeProjectChanged(ProjectModel* new_model, ProjectModel* previous_model);
+          
+        
+        void 
+        setCurrentModel (ProjectModel* model);
+        
+        void 
+        setMouseStyleAction (interactor_styles::INTERACTOR_STYLES selected_style);
+        
+        void
+        enqueueToolAction (AbstractTool* tool);
+       
+      private:
+        void
+        connectFileActions ();
+        void
+        connectEditActions ();
+        
+        void 
+        connectViewActions ();
+        
+        void 
+        initializeCloudBrowser ();
+        void
+        initializeCloudViewer ();
+        void 
+        initializeItemInspector ();
+        
+        void 
+        initializeToolBox ();
+        void 
+        initializePlugins ();
 
-  /** \brief This signal tells the current project to insert a cloud using a file dialog
-   * box */
-  void
-  insertNewCloudFromFile();
+        
+        /** \brief Pointer to the model which is currently being viewed  */
+        ProjectModel* current_model_;
+        QItemSelectionModel* current_selection_model_;
 
-  /** \brief This signal tells the current project to insert a cloud from and RGB and
-   * Depth image using a file dialog box */
-  void
-  insertNewCloudFromRGBandDepth();
-
-  /** \brief This signal tells the current project to save currently selected cloud to
-   * file */
-  void
-  saveSelectedCloudToFile();
-
-public Q_SLOTS:
-  // Slots for File Menu Actions
-  void on_action_new_project__triggered(/*QString name = "unsaved project"*/);
-  void
-  on_action_open_cloud_as_new_project__triggered();
-  void
-  on_action_open_project__triggered();
-  void
-  on_action_save_project__triggered();
-  void
-  on_action_save_project_as__triggered();
-  void
-  on_action_save_selected_cloud__triggered();
-  void
-  on_action_exit__triggered();
-
-  // Slots for Edit Menu Actions
-  void
-  on_action_insert_from_file__triggered();
-  void
-  on_action_insert_from_openNi_source__triggered();
-  void
-  on_action_insert_from_rgb_depth__triggered();
-
-  void
-  setCurrentModel(ProjectModel* model);
-
-  void
-  setMouseStyleAction(interactor_styles::INTERACTOR_STYLES selected_style);
-
-  void
-  enqueueToolAction(AbstractTool* tool);
-
-private:
-  void
-  connectFileActions();
-  void
-  connectEditActions();
-
-  void
-  connectViewActions();
-
-  void
-  initializeCloudBrowser();
-  void
-  initializeCloudViewer();
-  void
-  initializeItemInspector();
-
-  void
-  initializeToolBox();
-  void
-  initializePlugins();
-
-  /** \brief Pointer to the model which is currently being viewed  */
-  ProjectModel* current_model_;
-  QItemSelectionModel* current_selection_model_;
-
-  QMap<QString, ProjectModel*> name_model_map_;
-
-  QUndoGroup* undo_group_;
-
-  QItemSelectionModel* tool_selection_model_;
-  ToolBoxModel* tool_box_model_;
-
-  SignalMultiplexer* multiplexer_;
-
-  QActionGroup* mouse_style_group_;
-};
-
-} // namespace cloud_composer
-} // namespace pcl
+        QMap <QString, ProjectModel*> name_model_map_;
+        
+        QUndoGroup *undo_group_;
+        
+        QItemSelectionModel* tool_selection_model_;
+        ToolBoxModel* tool_box_model_;
+        
+        SignalMultiplexer* multiplexer_;
+        
+        QActionGroup* mouse_style_group_;
+    };
+    
+  }
+}

@@ -40,57 +40,58 @@
 
 #pragma once
 
-#include <pcl/apps/point_cloud_editor/cloud.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
+#include <pcl/apps/point_cloud_editor/cloud.h>
 
 /// @brief a buffer holding the points being copied and a set of operations for
 /// manipulating the buffer.
-class CopyBuffer : public Statistics {
-public:
-  /// @brief Default Constructor
-  /// @details This creates an empty buffer
-  CopyBuffer(bool register_stats = false)
-  {
-    if (register_stats)
-      registerStats();
-  }
+class CopyBuffer : public Statistics
+{
+  public:
+    /// @brief Default Constructor
+    /// @details This creates an empty buffer
+    CopyBuffer (bool register_stats=false)
+    {
+      if (register_stats)
+        registerStats();
+    }
 
-  /// @brief Sets the points in the copy buffer.
-  /// @details The passed selection pointer is used to get specified points
-  /// from the stored cloud pointer and copy them into the internal buffer.
-  /// Any points that currently exist in this buffer are removed and replaced
-  /// with those passed.  Note that this buffer is cleared prior to any
-  /// checking of the state of the passed parameters.
-  /// @param cloud_ptr a pointer to a cloud object whose points are to be
-  /// copied
-  /// @param selection a const reference to the selected points object
-  void
-  set(const ConstCloudPtr& cloud_ptr, const Selection& selection);
+    /// @brief Sets the points in the copy buffer.
+    /// @details The passed selection pointer is used to get specified points
+    /// from the stored cloud pointer and copy them into the internal buffer.
+    /// Any points that currently exist in this buffer are removed and replaced
+    /// with those passed.  Note that this buffer is cleared prior to any
+    /// checking of the state of the passed parameters.
+    /// @param cloud_ptr a pointer to a cloud object whose points are to be
+    /// copied
+    /// @param selection a const reference to the selected points object
+    void
+    set (const ConstCloudPtr& cloud_ptr, const Selection& selection);
 
-  /// @brief Returns the points stored in the internal buffer as a const Cloud
-  const Cloud&
-  get() const;
+    /// @brief Returns the points stored in the internal buffer as a const Cloud
+    const Cloud&
+    get() const;
 
-  /// @brief Returns the points stored in the internal buffer as a Cloud
-  Cloud&
-  get();
+    /// @brief Returns the points stored in the internal buffer as a Cloud
+    Cloud&
+    get();
+    
+    /// @brief Removes all the points from the copy buffer.
+    void
+    clean ();
+        
+    /// @brief Get the statistics of the copied points in string.
+    std::string
+    getStat () const override;
 
-  /// @brief Removes all the points from the copy buffer.
-  void
-  clean();
+    /// @brief Returns true if the buffer is empty, false otherwise
+    bool
+    empty() const
+    {
+      return (buffer_.size() == 0);
+    }
 
-  /// @brief Get the statistics of the copied points in string.
-  std::string
-  getStat() const override;
-
-  /// @brief Returns true if the buffer is empty, false otherwise
-  bool
-  empty() const
-  {
-    return (buffer_.size() == 0);
-  }
-
-private:
-  /// a cloud object holding all the copied points.
-  Cloud buffer_;
+  private:
+    /// a cloud object holding all the copied points.
+    Cloud buffer_; 
 };

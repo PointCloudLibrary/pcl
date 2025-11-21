@@ -64,7 +64,7 @@ namespace pcl
         * \param output the resulting point cloud (which should be of type pcl::PPFRGBSignature);
         */
       void
-      computeFeature (PointCloudOut &output);
+      computeFeature (PointCloudOut &output) override;
   };
 
   template <typename PointInT, typename PointNT, typename PointOutT>

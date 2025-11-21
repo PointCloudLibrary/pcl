@@ -57,7 +57,7 @@ GlobalOptimizationTDM::assemble (Parameter params)
 {
   // determine number of rows of matrix
   m_ncols = 0;
-  unsigned nnurbs = static_cast<unsigned> (m_nurbs.size ());
+  auto nnurbs = static_cast<unsigned> (m_nurbs.size ());
   unsigned nInt (0), nBnd (0), nCageRegInt (0), nCageRegBnd (0), nCommonBnd (0);
   for (unsigned i = 0; i < nnurbs; i++)
   {
@@ -127,7 +127,7 @@ GlobalOptimizationTDM::assemble (ParameterTDM params)
 {
   // determine number of rows of matrix
   m_ncols = 0;
-  unsigned nnurbs = static_cast<unsigned> (m_nurbs.size ());
+  auto nnurbs = static_cast<unsigned> (m_nurbs.size ());
   unsigned nInt (0), nBnd (0), nCageRegInt (0), nCageRegBnd (0), nCommonBnd (0), nCommonPar (0);
   for (unsigned i = 0; i < nnurbs; i++)
   {
@@ -453,7 +453,7 @@ GlobalOptimizationTDM::assembleInteriorPoints (unsigned id, int ncps, double wei
 
   ON_NurbsSurface *nurbs = m_nurbs[id];
   NurbsDataSurface *data = m_data[id];
-  unsigned nInt = static_cast<unsigned> (m_data[id]->interior.size ());
+  auto nInt = static_cast<unsigned> (m_data[id]->interior.size ());
 
   // interior points should lie on surface
   data->interior_line_start.clear ();
@@ -506,7 +506,7 @@ GlobalOptimizationTDM::assembleInteriorPointsTD (unsigned id, int ncps, double w
 
   ON_NurbsSurface *nurbs = m_nurbs[id];
   NurbsDataSurface *data = m_data[id];
-  unsigned nInt = static_cast<unsigned> (m_data[id]->interior.size ());
+  auto nInt = static_cast<unsigned> (m_data[id]->interior.size ());
 
   // interior points should lie on surface
   data->interior_line_start.clear ();
@@ -560,7 +560,7 @@ GlobalOptimizationTDM::assembleBoundaryPoints (unsigned id, int ncps, double wei
 
   ON_NurbsSurface *nurbs = m_nurbs[id];
   NurbsDataSurface *data = m_data[id];
-  unsigned nBnd = static_cast<unsigned> (m_data[id]->boundary.size ());
+  auto nBnd = static_cast<unsigned> (m_data[id]->boundary.size ());
 
   // interior points should lie on surface
   data->boundary_line_start.clear ();

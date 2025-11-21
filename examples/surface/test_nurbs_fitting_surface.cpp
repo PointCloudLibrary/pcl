@@ -12,15 +12,15 @@ CreateCylinderPoints (pcl::PointCloud<Point>::Ptr cloud, pcl::on_nurbs::vector_v
 {
   for (unsigned i = 0; i < npoints; i++)
   {
-    double da = alpha * double (rand ()) / RAND_MAX;
-    double dh = h * (double (rand ()) / RAND_MAX - 0.5);
+    double da = alpha * static_cast<double>(rand ()) / RAND_MAX;
+    double dh = h * (static_cast<double>(rand ()) / RAND_MAX - 0.5);
 
     Point p;
-    p.x = float (r * std::cos (da));
-    p.y = float (r * sin (da));
-    p.z = float (dh);
+    p.x = static_cast<float>(r * std::cos (da));
+    p.y = static_cast<float>(r * sin (da));
+    p.z = static_cast<float>(dh);
 
-    data.push_back (Eigen::Vector3d (p.x, p.y, p.z));
+    data.emplace_back(p.x, p.y, p.z);
     cloud->push_back (p);
   }
 }

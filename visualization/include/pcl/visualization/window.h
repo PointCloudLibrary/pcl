@@ -47,9 +47,8 @@ template <typename T> class vtkSmartPointer;
 class vtkObject;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;
-class vtkCallbackCommand;
 class vtkRendererCollection;
-class PCLVisualizerInteractorStyle;
+class vtkCallbackCommand;
 
 namespace pcl
 {
@@ -57,6 +56,7 @@ namespace pcl
   {
     class MouseEvent;
     class KeyboardEvent;
+    class PCLVisualizerInteractorStyle;
 
     class PCL_EXPORTS Window
     {

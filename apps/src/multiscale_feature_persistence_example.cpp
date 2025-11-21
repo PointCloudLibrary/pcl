@@ -41,7 +41,6 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/search/kdtree.h> // for KdTree
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/memory.h>
 

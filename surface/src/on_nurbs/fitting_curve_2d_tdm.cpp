@@ -57,7 +57,7 @@ FittingCurve2dTDM::assemble (const FittingCurve2dPDM::Parameter &parameter)
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
 
   double wInt = 1.0;
   if (!m_data->interior_weight.empty ())
@@ -189,7 +189,7 @@ FittingCurve2dTDM::addCageRegularisation (double weight, unsigned &row)
 void
 FittingCurve2dTDM::assembleInterior (double wInt, double rScale, unsigned &row)
 {
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
@@ -202,7 +202,7 @@ FittingCurve2dTDM::assembleInterior (double wInt, double rScale, unsigned &row)
     double param;
     Eigen::Vector2d pt, t, n;
     double error;
-    if (p < int (m_data->interior_param.size ()))
+    if (p < static_cast<int>(m_data->interior_param.size ()))
     {
       param = findClosestElementMidPoint (m_nurbs, pcp, m_data->interior_param[p]);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);
@@ -227,7 +227,7 @@ FittingCurve2dTDM::assembleInterior (double wInt, double rScale, unsigned &row)
     n (1) = pointAndTangents[5];
     n.normalize ();
 
-    if (p < int (m_data->interior_weight.size ()))
+    if (p < static_cast<int>(m_data->interior_weight.size ()))
       wInt = m_data->interior_weight[p];
 
     addPointConstraint (m_data->interior_param[p], m_data->interior[p], n, wInt, row);

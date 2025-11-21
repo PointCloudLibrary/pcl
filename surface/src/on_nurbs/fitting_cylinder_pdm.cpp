@@ -136,7 +136,7 @@ FittingCylinder::assemble (double smoothness)
 {
   int cp_red = (m_nurbs.m_order[1] - 2);
   int ncp = m_nurbs.m_cv_count[0] * (m_nurbs.m_cv_count[1] - 2 * cp_red);
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
   int nCageRegInt = (m_nurbs.m_cv_count[0] - 2) * (m_nurbs.m_cv_count[1] - 2 * cp_red);
   int nCageRegBnd = 2 * (m_nurbs.m_cv_count[1] - 2 * cp_red);
 
@@ -224,7 +224,7 @@ FittingCylinder::initNurbsPCACylinder (int order, NurbsDataSurface *data)
   Eigen::Matrix3d eigenvectors;
   Eigen::Vector3d eigenvalues;
 
-  unsigned s = unsigned (data->interior.size ());
+  auto s = static_cast<unsigned>(data->interior.size ());
 
   NurbsTools::pca (data->interior, mean, eigenvectors, eigenvalues);
 
@@ -289,7 +289,7 @@ FittingCylinder::initNurbsCylinderWithAxes (int order, NurbsDataSurface *data, E
 {
   Eigen::Vector3d mean;
 
-  unsigned s = unsigned (data->interior.size ());
+  auto s = static_cast<unsigned>(data->interior.size ());
   mean = NurbsTools::computeMean (data->interior);
 
   data->mean = mean;
@@ -410,7 +410,7 @@ FittingCylinder::assembleInterior (double wInt, unsigned &row)
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
   m_data->interior_normals.clear ();
-  unsigned nInt = unsigned (m_data->interior.size ());
+  auto nInt = static_cast<unsigned>(m_data->interior.size ());
   for (unsigned p = 0; p < nInt; p++)
   {
     Vector3d pcp;

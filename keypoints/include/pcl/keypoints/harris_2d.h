@@ -77,15 +77,14 @@ namespace pcl
         */
       HarrisKeypoint2D (ResponseMethod method = HARRIS, int window_width = 3, int window_height = 3, int min_distance = 5, float threshold = 0.0)
       : threshold_ (threshold)
-      , refine_ (false)
-      , nonmax_ (true)
-      , method_ (method)
-      , threads_ (0)
-      , response_ (new pcl::PointCloud<PointOutT> ())
+      , 
+       method_ (method)
+      , 
+       response_ (new pcl::PointCloud<PointOutT> ())
       , window_width_ (window_width)
       , window_height_ (window_height)
-      , skipped_pixels_ (0)
-      , min_distance_ (min_distance)
+      , 
+       min_distance_ (min_distance)
       {
         name_ = "HarrisKeypoint2D";
       }
@@ -156,13 +155,13 @@ namespace pcl
       /// threshold for non maxima suppression 
       float threshold_;
       /// corner refinement 
-      bool refine_;
+      bool refine_{false};
       /// non maximas suppression
-      bool nonmax_;
+      bool nonmax_{true};
       /// cornerness computation method
       ResponseMethod method_;
       /// number of threads to be used
-      unsigned int threads_;      
+      unsigned int threads_{0};      
 
     private:
       Eigen::MatrixXf derivatives_rows_;
@@ -184,7 +183,7 @@ namespace pcl
       /// half window height
       int half_window_height_;
       /// number of pixels to skip within search window
-      int skipped_pixels_;
+      int skipped_pixels_{0};
       /// minimum distance between two keypoints
       int min_distance_;
       /// intensity field accessor

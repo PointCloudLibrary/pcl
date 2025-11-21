@@ -59,12 +59,12 @@ FittingCurve2dASDM::assemble (const FittingCurve2dAPDM::Parameter &parameter)
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
   //  int nCommon = m_data->common.size();
   //  int nClosestP = parameter.closest_point_resolution;
 
   std::vector<double> elements = getElementVector (m_nurbs);
-  int nClosestP = int (elements.size ());
+  int nClosestP = static_cast<int>(elements.size ());
 
   double wInt = 1.0;
   if (!m_data->interior_weight.empty ())
@@ -213,7 +213,7 @@ FittingCurve2dASDM::addCageRegularisation (double weight, unsigned &row, const s
     {
       int i = j % ncp;
 
-      if (i >= int (m_data->closest_points_error.size () - 1))
+      if (i >= static_cast<int>(m_data->closest_points_error.size () - 1))
       {
         printf ("[FittingCurve2dASDM::addCageRegularisation] Warning, index for closest_points_error out of bounds\n");
       }
@@ -259,7 +259,7 @@ FittingCurve2dASDM::addCageRegularisation (double weight, unsigned &row, const s
 void
 FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale, unsigned &row)
 {
-  unsigned nInt = unsigned (m_data->interior.size ());
+  auto nInt = static_cast<unsigned>(m_data->interior.size ());
   bool wFunction (true);
   double ds = 1.0 / (2.0 * sigma2);
   m_data->interior_line_start.clear ();
@@ -410,7 +410,7 @@ FittingCurve2dASDM::assembleClosestPoints (const std::vector<double> &elements, 
   for (std::size_t i = 0; i < elements.size (); i++)
   {
 
-    int j = (i + 1) % int (elements.size ());
+    int j = (i + 1) % static_cast<int>(elements.size ());
 
     double dxi = elements[j] - elements[i];
     double xi = elements[i] + 0.5 * dxi;
@@ -444,7 +444,7 @@ FittingCurve2dASDM::assembleClosestPoints (const std::vector<double> &elements, 
       if (m_data->closest_rho.size () != elements.size ())
       {
         printf ("[FittingCurve2dASDM::assembleClosestPoints] ERROR: size does not match %d %d\n",
-                int (m_data->closest_rho.size ()), int (elements.size ()));
+                static_cast<int>(m_data->closest_rho.size ()), static_cast<int>(elements.size ()));
       }
       else
       {

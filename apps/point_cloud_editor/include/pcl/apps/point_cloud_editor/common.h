@@ -68,4 +68,4 @@ invertMatrix(const float* matrix, float* inverse);
 /// @brief Converts the passed string to lowercase in place
 /// @param s The string to be made lower.
 void
-stringToLower(std::string& s);
+stringToLower(std::string &s);

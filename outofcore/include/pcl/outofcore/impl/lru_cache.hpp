@@ -53,7 +53,7 @@ public:
   get (const KeyT& k)
   {
     // Get existing key
-    const CacheIterator it = cache_.find (k);
+    const auto it = cache_.find (k);
     assert(it != cache_.end ());
 
     // Move key to MRU key index
@@ -67,7 +67,7 @@ public:
   touch (const KeyT& key)
   {
     // Get existing key
-    const CacheIterator it = cache_.find (key);
+    const auto it = cache_.find (key);
     assert(it != cache_.end ());
 
     // Move key to MRU key index
@@ -93,7 +93,7 @@ public:
 
     while (size + item_size >= capacity_)
     {
-      const CacheIterator cache_it = cache_.find (*key_it);
+      const auto cache_it = cache_.find (*key_it);
 
       // Get tail item (Least Recently Used)
       std::size_t tail_timestamp = cache_it->second.first.timestamp;
@@ -153,7 +153,7 @@ public:
         return false;
 
       // Get LRU item
-      const CacheIterator it = cache_.find (key_index_.front ());
+      const auto it = cache_.find (key_index_.front ());
       assert(it != cache_.end());
 
       // Remove LRU item from cache and key index

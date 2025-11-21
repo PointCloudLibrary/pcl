@@ -438,7 +438,7 @@ main(int argc, char** argv)
     if (bEnDecode) {
       // ENCODING
       try {
-        boost::asio::io_context io_service;
+        boost::asio::io_service io_service;
         tcp::endpoint endpoint(tcp::v4(), 6666);
         tcp::acceptor acceptor(io_service, endpoint);
 
@@ -446,7 +446,7 @@ main(int argc, char** argv)
 
         std::cout << "Waiting for connection.." << std::endl;
 
-        acceptor.accept(socketStream.rdbuf()->socket());
+        acceptor.accept(*socketStream.rdbuf());
 
         std::cout << "Connected!" << std::endl;
 

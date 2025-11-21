@@ -43,7 +43,6 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/filter_indices.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(

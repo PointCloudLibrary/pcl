@@ -53,7 +53,7 @@ FittingSurfaceIM::computeMean () const
   u.y = 0.0;
   u.z = 0.0;
 
-  double ds = 1.0 / double (m_indices.size ());
+  double ds = 1.0 / static_cast<double>(m_indices.size ());
 
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *m_cloud;
   for (const auto &index : m_indices)
@@ -65,9 +65,9 @@ FittingSurfaceIM::computeMean () const
     if (std::isnan (point.x) || std::isnan (point.y) || std::isnan (point.z))
       continue;
 
-    u.x += point.x * float (ds);
-    u.y += point.y * float (ds);
-    u.z += point.z * float (ds);
+    u.x += point.x * static_cast<float>(ds);
+    u.y += point.y * static_cast<float>(ds);
+    u.z += point.z * static_cast<float>(ds);
   }
 
   return u;
@@ -181,19 +181,19 @@ FittingSurfaceIM::refine ()
   Eigen::Vector2d bbx (m_nurbs.Knot (0, 0), m_nurbs.Knot (0, m_nurbs.KnotCount (0) - 1));
   Eigen::Vector2d bby (m_nurbs.Knot (1, 0), m_nurbs.Knot (1, m_nurbs.KnotCount (1) - 1));
 
-  int dx = int (bbx (1) - bbx (0));
-  int dy = int (bby (1) - bby (0));
-  double ddx = double (dx) / (m_nurbs.CVCount (0) - 1);
-  double ddy = double (dy) / (m_nurbs.CVCount (1) - 1);
+  int dx = static_cast<int>(bbx (1) - bbx (0));
+  int dy = static_cast<int>(bby (1) - bby (0));
+  double ddx = static_cast<double>(dx) / (m_nurbs.CVCount (0) - 1);
+  double ddy = static_cast<double>(dy) / (m_nurbs.CVCount (1) - 1);
 
   m_cps_px.clear ();
   for (int i = 0; i < m_nurbs.CVCount (0); i++)
   {
     for (int j = 0; j < m_nurbs.CVCount (1); j++)
     {
-      int px = int (bbx (0) + ddx * i);
-      int py = int (bby (0) + ddy * j);
-      m_cps_px.push_back (Eigen::Vector2i (px, py));
+      int px = static_cast<int>(bbx (0) + ddx * i);
+      int py = static_cast<int>(bby (0) + ddy * j);
+      m_cps_px.emplace_back(px, py);
     }
   }
 }
@@ -244,10 +244,10 @@ FittingSurfaceIM::initSurface (int order, const Eigen::Vector4d &bb)
   {
     for (int j = 0; j < m_nurbs.Order (1); j++)
     {
-      int px = int (m_bb (0) + ddx * i + 0.5);
-      int py = int (m_bb (2) + ddy * j + 0.5);
+      int px = static_cast<int>(m_bb (0) + ddx * i + 0.5);
+      int py = static_cast<int>(m_bb (2) + ddy * j + 0.5);
 
-      m_cps_px.push_back (Eigen::Vector2i (px, py));
+      m_cps_px.emplace_back(px, py);
 
       ON_3dPoint p;
       p.x = pt.z * (px - m_intrinsic (0, 2)) / m_intrinsic (0, 0);
@@ -265,7 +265,7 @@ FittingSurfaceIM::initSurface (int order, const Eigen::Vector4d &bb)
 void
 FittingSurfaceIM::assemble (bool inverse_mapping)
 {
-  int nInt = int (m_indices.size ());
+  int nInt = static_cast<int>(m_indices.size ());
   int nCageReg = (m_nurbs.m_cv_count[0] - 2) * (m_nurbs.m_cv_count[1] - 2);
   int nCageRegBnd = 2 * (m_nurbs.m_cv_count[0] - 1) + 2 * (m_nurbs.m_cv_count[1] - 1);
 
@@ -296,8 +296,8 @@ FittingSurfaceIM::assemble (bool inverse_mapping)
       Eigen::Vector3d p, tu, tv;
       Eigen::Vector2d params1 (params (0), params (1));
       params1 = inverseMapping (m_nurbs, point, params1, error, p, tu, tv, 200, 1e-6, true);
-      params (0) = int (params1 (0));
-      params (1) = int (params1 (1));
+      params (0) = static_cast<int>(params1 (0));
+      params (1) = static_cast<int>(params1 (1));
     }
 
     addPointConstraint (params, pt.z, 1.0, row);
