@@ -9,15 +9,16 @@ jobs:
       image: pointcloudlibrary/env:24.04
     
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Run clang-tidy
-      run: |
+      - name: Run clang-tidy
+        run: |
           bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
           cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_COMPILER=/usr/bin/clang-18 -DCMAKE_C_COMPILER=/usr/bin/clang-18 . \
             -DBUILD_benchmarks=ON \
             -DBUILD_examples=ON \
+            -DBUILD_surface_on_nurbs=ON \
             -DBUILD_simulation=ON \
             -DBUILD_global_tests=ON
-        
+          
           run-clang-tidy -header-filter='.*'
