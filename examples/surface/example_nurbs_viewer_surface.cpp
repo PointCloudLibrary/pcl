@@ -48,7 +48,7 @@ main (int argc, char *argv[])
     return -1;
   }
 
-  const ON_NurbsSurface& on_surf = *(ON_NurbsSurface*)on_object;
+  const ON_NurbsSurface& on_surf = *dynamic_cast<ON_NurbsSurface*>(on_object);
 
   pcl::PolygonMesh mesh;
   std::string mesh_id = "mesh_nurbs";
@@ -68,7 +68,7 @@ main (int argc, char *argv[])
       return -1;
     }
 
-    const ON_NurbsCurve& on_curv = *(ON_NurbsCurve*)on_object;
+    const ON_NurbsCurve& on_curv = *dynamic_cast<ON_NurbsCurve*>(on_object);
 
     pcl::on_nurbs::Triangulation::convertTrimmedSurface2PolygonMesh (on_surf, on_curv, mesh,
                                                                      mesh_resolution);
