@@ -21,4 +21,4 @@ jobs:
             -DBUILD_simulation=ON \
             -DBUILD_global_tests=ON
           
-          run-clang-tidy -header-filter='.*' -exclude='.*(3rdparty|fft).*'
+          run-clang-tidy -header-filter='.*'
