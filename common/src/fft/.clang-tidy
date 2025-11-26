@@ -1,4 +1,4 @@
 ---
-# Inherit parent checks but suppress all warnings for third-party code (kiss_fft)
-InheritParentConfig: true
-WarningsAsErrors: ''
+# Disable all clang-tidy checks for third-party code (kiss_fft)
+Checks: '-*'
+InheritParentConfig: false
