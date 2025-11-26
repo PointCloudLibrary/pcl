@@ -1,6 +1,6 @@
 ---
-# Minimal checks for third-party code
-Checks: 'readability-identifier-naming'
+# Minimal checks for third-party code - disable all except one to avoid CI "no checks" error
+Checks: '-*,-clang-diagnostic-*,-clang-analyzer-*,readability-identifier-naming'
 WarningsAsErrors: ''
 CheckOptions:
   # Effectively disables the check by not configuring naming rules
