@@ -1,4 +1,3 @@
 ---
 # Disable all clang-tidy checks for third-party code
-Checks: '-*'
-InheritParentConfig: false
+Checks: ''
