@@ -1,3 +1,8 @@
 ---
-# Disable all clang-tidy checks for third-party code
-Checks: '-*'
+# Minimal checks for third-party code
+Checks: 'readability-identifier-naming'
+WarningsAsErrors: ''
+CheckOptions:
+  # Effectively disables the check by not configuring naming rules
+  - key: readability-identifier-naming.AbstractClassCase
+    value: ''
