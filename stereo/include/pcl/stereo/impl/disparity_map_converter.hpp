@@ -186,7 +186,7 @@ pcl::DisparityMapConverter<PointT>::loadDisparityMap(const std::string& file_nam
 
       disparity_map_[column + row * disparity_map_width_] = disparity;
     } // column
-  }   // row
+  } // row
 
   return true;
 }
@@ -287,7 +287,7 @@ pcl::DisparityMapConverter<PointT>::compute(PointCloud& out_cloud)
       // Put the point to the output cloud.
       out_cloud[disparity_point] = new_point;
     } // column
-  }   // row
+  } // row
 }
 
 template <typename PointT>

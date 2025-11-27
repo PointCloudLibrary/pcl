@@ -374,7 +374,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterVotesCompareFunction(
   return (a.second > b.second);
 }
 
-//#define PCL_INSTANTIATE_PPFRegistration(PointSource,PointTarget) template class
-// PCL_EXPORTS pcl::PPFRegistration<PointSource, PointTarget>;
+// #define PCL_INSTANTIATE_PPFRegistration(PointSource,PointTarget) template class
+//  PCL_EXPORTS pcl::PPFRegistration<PointSource, PointTarget>;
 
 #endif // PCL_REGISTRATION_IMPL_PPF_REGISTRATION_H_

@@ -136,7 +136,7 @@ protected:
 
   /** Set for output printings during classification. */
   static void
-  printNull(const char*){};
+  printNull(const char*) {};
 
   /** To read a line from the input file. Stored in "line_". */
   char*

@@ -145,8 +145,8 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
         intensity_histograms[index].addValue(intensity);
 
       } // if
-    }   // row
-  }     // column
+    } // row
+  } // column
 
   // For all histograms.
   for (std::size_t index_column = 0; index_column < resolution_column_;
@@ -183,5 +183,5 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
       out_cloud.at(index_column, index_disparity) = point_DEM;
 
     } // index_disparity
-  }   // index_column
+  } // index_column
 }

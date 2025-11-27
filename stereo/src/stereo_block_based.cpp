@@ -81,7 +81,7 @@ pcl::BlockBasedStereoMatching::compute_impl(unsigned char* ref_img,
       }
       acc[d] += v[x + radius_][d] - v[x - radius_ - 1][d];
     } // d
-  }   // x
+  } // x
 
   // 2
   const int ind1 = radius_ + radius_ + max_disp_ + x_off_;
@@ -147,7 +147,7 @@ pcl::BlockBasedStereoMatching::compute_impl(unsigned char* ref_img,
             computeStereoSubpixel(dbest, acc[dbest - 1], acc[dbest], acc[dbest + 1]);
 
     } // x
-  }   // y
+  } // y
 
   for (int d = 0; d < width_; d++)
     delete[] v[d];

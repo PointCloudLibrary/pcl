@@ -53,7 +53,7 @@ struct EIGEN_ALIGN16 PointXYZIEdge {
   float magnitude_x;
   float magnitude_y;
   PCL_MAKE_ALIGNED_OPERATOR_NEW // make sure our new allocators are aligned
-};                              // enforce SSE padding for correct memory alignment
+}; // enforce SSE padding for correct memory alignment
 
 /// A 2D convolution class.
 template <typename PointT>

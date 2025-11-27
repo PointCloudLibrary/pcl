@@ -317,7 +317,7 @@ public:
   OctreeBase(const OctreeBase& source)
   : leaf_count_(source.leaf_count_)
   , branch_count_(source.branch_count_)
-  , root_node_(new (BranchNode)(*(source.root_node_)))
+  , root_node_(new(BranchNode)(*(source.root_node_)))
   , depth_mask_(source.depth_mask_)
   , octree_depth_(source.octree_depth_)
   , dynamic_depth_enabled_(source.dynamic_depth_enabled_)

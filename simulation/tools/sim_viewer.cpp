@@ -368,12 +368,9 @@ simulate_callback(const pcl::visualization::KeyboardEvent& event, void* viewer_v
 
     // matrix->GetElement(1,0);
 
-    std::cout << m(0, 0) << " " << m(0, 1) << " " << m(0, 2) << " "
-              << " x0\n";
-    std::cout << m(1, 0) << " " << m(1, 1) << " " << m(1, 2) << " "
-              << " x1\n";
-    std::cout << m(2, 0) << " " << m(2, 1) << " " << m(2, 2) << " "
-              << "x2\n\n";
+    std::cout << m(0, 0) << " " << m(0, 1) << " " << m(0, 2) << " " << " x0\n";
+    std::cout << m(1, 0) << " " << m(1, 1) << " " << m(1, 2) << " " << " x1\n";
+    std::cout << m(2, 0) << " " << m(2, 1) << " " << m(2, 2) << " " << "x2\n\n";
 
     Eigen::Quaternionf rf;
     rf = Eigen::Quaternionf(m);
