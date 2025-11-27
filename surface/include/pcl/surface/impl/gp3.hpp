@@ -123,14 +123,34 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         state_[idx] = NONE;
   }
 
-  // Saving coordinates and point to index mapping
+  // Saving coordinates and point to index mapping + precomputations
   coords_.clear ();
   coords_.reserve (indices_->size ());
+  normals_.clear ();
+  normals_.reserve (indices_->size ());
+  u_basis_.clear ();
+  u_basis_.reserve (indices_->size ());
+  v_basis_.clear ();
+  v_basis_.reserve (indices_->size ());
+  proj_qp_list_.clear ();
+  proj_qp_list_.reserve (indices_->size ());
   std::vector<int> point2index (input_->size (), -1);
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
-    coords_.push_back((*input_)[(*indices_)[cp]].getVector3fMap());
-    point2index[(*indices_)[cp]] = cp;
+    const auto idx = (*indices_)[cp];
+    const auto& p = (*input_)[idx];
+    const Eigen::Vector3f xyz = p.getVector3fMap();
+    coords_.push_back(xyz);
+    point2index[idx] = cp;
+    const Eigen::Vector3f n = p.getNormalVector3fMap();
+    normals_.push_back(n);
+    // local basis
+    const Eigen::Vector3f v_local = n.unitOrthogonal();
+    const Eigen::Vector3f u_local = n.cross(v_local);
+    v_basis_.push_back(v_local);
+    u_basis_.push_back(u_local);
+    const float dist = n.dot(xyz);
+    proj_qp_list_.emplace_back(xyz - dist * n);
   }
 
   // Initializing
@@ -171,16 +191,10 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         nnIdx[i] = point2index[nnIdx[i]];
       }
 
-      // Get the normal estimate at the current point 
-      const Eigen::Vector3f nc = (*input_)[(*indices_)[R_]].getNormalVector3fMap ();
-
-      // Get a coordinate system that lies on a plane defined by its normal
-      v_ = nc.unitOrthogonal ();
-      u_ = nc.cross (v_);
-
-      // Projecting point onto the surface 
-      float dist = nc.dot (coords_[R_]);
-      proj_qp_ = coords_[R_] - dist * nc;
+      // Reuse precomputed normal, basis and projection
+      u_ = u_basis_[R_];
+      v_ = v_basis_[R_];
+      proj_qp_ = proj_qp_list_[R_];
       
       // Converting coords, calculating angles and saving the projected near boundary edges
       int nr_edge = 0;
@@ -336,16 +350,9 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         increase_nnn4s++;
       }
 
-      // Get the normal estimate at the current point 
-      const Eigen::Vector3f nc = (*input_)[(*indices_)[R_]].getNormalVector3fMap ();
-
-      // Get a coordinate system that lies on a plane defined by its normal
-      v_ = nc.unitOrthogonal ();
-      u_ = nc.cross (v_);
-
-      // Projecting point onto the surface
-      float dist = nc.dot (coords_[R_]);
-      proj_qp_ = coords_[R_] - dist * nc;
+      // Reuse precomputed normal, basis and projection
+      u_ = u_basis_[R_]; v_ = v_basis_[R_]; proj_qp_ = proj_qp_list_[R_];
+      const Eigen::Vector3f& nc = normals_[R_];
 
       // Converting coords, calculating angles and saving the projected near boundary edges
       int nr_edge = 0;
@@ -372,7 +379,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         if ((ffn_[R_] == nnIdx[i]) || (sfn_[R_] == nnIdx[i]))
           angles_[i].visible = true;
         bool same_side = true;
-        const Eigen::Vector3f neighbor_normal = (*input_)[(*indices_)[nnIdx[i]]].getNormalVector3fMap (); /// NOTE: nnIdx was reset
+        const Eigen::Vector3f neighbor_normal = normals_[nnIdx[i]];
         double cosine = nc.dot (neighbor_normal);
         if (cosine > 1) cosine = 1;
         if (cosine < -1) cosine = -1;
