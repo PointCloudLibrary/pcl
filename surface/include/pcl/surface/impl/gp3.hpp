@@ -181,7 +181,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       //searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
       //tree_->nearestKSearch ((*input_)[(*indices_)[R_]], nnn_, nnIdx, sqrDists);
       tree_->nearestKSearch (indices_->at (R_), nnn_, nnIdx, sqrDists);
-      double sqr_dist_threshold = (std::min)(sqr_max_edge, sqr_mu * sqrDists[1]);
+      const double sqr_dist_threshold = (std::min)(sqr_max_edge, sqr_mu * sqrDists[1]);
 
       // Search tree returns indices into the original cloud, but we are working with indices. TODO: make that optional!
       for (int i = 1; i < nnn_; i++)
@@ -198,7 +198,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       
       // Converting coords, calculating angles and saving the projected near boundary edges
       int nr_edge = 0;
-      std::vector<doubleEdge> doubleEdges;
+      double_edges_.clear();
+      double_edges_.reserve(nnn_);
       for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
       {
         // Transforming coordinates
@@ -229,7 +230,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           tmp_ = coords_[sfn_[nnIdx[i]]] - proj_qp_;
           e.second[0] = tmp_.dot(u_);
           e.second[1] = tmp_.dot(v_);
-          doubleEdges.push_back(e);
+          double_edges_.push_back(e);
         }
       }
       angles_[0].visible = false;
@@ -241,12 +242,12 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           bool visibility = true;
           for (int j = 0; j < nr_edge; j++)
           {
-            if (ffn_[nnIdx[doubleEdges[j].index]] != nnIdx[i])
-              visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].first, Eigen::Vector2f::Zero());
+            if (ffn_[nnIdx[double_edges_[j].index]] != nnIdx[i])
+              visibility = isVisible(uvn_nn[i], uvn_nn[double_edges_[j].index], double_edges_[j].first, Eigen::Vector2f::Zero());
             if (!visibility)
               break;
-            if (sfn_[nnIdx[doubleEdges[j].index]] != nnIdx[i])
-              visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].second, Eigen::Vector2f::Zero());
+            if (sfn_[nnIdx[double_edges_[j].index]] != nnIdx[i])
+              visibility = isVisible(uvn_nn[i], uvn_nn[double_edges_[j].index], double_edges_[j].second, Eigen::Vector2f::Zero());
             if (!visibility)
               break;
           }
@@ -327,13 +328,11 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         //  std::cerr << R_ << " [" << indices_->at (R_) << "] " << i << ": " << nnIdx[i] << " / " << point2index[nnIdx[i]] << std::endl;
         nnIdx[i] = point2index[nnIdx[i]];
       }
-
-      // Locating FFN and SFN to adapt distance threshold
-      double sqr_source_dist = (coords_[R_] - coords_[source_[R_]]).squaredNorm ();
-      double sqr_ffn_dist = (coords_[R_] - coords_[ffn_[R_]]).squaredNorm ();
-      double sqr_sfn_dist = (coords_[R_] - coords_[sfn_[R_]]).squaredNorm ();
-      double max_sqr_fn_dist = (std::max)(sqr_ffn_dist, sqr_sfn_dist);
-      double sqr_dist_threshold = (std::min)(sqr_max_edge, sqr_mu * sqrDists[1]); //sqr_mu * sqr_avg_conn_dist);
+      const double sqr_source_dist = (coords_[R_] - coords_[source_[R_]]).squaredNorm ();
+      const double sqr_ffn_dist    = (coords_[R_] - coords_[ffn_[R_]]).squaredNorm ();
+      const double sqr_sfn_dist    = (coords_[R_] - coords_[sfn_[R_]]).squaredNorm ();
+      const double max_sqr_fn_dist = (std::max)(sqr_ffn_dist, sqr_sfn_dist);
+      const double sqr_dist_threshold = (std::min)(sqr_max_edge, sqr_mu * sqrDists[1]);
       if (max_sqr_fn_dist > sqrDists[nnn_-1])
       {
         if (0 == increase_nnn4fn)
@@ -342,7 +341,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         state_[R_] = BOUNDARY;
         continue;
       }
-      double max_sqr_fns_dist = (std::max)(sqr_source_dist, max_sqr_fn_dist);
+      const double max_sqr_fns_dist = (std::max)(sqr_source_dist, max_sqr_fn_dist);
       if (max_sqr_fns_dist > sqrDists[nnn_-1])
       {
         if (0 == increase_nnn4s)
@@ -356,8 +355,9 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
 
       // Converting coords, calculating angles and saving the projected near boundary edges
       int nr_edge = 0;
-      std::vector<doubleEdge> doubleEdges;
-      for (int i = 1; i < nnn_; i++) // nearest neighbor with index 0 is the query point R_ itself
+      double_edges_.clear();
+      double_edges_.reserve(nnn_);
+      for (int i = 1; i < nnn_; ++i) // nearest neighbor with index 0 is the query point R_ itself
       {
         tmp_ = coords_[nnIdx[i]] - proj_qp_;
         uvn_nn[i][0] = tmp_.dot(u_);
@@ -406,7 +406,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           tmp_ = coords_[sfn_[nnIdx[i]]] - proj_qp_;
           e.second[0] = tmp_.dot(u_);
           e.second[1] = tmp_.dot(v_);
-          doubleEdges.push_back(e);
+          double_edges_.push_back(e);
           // Pruning by visibility criterion 
           if ((state_[nnIdx[i]] == FRINGE) && (ffn_[R_] != nnIdx[i]) && (sfn_[R_] != nnIdx[i]))
           {
@@ -468,17 +468,17 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           bool visibility = true;
           for (int j = 0; j < nr_edge; j++)
           {
-            if (doubleEdges[j].index != i)
+            if (double_edges_[j].index != i)
             {
-              const auto& f = ffn_[nnIdx[doubleEdges[j].index]];
+              const auto& f = ffn_[nnIdx[double_edges_[j].index]];
               if ((f != nnIdx[i]) && (f != R_))
-                visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].first, Eigen::Vector2f::Zero());
+                visibility = isVisible(uvn_nn[i], uvn_nn[double_edges_[j].index], double_edges_[j].first, Eigen::Vector2f::Zero());
               if (!visibility)
                 break;
 
-              const auto& s = sfn_[nnIdx[doubleEdges[j].index]];
+              const auto& s = sfn_[nnIdx[double_edges_[j].index]];
               if ((s != nnIdx[i]) && (s != R_))
-                visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].second, Eigen::Vector2f::Zero());
+                visibility = isVisible(uvn_nn[i], uvn_nn[double_edges_[j].index], double_edges_[j].second, Eigen::Vector2f::Zero());
               if (!visibility)
                 break;
             }

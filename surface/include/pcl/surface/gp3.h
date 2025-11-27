@@ -374,7 +374,8 @@ namespace pcl
 
       /** \brief Temporary variable to store 3 coordinates **/
       Eigen::Vector3f tmp_;
-
+      /** \brief Reusable buffer for projected boundary edges to avoid repeated allocations **/
+      std::vector<doubleEdge> double_edges_{};
       /** \brief The actual surface reconstruction method.
         * \param[out] output the resultant polygonal mesh
         */
