@@ -135,6 +135,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   angles_.resize(nnn_);
   std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > uvn_nn (nnn_);
   Eigen::Vector2f uvn_s;
+  const double cos_eps_angle_ = std::cos(eps_angle_);
 
   // iterating through fringe points and finishing them until everything is done
   while (is_free != NONE)
@@ -374,10 +375,13 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         double cosine = nc.dot (neighbor_normal);
         if (cosine > 1) cosine = 1;
         if (cosine < -1) cosine = -1;
-        double angle = std::acos (cosine);
-        if ((!consistent_) && (angle > M_PI/2))
-          angle = M_PI - angle;
-        if (angle > eps_angle_)
+        
+        bool too_large_angle;
+        if (consistent_)
+          too_large_angle = (cosine < cos_eps_angle_);
+        else
+          too_large_angle = (std::fabs(cosine) < cos_eps_angle_);
+        if (too_large_angle)
         {
           angles_[i].visible = false;
           same_side = false;
