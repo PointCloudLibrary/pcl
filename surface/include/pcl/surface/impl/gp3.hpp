@@ -41,6 +41,7 @@
 #include <pcl/surface/gp3.h>
 
 #include <algorithm>
+#include <deque>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
@@ -133,17 +134,25 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   }
 
   // Initializing
-  int is_free=0, nr_parts=0, increase_nnn4fn=0, increase_nnn4s=0, increase_dist=0;
+  int nr_parts=0, increase_nnn4fn=0, increase_nnn4s=0, increase_dist=0;
   angles_.resize(nnn_);
   std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > uvn_nn (nnn_);
   Eigen::Vector2f uvn_s;
   const double cos_eps_angle_ = std::cos(eps_angle_);
 
+  // Initialize queue with initial FREE points (avoid repeated scans)
+  std::deque<int> free_queue;
+  for (int i = 0; i < static_cast<int>(indices_->size()); ++i)
+    if (state_[i] == FREE)
+      free_queue.push_back(i);
+
   // iterating through fringe points and finishing them until everything is done
-  while (is_free != NONE)
+  while (!free_queue.empty())
   {
-    R_ = is_free;
-    if (state_[R_] == FREE)
+    R_ = free_queue.front();
+    free_queue.pop_front();
+    if (state_[R_] != FREE)
+      continue;
     {
       state_[R_] = NONE;
       part_[R_] = part_index++;
@@ -172,7 +181,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       // Projecting point onto the surface 
       float dist = nc.dot (coords_[R_]);
       proj_qp_ = coords_[R_] - dist * nc;
-
+      
       // Converting coords, calculating angles and saving the projected near boundary edges
       int nr_edge = 0;
       std::vector<doubleEdge> doubleEdges;
@@ -268,16 +277,6 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         left++;
       }
       while (not_found);
-    }
-
-    is_free = NONE;
-    for (std::size_t temp = 0; temp < indices_->size (); temp++)
-    {
-      if (state_[temp] == FREE)
-      {
-        is_free = temp;
-        break;
-      }
     }
 
     bool is_fringe = true;
