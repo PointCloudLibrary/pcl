@@ -473,19 +473,6 @@ namespace pcl
         part_[v] = part_[s];
         fringe_queue_.push_back(v);
       }
-
-      /** \brief Function for ascending sort of nnAngle, taking visibility into account
-        * (angles to visible neighbors will be first, to the invisible ones after).
-        * \param[in] a1 the first angle
-        * \param[in] a2 the second angle
-        */
-      static inline bool 
-      nnAngleSortAsc (const nnAngle& a1, const nnAngle& a2)
-      {
-        if (a1.visible == a2.visible)
-          return (a1.angle < a2.angle);
-        return a1.visible;
-      }
   };
 
 } // namespace pcl

@@ -40,6 +40,8 @@
 
 #include <pcl/surface/gp3.h>
 
+#include <algorithm>
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::PolygonMesh &output)
@@ -479,7 +481,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         }
 
       // Sorting angles
-      std::sort (angles_.begin (), angles_.end (), GreedyProjectionTriangulation<PointInT>::nnAngleSortAsc);
+      const auto visible_end = std::partition(angles_.begin(), angles_.end(), [](const nnAngle& a){ return a.visible; });
+      std::sort(angles_.begin(), visible_end, [](const nnAngle& a, const nnAngle& b){ return a.angle < b.angle; });
 
       // Triangulating
       if (angles_[2].visible == false)
