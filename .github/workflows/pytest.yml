@@ -1,0 +1,65 @@
+name: Pytest
+
+on: [push]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  Pytest:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Setup python version
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version  }}
+      - name: Display python version
+        run: python -c "import sys; print(sys.version)"
+
+      # Install pip and packages
+      - name: Install pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install pytest
+        run: pip install pytest
+
+      # Install clang and it's python inteface via apt
+      - name: Add llvm keys
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          echo 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main' | sudo tee -a /etc/apt/sources.list
+          echo 'deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main' | sudo tee -a /etc/apt/sources.list
+      - name: Install libclang and its python bindings
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libclang-11-dev python3-clang-11
+
+      # Add dist-package to path to enable apt installed python3-clang import
+      - name: Add dist-packages to PYTHONPATH
+        run: echo "::set-env name=PYTHONPATH::${PYTHON_PATH}:/usr/lib/python3/dist-packages"
+      - name: Display PYTHONPATH
+        run: python -c "import sys; print('\n'.join(sys.path))"
+
+      # Test with pytest
+      - name: Test with pytest
+        run: cd ${_PYTHON_BINDINGS_PATH} && pytest --junitxml=${GITHUB_WORKSPACE}/result_${{ matrix.python-version }}.xml
+        env:
+          _PYTHON_BINDINGS_PATH: bindings/python
+
+      # Artifacts
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v2
+        with:
+          # We are in ${GITHUB_WORKSPACE}
+          # ${GITHUB_SHA} won't work: use ${{ github.sha }}
+          name: pytest_py${{ matrix.python-version }}-${{ github.sha }}
+          path: result_${{ matrix.python-version }}.xml
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}
