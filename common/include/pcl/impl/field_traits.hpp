@@ -68,7 +68,6 @@ struct label;
 
 namespace pcl
 {
-
 namespace traits
 {
 
@@ -125,5 +124,4 @@ struct has_label : has_field<PointT, pcl::fields::label>
 { };
 
 } // namespace traits
-
 } // namespace pcl
