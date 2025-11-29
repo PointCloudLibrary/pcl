@@ -40,6 +40,7 @@
 
 #include <limits>
 
+#include <pcl/field_traits.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 

@@ -7,6 +7,7 @@
 #include <pcl/tracking/tracking.h>
 #include <pcl/memory.h>
 #include <pcl/point_types.h>
+#include <pcl/field_traits.h>
 
 namespace pcl {
 namespace tracking {
