@@ -162,7 +162,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
 
 #pragma omp parallel for default(none)                                                 \
     shared(max_dist_sqr, per_thread_correspondences) firstprivate(index, distance)     \
-    num_threads(num_threads_)
+        num_threads(num_threads_)
   // Iterate over the input set of source indices
   for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
     const auto& idx = (*indices_)[i];
@@ -244,8 +244,8 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
 
 #pragma omp parallel for default(none)                                                 \
     shared(max_dist_sqr, per_thread_correspondences)                                   \
-    firstprivate(index, distance, index_reciprocal, distance_reciprocal)               \
-    num_threads(num_threads_)
+        firstprivate(index, distance, index_reciprocal, distance_reciprocal)           \
+            num_threads(num_threads_)
   // Iterate over the input set of source indices
   for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
     const auto& idx = (*indices_)[i];
@@ -313,7 +313,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
 } // namespace registration
 } // namespace pcl
 
-// #define PCL_INSTANTIATE_CorrespondenceEstimation(T,U) template class PCL_EXPORTS
-//  pcl::registration::CorrespondenceEstimation<T,U>;
+//#define PCL_INSTANTIATE_CorrespondenceEstimation(T,U) template class PCL_EXPORTS
+// pcl::registration::CorrespondenceEstimation<T,U>;
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_ */

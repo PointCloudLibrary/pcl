@@ -191,8 +191,7 @@ pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scal
       target_mean.template head<3>() - R * source_mean.template head<3>();
 }
 
-// #define PCL_INSTANTIATE_TransformationEstimation3Point(T,U) template class
-// PCL_EXPORTS
-//  pcl::registration::TransformationEstimation3Point<T,U>;
+//#define PCL_INSTANTIATE_TransformationEstimation3Point(T,U) template class PCL_EXPORTS
+// pcl::registration::TransformationEstimation3Point<T,U>;
 
 #endif // PCL_REGISTRATION_IMPL_TRANSFORMATION_ESTIMATION_3POINT_H_

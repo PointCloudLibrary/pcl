@@ -20,5 +20,5 @@ jobs:
             -DBUILD_surface_on_nurbs=ON \
             -DBUILD_simulation=ON \
             -DBUILD_global_tests=ON
-   
+          
           run-clang-tidy -header-filter='.*'

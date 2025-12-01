@@ -53,5 +53,5 @@ Checks: >
     readability-simplify-subscript-expr,
 WarningsAsErrors: '*'
 CheckOptions:
-        - {key: modernize-use-auto.MinTypeNameLength, value: 7}
+    - {key: modernize-use-auto.MinTypeNameLength, value: 7}
 UseColor: true

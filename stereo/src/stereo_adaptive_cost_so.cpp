@@ -108,7 +108,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl(unsigned char* ref_img,
         acc[x][d] = num / sumw;
 
       } // d
-    } // x
+    }   // x
 
     // Forward
     for (int d = 0; d < max_disp_; d++)
@@ -197,7 +197,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl(unsigned char* ref_img,
         disp_map_[y * width_ + x] = computeStereoSubpixel(
             dbest, acc[x][dbest - 1], acc[x][dbest], acc[x][dbest + 1]);
     } // x
-  } // y
+  }   // y
 
   for (int x = 0; x < width_; x++) {
     delete[] fwd[x];

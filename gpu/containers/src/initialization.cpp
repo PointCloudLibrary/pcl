@@ -45,7 +45,7 @@
 #if !defined(HAVE_CUDA)
 #define HAVE_CUDA
 #endif
-// #include <pcl_config.h>
+//#include <pcl_config.h>
 
 #if !defined(HAVE_CUDA)
 

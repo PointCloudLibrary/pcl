@@ -67,11 +67,7 @@ struct DevPtr {
 
   __PCL_GPU_HOST_DEVICE__
   operator T*() { return data; }
-  __PCL_GPU_HOST_DEVICE__
-  operator const T*() const
-  {
-    return data;
-  }
+  __PCL_GPU_HOST_DEVICE__ operator const T*() const { return data; }
 };
 
 template <typename T>

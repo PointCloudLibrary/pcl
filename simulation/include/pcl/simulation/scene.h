@@ -9,7 +9,7 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-// #include <pcl/win32_macros.h>
+//#include <pcl/win32_macros.h>
 #include <pcl/simulation/camera.h>
 #include <pcl/simulation/model.h>
 

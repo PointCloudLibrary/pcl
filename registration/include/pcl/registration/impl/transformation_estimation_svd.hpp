@@ -227,7 +227,7 @@ TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
 } // namespace registration
 } // namespace pcl
 
-// #define PCL_INSTANTIATE_TransformationEstimationSVD(T,U) template class PCL_EXPORTS
-//  pcl::registration::TransformationEstimationSVD<T,U>;
+//#define PCL_INSTANTIATE_TransformationEstimationSVD(T,U) template class PCL_EXPORTS
+// pcl::registration::TransformationEstimationSVD<T,U>;
 
 #endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_HPP_ */

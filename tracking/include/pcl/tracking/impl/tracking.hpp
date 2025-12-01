@@ -231,7 +231,7 @@ operator-(const ParticleXYZRPY& a, const ParticleXYZRPY& b)
 } // namespace tracking
 } // namespace pcl
 
-// ########################################################################33
+//########################################################################33
 
 namespace pcl {
 namespace tracking {
@@ -415,7 +415,7 @@ operator-(const ParticleXYZR& a, const ParticleXYZR& b)
 } // namespace tracking
 } // namespace pcl
 
-// ########################################################################33
+//########################################################################33
 
 namespace pcl {
 namespace tracking {
@@ -605,7 +605,7 @@ operator-(const ParticleXYRPY& a, const ParticleXYRPY& b)
 } // namespace tracking
 } // namespace pcl
 
-// ########################################################################33
+//########################################################################33
 
 namespace pcl {
 namespace tracking {
@@ -792,7 +792,7 @@ operator-(const ParticleXYRP& a, const ParticleXYRP& b)
 } // namespace tracking
 } // namespace pcl
 
-// ########################################################################33
+//########################################################################33
 
 namespace pcl {
 namespace tracking {

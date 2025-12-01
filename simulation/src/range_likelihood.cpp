@@ -19,7 +19,7 @@
 // For adding noise:
 static std::minstd_rand rng(std::random_device{}());
 
-// #define SIMULATION_DEBUG 1
+//#define SIMULATION_DEBUG 1
 #define DO_TIMING_PROFILE 0
 
 // 301 values, 0.0 uniform  1.0 normal. properly truncated/normalized
@@ -587,7 +587,7 @@ costFunction0(float ref_val, float depth_val)
 float
 costFunction1(float ref_val, float depth_val)
 {
-  float cost = sqr(ref_val - 1 / (1.4285f - (depth_val) * 1.3788f));
+  float cost = sqr(ref_val - 1 / (1.4285f - (depth_val)*1.3788f));
   // std::cout << " [" << ref_val << "," << 1/(1.4285 -(depth_val)*1.3788) << "] ";
   if (ref_val < 0) { // all images pixels with no range
     cost = 1;
@@ -604,7 +604,7 @@ costFunction1(float ref_val, float depth_val)
 float
 costFunction2(float ref_val, float depth_val)
 {
-  float min_dist = std::abs(ref_val - 1 / (1.4285f - (depth_val) * 1.3788f));
+  float min_dist = std::abs(ref_val - 1 / (1.4285f - (depth_val)*1.3788f));
   int lup = static_cast<int>(std::ceil(min_dist * 100)); // has resolution of 0.01m
 
   if (lup > 300) { // implicitly this caps the cost if there is a hole in the model
@@ -672,7 +672,7 @@ costFunction4(float ref_val, float depth_val)
   // bottom:
   // bottom = bottom_lookup(   round(mu*1000+1));
   int bottom_lup =
-      static_cast<int>(std::ceil((depth_val) * 300)); // has resolution of 0.001m
+      static_cast<int>(std::ceil((depth_val)*300)); // has resolution of 0.001m
   if (bottom_lup > 300) {
     bottom_lup = 300;
   }
