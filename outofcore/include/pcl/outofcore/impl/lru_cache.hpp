@@ -33,7 +33,6 @@ public:
 
   using KeyIndex = std::list<KeyT>;
   using KeyIndexIterator = typename KeyIndex::iterator;
-
   using Cache = std::map<KeyT, std::pair<CacheItemT, typename KeyIndex::iterator> >;
   using CacheIterator = typename Cache::iterator;
 
@@ -133,7 +132,7 @@ public:
   CacheItemT&
   tailItem ()
   {
-    const CacheIterator it = cache_.find (key_index_.front ());
+    const auto it = cache_.find (key_index_.front ());
     return it->second.first;
   }
 
