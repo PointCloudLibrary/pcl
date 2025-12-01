@@ -6,15 +6,15 @@
 TEST(PCL, printStreamsMacros) {
   pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
 
-  PCL_ALWAYS_STREAM("Always_stream\n");
+  PCL_ALWAYS_STREAM("Always_stream\n")
   PCL_ERROR_STREAM("Error_stream\n")
-  PCL_WARN_STREAM("Warn_stream\n");
+  PCL_WARN_STREAM("Warn_stream\n")
   PCL_INFO_STREAM("Info_stream: this is a point: " << pcl::PointXYZ(1.0, 2.0, 3.0)
-                                                   << "\n");
-  PCL_DEBUG_STREAM("Debug_stream\n");
+                                                   << "\n")
+  PCL_DEBUG_STREAM("Debug_stream\n")
   PCL_VERBOSE_STREAM("Verbose_stream: an Eigen vector: "
                      << "\n"
-                     << Eigen::Vector3f(1.0, 2.0, 3.0) << "\n");
+                     << Eigen::Vector3f(1.0, 2.0, 3.0) << "\n")
 }
 
 TEST(PCL, printMacros)
