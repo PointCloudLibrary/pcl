@@ -40,6 +40,7 @@
 #include <iostream>
 
 #include <pcl/filters/filter.h>
+#include <pcl/point_types.h>
 
 int
 main (int, char**)

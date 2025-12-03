@@ -4,6 +4,7 @@
 #include <pcl/stereo/stereo_matching.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/image_viewer.h>
+#include <pcl/point_types.h>
 
 #include <pcl/io/pcd_io.h>
 

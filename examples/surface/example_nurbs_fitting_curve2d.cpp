@@ -3,6 +3,8 @@
 
 #include <pcl/io/pcd_io.h>
 
+#include <pcl/point_types.h>
+
 #include <pcl/visualization/pcl_visualizer.h>
 
 pcl::visualization::PCLVisualizer viewer ("Curve Fitting 2D");

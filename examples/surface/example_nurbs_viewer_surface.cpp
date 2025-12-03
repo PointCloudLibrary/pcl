@@ -1,3 +1,4 @@
+#include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/surface/on_nurbs/triangulation.h>
 
