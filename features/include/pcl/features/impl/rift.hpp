@@ -42,6 +42,7 @@
 #define PCL_FEATURES_IMPL_RIFT_H_
 
 #include <pcl/features/rift.h>
+#include <pcl/point_types.h>    // for pcl::Vector3fMapConst
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename GradientT, typename PointOutT> void

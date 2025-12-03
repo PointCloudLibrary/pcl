@@ -41,6 +41,7 @@
 #pragma once
 
 #include <pcl/features/feature.h>
+#include <pcl/point_types.h>       // for pcl::FPFHSignature33
 
 namespace pcl
 {

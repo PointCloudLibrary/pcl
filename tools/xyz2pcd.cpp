@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
