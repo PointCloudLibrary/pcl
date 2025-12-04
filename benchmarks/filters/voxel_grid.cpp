@@ -1,6 +1,7 @@
 #include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/io/pcd_io.h> // for PCDReader
+#include <pcl/io/pcd_io.h>   // for PCDReader
+#include <pcl/point_types.h> // for pcl::PointXYZ
 
 #include <benchmark/benchmark.h>
 
