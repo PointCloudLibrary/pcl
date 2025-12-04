@@ -43,6 +43,7 @@
 #include <pcl/common/concatenate.h>
 #include <pcl/common/copy_point.h>
 
+#include <cstring>  // for memcpy
 
 namespace pcl
 {
