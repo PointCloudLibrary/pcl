@@ -34,7 +34,6 @@ public:
   using KeyIndex = std::list<KeyT>;
   using KeyIndexIterator = typename KeyIndex::iterator;
   using Cache = std::map<KeyT, std::pair<CacheItemT, typename KeyIndex::iterator> >;
-  using CacheIterator = typename Cache::iterator;
 
   LRUCache (std::size_t c) :
       capacity_ (c)
