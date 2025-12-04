@@ -40,6 +40,7 @@
 
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
+#include <pcl/point_types.h>
 
 using namespace pcl::outofcore;
 

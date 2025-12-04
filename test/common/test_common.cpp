@@ -46,6 +46,7 @@
 #include <pcl/common/intersections.h>
 #include <pcl/common/io.h>
 #include <pcl/common/eigen.h>
+#include <pcl/field_traits.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/point_tests.h> // for isFinite

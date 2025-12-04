@@ -46,6 +46,7 @@
 
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>
+#include <pcl/point_types.h>     // for pcl::PointXYZ
 
 #include <pcl/outofcore/octree_base.h>
 #include <pcl/outofcore/octree_disk_container.h>

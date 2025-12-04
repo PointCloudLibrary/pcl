@@ -41,6 +41,7 @@
 #pragma once
 
 #include <pcl/features/feature.h>
+#include <pcl/point_types.h>       // for pcl::ESFSignature640
 #define GRIDSIZE 64
 #define GRIDSIZE_H (GRIDSIZE/2)
 #include <vector>

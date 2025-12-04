@@ -43,6 +43,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/principal_curvatures.h>
 #include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/point_types.h>
 
 int
 main (int, char** argv)

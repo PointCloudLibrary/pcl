@@ -37,6 +37,7 @@
 #pragma once
 
 #include <pcl/keypoints/keypoint.h>
+#include <pcl/point_types.h>         // for pcl::Normal, pcl::IntensityGradient
 
 namespace pcl
 {

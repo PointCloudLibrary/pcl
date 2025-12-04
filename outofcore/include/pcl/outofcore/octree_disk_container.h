@@ -47,10 +47,11 @@
 #include <boost/random/mersenne_twister.hpp> // for boost::mt19937
 #include <boost/uuid/random_generator.hpp>
 
-#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/outofcore/octree_abstract_node_container.h>
+#include <pcl/common/utils.h>    // pcl::utils::ignore
 #include <pcl/io/pcd_io.h>
 #include <pcl/PCLPointCloud2.h>
+#include <pcl/point_types.h>     // for pcl::PointXYZ
 
 //allows operation on POSIX
 #if !defined _WIN32

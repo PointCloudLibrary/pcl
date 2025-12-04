@@ -38,6 +38,7 @@
 #include <pcl/common/time.h> // for StopWatch
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/harris_3d.h>
+#include <pcl/point_types.h>
 
 int
 main(int argc, char** argv)
