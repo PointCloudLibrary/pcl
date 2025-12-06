@@ -48,7 +48,7 @@ main (int argc, char *argv[])
     return -1;
   }
 
-  const ON_NurbsSurface* on_surf_ptr = dynamic_cast<const ON_NurbsSurface*>(on_object);
+  const auto* on_surf_ptr = dynamic_cast<const ON_NurbsSurface*>(on_object);
   if (!on_surf_ptr)
   {
     std::cerr << "object[0] is not a NURBS surface." << std::endl;
@@ -74,7 +74,7 @@ main (int argc, char *argv[])
       return -1;
     }
 
-    const ON_NurbsCurve* on_curv_ptr = dynamic_cast<const ON_NurbsCurve*>(on_object);
+    const auto* on_curv_ptr = dynamic_cast<const ON_NurbsCurve*>(on_object);
     if (!on_curv_ptr)
     {
       std::cerr << "object[1] is not a NURBS curve." << std::endl;
