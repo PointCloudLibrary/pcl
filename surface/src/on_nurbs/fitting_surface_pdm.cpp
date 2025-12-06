@@ -282,7 +282,7 @@ FittingSurface::assembleInterior (double wInt, unsigned &row)
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
   m_data->interior_normals.clear ();
-  unsigned nInt = static_cast<unsigned> (m_data->interior.size ());
+  auto nInt = static_cast<unsigned> (m_data->interior.size ());
   for (unsigned p = 0; p < nInt; p++)
   {
     Vector3d &pcp = m_data->interior[p];
@@ -326,7 +326,7 @@ FittingSurface::assembleBoundary (double wBnd, unsigned &row)
   m_data->boundary_line_end.clear ();
   m_data->boundary_error.clear ();
   m_data->boundary_normals.clear ();
-  unsigned nBnd = static_cast<unsigned> (m_data->boundary.size ());
+  auto nBnd = static_cast<unsigned> (m_data->boundary.size ());
   for (unsigned p = 0; p < nBnd; p++)
   {
     Vector3d &pcp = m_data->boundary[p];
@@ -407,7 +407,7 @@ FittingSurface::initNurbsPCA (int order, NurbsDataSurface *m_data, Eigen::Vector
   Eigen::Matrix3d eigenvectors;
   Eigen::Vector3d eigenvalues;
 
-  unsigned s = static_cast<unsigned> (m_data->interior.size ());
+  auto s = static_cast<unsigned> (m_data->interior.size ());
 
   NurbsTools::pca (m_data->interior, mean, eigenvectors, eigenvalues);
 
@@ -455,7 +455,7 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
   Eigen::Matrix3d eigenvectors;
   Eigen::Vector3d eigenvalues;
 
-  unsigned s = static_cast<unsigned> (m_data->interior.size ());
+  auto s = static_cast<unsigned> (m_data->interior.size ());
   m_data->interior_param.clear ();
 
   NurbsTools::pca (m_data->interior, mean, eigenvectors, eigenvalues);
@@ -479,7 +479,7 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
   for (unsigned i = 0; i < s; i++)
   {
     Eigen::Vector3d p (eigenvectors_inv * (m_data->interior[i] - mean));
-    m_data->interior_param.push_back (Eigen::Vector2d (p (0), p (1)));
+    m_data->interior_param.emplace_back (p (0), p (1));
 
     if (p (0) > v_max (0))
       v_max (0) = p (0);
@@ -1168,15 +1168,15 @@ FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vect
   // NORTH - SOUTH
   for (std::size_t i = 0; i < (elementsV.size () - 1); i++)
   {
-    ini_points.emplace_back(WEST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
-    ini_points.emplace_back(EAST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
+    ini_points.emplace_back (WEST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
+    ini_points.emplace_back (EAST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
   }
 
   // WEST - EAST
   for (std::size_t i = 0; i < (elementsU.size () - 1); i++)
   {
-    ini_points.emplace_back(NORTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
-    ini_points.emplace_back(SOUTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
+    ini_points.emplace_back (NORTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
+    ini_points.emplace_back (SOUTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
   }
 
   for (std::size_t i = 0; i < ini_points.size (); i++)

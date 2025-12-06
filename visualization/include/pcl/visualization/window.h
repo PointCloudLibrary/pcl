@@ -49,7 +49,6 @@ class vtkRenderWindow;
 class vtkRenderWindowInteractor;
 class vtkCallbackCommand;
 class vtkRendererCollection;
-class PCLVisualizerInteractorStyle;
 
 namespace pcl
 {
@@ -57,6 +56,7 @@ namespace pcl
   {
     class MouseEvent;
     class KeyboardEvent;
+    class PCLVisualizerInteractorStyle;
 
     class PCL_EXPORTS Window
     {

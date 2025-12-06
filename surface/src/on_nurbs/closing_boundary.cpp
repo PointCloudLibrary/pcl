@@ -243,7 +243,7 @@ ClosingBoundary::sampleUniform (ON_NurbsSurface *nurbs, vector_vec3d &point_list
     {
       params (0) = minU + (maxU - minU) * ds * i;
       nurbs->Evaluate (params (0), params (1), 0, 3, points);
-      point_list.push_back (Eigen::Vector3d (points[0], points[1], points[2]));
+      point_list.emplace_back(points[0], points[1], points[2]);
     }
   }
 }
@@ -262,10 +262,10 @@ ClosingBoundary::sampleRandom (ON_NurbsSurface *nurbs, vector_vec3d &point_list,
 
   for (unsigned i = 0; i < samples; i++)
   {
-    params (0) = minU + (maxU - minU) * (double (rand ()) / RAND_MAX);
-    params (1) = minV + (maxV - minV) * (double (rand ()) / RAND_MAX);
+    params (0) = minU + (maxU - minU) * (static_cast<double>(rand ()) / RAND_MAX);
+    params (1) = minV + (maxV - minV) * (static_cast<double>(rand ()) / RAND_MAX);
     nurbs->Evaluate (params (0), params (1), 0, 3, points);
-    point_list.push_back (Eigen::Vector3d (points[0], points[1], points[2]));
+    point_list.emplace_back(points[0], points[1], points[2]);
   }
 }
 
@@ -290,7 +290,7 @@ ClosingBoundary::sampleFromBoundary (ON_NurbsSurface *nurbs, vector_vec3d &point
   {
     params (1) = minV + (maxV - minV) * ds * i;
     nurbs->Evaluate (params (0), params (1), 0, 3, points);
-    point_list.push_back (Eigen::Vector3d (points[0], points[1], points[2]));
+    point_list.emplace_back(points[0], points[1], points[2]);
     param_list.push_back (params);
   }
 
@@ -300,7 +300,7 @@ ClosingBoundary::sampleFromBoundary (ON_NurbsSurface *nurbs, vector_vec3d &point
   {
     params (1) = minV + (maxV - minV) * ds * i;
     nurbs->Evaluate (params (0), params (1), 0, 3, points);
-    point_list.push_back (Eigen::Vector3d (points[0], points[1], points[2]));
+    point_list.emplace_back(points[0], points[1], points[2]);
     param_list.push_back (params);
   }
 
@@ -310,7 +310,7 @@ ClosingBoundary::sampleFromBoundary (ON_NurbsSurface *nurbs, vector_vec3d &point
   {
     params (0) = minU + (maxU - minU) * ds * i;
     nurbs->Evaluate (params (0), params (1), 0, 3, points);
-    point_list.push_back (Eigen::Vector3d (points[0], points[1], points[2]));
+    point_list.emplace_back(points[0], points[1], points[2]);
     param_list.push_back (params);
   }
 
@@ -320,7 +320,7 @@ ClosingBoundary::sampleFromBoundary (ON_NurbsSurface *nurbs, vector_vec3d &point
   {
     params (0) = minU + (maxU - minU) * ds * i;
     nurbs->Evaluate (params (0), params (1), 0, 3, points);
-    point_list.push_back (Eigen::Vector3d (points[0], points[1], points[2]));
+    point_list.emplace_back(points[0], points[1], points[2]);
     param_list.push_back (params);
   }
 }
