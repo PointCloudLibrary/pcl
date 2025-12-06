@@ -211,7 +211,7 @@ FittingCurve2dSDM::addCageRegularisation (double weight, unsigned &row)
 void
 FittingCurve2dSDM::assembleInterior (double wInt, double rScale, unsigned &row)
 {
-  unsigned nInt = static_cast<int>(m_data->interior.size ());
+  auto nInt = static_cast<unsigned>(m_data->interior.size ());
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();

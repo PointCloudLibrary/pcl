@@ -615,7 +615,7 @@ SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, con
 
     if (!std::isnan (pt.x) && !std::isnan (pt.y) && !std::isnan (pt.z))
     {
-      on_cloud.emplace_back(pt.x, pt.y, pt.z);
+      on_cloud.emplace_back (pt.x, pt.y, pt.z);
       numPoints++;
     }
 

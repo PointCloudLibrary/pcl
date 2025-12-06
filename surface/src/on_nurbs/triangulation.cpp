@@ -375,8 +375,8 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     params[i] = param;
     pt_is_in[i] = (z (2) >= 0.0);
 
-    end.emplace_back(pc (0), pc (1), 0.0);
-    start.emplace_back(vp (0), vp (1), 0.0);
+    end.emplace_back (pc (0), pc (1), 0.0);
+    start.emplace_back (vp (0), vp (1), 0.0);
   }
 
   for (const auto &poly : polygons)

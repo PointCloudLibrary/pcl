@@ -20,7 +20,7 @@ CreateCylinderPoints (pcl::PointCloud<Point>::Ptr cloud, pcl::on_nurbs::vector_v
     p.y = static_cast<float>(r * sin (da));
     p.z = static_cast<float>(dh);
 
-    data.emplace_back(p.x, p.y, p.z);
+    data.emplace_back (p.x, p.y, p.z);
     cloud->push_back (p);
   }
 }
