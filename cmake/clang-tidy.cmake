@@ -1,0 +1,31 @@
+find_program(CLANG_TIDY clang-tidy)
+if(NOT CLANG_TIDY)
+    message(STATUS "Did not find clang-tidy, target tidy is disabled.")
+else()
+    message(STATUS "Found clang-tidy, use \"make tidy\" to run it.")
+
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+    set(CLANG_TIDY_CHECKS "*")
+    set(CLANG_TIDY_CHECKS "${CLANG_TIDY_CHECKS},-clang-analyzer-*")
+    set(CLANG_TIDY_CHECKS "${CLANG_TIDY_CHECKS},-clang-analyzer-cplusplus*")
+    set(CLANG_TIDY_CHECKS "-checks='${CLANG_TIDY_CHECKS}'")
+
+    macro(clang_tidy directory DESC)
+        if(IS_DIRECTORY "${directory}")
+            file(GLOB_RECURSE sources_${directory} "${directory}/*.cpp" "${directory}/*.hpp")
+            list(LENGTH sources_${directory} sources_length)
+            if(${sources_length})
+                add_custom_target(tidy-${DESC}
+                        COMMAND ${CLANG_TIDY} -p ${CMAKE_BINARY_DIR}/compile_commands.json ${CLANG_TIDY_CHECKS} -header-filter='.*' ${sources_${directory}}
+                        WORKING_DIRECTORY ${directory})
+            endif()
+        endif()
+    endmacro(clang_tidy)
+    macro(clang_tidy_recurse directory)
+        file(GLOB dirs LIST_DIRECTORIES true RELATIVE "${directory}" "*")
+        foreach(dir ${dirs})
+            clang_tidy("${directory}/${dir}" "${dir}")
+        endforeach()
+    endmacro(clang_tidy_recurse)
+endif()
