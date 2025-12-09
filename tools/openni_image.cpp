@@ -97,7 +97,7 @@ do \
     ++count; \
     if (now - last >= 1.0) \
     { \
-      std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff.getSize () << ", number of frames written so far: " << nr_frames_total << "\n"; \
+      std::cerr << "Average framerate("<< (_WHAT_) << "): " << double(count)/double(now - last) << " Hz. Queue size: " << (buff).getSize () << ", number of frames written so far: " << nr_frames_total << "\n"; \
       count = 0; \
       last = now; \
     } \
@@ -112,7 +112,7 @@ do \
     ++count; \
     if (now - last >= 1.0) \
     { \
-      std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff.getSize () << "\n"; \
+      std::cerr << "Average framerate("<< (_WHAT_) << "): " << double(count)/double(now - last) << " Hz. Queue size: " << (buff).getSize () << "\n"; \
       count = 0; \
       last = now; \
     } \
@@ -128,9 +128,9 @@ do \
     if (now - last >= 1.0) \
     { \
       if (visualize && global_visualize) \
-        std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w) / " << buff2.getSize () << " (v)\n"; \
+        std::cerr << "Average framerate("<< (_WHAT_) << "): " << double(count)/double(now - last) << " Hz. Queue size: " << (buff1).getSize () << " (w) / " << (buff2).getSize () << " (v)\n"; \
       else \
-        std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w)\n"; \
+        std::cerr << "Average framerate("<< (_WHAT_) << "): " << double(count)/double(now - last) << " Hz. Queue size: " << (buff1).getSize () << " (w)\n"; \
       count = 0; \
       last = now; \
     } \
@@ -524,7 +524,7 @@ class Viewer
                 reinterpret_cast<const unsigned short*> (&frame->depth_image->getDepthMetaData ().Data ()[0]),
                   frame->depth_image->getWidth (), frame->depth_image->getHeight (),
                   std::numeric_limits<unsigned short>::min (), 
-                  // Scale so that the colors look brigher on screen
+                  // Scale so that the colors look brighter on screen
                   std::numeric_limits<unsigned short>::max () / 10, 
                   true);
 
@@ -549,7 +549,6 @@ class Viewer
     ///////////////////////////////////////////////////////////////////////////////////////
     Viewer (Buffer &buf)
       : buf_ (buf)
-      , image_cld_init_ (false), depth_image_cld_init_ (false)
     {
       image_viewer_.reset (new visualization::ImageViewer ("PCL/OpenNI RGB image viewer"));
       depth_image_viewer_.reset (new visualization::ImageViewer ("PCL/OpenNI depth image viewer"));
@@ -620,7 +619,7 @@ class Viewer
     Buffer &buf_;
     visualization::ImageViewer::Ptr image_viewer_;
     visualization::ImageViewer::Ptr depth_image_viewer_;
-    bool image_cld_init_, depth_image_cld_init_;
+    bool image_cld_init_{false}, depth_image_cld_init_{false};
 };
 
 void

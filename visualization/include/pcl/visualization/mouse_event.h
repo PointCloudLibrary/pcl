@@ -132,7 +132,7 @@ namespace pcl
         MouseButton button_;
         unsigned int pointer_x_;
         unsigned int pointer_y_;
-        unsigned int key_state_;
+        unsigned int key_state_{0};
         bool selection_mode_;
     };
 
@@ -144,8 +144,8 @@ namespace pcl
     , button_ (button)
     , pointer_x_ (x)
     , pointer_y_ (y)
-    , key_state_ (0)
-    , selection_mode_ (selection_mode)
+    , 
+     selection_mode_ (selection_mode)
     {
       if (alt)
         key_state_ = KeyboardEvent::Alt;

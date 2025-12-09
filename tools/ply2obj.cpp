@@ -122,18 +122,14 @@ class ply_to_obj_converter
     void
     face_end ();
 
-    flags_type flags_;
-    std::ostream* ostream_;
-    double vertex_x_, vertex_y_, vertex_z_;
-    std::size_t face_vertex_indices_element_index_, face_vertex_indices_first_element_, face_vertex_indices_previous_element_;
+    flags_type flags_{0};
+    std::ostream* ostream_{};
+    double vertex_x_{0.0}, vertex_y_{0.0}, vertex_z_{0.0};
+    std::size_t face_vertex_indices_element_index_{0}, face_vertex_indices_first_element_{0}, face_vertex_indices_previous_element_{0};
 };
 
 ply_to_obj_converter::ply_to_obj_converter (flags_type flags)
-  : flags_ (flags), ostream_ (), 
-  vertex_x_ (0), vertex_y_ (0), vertex_z_ (0),
-  face_vertex_indices_element_index_ (), 
-  face_vertex_indices_first_element_ (),
-  face_vertex_indices_previous_element_ ()
+  : flags_ (flags)
 {
 }
 

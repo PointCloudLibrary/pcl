@@ -107,8 +107,7 @@ namespace pcl
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
-      SeededHueSegmentation () : cluster_tolerance_ (0), delta_hue_ (0.0)
-      {};
+      SeededHueSegmentation () = default;
 
       /** \brief Provide a pointer to the search object.
         * \param[in] tree a pointer to the spatial search object.
@@ -155,13 +154,13 @@ namespace pcl
       using BasePCLBase::deinitCompute;
 
       /** \brief A pointer to the spatial search object. */
-      KdTreePtr tree_;
+      KdTreePtr tree_{nullptr};
 
       /** \brief The spatial cluster tolerance as a measure in the L2 Euclidean space. */
-      double cluster_tolerance_;
+      double cluster_tolerance_{0.0};
 
       /** \brief The allowed difference on the hue*/
-      float delta_hue_;
+      float delta_hue_{0.0f};
 
       /** \brief Class getName method. */
       virtual std::string getClassName () const { return ("seededHueSegmentation"); }

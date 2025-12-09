@@ -8,10 +8,9 @@
 find_package(PkgConfig QUIET)
 pkg_check_modules(PC_SPHINX sphinx-build)
 
-find_package(PythonInterp)
-
-if(PYTHONINTERP_FOUND)
-  get_filename_component(PYTHON_DIR "${PYTHON_EXECUTABLE}" PATH)
+find_package(Python)
+if(Python_Interpreter_FOUND)
+  get_filename_component(PYTHON_DIR "${Python_EXECUTABLE}" PATH)
 endif()
 
 find_program(SPHINX_EXECUTABLE NAMES sphinx-build

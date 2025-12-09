@@ -1,9 +1,19 @@
 set(SUBSYS_NAME outofcore)
 set(SUBSYS_DESC "Point cloud outofcore library")
+if(BUILD_visualization)
 set(SUBSYS_DEPS common io filters octree visualization)
+else()
+set(SUBSYS_DEPS common io filters octree)
+endif()
 
-set(build TRUE)
-PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
+if(NOT TARGET Boost::filesystem)
+  set(DEFAULT FALSE)
+  set(REASON "Boost filesystem is not available.")
+else()
+  set(DEFAULT TRUE)
+endif()
+
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -13,7 +23,6 @@ if(NOT build)
 endif()
 
 set(srcs
-  src/cJSON.cpp
   src/outofcore_node_data.cpp
   src/outofcore_base_data.cpp
 )
@@ -26,7 +35,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/outofcore_breadth_first_iterator.h"
   "include/pcl/${SUBSYS_NAME}/outofcore_depth_first_iterator.h"
   "include/pcl/${SUBSYS_NAME}/boost.h"
-  "include/pcl/${SUBSYS_NAME}/cJSON.h"
   "include/pcl/${SUBSYS_NAME}/octree_base.h"
   "include/pcl/${SUBSYS_NAME}/octree_base_node.h"
   "include/pcl/${SUBSYS_NAME}/octree_abstract_node_container.h"
@@ -59,18 +67,31 @@ set(visualization_incs
   "include/pcl/${SUBSYS_NAME}/visualization/viewport.h"
 )
 
+if(NOT HAVE_CJSON)
+  list(APPEND srcs  src/cJSON.cpp)
+  list(APPEND incs "include/pcl/${SUBSYS_NAME}/cJSON.h")
+endif()
+
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs} ${visualization_incs})
-#PCL_ADD_SSE_FLAGS("${LIB_NAME}")
-target_link_libraries("${LIB_NAME}" pcl_common pcl_visualization ${Boost_SYSTEM_LIBRARY})
+if(BUILD_visualization)
+  PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs} ${visualization_incs})
+  target_link_libraries("${LIB_NAME}" pcl_common pcl_visualization Boost::filesystem)
+else()
+  PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
+  target_link_libraries("${LIB_NAME}" pcl_common Boost::filesystem)
+endif()
+if(HAVE_CJSON)
+  target_link_libraries("${LIB_NAME}" ${CJSON_LIBRARIES})
+endif()
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/visualization" ${visualization_incs})
+if(BUILD_visualization)
+  PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/visualization" ${visualization_incs})
+endif()
 
 if(BUILD_tools)
   add_subdirectory(tools)

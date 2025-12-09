@@ -61,18 +61,9 @@
 class ply_to_raw_converter
 {
   public:
-    ply_to_raw_converter () : 
-      ostream_ (), vertex_x_ (0), vertex_y_ (0), vertex_z_ (0), 
-      face_vertex_indices_element_index_ (),
-      face_vertex_indices_first_element_ (), 
-      face_vertex_indices_previous_element_ ()
-    {}
+  ply_to_raw_converter() = default;
 
-    ply_to_raw_converter (const ply_to_raw_converter &f) :
-      ostream_ (), vertex_x_ (0), vertex_y_ (0), vertex_z_ (0), 
-      face_vertex_indices_element_index_ (),
-      face_vertex_indices_first_element_ (), 
-      face_vertex_indices_previous_element_ ()
+  ply_to_raw_converter (const ply_to_raw_converter &f)
     {
       *this = f;
     }
@@ -80,6 +71,8 @@ class ply_to_raw_converter
     ply_to_raw_converter&
     operator = (const ply_to_raw_converter &f)
     {
+      if (this == &f)
+        return *this;
       ostream_ = f.ostream_;
       vertex_x_ = f.vertex_x_;
       vertex_y_ = f.vertex_y_;
@@ -87,7 +80,7 @@ class ply_to_raw_converter
       face_vertex_indices_element_index_ = f.face_vertex_indices_element_index_;
       face_vertex_indices_first_element_ = f.face_vertex_indices_first_element_;
       face_vertex_indices_previous_element_ = f.face_vertex_indices_previous_element_;
-      return (*this);
+      return *this;
     }
 
     bool 
@@ -144,10 +137,10 @@ class ply_to_raw_converter
     void
     face_end ();
 
-    std::ostream* ostream_;
-    pcl::io::ply::float32 vertex_x_, vertex_y_, vertex_z_;
-    pcl::io::ply::int32 face_vertex_indices_element_index_, face_vertex_indices_first_element_, face_vertex_indices_previous_element_;
-    std::vector<std::tuple<pcl::io::ply::float32, pcl::io::ply::float32, pcl::io::ply::float32> > vertices_;
+    std::ostream* ostream_{};
+    pcl::io::ply::float32 vertex_x_{0.0f}, vertex_y_{0.0f}, vertex_z_{0.0f};
+    pcl::io::ply::int32 face_vertex_indices_element_index_{0}, face_vertex_indices_first_element_{0}, face_vertex_indices_previous_element_{0};
+    std::vector<std::tuple<pcl::io::ply::float32, pcl::io::ply::float32, pcl::io::ply::float32> > vertices_{};
 };
 
 void

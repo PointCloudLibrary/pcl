@@ -40,10 +40,10 @@
  **/
 
 #include <iostream>
-#include <boost/filesystem.hpp>
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
@@ -235,12 +235,12 @@ int main(int argc, char ** argv)
     PCL_INFO ("Creating RGB Tiff List\n");
 
   std::vector<std::string> tiff_rgb_files;
-  std::vector<boost::filesystem::path> tiff_rgb_paths;
-  boost::filesystem::directory_iterator end_itr;
+  std::vector<pcl_fs::path> tiff_rgb_paths;
+  pcl_fs::directory_iterator end_itr;
 
-  if(boost::filesystem::is_directory(rgb_path_))
+  if(pcl_fs::is_directory(rgb_path_))
   {
-    for (boost::filesystem::directory_iterator itr(rgb_path_); itr != end_itr; ++itr)
+    for (pcl_fs::directory_iterator itr(rgb_path_); itr != end_itr; ++itr)
     {
       std::string ext = itr->path().extension().string();
       if(ext == ".tiff")
@@ -278,11 +278,11 @@ int main(int argc, char ** argv)
     PCL_INFO ("Creating Depth Tiff List\n");
 
   std::vector<std::string> tiff_depth_files;
-  std::vector<boost::filesystem::path> tiff_depth_paths;
+  std::vector<pcl_fs::path> tiff_depth_paths;
 
-  if(boost::filesystem::is_directory(depth_path_))
+  if(pcl_fs::is_directory(depth_path_))
   {
-    for (boost::filesystem::directory_iterator itr(depth_path_); itr != end_itr; ++itr)
+    for (pcl_fs::directory_iterator itr(depth_path_); itr != end_itr; ++itr)
     {
       std::string ext = itr->path().extension().string();
       if(ext == ".tiff")

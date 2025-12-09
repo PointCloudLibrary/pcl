@@ -28,6 +28,22 @@
 // and statically link with the zlib library. All the necessary
 // header files are included by opennurbs.h.
 
+// PCL can use an external zlib.
+
+#include <pcl/pcl_config.h>
+
+#if defined(HAVE_ZLIB)
+
+#define z_deflate deflate
+#define z_inflate inflate
+#define z_Bytef Bytef
+
+#define zcalloc pcl_zcalloc
+#define zcfree pcl_zcfree
+
+#include <zlib.h>
+
+#else
 
 #if !defined(Z_PREFIX)
 /* decorates zlib functions with a "z_" prefix to prevent symbol collision. */
@@ -40,6 +56,8 @@
 #endif
 
 #include "zlib.h"
+
+#endif // HAVE_ZLIB
 
 ON_BEGIN_EXTERNC
 voidpf zcalloc (voidpf, unsigned, unsigned);

@@ -1,6 +1,6 @@
 # escape=`
 
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 # Use "--build-arg platform=x64" for 64 bit or x86 for 32 bit.
 ARG PLATFORM
@@ -31,14 +31,14 @@ RUN wget $Env:CHANNEL_BASE_URL/vs_buildtools.exe -OutFile 'C:\TEMP\vs_buildtools
     "--add",                                                        `
     "Microsoft.VisualStudio.Workload.VCTools",                      `
     "Microsoft.Net.Component.4.7.2.SDK",                            `
+    "Microsoft.Net.Component.4.7.2.TargetingPack",                  `
     "Microsoft.VisualStudio.Component.VC.ATLMFC",                   `
     "--includeRecommended"                                          `
     -Wait -PassThru;                                                `
     del c:\temp\vs_buildtools.exe;                                  
 
-# VCPKG requires update if Cmake version is > 3.20.5 see: https://github.com/microsoft/vcpkg-tool/pull/107
 RUN iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));   `
-    choco install cmake --version=3.20.5 --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress; `
+    choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress; `
     choco install git -y --no-progress
 
 RUN git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; git checkout $Env:VCPKGCOMMIT;
@@ -46,6 +46,33 @@ RUN git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; git checkout $En
 # To explicit set VCPKG to only build Release version of the libraries.
 COPY $PLATFORM'-windows-rel.cmake' 'c:\vcpkg\triplets\'$PLATFORM'-windows-rel.cmake'
 
-RUN cd .\vcpkg;                                                `
-    .\bootstrap-vcpkg.bat;                                            `
-    .\vcpkg install boost flann eigen3 qhull vtk[qt,opengl] gtest benchmark openni2 --triplet $Env:PLATFORM-windows-rel --host-triplet $Env:PLATFORM-windows-rel --clean-after-build;
+RUN cd .\vcpkg;                                                     `
+    .\bootstrap-vcpkg.bat;                                          `
+    .\vcpkg install `
+    boost-accumulators `
+    boost-asio `
+    boost-algorithm `
+    boost-filesystem `
+    boost-format `
+    boost-graph `
+    boost-interprocess `
+    boost-iostreams `
+    boost-math `
+    boost-ptr-container `
+    boost-signals2 `
+    boost-sort `
+    boost-uuid `
+    boost-cmake `
+    flann `
+    nanoflann `
+    eigen3 `
+    qhull `
+    glew `
+    freeglut `
+    vtk[core,qt,opengl] `
+    gtest `
+    benchmark `
+    openni2 `
+    cjson `
+    --triplet $Env:PLATFORM-windows-rel --host-triplet $Env:PLATFORM-windows-rel --clean-after-build --x-buildtrees-root=C:\b;
+

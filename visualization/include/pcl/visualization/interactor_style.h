@@ -112,18 +112,13 @@ namespace pcl
         static PCLVisualizerInteractorStyle *New ();
 
         /** \brief Empty constructor. */
-        PCLVisualizerInteractorStyle () : 
-          init_ (), win_height_ (), win_width_ (), win_pos_x_ (), win_pos_y_ (),
-          max_win_height_ (), max_win_width_ (), use_vbos_ (false), grid_enabled_ (), lut_enabled_ (),
-          stereo_anaglyph_mask_default_ (),
-          modifier_ (), camera_saved_ ()
-        {}
+        PCLVisualizerInteractorStyle () = default;
       
         /** \brief Empty destructor */
         ~PCLVisualizerInteractorStyle () override = default;
 
         // this macro defines Superclass, the isA functionality and the safe downcast method
-        vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleRubberBandPick);
+        vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleRubberBandPick)
         
         /** \brief Initialization routine. Must be called before anything else. */
         virtual void 
@@ -160,6 +155,7 @@ namespace pcl
           * buffer objects by default, transparently for the user.
           * \param[in] use_vbos set to true to use VBOs
           */
+        PCL_DEPRECATED(1, 18, "this function has no effect")
         inline void
         setUseVbos (const bool use_vbos) { use_vbos_ = use_vbos; }
 
@@ -260,36 +256,36 @@ namespace pcl
 
        protected:
         /** \brief Set to true after initialization is complete. */
-        bool init_;
+        bool init_{false};
 
         /** \brief Collection of vtkRenderers stored internally. */
         vtkSmartPointer<vtkRendererCollection> rens_;
 
         /** \brief Cloud actor map stored internally. */
-        CloudActorMapPtr cloud_actors_;
+        CloudActorMapPtr cloud_actors_{nullptr};
 
         /** \brief Shape map stored internally. */
-        ShapeActorMapPtr shape_actors_;
+        ShapeActorMapPtr shape_actors_{nullptr};
 
         /** \brief The current window width/height. */
-        int win_height_, win_width_;
+        int win_height_{0}, win_width_{0};
 
         /** \brief The current window position x/y. */
-        int win_pos_x_, win_pos_y_;
+        int win_pos_x_{0}, win_pos_y_{0};
 
         /** \brief The maximum resizeable window width/height. */
-        int max_win_height_, max_win_width_;
+        int max_win_height_{0}, max_win_width_{0};
 
         /** \brief Boolean that holds whether or not to use the vtkVertexBufferObjectMapper*/
-        bool use_vbos_;
+        bool use_vbos_{false};
 
         /** \brief Set to true if the grid actor is enabled. */
-        bool grid_enabled_;
+        bool grid_enabled_{false};
         /** \brief Actor for 2D grid on screen. */
         vtkSmartPointer<vtkLegendScaleActor> grid_actor_;
 
         /** \brief Set to true if the LUT actor is enabled. */
-        bool lut_enabled_;
+        bool lut_enabled_{false};
         /** \brief Actor for 2D lookup table on screen. */
         vtkSmartPointer<vtkScalarBarActor> lut_actor_;
 
@@ -364,20 +360,20 @@ namespace pcl
         }
 
         /** \brief True if we're using red-blue colors for anaglyphic stereo, false if magenta-green. */
-        bool stereo_anaglyph_mask_default_;
+        bool stereo_anaglyph_mask_default_{false};
 
         /** \brief A VTK Mouse Callback object, used for point picking. */
         vtkSmartPointer<PointPickingCallback> mouse_callback_;
 
         /** \brief The keyboard modifier to use. Default: Alt. */
-        InteractorKeyboardModifier modifier_;
+        InteractorKeyboardModifier modifier_{};
 
         /** \brief Camera file for camera parameter saving/restoring. */
         std::string camera_file_;
         /** \brief A \ref pcl::visualization::Camera for camera parameter saving/restoring. */
         Camera camera_;
         /** \brief A \ref pcl::visualization::Camera is saved or not. */
-        bool camera_saved_;
+        bool camera_saved_{false};
         /** \brief The render window.
           * Only used when interactor maybe not available
           */
@@ -408,7 +404,7 @@ namespace pcl
         static PCLHistogramVisualizerInteractorStyle *New ();
 
         /** \brief Empty constructor. */
-        PCLHistogramVisualizerInteractorStyle () : init_ (false) {}
+        PCLHistogramVisualizerInteractorStyle () = default;
 
         /** \brief Initialization routine. Must be called before anything else. */
         void 
@@ -425,7 +421,7 @@ namespace pcl
         RenWinInteractMap wins_;
 
         /** \brief Set to true after initialization is complete. */
-        bool init_;
+        bool init_{false};
 
         /** \brief Interactor style internal method. Gets called whenever a key is pressed. */
         void OnKeyDown () override;

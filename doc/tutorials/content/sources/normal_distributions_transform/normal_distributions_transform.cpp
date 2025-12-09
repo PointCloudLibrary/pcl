@@ -69,8 +69,8 @@ main ()
   pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud (new pcl::PointCloud<pcl::PointXYZ>);
   ndt.align (*output_cloud, init_guess);
 
-  std::cout << "Normal Distributions Transform has converged:" << ndt.hasConverged ()
-            << " score: " << ndt.getFitnessScore () << std::endl;
+  std::cout << "Normal Distributions Transform has " << (ndt.hasConverged ()?"converged":"not converged")
+            << ", score: " << ndt.getFitnessScore () << std::endl;
 
   // Transforming unfiltered, input cloud using found transform.
   pcl::transformPointCloud (*input_cloud, *output_cloud, ndt.getFinalTransformation ());

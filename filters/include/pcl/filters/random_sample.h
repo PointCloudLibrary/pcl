@@ -94,7 +94,7 @@ namespace pcl
       /** \brief Get the value of the internal \a sample parameter.
         */
       inline unsigned int
-      getSample ()
+      getSample () const
       {
         return (sample_);
       }
@@ -111,7 +111,7 @@ namespace pcl
       /** \brief Get the value of the internal \a seed parameter.
         */
       inline unsigned int
-      getSeed ()
+      getSeed () const
       {
         return (seed_);
       }
@@ -179,7 +179,7 @@ namespace pcl
       /** \brief Get the value of the internal \a sample parameter.
         */
       inline unsigned int
-      getSample ()
+      getSample () const
       {
         return (sample_);
       }
@@ -196,7 +196,7 @@ namespace pcl
       /** \brief Get the value of the internal \a seed parameter.
         */
       inline unsigned int
-      getSeed ()
+      getSeed () const
       {
         return (seed_);
       }

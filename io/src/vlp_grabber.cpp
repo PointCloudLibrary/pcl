@@ -92,7 +92,7 @@ pcl::VLPGrabber::loadVLP16Corrections ()
 boost::asio::ip::address
 pcl::VLPGrabber::getDefaultNetworkAddress ()
 {
-  return (boost::asio::ip::address::from_string ("255.255.255.255"));
+  return (boost::asio::ip::make_address ("255.255.255.255"));
 }
 
 /////////////////////////////////////////////////////////////////////////////

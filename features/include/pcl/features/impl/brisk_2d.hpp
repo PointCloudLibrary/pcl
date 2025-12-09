@@ -47,17 +47,10 @@ namespace pcl
 
 template <typename PointInT, typename PointOutT, typename KeypointT, typename IntensityT>
 BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::BRISK2DEstimation ()
-  : rotation_invariance_enabled_ (true)
-  , scale_invariance_enabled_ (true)
-  , pattern_scale_ (1.0f)
-  , input_cloud_ (), keypoints_ (), scale_range_ (), pattern_points_ (), points_ ()
-  , n_rot_ (1024), scale_list_ (nullptr), size_list_ (nullptr)
-  , scales_ (64)
-  , scalerange_ (30)
-  , basic_size_ (12.0)
-  , strings_ (0), d_max_ (0.0f), d_min_ (0.0f), short_pairs_ (), long_pairs_ ()
-  , no_short_pairs_ (0), no_long_pairs_ (0)
-  , intensity_ ()
+  : 
+   input_cloud_ (), keypoints_ (),  pattern_points_ (), 
+   short_pairs_ (), long_pairs_ ()
+  ,  intensity_ ()
   , name_ ("BRISK2Destimation")
 {
   // Since we do not assume pattern_scale_ should be changed by the user, we
@@ -114,7 +107,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel (
     points_ += number;
 
   // set up the patterns
-  pattern_points_ = new BriskPatternPoint[points_*scales_*n_rot_];
+  pattern_points_ = new BriskPatternPoint[static_cast<std::size_t>(points_)*static_cast<std::size_t>(scales_)*static_cast<std::size_t>(n_rot_)];
   BriskPatternPoint* pattern_iterator = pattern_points_;
 
   // define the scale discretization:
@@ -230,7 +223,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
   const float yf = brisk_point.y + key_y;
   const int x = static_cast<int>(xf);
   const int y = static_cast<int>(yf);
-  const int& imagecols = image_width;
+  const std::ptrdiff_t imagecols = image_width;
 
   // get the sigma:
   const float sigma_half = brisk_point.sigma;
@@ -278,7 +271,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
   const int scaling2 = static_cast<int> (static_cast<float>(scaling) * area / 1024.0f);
 
   // the integral image is larger:
-  const int integralcols = imagecols + 1;
+  const std::ptrdiff_t integralcols = image_width + 1;
 
   // calculate borders
   const float x_1 = xf - sigma_half;
@@ -457,7 +450,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   const auto height = static_cast<index_t>(input_cloud_->height);
 
   // destination for intensity data; will be forwarded to BRISK
-  std::vector<unsigned char> image_data (width*height);
+  std::vector<unsigned char> image_data (static_cast<std::size_t>(width)*static_cast<std::size_t>(height));
 
   for (std::size_t i = 0; i < image_data.size (); ++i)
     image_data[i] = static_cast<unsigned char> (intensity_ ((*input_cloud_)[i]));
@@ -519,7 +512,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
 
   // first, calculate the integral image over the whole image:
   // current integral image
-  std::vector<int> integral ((width+1)*(height+1), 0);    // the integral image
+  std::vector<int> integral (static_cast<std::size_t>(width+1)*static_cast<std::size_t>(height+1), 0);    // the integral image
 
   for (index_t row_index = 1; row_index < height; ++row_index)
   {

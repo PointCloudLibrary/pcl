@@ -54,6 +54,7 @@ namespace pcl
     * The description can be found in the article:
     * "Min-Cut Based Segmentation of Point Clouds"
     * \author: Aleksey Golovinskiy and Thomas Funkhouser.
+    * \ingroup segmentation
     */
   template <typename PointT>
   class PCL_EXPORTS MinCutSegmentation : public pcl::PCLBase<PointT>
@@ -260,64 +261,64 @@ namespace pcl
     protected:
 
       /** \brief Stores the sigma coefficient. It is used for finding smooth costs. More information can be found in the article. */
-      double inverse_sigma_;
+      double inverse_sigma_{16.0};
 
       /** \brief Signalizes if the binary potentials are valid. */
-      bool binary_potentials_are_valid_;
+      bool binary_potentials_are_valid_{false};
 
       /** \brief Used for comparison of the floating point numbers. */
-      double epsilon_;
+      double epsilon_{0.0001};
 
       /** \brief Stores the distance to the background. */
-      double radius_;
+      double radius_{16.0};
 
       /** \brief Signalizes if the unary potentials are valid. */
-      bool unary_potentials_are_valid_;
+      bool unary_potentials_are_valid_{false};
 
       /** \brief Stores the weight for every edge that comes from source point. */
-      double source_weight_;
+      double source_weight_{0.8};
 
       /** \brief Stores the search method that will be used for finding K nearest neighbors. Neighbours are used for building the graph. */
-      KdTreePtr search_;
+      KdTreePtr search_{nullptr};
 
       /** \brief Stores the number of neighbors to find. */
-      unsigned int number_of_neighbours_;
+      unsigned int number_of_neighbours_{14};
 
       /** \brief Signalizes if the graph is valid. */
-      bool graph_is_valid_;
+      bool graph_is_valid_{false};
 
       /** \brief Stores the points that are known to be in the foreground. */
-      std::vector<PointT, Eigen::aligned_allocator<PointT> > foreground_points_;
+      std::vector<PointT, Eigen::aligned_allocator<PointT> > foreground_points_{};
 
       /** \brief Stores the points that are known to be in the background. */
-      std::vector<PointT, Eigen::aligned_allocator<PointT> > background_points_;
+      std::vector<PointT, Eigen::aligned_allocator<PointT> > background_points_{};
 
       /** \brief After the segmentation it will contain the segments. */
-      std::vector <pcl::PointIndices> clusters_;
+      std::vector <pcl::PointIndices> clusters_{};
 
       /** \brief Stores the graph for finding the maximum flow. */
-      mGraphPtr graph_;
+      mGraphPtr graph_{nullptr};
 
       /** \brief Stores the capacity of every edge in the graph. */
-      std::shared_ptr<CapacityMap> capacity_;
+      std::shared_ptr<CapacityMap> capacity_{nullptr};
 
       /** \brief Stores reverse edges for every edge in the graph. */
-      std::shared_ptr<ReverseEdgeMap> reverse_edges_;
+      std::shared_ptr<ReverseEdgeMap> reverse_edges_{nullptr};
 
       /** \brief Stores the vertices of the graph. */
-      std::vector< VertexDescriptor > vertices_;
+      std::vector< VertexDescriptor > vertices_{};
 
       /** \brief Stores the information about the edges that were added to the graph. It is used to avoid the duplicate edges. */
-      std::vector< std::set<int> > edge_marker_;
+      std::vector< std::set<int> > edge_marker_{};
 
       /** \brief Stores the vertex that serves as source. */
-      VertexDescriptor source_;
+      VertexDescriptor source_{};
 
       /** \brief Stores the vertex that serves as sink. */
-      VertexDescriptor sink_;
+      VertexDescriptor sink_{};
 
       /** \brief Stores the maximum flow value that was calculated during the segmentation. */
-      double max_flow_;
+      double max_flow_{0.0};
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW

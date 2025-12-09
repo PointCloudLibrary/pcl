@@ -98,7 +98,7 @@ namespace pcl
    * www.srgb.com, www.color.org/srgb.html
    */
   template <typename T, std::uint8_t bits = 8>
-  PCL_EXPORTS inline std::array<T, 1 << bits>
+  inline std::array<T, 1 << bits>
   RGB2sRGB_LUT() noexcept
   {
     static_assert(std::is_floating_point<T>::value, "LUT value must be a floating point");
@@ -144,7 +144,7 @@ namespace pcl
    * Reference: Billmeyer and Saltzman’s Principles of Color Technology
    */
   template <typename T, std::size_t discretizations = 4000>
-  PCL_EXPORTS inline const std::array<T, discretizations>&
+  inline const std::array<T, discretizations>&
   XYZ2LAB_LUT() noexcept
   {
     static_assert(std::is_floating_point<T>::value, "LUT value must be a floating point");

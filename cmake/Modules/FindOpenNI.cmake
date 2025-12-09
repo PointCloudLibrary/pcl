@@ -27,8 +27,6 @@ find_path(OPENNI_INCLUDE_DIR XnStatus.h
                 /usr/include/openni
                 /usr/include/ni
                 /opt/local/include/ni
-                "${OPENNI_ROOT}"
-                "$ENV{OPENNI_ROOT}"
           PATHS "$ENV{OPEN_NI_INSTALL_PATH${OPENNI_SUFFIX}}/Include"
           PATH_SUFFIXES openni include Include)
 
@@ -38,8 +36,6 @@ find_library(OPENNI_LIBRARY
              HINTS ${PC_OPENNI_LIBDIR}
                    ${PC_OPENNI_LIBRARY_DIRS}
                    /usr/lib
-                   "${OPENNI_ROOT}"
-                   "$ENV{OPENNI_ROOT}"
              PATHS "$ENV{OPEN_NI_LIB${OPENNI_SUFFIX}}"
              PATH_SUFFIXES lib Lib Lib64)
 

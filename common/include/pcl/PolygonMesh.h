@@ -79,7 +79,7 @@ namespace pcl
     operator += (const PolygonMesh& rhs)
     {
       concatenate((*this), rhs);
-      return (*this);
+      return *this;
     }
 
     /** \brief Add a polygon mesh to another mesh.

@@ -41,6 +41,8 @@
 
 #include <pcl/search/brute_force.h>
 #include <pcl/search/kdtree.h>
+#include <pcl/search/flann_search.h>
+#include <pcl/search/kdtree_nanoflann.h>
 #include <pcl/search/organized.h>
 #include <pcl/search/octree.h>
 #include <pcl/io/pcd_io.h>
@@ -113,6 +115,13 @@ pcl::search::BruteForce<pcl::PointXYZ> brute_force;
 
 /** \brief instance of KDTree search method to be tested*/
 pcl::search::KdTree<pcl::PointXYZ> KDTree;
+
+/** \brief instance of FlannSearch search method to be tested*/
+pcl::search::FlannSearch<pcl::PointXYZ> FlannSearch;
+
+#if PCL_HAS_NANOFLANN
+pcl::search::KdTreeNanoflann<pcl::PointXYZ> KDTreeNanoflann;
+#endif
 
 /** \brief instance of Octree search method to be tested*/
 pcl::search::Octree<pcl::PointXYZ> octree_search (0.1);
@@ -652,15 +661,26 @@ main (int argc, char** argv)
   
   brute_force.setSortedResults (true);
   KDTree.setSortedResults (true);
+#if PCL_HAS_NANOFLANN
+  KDTreeNanoflann.setSortedResults (true);
+#endif
   octree_search.setSortedResults (true);
   organized.setSortedResults (true);
   
   unorganized_search_methods.push_back (&brute_force);
   unorganized_search_methods.push_back (&KDTree);
+  unorganized_search_methods.push_back (&FlannSearch);
+#if PCL_HAS_NANOFLANN
+  unorganized_search_methods.push_back (&KDTreeNanoflann);
+#endif
   unorganized_search_methods.push_back (&octree_search);
   
   organized_search_methods.push_back (&brute_force);
   organized_search_methods.push_back (&KDTree);
+  organized_search_methods.push_back (&FlannSearch);
+#if PCL_HAS_NANOFLANN
+  organized_search_methods.push_back (&KDTreeNanoflann);
+#endif
   organized_search_methods.push_back (&octree_search);
   organized_search_methods.push_back (&organized);
   

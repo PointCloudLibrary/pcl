@@ -37,47 +37,42 @@
 
 #pragma once
 
-#include <QQueue>
-
 #include <pcl/apps/cloud_composer/commands.h>
 
-namespace pcl
-{
-  namespace cloud_composer
-  {
-    class AbstractTool;
-    class CloudComposerItem;
-    
-    struct ActionPair
-    {
-      CloudCommand* command;  
-      AbstractTool* tool;
-    };
-    
-    class WorkQueue : public QObject
-    {
-      Q_OBJECT
-      public:
-        WorkQueue (QObject* parent = nullptr);  
-      public Q_SLOTS:
-        void
-        enqueueNewAction (AbstractTool* new_tool, ConstItemList input_data);
-        
-        void 
-        actionFinished (ActionPair finished_action);
-        
-        void 
-        checkQueue ();
-      Q_SIGNALS:
-        void 
-        commandProgress (QString command_text, double progress);
+#include <QQueue>
 
-        void
-        commandComplete (CloudCommand* completed_command);
-        
-      private:
-        QQueue <ActionPair> work_queue_;
-        
-    };
-  }
-}
+namespace pcl {
+namespace cloud_composer {
+class AbstractTool;
+class CloudComposerItem;
+
+struct ActionPair {
+  CloudCommand* command;
+  AbstractTool* tool;
+};
+
+class WorkQueue : public QObject {
+  Q_OBJECT
+public:
+  WorkQueue(QObject* parent = nullptr);
+public Q_SLOTS:
+  void
+  enqueueNewAction(AbstractTool* new_tool, ConstItemList input_data);
+
+  void
+  actionFinished(ActionPair finished_action);
+
+  void
+  checkQueue();
+Q_SIGNALS:
+  void
+  commandProgress(QString command_text, double progress);
+
+  void
+  commandComplete(CloudCommand* completed_command);
+
+private:
+  QQueue<ActionPair> work_queue_;
+};
+} // namespace cloud_composer
+} // namespace pcl

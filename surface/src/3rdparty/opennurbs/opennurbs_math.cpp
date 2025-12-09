@@ -1280,8 +1280,6 @@ ON_TransformPointList(
 
   if ( !ON_IsValidPointList( dim, is_rat, count, stride, point ) )
     return false;
-  if ( xform.m_xform == NULL )
-    return false;
   if (count == 0)
     return true;
 
@@ -1380,8 +1378,6 @@ ON_TransformPointList(
   double x, y, z, w;
 
   if ( !ON_IsValidPointList( dim, is_rat, count, stride, point ) )
-    return false;
-  if ( xform.m_xform == NULL )
     return false;
   if (count == 0)
     return true;
@@ -1507,8 +1503,6 @@ ON_TransformVectorList(
 
   if ( !ON_IsValidPointList( dim, 0, count, stride, vector ) )
     return false;
-  if ( xform.m_xform == NULL )
-    return false;
   if (count == 0)
     return true;
 
@@ -1555,8 +1549,6 @@ ON_TransformVectorList(
   double x, y, z;
 
   if ( !ON_IsValidPointList( dim, 0, count, stride, vector ) )
-    return false;
-  if ( xform.m_xform == NULL )
     return false;
   if (count == 0)
     return true;

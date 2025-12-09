@@ -45,8 +45,7 @@ namespace pcl
 {
 
 /////////////////////////////////////////////////////////////////////////
-NarfKeypoint::NarfKeypoint (RangeImageBorderExtractor* range_image_border_extractor, float support_size) :
-    interest_image_ (nullptr), interest_points_ (nullptr)
+NarfKeypoint::NarfKeypoint (RangeImageBorderExtractor* range_image_border_extractor, float support_size)
 {
   name_ = "NarfKeypoint";
   clearData ();
@@ -479,7 +478,6 @@ NarfKeypoint::calculateSparseInterestImage ()
   
   //double interest_value_calculation_start_time = getTime ();
 #pragma omp parallel for \
-  default(none) \
   shared(array_size, border_descriptions, increased_radius_squared, radius_reciprocal, radius_overhead_squared, range_image, search_radius, \
          surface_change_directions, surface_change_scores) \
   num_threads(parameters_.max_no_of_threads) \
@@ -557,7 +555,7 @@ NarfKeypoint::calculateSparseInterestImage ()
                                        static_cast<int> (pcl_lrint (std::floor ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size))));
       float& histogram_value = angle_histogram[histogram_cell];
       histogram_value = (std::max) (histogram_value, surface_change_score);
-      angle_elements[histogram_cell].push_back (std::make_pair(index2, surface_change_score));
+      angle_elements[histogram_cell].emplace_back(index2, surface_change_score);
     }
     
     // Reset was_touched to false

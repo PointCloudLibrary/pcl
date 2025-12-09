@@ -53,7 +53,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     PointCloudIn &pc, std::vector<float> &hist)
 {
   const int binsize = 64;
-  unsigned int sample_size = 20000;
+  const std::size_t sample_size = 20000;
   // @TODO: Replace with c++ stdlib uniform_random_generator
   srand (static_cast<unsigned int> (time (nullptr)));
   const auto maxindex = pc.size ();
@@ -66,18 +66,18 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   wt_d2.reserve (sample_size * 3);
   wt_d3.reserve (sample_size);
 
-  float h_in[binsize] = {0};
-  float h_out[binsize] = {0};
-  float h_mix[binsize] = {0};
-  float h_mix_ratio[binsize] = {0};
+  float h_in[binsize] = {0.0f};
+  float h_out[binsize] = {0.0f};
+  float h_mix[binsize] = {0.0f};
+  float h_mix_ratio[binsize] = {0.0f};
 
-  float h_a3_in[binsize] = {0};
-  float h_a3_out[binsize] = {0};
-  float h_a3_mix[binsize] = {0};
+  float h_a3_in[binsize] = {0.0f};
+  float h_a3_out[binsize] = {0.0f};
+  float h_a3_mix[binsize] = {0.0f};
 
-  float h_d3_in[binsize] = {0};
-  float h_d3_out[binsize] = {0};
-  float h_d3_mix[binsize] = {0};
+  float h_d3_in[binsize] = {0.0f};
+  float h_d3_out[binsize] = {0.0f};
+  float h_d3_mix[binsize] = {0.0f};
 
   float ratio=0.0;
   float pih = static_cast<float>(M_PI) / 2.0f;
@@ -269,7 +269,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   //float weights[10] = {1,  1,  1,  1,  1,  1,  1,  1 , 1 ,  1};
   float weights[10] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 1.0f,  1.0f, 2.0f, 2.0f, 2.0f};
 
-  hist.reserve (binsize * 10);
+  hist.reserve (static_cast<std::size_t>(binsize) * 10);
   for (const float &i : h_a3_in)
     hist.push_back (i * weights[0]);
   for (const float &i : h_a3_out)

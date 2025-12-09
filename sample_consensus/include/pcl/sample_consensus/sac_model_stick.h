@@ -56,11 +56,16 @@ namespace pcl
     *   - \b line_direction.z : the Z coordinate of a line's direction
     *   - \b line_width       : the width of the line
     *
+    * \warning This model is considered deprecated. The coefficients are used inconsistently in the methods, and the last coefficient (line width) is unused. We recommend to use the line or cylinder model instead.
     * \author Radu B. Rusu
     * \ingroup sample_consensus
     */
   template <typename PointT>
+#ifdef SAC_MODEL_STICK_DONT_WARN_DEPRECATED
   class SampleConsensusModelStick : public SampleConsensusModel<PointT>
+#else
+  class PCL_DEPRECATED(1, 17, "Use line or cylinder model instead") SampleConsensusModelStick : public SampleConsensusModel<PointT>
+#endif
   {
     public:
       using SampleConsensusModel<PointT>::model_name_;

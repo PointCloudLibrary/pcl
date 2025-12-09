@@ -37,7 +37,4 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_ICP_NL_HPP_
-#define PCL_REGISTRATION_ICP_NL_HPP_
-
-#endif /* PCL_REGISTRATION_ICP_NL_HPP_ */
+PCL_DEPRECATED_HEADER(1, 18, "Do not include icp_nl.hpp, it is empty.")

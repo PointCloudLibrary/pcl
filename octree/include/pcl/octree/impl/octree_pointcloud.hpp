@@ -55,16 +55,10 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 : OctreeT()
 , input_(PointCloudConstPtr())
 , indices_(IndicesConstPtr())
-, epsilon_(0)
 , resolution_(resolution)
-, min_x_(0.0f)
 , max_x_(resolution)
-, min_y_(0.0f)
 , max_y_(resolution)
-, min_z_(0.0f)
 , max_z_(resolution)
-, bounding_box_defined_(false)
-, max_objs_per_leaf_(0)
 {
   if (resolution <= 0.0) {
     PCL_THROW_EXCEPTION(InitFailedException,
@@ -523,9 +517,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
         // octree not empty - we add another tree level and thus increase its size by a
         // factor of 2*2*2
-        child_idx = static_cast<unsigned char>(((!bUpperBoundViolationX) << 2) |
-                                               ((!bUpperBoundViolationY) << 1) |
-                                               ((!bUpperBoundViolationZ)));
+        child_idx = static_cast<unsigned char>((bLowerBoundViolationX ? 4 : 0) |
+                                               (bLowerBoundViolationY ? 2 : 0) |
+                                               (bLowerBoundViolationZ ? 1 : 0));
 
         BranchNode* newRootBranch;
 
@@ -538,13 +532,13 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
         octreeSideLen = static_cast<double>(1 << this->octree_depth_) * resolution_;
 
-        if (!bUpperBoundViolationX)
+        if (bLowerBoundViolationX)
           min_x_ -= octreeSideLen;
 
-        if (!bUpperBoundViolationY)
+        if (bLowerBoundViolationY)
           min_y_ -= octreeSideLen;
 
-        if (!bUpperBoundViolationZ)
+        if (bLowerBoundViolationZ)
           min_z_ -= octreeSideLen;
 
         // configure tree depth of octree
@@ -892,12 +886,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   min_pt(2) = static_cast<float>(static_cast<double>(key_arg.z) * voxel_side_len +
                                  this->min_z_);
 
-  max_pt(0) = static_cast<float>(static_cast<double>(key_arg.x + 1) * voxel_side_len +
-                                 this->min_x_);
-  max_pt(1) = static_cast<float>(static_cast<double>(key_arg.y + 1) * voxel_side_len +
-                                 this->min_y_);
-  max_pt(2) = static_cast<float>(static_cast<double>(key_arg.z + 1) * voxel_side_len +
-                                 this->min_z_);
+  max_pt(0) = min_pt(0) + voxel_side_len;
+  max_pt(1) = min_pt(1) + voxel_side_len;
+  max_pt(2) = min_pt(2) + voxel_side_len;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

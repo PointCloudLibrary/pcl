@@ -46,6 +46,7 @@ namespace pcl
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
       using SampleConsensusModel<PointT>::radius_max_;
+      using SampleConsensusModel<PointT>::error_sqr_dists_;
 
       using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
       using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
@@ -101,7 +102,7 @@ namespace pcl
       operator = (const SampleConsensusModelEllipse3D &source)
       {
         SampleConsensusModel<PointT>::operator=(source);
-        return (*this);
+        return *this;
       }
 
       /** \brief Check whether the given index samples can form a valid 3D ellipse model, compute the model coefficients

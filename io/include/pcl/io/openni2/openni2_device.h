@@ -128,11 +128,11 @@ namespace pcl
           stopDepthStream ();
 
           bool
-          isIRStreamStarted ();
+          isIRStreamStarted () const;
           bool
-          isColorStreamStarted ();
+          isColorStreamStarted () const;
           bool
-          isDepthStreamStarted ();
+          isDepthStreamStarted () const;
 
           bool
           isImageRegistrationModeSupported () const;
@@ -192,11 +192,11 @@ namespace pcl
 
           // Baseline between sensors. Returns 0 if this value does not exist.
           float
-          getBaseline();
+          getBaseline() const;
 
           // Value of pixels in shadow or that have no valid measurement
           std::uint64_t
-          getShadowValue();
+          getShadowValue() const;
 
           void
           setAutoExposure (bool enable);
@@ -315,16 +315,16 @@ namespace pcl
           mutable std::vector<OpenNI2VideoMode> color_video_modes_;
           mutable std::vector<OpenNI2VideoMode> depth_video_modes_;
 
-          bool ir_video_started_;
-          bool color_video_started_;
-          bool depth_video_started_;
+          bool ir_video_started_{false};
+          bool color_video_started_{false};
+          bool depth_video_started_{false};
 
           /** \brief distance between the projector and the IR camera in meters*/
-          float baseline_;
+          float baseline_{0.0f};
           /** the value for shadow (occluded pixels) */
-          std::uint64_t shadow_value_;
+          std::uint64_t shadow_value_{0};
           /** the value for pixels without a valid disparity measurement */
-          std::uint64_t no_sample_value_;
+          std::uint64_t no_sample_value_{0};
       };
 
       PCL_EXPORTS std::ostream& operator<< (std::ostream& stream, const OpenNI2Device& device);

@@ -50,9 +50,8 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::Window::Window (const std::string& window_name)
-  : stopped_ ()
-  , timer_id_ ()
-  , mouse_command_ (vtkCallbackCommand::New ())
+  : 
+   mouse_command_ (vtkCallbackCommand::New ())
   , keyboard_command_ (vtkCallbackCommand::New ())
   , style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
@@ -130,6 +129,8 @@ pcl::visualization::Window::Window (const pcl::visualization::Window &src)
 pcl::visualization::Window&
 pcl::visualization::Window::operator = (const pcl::visualization::Window &src)
 {
+  if (this == &src)
+    return *this;
   stopped_ = src.stopped_;
   timer_id_ = src.timer_id_;
   //mouse_signal_ = src.mouse_signal_;
@@ -142,7 +143,7 @@ pcl::visualization::Window::operator = (const pcl::visualization::Window &src)
   rens_ = src.rens_;
   exit_main_loop_timer_callback_ = src.exit_main_loop_timer_callback_;
   exit_callback_ = src.exit_callback_;
-  return (*this);
+  return *this;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -322,10 +323,7 @@ pcl::visualization::Window::KeyboardCallback (vtkObject*, unsigned long eid, voi
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::Window::ExitMainLoopTimerCallback::ExitMainLoopTimerCallback () 
-  : right_timer_id (-1), window (nullptr) 
-{
-}
+pcl::visualization::Window::ExitMainLoopTimerCallback::ExitMainLoopTimerCallback () = default;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -342,10 +340,7 @@ pcl::visualization::Window::ExitMainLoopTimerCallback::Execute (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::Window::ExitCallback::ExitCallback () 
-  : window (nullptr)
-{
-}
+pcl::visualization::Window::ExitCallback::ExitCallback () = default;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void

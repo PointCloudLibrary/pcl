@@ -41,8 +41,7 @@
 
 #include <pcl/segmentation/seeded_hue_segmentation.h>
 #include <pcl/console/print.h> // for PCL_ERROR
-#include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/auto.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -61,6 +60,8 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>          &cloud,
               static_cast<std::size_t>(cloud.size()));
     return;
   }
+  // If tree gives sorted results, we can skip the first one because it is the query point itself
+  const std::size_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
 
@@ -96,7 +97,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>          &cloud,
         continue;
       }
 
-      for (std::size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
+      for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)
       {
         if (processed[nn_indices[j]])                             // Has this point been processed before ?
           continue;
@@ -139,6 +140,8 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>            &cloud,
               static_cast<std::size_t>(cloud.size()));
     return;
   }
+  // If tree gives sorted results, we can skip the first one because it is the query point itself
+  const std::size_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
 
@@ -173,7 +176,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>            &cloud,
         sq_idx++;
         continue;
       }
-      for (std::size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
+      for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)
       {
         if (processed[nn_indices[j]])                             // Has this point been processed before ?
           continue;
@@ -216,14 +219,12 @@ pcl::SeededHueSegmentation::segment (PointIndices &indices_in, PointIndices &ind
   // Initialize the spatial locator
   if (!tree_)
   {
-    if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointXYZRGB> ());
-    else
-      tree_.reset (new pcl::search::KdTree<PointXYZRGB> (false));
+    tree_.reset (pcl::search::autoSelectMethod<pcl::PointXYZRGB> (input_, false, pcl::search::Purpose::radius_search));
   }
+  else
+    // Send the input dataset to the spatial locator
+    tree_->setInputCloud (input_);
 
-  // Send the input dataset to the spatial locator
-  tree_->setInputCloud (input_);
   seededHueSegmentation (*input_, tree_, static_cast<float> (cluster_tolerance_), indices_in, indices_out, delta_hue_);
   deinitCompute ();
 }

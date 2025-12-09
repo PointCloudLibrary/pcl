@@ -2,9 +2,8 @@ set(SUBSYS_NAME registration)
 set(SUBSYS_DESC "Point cloud registration library")
 set(SUBSYS_DEPS common octree kdtree search sample_consensus features filters)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -13,8 +12,6 @@ if(NOT build)
 endif()
 
 set(incs
-  "include/pcl/${SUBSYS_NAME}/eigen.h"
-  "include/pcl/${SUBSYS_NAME}/boost.h"
   "include/pcl/${SUBSYS_NAME}/boost_graph.h"
   "include/pcl/${SUBSYS_NAME}/convergence_criteria.h"
   "include/pcl/${SUBSYS_NAME}/default_convergence_criteria.h"
@@ -52,7 +49,6 @@ set(incs
 
   "include/pcl/${SUBSYS_NAME}/pyramid_feature_matching.h"
   "include/pcl/${SUBSYS_NAME}/registration.h"
-  "include/pcl/${SUBSYS_NAME}/transforms.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_2D.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h"
@@ -87,17 +83,10 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_normal_shooting.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_backprojection.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_organized_projection.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_distance.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_median_distance.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_surface_normal.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_features.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_one_to_one.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_poly.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_sample_consensus.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_sample_consensus_2d.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_trimmed.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_var_trimmed.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_organized_boundary.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_types.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/ia_ransac.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/icp.hpp"
@@ -173,7 +162,6 @@ set(srcs
 )
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
 target_link_libraries("${LIB_NAME}" pcl_kdtree pcl_search pcl_sample_consensus pcl_features pcl_filters)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})

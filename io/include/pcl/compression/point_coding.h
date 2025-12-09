@@ -60,11 +60,7 @@ class PointCoding
 
   public:
     /** \brief Constructor. */
-    PointCoding () :
-      output_ (),
-      pointCompressionResolution_ (0.001f) // 1mm
-    {
-    }
+    PointCoding () = default;
 
     /** \brief Empty class constructor. */
     virtual
@@ -173,15 +169,15 @@ class PointCoding
         PointT& point = (*outputCloud_arg)[beginIdx_arg + i];
 
         // decode point position
-        point.x = static_cast<float> (referencePoint_arg[0] + diffX * pointCompressionResolution_);
-        point.y = static_cast<float> (referencePoint_arg[1] + diffY * pointCompressionResolution_);
-        point.z = static_cast<float> (referencePoint_arg[2] + diffZ * pointCompressionResolution_);
+        point.x = static_cast<float> (referencePoint_arg[0] + (diffX+0.5) * pointCompressionResolution_);
+        point.y = static_cast<float> (referencePoint_arg[1] + (diffY+0.5) * pointCompressionResolution_);
+        point.z = static_cast<float> (referencePoint_arg[2] + (diffZ+0.5) * pointCompressionResolution_);
       }
     }
 
   protected:
     /** \brief Pointer to output point cloud dataset. */
-    PointCloudPtr output_;
+    PointCloudPtr output_{nullptr};
 
     /** \brief Vector for storing differential point information  */
     std::vector<char> pointDiffDataVector_;
@@ -190,7 +186,7 @@ class PointCoding
     std::vector<char>::const_iterator pointDiffDataVectorIterator_;
 
     /** \brief Precision of point coding*/
-    float pointCompressionResolution_;
+    float pointCompressionResolution_{0.001f};
 };
 
 } // namespace octree

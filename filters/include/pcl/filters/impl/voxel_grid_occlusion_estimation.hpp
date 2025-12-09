@@ -47,7 +47,7 @@ pcl::VoxelGridOcclusionEstimation<PointT>::initializeVoxelGrid ()
 {
   // initialization set to true
   initialized_ = true;
-  
+
   // create the voxel grid and store the output cloud
   this->filter (filtered_cloud_);
 
@@ -62,6 +62,13 @@ pcl::VoxelGridOcclusionEstimation<PointT>::initializeVoxelGrid ()
   // set the sensor origin and sensor orientation
   sensor_origin_ = filtered_cloud_.sensor_origin_;
   sensor_orientation_ = filtered_cloud_.sensor_orientation_;
+
+  Eigen::Vector3i ijk = this->getGridCoordinates(sensor_origin_.x(), sensor_origin_.y(), sensor_origin_.z());
+  // first check whether the sensor origin is within the voxel grid bounding box, then whether it is occupied
+  if((ijk[0]>=min_b_[0] && ijk[1]>=min_b_[1] && ijk[2]>=min_b_[2] && ijk[0]<=max_b_[0] && ijk[1]<=max_b_[1] && ijk[2]<=max_b_[2]) && this->getCentroidIndexAt (ijk) != -1) {
+    PCL_WARN ("[VoxelGridOcclusionEstimation::initializeVoxelGrid] The voxel containing the sensor origin (%g, %g, %g) is marked as occupied. We will instead assume that it is free, to be able to perform the occlusion estimation.\n", sensor_origin_.x(), sensor_origin_.y(), sensor_origin_.z());
+    this->leaf_layout_[((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (this->divb_mul_)] = -1;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,13 +162,13 @@ pcl::VoxelGridOcclusionEstimation<PointT>::occlusionEstimationAll (std::vector<E
           Eigen::Vector4f p = getCentroidCoordinate (ijk);
           Eigen::Vector4f direction = p - sensor_origin_;
           direction.normalize ();
-          
+
           // estimate entry point into the voxel grid
           float tmin = rayBoxIntersection (sensor_origin_, direction);
 
           // ray traversal
           int state = rayTraversal (ijk, sensor_origin_, direction, tmin);
-          
+
           // if voxel is occluded
           if (state == 1)
             occluded_voxels.push_back (ijk);
@@ -172,7 +179,7 @@ pcl::VoxelGridOcclusionEstimation<PointT>::occlusionEstimationAll (std::vector<E
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> float
-pcl::VoxelGridOcclusionEstimation<PointT>::rayBoxIntersection (const Eigen::Vector4f& origin, 
+pcl::VoxelGridOcclusionEstimation<PointT>::rayBoxIntersection (const Eigen::Vector4f& origin,
                                                                const Eigen::Vector4f& direction)
 {
   float tmin, tmax, tymin, tymax, tzmin, tzmax;
@@ -191,7 +198,7 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayBoxIntersection (const Eigen::Vect
   if (direction[1] >= 0)
   {
     tymin = (b_min_[1] - origin[1]) / direction[1];
-    tymax = (b_max_[1] - origin[1]) / direction[1]; 
+    tymax = (b_max_[1] - origin[1]) / direction[1];
   }
   else
   {
@@ -226,29 +233,29 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayBoxIntersection (const Eigen::Vect
   {
     PCL_ERROR ("no intersection with the bounding box \n");
     tmin = -1.0f;
-    return tmin;       
+    return tmin;
   }
 
   if (tzmin > tmin)
     tmin = tzmin;
   if (tzmax < tmax)
     tmax = tzmax;
-
-  return tmin;
+  return std::max<float>(tmin, 0.0f); // We only want to go in "positive" direction here, not in negative. This is relevant if the origin is inside the bounding box
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (const Eigen::Vector3i& target_voxel,
-                                                         const Eigen::Vector4f& origin, 
+                                                         const Eigen::Vector4f& origin,
                                                          const Eigen::Vector4f& direction,
                                                          const float t_min)
 {
-  // coordinate of the boundary of the voxel grid
-  Eigen::Vector4f start = origin + t_min * direction;
+  // coordinate of the boundary of the voxel grid. To avoid numerical imprecision
+  // causing the start voxel index to be off by one, we add the machine epsilon
+  Eigen::Vector4f start = origin + (t_min > 0.0f ? (t_min + std::numeric_limits<float>::epsilon()) : t_min) * direction;
 
   // i,j,k coordinate of the voxel were the ray enters the voxel grid
-  Eigen::Vector3i ijk = getGridCoordinatesRound (start[0], start[1], start[2]);
+  Eigen::Vector3i ijk = this->getGridCoordinates(start[0], start[1], start[2]);
 
   // steps in which direction we have to travel in the voxel grid
   int step_x, step_y, step_z;
@@ -290,13 +297,13 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (const Eigen::Vector3i& 
   float t_max_x = t_min + (voxel_max[0] - start[0]) / direction[0];
   float t_max_y = t_min + (voxel_max[1] - start[1]) / direction[1];
   float t_max_z = t_min + (voxel_max[2] - start[2]) / direction[2];
-     
+
   float t_delta_x = leaf_size_[0] / static_cast<float> (std::abs (direction[0]));
   float t_delta_y = leaf_size_[1] / static_cast<float> (std::abs (direction[1]));
   float t_delta_z = leaf_size_[2] / static_cast<float> (std::abs (direction[2]));
 
-  while ( (ijk[0] < max_b_[0]+1) && (ijk[0] >= min_b_[0]) && 
-          (ijk[1] < max_b_[1]+1) && (ijk[1] >= min_b_[1]) && 
+  while ( (ijk[0] < max_b_[0]+1) && (ijk[0] >= min_b_[0]) &&
+          (ijk[1] < max_b_[1]+1) && (ijk[1] >= min_b_[1]) &&
           (ijk[2] < max_b_[2]+1) && (ijk[2] >= min_b_[2]) )
   {
     // check if we reached target voxel
@@ -333,7 +340,7 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (const Eigen::Vector3i& 
 template <typename PointT> int
 pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >& out_ray,
                                                          const Eigen::Vector3i& target_voxel,
-                                                         const Eigen::Vector4f& origin, 
+                                                         const Eigen::Vector4f& origin,
                                                          const Eigen::Vector4f& direction,
                                                          const float t_min)
 {
@@ -341,12 +348,12 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (std::vector<Eigen::Vect
   int reserve_size = div_b_.maxCoeff () * div_b_.maxCoeff ();
   out_ray.reserve (reserve_size);
 
-  // coordinate of the boundary of the voxel grid
-  Eigen::Vector4f start = origin + t_min * direction;
+  // coordinate of the boundary of the voxel grid. To avoid numerical imprecision
+  // causing the start voxel index to be off by one, we add the machine epsilon
+  Eigen::Vector4f start = origin + (t_min > 0.0f ? (t_min + std::numeric_limits<float>::epsilon()) : t_min) * direction;
 
   // i,j,k coordinate of the voxel were the ray enters the voxel grid
-  Eigen::Vector3i ijk = getGridCoordinatesRound (start[0], start[1], start[2]);
-  //Eigen::Vector3i ijk = this->getGridCoordinates (start_x, start_y, start_z);
+  Eigen::Vector3i ijk = this->getGridCoordinates (start[0], start[1], start[2]);
 
   // steps in which direction we have to travel in the voxel grid
   int step_x, step_y, step_z;
@@ -388,7 +395,7 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (std::vector<Eigen::Vect
   float t_max_x = t_min + (voxel_max[0] - start[0]) / direction[0];
   float t_max_y = t_min + (voxel_max[1] - start[1]) / direction[1];
   float t_max_z = t_min + (voxel_max[2] - start[2]) / direction[2];
-     
+
   float t_delta_x = leaf_size_[0] / static_cast<float> (std::abs (direction[0]));
   float t_delta_y = leaf_size_[1] / static_cast<float> (std::abs (direction[1]));
   float t_delta_z = leaf_size_[2] / static_cast<float> (std::abs (direction[2]));
@@ -396,8 +403,8 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (std::vector<Eigen::Vect
   // the index of the cloud (-1 if empty)
   int result = 0;
 
-  while ( (ijk[0] < max_b_[0]+1) && (ijk[0] >= min_b_[0]) && 
-          (ijk[1] < max_b_[1]+1) && (ijk[1] >= min_b_[1]) && 
+  while ( (ijk[0] < max_b_[0]+1) && (ijk[0] >= min_b_[0]) &&
+          (ijk[1] < max_b_[1]+1) && (ijk[1] >= min_b_[1]) &&
           (ijk[2] < max_b_[2]+1) && (ijk[2] >= min_b_[2]) )
   {
     // add voxel to ray

@@ -46,11 +46,7 @@ namespace registration {
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
     KFPCSInitialAlignment()
-: lower_trl_boundary_(-1.f)
-, upper_trl_boundary_(-1.f)
-, lambda_(0.5f)
-, use_trl_score_(false)
-, indices_validation_(new pcl::Indices)
+: indices_validation_(new pcl::Indices)
 {
   reg_name_ = "pcl::registration::KFPCSInitialAlignment";
 }
@@ -94,13 +90,26 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
 
   // generate a subset of indices of size ransac_iterations_ on which to evaluate
   // candidates on
-  std::size_t nr_indices = indices_->size();
-  if (nr_indices < static_cast<std::size_t>(ransac_iterations_))
+  if (indices_->size() <= static_cast<std::size_t>(ransac_iterations_) ||
+      ransac_iterations_ <= 0)
     indices_validation_ = indices_;
-  else
-    for (int i = 0; i < ransac_iterations_; i++)
-      indices_validation_->push_back((*indices_)[rand() % nr_indices]);
+  else {
+    indices_validation_.reset(new pcl::Indices);
+    pcl::RandomSample<PointSource> random_sampling;
+    random_sampling.setInputCloud(input_);
+    random_sampling.setIndices(indices_);
+    random_sampling.setSample(ransac_iterations_);
+    random_sampling.filter(*indices_validation_);
+  }
 
+  PCL_DEBUG("[%s::initCompute] delta_=%g, max_inlier_dist_sqr_=%g, "
+            "coincidation_limit_=%g, max_edge_diff_=%g, max_pair_diff_=%g\n",
+            reg_name_.c_str(),
+            delta_,
+            max_inlier_dist_sqr_,
+            coincidation_limit_,
+            max_edge_diff_,
+            max_pair_diff_);
   return (true);
 }
 
@@ -121,9 +130,10 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
         std::numeric_limits<float>::max(); // reset to std::numeric_limits<float>::max()
                                            // to accept all candidates and not only best
 
-    // determine corresondences between base and match according to their distance to
-    // centroid
-    linkMatchWithBase(base_indices, match, correspondences_temp);
+    correspondences_temp.emplace_back(match[0], base_indices[0], 0.0);
+    correspondences_temp.emplace_back(match[1], base_indices[1], 0.0);
+    correspondences_temp.emplace_back(match[2], base_indices[2], 0.0);
+    correspondences_temp.emplace_back(match[3], base_indices[3], 0.0);
 
     // check match based on residuals of the corresponding points after transformation
     if (validateMatch(base_indices, match, correspondences_temp, transformation_temp) <
@@ -135,8 +145,17 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
     validateTransformation(transformation_temp, fitness_score);
 
     // store all valid match as well as associated score and transformation
-    candidates.push_back(
-        MatchingCandidate(fitness_score, correspondences_temp, transformation_temp));
+    candidates.emplace_back(fitness_score, correspondences_temp, transformation_temp);
+  }
+  // make sure that candidate with best fitness score is at the front, for early
+  // termination check
+  if (!candidates.empty()) {
+    auto best_candidate = candidates.begin();
+    for (auto iter = candidates.begin(); iter < candidates.end(); ++iter)
+      if (iter->fitness_score < best_candidate->fitness_score)
+        best_candidate = iter;
+    if (best_candidate != candidates.begin())
+      std::swap(*best_candidate, *candidates.begin());
   }
 }
 
@@ -154,8 +173,8 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
   float score_a = 0.f, score_b = 0.f;
 
   // residual costs based on mse
-  pcl::Indices ids;
-  std::vector<float> dists_sqr;
+  pcl::Indices ids(1);
+  std::vector<float> dists_sqr(1);
   for (const auto& source : source_transformed) {
     // search for nearest point using kd tree search
     tree_->nearestKSearch(source, 1, ids, dists_sqr);
@@ -170,7 +189,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
   // translation score (solutions with small translation are down-voted)
   float scale = 1.f;
   if (use_trl_score_) {
-    float trl = transformation.rightCols<1>().head(3).norm();
+    float trl = transformation.rightCols<1>().head<3>().norm();
     float trl_ratio =
         (trl - lower_trl_boundary_) / (upper_trl_boundary_ - lower_trl_boundary_);
 
@@ -224,6 +243,10 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::finalCompute(
   fitness_score_ = candidates_[0].fitness_score;
   final_transformation_ = candidates_[0].transformation;
   *correspondences_ = candidates_[0].correspondences;
+  PCL_DEBUG("[%s::finalCompute] best score is %g, out of %zu candidate solutions.\n",
+            reg_name_.c_str(),
+            fitness_score_,
+            candidates_.size());
 
   // here we define convergence if resulting score is above threshold
   converged_ = fitness_score_ < score_threshold_;
@@ -248,7 +271,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandid
     for (const auto& c2 : candidates) {
       Eigen::Matrix4f diff =
           candidate.transformation.colPivHouseholderQr().solve(c2.transformation);
-      const float angle3d = Eigen::AngleAxisf(diff.block<3, 3>(0, 0)).angle();
+      const float angle3d = Eigen::AngleAxisf(diff.topLeftCorner<3, 3>()).angle();
       const float translation3d = diff.block<3, 1>(0, 3).norm();
       unique = angle3d > min_angle3d && translation3d > min_translation3d;
       if (!unique) {
@@ -285,7 +308,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getTBestCandid
     for (const auto& c2 : candidates) {
       Eigen::Matrix4f diff =
           candidate.transformation.colPivHouseholderQr().solve(c2.transformation);
-      const float angle3d = Eigen::AngleAxisf(diff.block<3, 3>(0, 0)).angle();
+      const float angle3d = Eigen::AngleAxisf(diff.topLeftCorner<3, 3>()).angle();
       const float translation3d = diff.block<3, 1>(0, 3).norm();
       unique = angle3d > min_angle3d && translation3d > min_translation3d;
       if (!unique) {

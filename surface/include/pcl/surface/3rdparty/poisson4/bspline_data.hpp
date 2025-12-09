@@ -291,7 +291,11 @@ namespace pcl
     {
       if (flags & VV_DOT_FLAG) {
         delete[] vvDotTable ; vvDotTable = NULL;
+      }
+      if (flags & DV_DOT_FLAG) {
         delete[] dvDotTable ; dvDotTable = NULL;
+      }
+      if (flags & DD_DOT_FLAG) {
         delete[] ddDotTable ; ddDotTable = NULL;
       }
     }

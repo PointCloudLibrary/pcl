@@ -108,8 +108,8 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::initCompute;    
 
       /** \brief Empty constructor. */
-      SIFTKeypoint () : min_scale_ (0.0), nr_octaves_ (0), nr_scales_per_octave_ (0), 
-        min_contrast_ (-std::numeric_limits<float>::max ()), scale_idx_ (-1), 
+      SIFTKeypoint () :  
+        min_contrast_ (-std::numeric_limits<float>::max ()),  
         getFieldValue_ ()
       {
         name_ = "SIFTKeypoint";
@@ -178,20 +178,20 @@ namespace pcl
 
 
       /** \brief The standard deviation of the smallest scale in the scale space.*/
-      float min_scale_;
+      float min_scale_{0.0};
 
       /** \brief The number of octaves (i.e. doublings of scale) over which to search for keypoints.*/
-      int nr_octaves_;
+      int nr_octaves_{0};
 
       /** \brief The number of scales to be computed for each octave.*/
-      int nr_scales_per_octave_;
+      int nr_scales_per_octave_{0};
 
       /** \brief The minimum contrast required for detection.*/
       float min_contrast_;
 
       /** \brief Set to a value different than -1 if the output cloud has a "scale" field and we have to save 
         * the keypoints scales. */
-      int scale_idx_;
+      int scale_idx_{-1};
 
       /** \brief The list of fields present in the output point cloud data. */
       std::vector<pcl::PCLPointField> out_fields_;

@@ -43,6 +43,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/flare.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using KdTreePtr = pcl::search::KdTree<pcl::PointXYZ>::Ptr;
 using PointCloudPtr = pcl::PointCloud<pcl::PointXYZ>::Ptr;

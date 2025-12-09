@@ -26,6 +26,8 @@ main (int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PCDWriter writer;
   reader.read (argv[1], *cloud_filtered);
+  pcl::Indices unused;
+  pcl::removeNaNFromPointCloud(*cloud_filtered, *cloud_filtered, unused);
 
 /////////////////////////////////////////////
 /// CPU VERSION
@@ -81,7 +83,7 @@ main (int argc, char** argv)
   octree_device->build();
 
   std::vector<pcl::PointIndices> cluster_indices_gpu;
-  pcl::gpu::EuclideanClusterExtraction gec;
+  pcl::gpu::EuclideanClusterExtraction<pcl::PointXYZ> gec;
   gec.setClusterTolerance (0.02); // 2cm
   gec.setMinClusterSize (100);
   gec.setMaxClusterSize (25000);

@@ -9,6 +9,7 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <chrono>
 #include <thread>
 
 using namespace pcl;

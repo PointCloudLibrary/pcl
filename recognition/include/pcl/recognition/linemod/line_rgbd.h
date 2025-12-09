@@ -48,25 +48,26 @@ namespace pcl
   struct BoundingBoxXYZ
   {
     /** \brief Constructor. */
-    BoundingBoxXYZ () : x (0.0f), y (0.0f), z (0.0f), width (0.0f), height (0.0f), depth (0.0f) {}
+    BoundingBoxXYZ () = default;
 
     /** \brief X-coordinate of the upper left front point */
-    float x;
+    float x{0.0f};
     /** \brief Y-coordinate of the upper left front point */
-    float y;
+    float y{0.0f};
     /** \brief Z-coordinate of the upper left front point */
-    float z;
+    float z{0.0f};
 
     /** \brief Width of the bounding box */
-    float width;
+    float width{0.0f};
     /** \brief Height of the bounding box */
-    float height;
+    float height{0.0f};
     /** \brief Depth of the bounding box */
-    float depth;
+    float depth{0.0f};
   };
 
   /** \brief High-level class for template matching using the LINEMOD approach based on RGB and Depth data.
     * \author Stefan Holzer
+    * \ingroup recognition
     */
   template <typename PointXYZT, typename PointRGBT=PointXYZT>
   class PCL_EXPORTS LineRGBD
@@ -77,16 +78,16 @@ namespace pcl
       struct Detection
       {
         /** \brief Constructor. */
-        Detection () : template_id (0), object_id (0), detection_id (0), response (0.0f) {}
+        Detection () = default;
 
         /** \brief The ID of the template. */
-        std::size_t template_id;
+        std::size_t template_id{0};
         /** \brief The ID of the object corresponding to the template. */
-        std::size_t object_id;
+        std::size_t object_id{0};
         /** \brief The ID of this detection. This is only valid for the last call of the method detect (...). */
-        std::size_t detection_id;
+        std::size_t detection_id{0};
         /** \brief The response of this detection. Responses are between 0 and 1, where 1 is best. */
-        float response;
+        float response{0.0f};
         /** \brief The 3D bounding box of the detection. */
         BoundingBoxXYZ bounding_box;
         /** \brief The 2D template region of the detection. */
@@ -95,8 +96,7 @@ namespace pcl
 
       /** \brief Constructor */
       LineRGBD ()
-        : intersection_volume_threshold_ (1.0f)
-        , color_gradient_mod_ ()
+        : color_gradient_mod_ ()
         , surface_normal_mod_ ()
         , cloud_xyz_ ()
         , cloud_rgb_ ()
@@ -281,7 +281,7 @@ namespace pcl
       readLTMHeader (int fd, pcl::io::TARHeader &header);
 
       /** \brief Intersection volume threshold. */
-      float intersection_volume_threshold_;
+      float intersection_volume_threshold_{1.0f};
 
       /** \brief LINEMOD instance. */
       public: pcl::LINEMOD linemod_;

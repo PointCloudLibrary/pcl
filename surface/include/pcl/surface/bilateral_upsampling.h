@@ -77,10 +77,7 @@ namespace pcl
       Eigen::Matrix3f KinectVGAProjectionMatrix, KinectSXGAProjectionMatrix;
 
       /** \brief Constructor. */
-      BilateralUpsampling () 
-        : window_size_ (5)
-        , sigma_color_ (15.0f)
-        , sigma_depth_ (0.5f)
+      BilateralUpsampling ()
       {
         KinectVGAProjectionMatrix << 525.0f, 0.0f, 320.0f,
                                      0.0f, 525.0f, 240.0f,
@@ -148,11 +145,14 @@ namespace pcl
       computeDistances (Eigen::MatrixXf &val_exp_depth, Eigen::VectorXf &val_exp_rgb);
 
     private:
-      int window_size_;
-      float sigma_color_, sigma_depth_;
+      int window_size_{5};
+      float sigma_color_{15.0f}, sigma_depth_{0.5f};
       Eigen::Matrix3f projection_matrix_, unprojection_matrix_;
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/surface/impl/bilateral_upsampling.hpp>
+#endif

@@ -39,7 +39,7 @@
 
 #pragma once
 
-#include <pcl/filters/filter.h>
+#include <pcl/filters/filter_indices.h>
 
 #include <unordered_map>
 
@@ -52,13 +52,16 @@ namespace pcl
     * Then, in each *voxel* (i.e., 3D box), all the points present will be
     * approximated (i.e., *downsampled*) with the closest point to the center of the voxel.
     *
+    * \sa VoxelGrid
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */ 
   template <typename PointT>
-  class UniformSampling: public Filter<PointT>
+  class UniformSampling: public FilterIndices<PointT>
   {
-    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloud = typename FilterIndices<PointT>::PointCloud;
+
+    using FilterIndices<PointT>::negative_;
 
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::input_;
@@ -75,15 +78,14 @@ namespace pcl
 
       /** \brief Empty constructor. */
       UniformSampling (bool extract_removed_indices = false) :
-        Filter<PointT>(extract_removed_indices),
+        FilterIndices<PointT>(extract_removed_indices),
         leaves_ (),
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Vector4f::Zero ()),
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
-        divb_mul_ (Eigen::Vector4i::Zero ()),
-        search_radius_ (0)
+        divb_mul_ (Eigen::Vector4i::Zero ())
       {
         filter_name_ = "UniformSampling";
       }
@@ -109,12 +111,25 @@ namespace pcl
         search_radius_ = radius;
       }
 
+      /** \brief Set the minimum number of points required for a voxel to be used.
+        * \param[in] min_points_per_voxel the minimum number of points for required for a voxel to be used
+        */
+      inline void
+      setMinimumPointsNumberPerVoxel (unsigned int min_points_per_voxel) { min_points_per_voxel_ = min_points_per_voxel; }
+
+      /** \brief Return the minimum number of points required for a voxel to be used.
+        */
+      inline unsigned int
+      getMinimumPointsNumberPerVoxel () const { return min_points_per_voxel_; }
+
+      
     protected:
       /** \brief Simple structure to hold an nD centroid and the number of points in a leaf. */
       struct Leaf
       {
-        Leaf () : idx (-1) { }
-        int idx;
+        Leaf () = default;
+        int idx{-1};
+        unsigned int count{0};
       };
 
       /** \brief The 3D grid leaves. */
@@ -130,13 +145,16 @@ namespace pcl
       Eigen::Vector4i min_b_, max_b_, div_b_, divb_mul_;
 
       /** \brief The nearest neighbors search radius for each point. */
-      double search_radius_;
+      double search_radius_{0.0};
 
-      /** \brief Downsample a Point Cloud using a voxelized grid approach
-        * \param[out] output the resultant point cloud message
+      /** \brief Minimum number of points per voxel. */
+      unsigned int min_points_per_voxel_{0};
+
+      /** \brief Filtered results are indexed by an indices array.
+        * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (PointCloud &output) override;
+      applyFilter (Indices &indices) override;
   };
 }
 

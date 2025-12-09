@@ -41,6 +41,8 @@
 #include <pcl/exceptions.h>
 #include <pcl/console/print.h>
 
+#include <cassert>
+
 using namespace pcl::device;
 
 /////////////////////////////////////////////////////////////////////////
@@ -101,6 +103,10 @@ void pcl::gpu::NormalEstimation::getViewPoint (float &vpx, float &vpy, float &vp
 void pcl::gpu::NormalEstimation::compute(Normals& normals)
 {
     assert(!cloud_.empty());
+    if (radius_ <= 0.0f || max_results_ <= 0) {
+        pcl::gpu::error("radius and/or max_results is invalid. Set them appropriately with setRadiusSearch", __FILE__, __LINE__);
+        return;
+    }
 
     PointCloud& surface = surface_.empty() ? cloud_ : surface_;
 
@@ -143,6 +149,10 @@ void pcl::gpu::PFHEstimation::compute(const PointCloud& cloud, const Normals& no
 
 void pcl::gpu::PFHEstimation::compute(DeviceArray2D<PFHSignature125>& features)
 {
+    if (radius_ <= 0.0f || max_results_ <= 0) {
+        pcl::gpu::error("radius and/or max_results is invalid. Set them appropriately with setRadiusSearch", __FILE__, __LINE__);
+        return;
+    }
     PointCloud& surface = surface_.empty() ? cloud_ : surface_;
 
     octree_.setCloud(surface);
@@ -181,6 +191,10 @@ void pcl::gpu::PFHRGBEstimation::compute(const PointCloud& cloud, const Normals&
 
 void pcl::gpu::PFHRGBEstimation::compute(DeviceArray2D<PFHRGBSignature250>& features)
 {
+    if (radius_ <= 0.0f || max_results_ <= 0) {
+        pcl::gpu::error("radius and/or max_results is invalid. Set them appropriately with setRadiusSearch", __FILE__, __LINE__);
+        return;
+    }
     PointCloud& surface = surface_.empty() ? cloud_ : surface_;
 
     octree_.setCloud(surface);
@@ -229,6 +243,10 @@ void pcl::gpu::FPFHEstimation::compute(const PointCloud& cloud, const Normals& n
 
 void pcl::gpu::FPFHEstimation::compute(DeviceArray2D<FPFHSignature33>& features)
 {   
+    if (radius_ <= 0.0f || max_results_ <= 0) {
+        pcl::gpu::error("radius and/or max_results is invalid. Set them appropriately with setRadiusSearch", __FILE__, __LINE__);
+        return;
+    }
     bool hasInds = !indices_.empty() && indices_.size() != cloud_.size();
     bool hasSurf = !surface_.empty();
 
@@ -312,6 +330,10 @@ void pcl::gpu::PPFRGBEstimation::compute(DeviceArray<PPFRGBSignature>& features)
 
 void pcl::gpu::PPFRGBRegionEstimation::compute(DeviceArray<PPFRGBSignature>& features)
 {
+    if (radius_ <= 0.0f || max_results_ <= 0) {
+        pcl::gpu::error("radius and/or max_results is invalid. Set them appropriately with setRadiusSearch", __FILE__, __LINE__);
+        return;
+    }
     static_assert(sizeof(PPFRGBRegionEstimation:: PointType) == sizeof(device:: PointType), "Point sizes do not match");
     static_assert(sizeof(PPFRGBRegionEstimation::NormalType) == sizeof(device::NormalType), "Normal sizes do not match");
 

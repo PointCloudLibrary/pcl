@@ -5,21 +5,18 @@
 
 set(SUBSUBSYS_NAME cloud_composer)
 set(SUBSUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
-set(SUBSUBSYS_DEPS common io visualization filters apps)
+set(SUBSUBSYS_DEPS common io visualization features filters apps)
 set(SUBSUBSYS_EXT_DEPS vtk ${QTX})
+set(REASON "")
+set(DEFAULT OFF)
 
-# QVTK?
-if(NOT HAVE_QVTK)
-  set(DEFAULT AUTO_OFF)
-  set(REASON "Cloud composer requires QVTK")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
+# Have Qt?
+if("${QTX}" STREQUAL "")
+  set(REASON "Cloud composer requires Qt.")
 endif()
 
-#Default to not building for now
-if("${DEFAULT}" STREQUAL "TRUE")
-  set(DEFAULT FALSE)
+if(NOT HAVE_QVTK)  
+  set(REASON "VTK was not built with Qt support.")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
@@ -30,8 +27,6 @@ PCL_ADD_DOC(${SUBSUBSYS_NAME})
 if(NOT build)
   return()
 endif()
-
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 #Create subdirectory for plugin libs
 set(CLOUD_COMPOSER_PLUGIN_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/cloud_composer_plugins")
@@ -76,7 +71,7 @@ set(PCL_LIB_TYPE STATIC)
 PCL_ADD_LIBRARY(pcl_cc_tool_interface COMPONENT ${SUBSUBSYS_NAME} SOURCES ${INTERFACE_HEADERS} ${INTERFACE_SOURCES})
 
 
-target_link_libraries(pcl_cc_tool_interface pcl_common pcl_filters pcl_search pcl_visualization ${QTX}::Widgets)
+target_link_libraries(pcl_cc_tool_interface pcl_common pcl_features pcl_filters pcl_search pcl_visualization ${QTX}::Widgets)
 
 set(PCL_LIB_TYPE ${PCL_LIB_TYPE_ORIGIN})
 

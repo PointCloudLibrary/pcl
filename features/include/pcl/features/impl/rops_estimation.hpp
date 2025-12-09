@@ -275,17 +275,17 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
     for (const auto &i_pt : pt)
     {
       Eigen::Vector3f vec = i_pt - feature_point;
-      curr_scatter_matrix += vec * (vec.transpose ());
+      curr_scatter_matrix.noalias() += vec * (vec.transpose ());
       for (const auto &j_pt : pt)
-        curr_scatter_matrix += vec * ((j_pt - feature_point).transpose ());
+        curr_scatter_matrix.noalias() += vec * ((j_pt - feature_point).transpose ());
     }
     scatter_matrices.emplace_back (coeff * curr_scatter_matrix);
   }
 
   if (std::abs (total_area) < std::numeric_limits <float>::epsilon ())
-    total_area = 1.0f / total_area;
-  else
     total_area = 1.0f;
+  else
+    total_area = 1.0f / total_area;
 
   Eigen::Matrix3f overall_scatter_matrix;
   overall_scatter_matrix.setZero ();
@@ -343,43 +343,40 @@ template <typename PointInT, typename PointOutT> void
 pcl::ROPSEstimation <PointInT, PointOutT>::computeEigenVectors (const Eigen::Matrix3f& matrix,
   Eigen::Vector3f& major_axis, Eigen::Vector3f& middle_axis, Eigen::Vector3f& minor_axis) const
 {
-  Eigen::EigenSolver <Eigen::Matrix3f> eigen_solver;
-  eigen_solver.compute (matrix);
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> eigen_solver(matrix, Eigen::ComputeEigenvectors);
 
-  Eigen::EigenSolver <Eigen::Matrix3f>::EigenvectorsType eigen_vectors;
-  Eigen::EigenSolver <Eigen::Matrix3f>::EigenvalueType eigen_values;
-  eigen_vectors = eigen_solver.eigenvectors ();
-  eigen_values = eigen_solver.eigenvalues ();
+  const Eigen::SelfAdjointEigenSolver <Eigen::Matrix3f>::EigenvectorsType& eigen_vectors = eigen_solver.eigenvectors ();
+  const Eigen::SelfAdjointEigenSolver <Eigen::Matrix3f>::RealVectorType& eigen_values = eigen_solver.eigenvalues ();
 
   unsigned int temp = 0;
   unsigned int major_index = 0;
   unsigned int middle_index = 1;
   unsigned int minor_index = 2;
 
-  if (eigen_values.real () (major_index) < eigen_values.real () (middle_index))
+  if (eigen_values (major_index) < eigen_values (middle_index))
   {
     temp = major_index;
     major_index = middle_index;
     middle_index = temp;
   }
 
-  if (eigen_values.real () (major_index) < eigen_values.real () (minor_index))
+  if (eigen_values (major_index) < eigen_values (minor_index))
   {
     temp = major_index;
     major_index = minor_index;
     minor_index = temp;
   }
 
-  if (eigen_values.real () (middle_index) < eigen_values.real () (minor_index))
+  if (eigen_values (middle_index) < eigen_values (minor_index))
   {
     temp = minor_index;
     minor_index = middle_index;
     middle_index = temp;
   }
 
-  major_axis = eigen_vectors.col (major_index).real ();
-  middle_axis = eigen_vectors.col (middle_index).real ();
-  minor_axis = eigen_vectors.col (minor_index).real ();
+  major_axis = eigen_vectors.col (major_index);
+  middle_axis = eigen_vectors.col (middle_index);
+  minor_axis = eigen_vectors.col (minor_index);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

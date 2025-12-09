@@ -47,14 +47,17 @@
 template <typename PointInT, typename PointOutT> void
 pcl::NormalEstimationOMP<PointInT, PointOutT>::setNumberOfThreads (unsigned int nr_threads)
 {
-  if (nr_threads == 0)
 #ifdef _OPENMP
+  if (nr_threads == 0)
     threads_ = omp_get_num_procs();
-#else
-    threads_ = 1;
-#endif
   else
     threads_ = nr_threads;
+  PCL_DEBUG ("[pcl::NormalEstimationOMP::setNumberOfThreads] Setting number of threads to %u.\n", threads_);
+#else
+  threads_ = 1;
+  if (nr_threads != 1)
+    PCL_WARN ("[pcl::NormalEstimationOMP::setNumberOfThreads] Parallelization is requested, but OpenMP is not available! Continuing without parallelization.\n");
+#endif // _OPENMP
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +77,8 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
   default(none) \
   shared(output) \
   firstprivate(nn_indices, nn_dists) \
-  num_threads(threads_)
+  num_threads(threads_) \
+  schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
@@ -103,7 +107,8 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
   default(none) \
   shared(output) \
   firstprivate(nn_indices, nn_dists) \
-  num_threads(threads_)
+  num_threads(threads_) \
+  schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {

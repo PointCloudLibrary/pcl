@@ -43,6 +43,9 @@
 
 namespace pcl
 {
+  /** \brief Similar to the Point Feature Histogram descriptor, but also takes color into account. See also \ref PFHEstimation
+    * \ingroup features
+    */
   template <typename PointInT, typename PointNT, typename PointOutT = pcl::PFHRGBSignature250>
   class PFHRGBEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {

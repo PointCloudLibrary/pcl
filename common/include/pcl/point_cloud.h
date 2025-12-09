@@ -52,6 +52,7 @@
 #include <pcl/types.h>
 #include <pcl/console/print.h>  // for PCL_WARN
 
+#include <cassert> // for assert
 #include <utility>
 #include <vector>
 
@@ -169,7 +170,7 @@ namespace pcl
     * \author Patrick Mihelich, Radu B. Rusu
     */
   template <typename PointT>
-  class PCL_EXPORTS PointCloud
+  class PointCloud
   {
     public:
       /** \brief Default constructor. Sets \ref is_dense to true, \ref width
@@ -214,7 +215,7 @@ namespace pcl
       operator += (const PointCloud& rhs)
       {
         concatenate((*this), rhs);
-        return (*this);
+        return *this;
       }
 
       /** \brief Add a point cloud to another cloud.
@@ -921,5 +922,3 @@ namespace pcl
     return (s);
   }
 }
-
-#define PCL_INSTANTIATE_PointCloud(T) template class PCL_EXPORTS pcl::PointCloud<T>;

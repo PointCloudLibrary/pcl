@@ -225,7 +225,7 @@ scaleInPlace (pcl::PCLPointCloud2 &cloud, double* multiplier)
 #define MULTIPLY(CASE_LABEL)                                                           \
   case CASE_LABEL: {                                                                   \
     for (int i = 0; i < 3; ++i)                                                        \
-      multiply<pcl::traits::asType_t<CASE_LABEL>>(                                     \
+      multiply<pcl::traits::asType_t<(CASE_LABEL)>>(                                   \
           cloud, xyz_offset[i], multiplier[i]);                                        \
     break;                                                                             \
   }
@@ -295,7 +295,7 @@ main (int argc, char** argv)
       const float& y = values[1];
       const float& z = values[2];
       const float& w = values[3];
-      tform.topLeftCorner (3, 3) = Eigen::Matrix3f (Eigen::Quaternionf (w, x, y, z));
+      tform.topLeftCorner<3, 3> () = Eigen::Matrix3f (Eigen::Quaternionf (w, x, y, z));
     }
     else
     {
@@ -312,7 +312,7 @@ main (int argc, char** argv)
       const float& ay = values[1];
       const float& az = values[2];
       const float& theta = values[3];
-      tform.topLeftCorner (3, 3) = Eigen::Matrix3f (Eigen::AngleAxisf (theta, Eigen::Vector3f (ax, ay, az)));
+      tform.topLeftCorner<3, 3> () = Eigen::Matrix3f (Eigen::AngleAxisf (theta, Eigen::Vector3f (ax, ay, az)));
     }
     else
     {

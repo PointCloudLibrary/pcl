@@ -42,7 +42,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/surface/mls.h>
-#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;
@@ -122,9 +121,6 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input,
   mls.setUpsamplingStepSize (0.015);
   mls.setDilationIterations (2);
   mls.setDilationVoxelSize (0.01f);
-
-  search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ> ());
-  mls.setSearchMethod (tree);
   mls.setComputeNormals (true);
 
   PCL_INFO ("Computing smoothed surface and normals with search_radius %f , sqr_gaussian_param %f, polynomial order %d\n",

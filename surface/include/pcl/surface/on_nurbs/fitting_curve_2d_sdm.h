@@ -87,6 +87,7 @@ namespace pcl
         updateCurve (double damp) override;
 
       protected:
+        using FittingCurve2dPDM::addPointConstraint;
 
         /** \brief Add minimization constraint: point-to-surface distance (squared-distance-minimization). */
         virtual void

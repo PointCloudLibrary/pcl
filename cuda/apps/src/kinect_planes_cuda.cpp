@@ -49,6 +49,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
@@ -60,8 +61,6 @@
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-
-#include <boost/filesystem.hpp>
 
 #include <functional>
 #include <iostream>
@@ -273,7 +272,7 @@ class MultiRansac
       //bool repeat = false;
 
       //std::string path = "./pcl_logo.pcd";
-      //if (path.empty() || !boost::filesystem::exists (path))
+      //if (path.empty() || !pcl_fs::exists (path))
       //{
       //  std::cerr << "did not find file" << std::endl;
       //}

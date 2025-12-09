@@ -44,12 +44,35 @@
  */
 
 #include <pcl/type_traits.h>  // for has_custom_allocator
+#include <pcl/pcl_config.h> // for PCL_USES_EIGEN_HANDMADE_ALIGNED_MALLOC
 
 #include <Eigen/Core>  // for EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 #include <memory>  // for std::allocate_shared, std::dynamic_pointer_cast, std::make_shared, std::shared_ptr, std::static_pointer_cast, std::weak_ptr
 #include <type_traits>  // for std::enable_if_t, std::false_type, std::true_type
 #include <utility>  // for std::forward
+
+#if !defined(PCL_SILENCE_MALLOC_WARNING) && !defined(__NVCC__)
+#if PCL_USES_EIGEN_HANDMADE_ALIGNED_MALLOC
+// EIGEN_DEFAULT_ALIGN_BYTES and EIGEN_MALLOC_ALREADY_ALIGNED will be set after including Eigen/Core
+// this condition is the same as in the function aligned_malloc in Memory.h in the Eigen code
+#if (defined(EIGEN_DEFAULT_ALIGN_BYTES) && EIGEN_DEFAULT_ALIGN_BYTES==0) || (defined(EIGEN_MALLOC_ALREADY_ALIGNED) && EIGEN_MALLOC_ALREADY_ALIGNED)
+#if defined(_MSC_VER)
+#error "Potential runtime error due to aligned malloc mismatch! You likely have to compile your code with AVX enabled or define EIGEN_MAX_ALIGN_BYTES=32 (to silence this message at your own risk, define PCL_SILENCE_MALLOC_WARNING=1)"
+#else // defined(_MSC_VER)
+#warning "Potential runtime error due to aligned malloc mismatch! You likely have to compile your code with AVX enabled or define EIGEN_MAX_ALIGN_BYTES=32 (to silence this message at your own risk, define PCL_SILENCE_MALLOC_WARNING=1)"
+#endif // defined(_MSC_VER)
+#endif
+#else // PCL_USES_EIGEN_HANDMADE_ALIGNED_MALLOC
+#if (defined(EIGEN_DEFAULT_ALIGN_BYTES) && EIGEN_DEFAULT_ALIGN_BYTES!=0) && (defined(EIGEN_MALLOC_ALREADY_ALIGNED) && !EIGEN_MALLOC_ALREADY_ALIGNED)
+#if defined(_MSC_VER)
+#error "Potential runtime error due to aligned malloc mismatch! PCL was likely compiled without AVX support but you enabled AVX for your code (to silence this message at your own risk, define PCL_SILENCE_MALLOC_WARNING=1)"
+#else // defined(_MSC_VER)
+#warning "Potential runtime error due to aligned malloc mismatch! PCL was likely compiled without AVX support but you enabled AVX for your code (to silence this message at your own risk, define PCL_SILENCE_MALLOC_WARNING=1)"
+#endif // defined(_MSC_VER)
+#endif
+#endif // PCL_USES_EIGEN_HANDMADE_ALIGNED_MALLOC
+#endif // !defined(PCL_SILENCE_MALLOC_WARNING)
 
 /**
  * \brief Macro to signal a class requires a custom allocator

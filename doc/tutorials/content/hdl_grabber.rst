@@ -213,10 +213,6 @@ Add the following lines to your CMakeLists.txt file:
 
    find_package(PCL 1.2 REQUIRED)
 
-   include_directories(${PCL_INCLUDE_DIRS})
-   link_directories(${PCL_LIBRARY_DIRS})
-   add_definitions(${PCL_DEFINITIONS})
-
    add_executable(pcl_hdl_viewer_simple hdl_viewer_simple.cpp)
    target_link_libraries(pcl_hdl_viewer_simple ${PCL_LIBRARIES})
 

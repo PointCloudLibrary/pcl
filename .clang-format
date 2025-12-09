@@ -22,6 +22,7 @@ PointerAlignment: Left
 Standard: c++14
 TabWidth: 2
 UseTab: Never
+SortIncludes: CaseInsensitive
 IncludeBlocks: Regroup
 IncludeCategories:
 # Main PCL includes of common module should be sorted at end of PCL includes

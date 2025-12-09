@@ -56,6 +56,7 @@ namespace pcl
     * Based on the following publication:
     *    * "Geometrically Stable Sampling for the ICP Algorithm" - N. Gelfand, L. Ikemoto, S. Rusinkiewicz, M. Levoy
     *
+    * \ingroup filters
     * \author Alexandru E. Ichim, alex.e.ichim@gmail.com
     */
   template <typename PointT, typename PointNT>

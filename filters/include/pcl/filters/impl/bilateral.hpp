@@ -41,8 +41,8 @@
 #define PCL_FILTERS_BILATERAL_IMPL_H_
 
 #include <pcl/filters/bilateral.h>
-#include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/auto.h> // for autoSelectMethod
+#include <pcl/common/point_tests.h> // for isXYZFinite
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> double
@@ -83,14 +83,12 @@ pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
   // In case a search method has not been given, initialize it using some defaults
   if (!tree_)
   {
-    // For organized datasets, use an OrganizedNeighbor
-    if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
-    // For unorganized data, use a FLANN kdtree
-    else
-      tree_.reset (new pcl::search::KdTree<PointT> (false));
+    tree_.reset (pcl::search::autoSelectMethod<PointT>(input_, false, pcl::search::Purpose::radius_search));
   }
-  tree_->setInputCloud (input_);
+  else
+  {
+    tree_->setInputCloud (input_);
+  }
 
   Indices k_indices;
   std::vector<float> k_distances;
@@ -101,11 +99,14 @@ pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
   // For all the indices given (equal to the entire cloud if none given)
   for (const auto& idx : (*indices_))
   {
-    // Perform a radius search to find the nearest neighbors
-    tree_->radiusSearch (idx, sigma_s_ * 2, k_indices, k_distances);
+    if (input_->is_dense || pcl::isXYZFinite((*input_)[idx]))
+    {
+      // Perform a radius search to find the nearest neighbors
+      tree_->radiusSearch (idx, sigma_s_ * 2, k_indices, k_distances);
 
-    // Overwrite the intensity value with the computed average
-    output[idx].intensity = static_cast<float> (computePointWeight (idx, k_indices, k_distances));
+      // Overwrite the intensity value with the computed average
+      output[idx].intensity = static_cast<float> (computePointWeight (idx, k_indices, k_distances));
+    }
   }
 }
  

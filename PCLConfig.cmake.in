@@ -1,10 +1,23 @@
 # ------------------------------------------------------------------------------------
 # Helper to use PCL from outside project
 #
-# target_link_libraries(my_fabulous_target PCL_XXX_LIBRARIES) where XXX is the
-# upper cased xxx from :
+# Search for PCL:
+# Request all PCL modules:
+#   find_package(PCL CONFIG REQUIRED)
+# Or request only specific PCL modules:
+#   find_package(PCL CONFIG REQUIRED COMPONENTS xxx yyy)
+#
+# Link to PCL:
+# Link to all found PCL modules:
+#   target_link_libraries(my_fabulous_target ${PCL_LIBRARIES})
+# Or link only to specific modules:
+#   target_link_libraries(my_fabulous_target pcl_xxx pcl_yyy)
+#
+# Where xxx and yyy are module names from the following list:
 # @PCLCONFIG_AVAILABLE_COMPONENTS_LIST@
 #
+# Some additional variables are set by PCLConfig.cmake, which are not needed when
+# using the (modern) linking approach described above:
 # PCL_INCLUDE_DIRS is filled with PCL and available 3rdparty headers
 # PCL_LIBRARY_DIRS is filled with PCL components libraries install directory and
 # 3rdparty libraries paths
@@ -12,16 +25,12 @@
 #                                   www.pointclouds.org
 #------------------------------------------------------------------------------------
 
-# Set default policy behavior similar to minimum requirement version
-cmake_policy(VERSION 3.10)
 
-# explicitly set policies we already support in newer cmake versions
-if(POLICY CMP0074)
-  # TODO: update *_ROOT variables to be PCL_*_ROOT or equivalent.
-  # CMP0074 directly affects how Find* modules work and *_ROOT variables.  Since
-  # this is a config file that will be consumed by parent projects with (likely)
-  # NEW behavior, we need to push a policy stack.
-  cmake_policy(SET CMP0074 NEW)
+# Set default policy behavior similar to minimum requirement version
+cmake_policy(VERSION 3.16.3)
+
+if(POLICY CMP0144)
+  cmake_policy(SET CMP0144 NEW)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")
@@ -93,15 +102,8 @@ macro(find_boost)
   elseif(NOT BOOST_INCLUDEDIR)
     set(BOOST_INCLUDEDIR "@Boost_INCLUDE_DIR@")
   endif()
-  
-  set(Boost_ADDITIONAL_VERSIONS
-    "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@" "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@"
-    "1.82.0" "1.82" "1.81.0" "1.81" "1.80.0" "1.80"
-    "1.79.0" "1.79" "1.78.0" "1.78" "1.77.0" "1.77" "1.76.0" "1.76" "1.75.0" "1.75" 
-    "1.74.0" "1.74" "1.73.0" "1.73" "1.72.0" "1.72" "1.71.0" "1.71" "1.70.0" "1.70"
-    "1.69.0" "1.69" "1.68.0" "1.68" "1.67.0" "1.67" "1.66.0" "1.66" "1.65.1" "1.65.0" "1.65")
-  
-  find_package(Boost 1.65.0 ${QUIET_} COMPONENTS @PCLCONFIG_AVAILABLE_BOOST_MODULES@)
+
+  find_package(Boost 1.71.0 ${QUIET_} COMPONENTS @PCLCONFIG_AVAILABLE_BOOST_MODULES@ CONFIG)
 
   set(BOOST_FOUND ${Boost_FOUND})
   set(BOOST_INCLUDE_DIRS "${Boost_INCLUDE_DIR}")
@@ -112,14 +114,21 @@ macro(find_boost)
   endif()
 endmacro()
 
-#remove this as soon as eigen is shipped with FindEigen.cmake
-macro(find_eigen)
+macro(find_eigen3)
   if(PCL_ALL_IN_ONE_INSTALLER)
-    set(EIGEN_ROOT "${PCL_ROOT}/3rdParty/Eigen")
-  elseif(NOT EIGEN_ROOT)
-    get_filename_component(EIGEN_ROOT "@EIGEN_INCLUDE_DIRS@" ABSOLUTE)
+    set(Eigen3_DIR "${PCL_ROOT}/3rdParty/Eigen3/share/eigen3/cmake/")
   endif()
-  find_package(Eigen 3.3)
+  find_package(Eigen3 REQUIRED NO_MODULE)
+  if (Eigen3_VERSION VERSION_LESS 3.3)
+    message(FATAL_ERROR "Eigen version>=3.3 is required, but found ${Eigen3_VERSION}")
+  endif()
+  if(NOT EIGEN3_FOUND AND Eigen3_FOUND)
+    set(EIGEN3_FOUND ${Eigen3_FOUND})
+  endif()
+  # In very new Eigen versions, EIGEN3_INCLUDE_DIR(S) is not defined any more, only the target:
+  if(TARGET Eigen3::Eigen)
+    set(EIGEN3_LIBRARIES Eigen3::Eigen)
+  endif()
 endmacro()
 
 #remove this as soon as qhull is shipped with FindQhull.cmake
@@ -271,8 +280,8 @@ endmacro()
 function(find_external_library _component _lib _is_optional)
   if("${_lib}" STREQUAL "boost")
     find_boost()
-  elseif("${_lib}" STREQUAL "eigen")
-    find_eigen()
+  elseif("${_lib}" STREQUAL "eigen3")
+    find_eigen3()
   elseif("${_lib}" STREQUAL "flann")
     find_flann()
   elseif("${_lib}" STREQUAL "qhull")
@@ -303,23 +312,28 @@ function(find_external_library _component _lib _is_optional)
     find_package(Pcap)
   elseif("${_lib}" STREQUAL "png")
     find_package(PNG)
+  elseif("${_lib}" STREQUAL "OpenMP")
+    find_package(OpenMP COMPONENTS CXX)
+    # the previous find_package call sets OpenMP_CXX_LIBRARIES, but not OPENMP_LIBRARIES, which is used further down
+    # we can link to the CMake target OpenMP::OpenMP_CXX by setting the following:
+    set(OPENMP_LIBRARIES OpenMP::OpenMP_CXX)
   else()
     message(WARNING "${_lib} is not handled by find_external_library")
   endif()
 
   string(TOUPPER "${_component}" COMPONENT)
   string(TOUPPER "${_lib}" LIB)
-  string(REGEX REPLACE "[.-]" "_" LIB ${LIB})
+  string(REGEX REPLACE "[.-]" "_" LIB "${LIB}")
   if(${LIB}_FOUND)
     list(APPEND PCL_${COMPONENT}_INCLUDE_DIRS ${${LIB}_INCLUDE_DIRS})
     set(PCL_${COMPONENT}_INCLUDE_DIRS ${PCL_${COMPONENT}_INCLUDE_DIRS} PARENT_SCOPE)
-    
+
     if(${LIB} MATCHES "VTK")
       if(${${LIB}_VERSION_MAJOR} GREATER_EQUAL 9)
         set(ISVTK9ORGREATER TRUE)
       endif()
     endif()
-    
+
     if(${LIB}_USE_FILE AND NOT ISVTK9ORGREATER )
       include(${${LIB}_USE_FILE})
     else()
@@ -430,6 +444,8 @@ set(PCL_INCLUDE_DIRS "${PCL_CONF_INCLUDE_DIR}")
 #set a suffix for debug libraries
 set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
 set(PCL_RELEASE_SUFFIX "@CMAKE_RELEASE_POSTFIX@")
+set(PCL_RELWITHDEBINFO_SUFFIX "@CMAKE_RELWITHDEBINFO_POSTFIX@")
+set(PCL_MINSIZEREL_SUFFIX "@CMAKE_MINSIZEREL_POSTFIX@")
 
 set(PCL_SHARED_LIBS "@PCL_SHARED_LIBS@")
 
@@ -441,6 +457,10 @@ list(APPEND PCL_COMPILE_OPTIONS @PCLCONFIG_SSE_COMPILE_OPTIONS@)
 list(APPEND PCL_COMPILE_OPTIONS @PCLCONFIG_AVX_COMPILE_OPTIONS@)
 
 set(pcl_all_components @PCLCONFIG_AVAILABLE_COMPONENTS@)
+# insert "io_ply" before "io"
+list(FIND pcl_all_components "io" pcl_pos_io)
+list(INSERT pcl_all_components ${pcl_pos_io} "io_ply")
+unset(pcl_pos_io)
 list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 
 #list each component dependencies IN PCL
@@ -450,6 +470,11 @@ list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 @PCLCONFIG_EXTERNAL_DEPENDENCIES@
 
 @PCLCONFIG_OPTIONAL_DEPENDENCIES@
+
+# io_ply subcomponent
+list(APPEND pcl_io_int_dep io_ply)
+set(pcl_io_ply_int_dep common)
+set(pcl_io_ply_ext_dep boost)
 
 # VTK components required by PCL
 set(PCL_VTK_COMPONENTS "@PCL_VTK_COMPONENTS@")
@@ -508,18 +533,21 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
 
   string(REGEX REPLACE "^cuda_(.*)$" "\\1" cuda_component "${component}")
   string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}")
+  string(REGEX REPLACE "^io_(.*)$" "\\1" io_component "${component}")
 
   find_path(PCL_${COMPONENT}_INCLUDE_DIR
     NAMES pcl/${component}
           pcl/apps/${component}
           pcl/cuda/${cuda_component} pcl/cuda/${component}
           pcl/gpu/${gpu_component} pcl/gpu/${component}
+          pcl/io/${io_component}
     HINTS ${PCL_INCLUDE_DIRS}
     PATH_SUFFIXES
           ${component}/include
           apps/${component}/include
           cuda/${cuda_component}/include
           gpu/${gpu_component}/include
+          io/${io_component}/include
     DOC "path to ${component} headers"
     NO_DEFAULT_PATH)
   mark_as_advanced(PCL_${COMPONENT}_INCLUDE_DIR)
@@ -534,7 +562,8 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
   # Skip find_library for header only modules
   list(FIND pcl_header_only_components ${component} _is_header_only)
   if(_is_header_only EQUAL -1)
-    find_library(PCL_${COMPONENT}_LIBRARY ${pcl_component}${PCL_RELEASE_SUFFIX}
+    find_library(PCL_${COMPONENT}_LIBRARY
+      NAMES ${pcl_component}${PCL_RELEASE_SUFFIX} ${pcl_component}${PCL_RELWITHDEBINFO_SUFFIX} ${pcl_component}${PCL_MINSIZEREL_SUFFIX}
       HINTS ${PCL_LIBRARY_DIRS}
       DOC "path to ${pcl_component} library"
       NO_DEFAULT_PATH)

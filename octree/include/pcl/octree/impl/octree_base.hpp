@@ -46,12 +46,7 @@ namespace octree {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 OctreeBase<LeafContainerT, BranchContainerT>::OctreeBase()
-: leaf_count_(0)
-, branch_count_(1)
-, root_node_(new BranchNode())
-, depth_mask_(0)
-, octree_depth_(0)
-, dynamic_depth_enabled_(false)
+: root_node_(new BranchNode())
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -249,8 +244,8 @@ OctreeBase<LeafContainerT, BranchContainerT>::deserializeTree(
   deleteTree();
 
   // iterator for binary tree structure vector
-  std::vector<char>::const_iterator binary_tree_out_it = binary_tree_out_arg.begin();
-  std::vector<char>::const_iterator binary_tree_out_it_end = binary_tree_out_arg.end();
+  auto binary_tree_out_it = binary_tree_out_arg.cbegin();
+  auto binary_tree_out_it_end = binary_tree_out_arg.cend();
 
   deserializeTreeRecursive(root_node_,
                            depth_mask_,
@@ -271,19 +266,17 @@ OctreeBase<LeafContainerT, BranchContainerT>::deserializeTree(
   OctreeKey new_key;
 
   // set data iterator to first element
-  typename std::vector<LeafContainerT*>::const_iterator leaf_vector_it =
-      leaf_container_vector_arg.begin();
+  auto leaf_vector_it = leaf_container_vector_arg.cbegin();
 
   // set data iterator to last element
-  typename std::vector<LeafContainerT*>::const_iterator leaf_vector_it_end =
-      leaf_container_vector_arg.end();
+  auto leaf_vector_it_end = leaf_container_vector_arg.cend();
 
   // free existing tree before tree rebuild
   deleteTree();
 
   // iterator for binary tree structure vector
-  std::vector<char>::const_iterator binary_tree_input_it = binary_tree_in_arg.begin();
-  std::vector<char>::const_iterator binary_tree_input_it_end = binary_tree_in_arg.end();
+  auto binary_tree_input_it = binary_tree_in_arg.cbegin();
+  auto binary_tree_input_it_end = binary_tree_in_arg.cend();
 
   deserializeTreeRecursive(root_node_,
                            depth_mask_,

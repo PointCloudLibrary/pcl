@@ -3,7 +3,6 @@ set(SUBSYS_PATH cuda/common)
 set(SUBSYS_DESC "Point cloud CUDA common library")
 set(SUBSYS_DEPS)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 mark_as_advanced("BUILD_${SUBSYS_NAME}")
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
@@ -28,8 +27,8 @@ set(common_incs
     include/pcl/cuda/common/point_type_rgb.h
     )
 
-include_directories(./include)
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
+PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME})
 set(EXT_DEPS CUDA)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC "${SUBSYS_DESC}"
     PCL_DEPS "${SUBSYS_DEPS}" EXT_DEPS "" HEADER_ONLY)

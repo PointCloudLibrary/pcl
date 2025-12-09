@@ -42,6 +42,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/principal_curvatures.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;
@@ -116,7 +117,7 @@ TEST (PCL, PrincipalCurvaturesEstimation)
   pc.compute (*pcs);
   EXPECT_EQ (pcs->size (), indices.size ());
 
-  // Adjust for small numerical inconsitencies (due to nn_indices not being sorted)
+  // Adjust for small numerical inconsistencies (due to nn_indices not being sorted)
   EXPECT_NEAR (std::abs ((*pcs)[0].principal_curvature[0]), 0.98509, 1e-4);
   EXPECT_NEAR (std::abs ((*pcs)[0].principal_curvature[1]), 0.10713, 1e-4);
   EXPECT_NEAR (std::abs ((*pcs)[0].principal_curvature[2]), 0.13462, 1e-4);

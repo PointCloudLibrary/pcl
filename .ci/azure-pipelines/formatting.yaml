@@ -7,7 +7,7 @@ jobs:
       - checkout: self
         # find the commit hash on a quick non-forced update too
         fetchDepth: 10
-      - script: ./.dev/format.sh $(which clang-format) .
+      - script: python ./.dev/format.py .
         displayName: 'Run clang-format'
       - script: git diff > formatting.patch
         displayName: 'Compute diff'

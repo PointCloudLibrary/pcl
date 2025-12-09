@@ -1,7 +1,7 @@
 set(SUBSYS_NAME gpu_kinfu)
 set(SUBSYS_PATH gpu/kinfu)
 set(SUBSYS_DESC "Kinect Fusion implementation")
-set(SUBSYS_DEPS common io gpu_containers geometry search)
+set(SUBSYS_DEPS common io gpu_utils gpu_containers geometry search)
 if(${CUDA_VERSION_STRING} VERSION_GREATER_EQUAL "12.0")
   set(DEFAULT FALSE)
   set(REASON "Kinfu uses textures which was removed in CUDA 12")
@@ -26,10 +26,10 @@ source_group("Source Files\\cuda" FILES ${cuda})
 source_group("Source Files" FILES ${srcs})
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${cuda})
-target_link_libraries(${LIB_NAME} pcl_cuda pcl_gpu_containers)
+target_link_libraries(${LIB_NAME} pcl_gpu_utils pcl_gpu_containers)
+target_include_directories(${LIB_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_compile_options(${LIB_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--ftz=true;--prec-div=false;--prec-sqrt=false>)
 

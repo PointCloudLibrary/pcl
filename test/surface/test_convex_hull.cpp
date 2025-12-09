@@ -45,6 +45,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/search/kdtree.h>
 #include <pcl/surface/convex_hull.h>
 #include <pcl/common/common.h>
 #include <pcl/sample_consensus/model_types.h> // for SACMODEL_PLANE

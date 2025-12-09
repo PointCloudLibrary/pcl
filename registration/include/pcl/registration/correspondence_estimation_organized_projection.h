@@ -90,11 +90,7 @@ public:
   /** \brief Empty constructor that sets all the intrinsic calibration to the default
    * Kinect values. */
   CorrespondenceEstimationOrganizedProjection()
-  : fx_(525.f)
-  , fy_(525.f)
-  , cx_(319.5f)
-  , cy_(239.5f)
-  , src_to_tgt_transformation_(Eigen::Matrix4f::Identity())
+  : src_to_tgt_transformation_(Eigen::Matrix4f::Identity())
   , depth_threshold_(std::numeric_limits<float>::max())
   , projection_matrix_(Eigen::Matrix3f::Identity())
   {}
@@ -194,7 +190,7 @@ public:
    * will be rejected
    */
   void
-  determineCorrespondences(Correspondences& correspondences, double max_distance);
+  determineCorrespondences(Correspondences& correspondences, const double max_distance);
 
   /** \brief Computes the correspondences, applying a maximum Euclidean distance
    * threshold.
@@ -205,7 +201,7 @@ public:
    */
   void
   determineReciprocalCorrespondences(Correspondences& correspondences,
-                                     double max_distance);
+                                     const double max_distance);
 
   /** \brief Clone and cast to CorrespondenceEstimationBase */
   virtual typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
@@ -223,8 +219,8 @@ protected:
   bool
   initCompute();
 
-  float fx_, fy_;
-  float cx_, cy_;
+  float fx_{525.f}, fy_{525.f};
+  float cx_{319.5f}, cy_{239.5f};
   Eigen::Matrix4f src_to_tgt_transformation_;
   float depth_threshold_;
 

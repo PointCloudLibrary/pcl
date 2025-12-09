@@ -97,6 +97,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::nearestKSearch
 
   prioPointQueueEntry point_entry;
   std::vector<prioPointQueueEntry> point_candidates;
+  point_candidates.reserve(k);
 
   OctreeKey key;
   key.x = key.y = key.z = 0;
@@ -305,20 +306,25 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
         // calculate point distance to search point
         float squared_dist = pointSquaredDist(candidate_point, point);
 
-        // check if a closer match is found
-        if (squared_dist < smallest_squared_dist) {
-          prioPointQueueEntry point_entry;
-
-          point_entry.point_distance_ = squared_dist;
-          point_entry.point_idx_ = point_index;
-          point_candidates.push_back(point_entry);
+        const auto insert_into_queue = [&] {
+          point_candidates.emplace(
+              std::upper_bound(point_candidates.begin(),
+                               point_candidates.end(),
+                               squared_dist,
+                               [](float dist, const prioPointQueueEntry& ent) {
+                                 return dist < ent.point_distance_;
+                               }),
+              point_index,
+              squared_dist);
+        };
+        if (point_candidates.size() < K) {
+          insert_into_queue();
+        }
+        else if (point_candidates.back().point_distance_ > squared_dist) {
+          point_candidates.pop_back();
+          insert_into_queue();
         }
       }
-
-      std::sort(point_candidates.begin(), point_candidates.end());
-
-      if (point_candidates.size() > K)
-        point_candidates.resize(K);
 
       if (point_candidates.size() == K)
         smallest_squared_dist = point_candidates.back().point_distance_;
@@ -342,9 +348,6 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
                                       std::vector<float>& k_sqr_distances,
                                       uindex_t max_nn) const
 {
-  // get spatial voxel information
-  double voxel_squared_diameter = this->getVoxelSquaredDiameter(tree_depth);
-
   // iterate over all children
   for (unsigned char child_idx = 0; child_idx < 8; child_idx++) {
     if (!this->branchHasChild(*node, child_idx))
@@ -354,7 +357,6 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
     child_node = this->getBranchChildPtr(*node, child_idx);
 
     OctreeKey new_key;
-    PointT voxel_center;
     float squared_dist;
 
     // generate new key for current branch voxel
@@ -362,17 +364,24 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
     new_key.y = (key.y << 1) + (!!(child_idx & (1 << 1)));
     new_key.z = (key.z << 1) + (!!(child_idx & (1 << 0)));
 
-    // generate voxel center point for voxel at key
-    this->genVoxelCenterFromOctreeKey(new_key, tree_depth, voxel_center);
-
-    // calculate distance to search point
-    squared_dist = pointSquaredDist(static_cast<const PointT&>(voxel_center), point);
-
-    // if distance is smaller than search radius
-    if (squared_dist + this->epsilon_ <=
-        voxel_squared_diameter / 4.0 + radiusSquared +
-            sqrt(voxel_squared_diameter * radiusSquared)) {
-
+    // compute min distance between query point and any point in this child node, to
+    // decide whether we can skip it
+    Eigen::Vector3f min_pt, max_pt;
+    this->genVoxelBoundsFromOctreeKey(new_key, tree_depth, min_pt, max_pt);
+    squared_dist = 0.0f;
+    if (point.x < min_pt.x())
+      squared_dist += std::pow(point.x - min_pt.x(), 2);
+    else if (point.x > max_pt.x())
+      squared_dist += std::pow(point.x - max_pt.x(), 2);
+    if (point.y < min_pt.y())
+      squared_dist += std::pow(point.y - min_pt.y(), 2);
+    else if (point.y > max_pt.y())
+      squared_dist += std::pow(point.y - max_pt.y(), 2);
+    if (point.z < min_pt.z())
+      squared_dist += std::pow(point.z - min_pt.z(), 2);
+    else if (point.z > max_pt.z())
+      squared_dist += std::pow(point.z - max_pt.z(), 2);
+    if (squared_dist < (radiusSquared + this->epsilon_)) {
       if (child_node->getNodeType() == BRANCH_NODE) {
         // we have not reached maximum tree depth
         getNeighborsWithinRadiusRecursive(point,
@@ -389,13 +398,9 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
       else {
         // we reached leaf node level
         const auto* child_leaf = static_cast<const LeafNode*>(child_node);
-        Indices decoded_point_vector;
 
-        // decode leaf node into decoded_point_vector
-        (*child_leaf)->getPointIndices(decoded_point_vector);
-
-        // Linearly iterate over all decoded (unsorted) points
-        for (const auto& index : decoded_point_vector) {
+        // Linearly iterate over all points in the leaf
+        for (const auto& index : (*child_leaf)->getPointIndicesVector()) {
           const PointT& candidate_point = this->getPointByIndex(index);
 
           // calculate point distance to search point
@@ -548,9 +553,9 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::boxSearchRecur
 
     // test if search region overlap with voxel space
 
-    if (!((lower_voxel_corner(0) > max_pt(0)) || (min_pt(0) > upper_voxel_corner(0)) ||
-          (lower_voxel_corner(1) > max_pt(1)) || (min_pt(1) > upper_voxel_corner(1)) ||
-          (lower_voxel_corner(2) > max_pt(2)) || (min_pt(2) > upper_voxel_corner(2)))) {
+    if ((lower_voxel_corner(0) <= max_pt(0)) && (min_pt(0) <= upper_voxel_corner(0)) &&
+        (lower_voxel_corner(1) <= max_pt(1)) && (min_pt(1) <= upper_voxel_corner(1)) &&
+        (lower_voxel_corner(2) <= max_pt(2)) && (min_pt(2) <= upper_voxel_corner(2))) {
 
       if (child_node->getNodeType() == BRANCH_NODE) {
         // we have not reached maximum tree depth

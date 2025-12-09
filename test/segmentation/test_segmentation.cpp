@@ -55,7 +55,6 @@ using namespace pcl::io;
 
 PointCloud<PointXYZ>::Ptr cloud_;
 PointCloud<PointXYZ>::Ptr cloud_t_;
-KdTree<PointXYZ>::Ptr tree_;
 
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr another_cloud_;
@@ -79,6 +78,27 @@ TEST (RegionGrowingRGBTest, Segment)
   EXPECT_NE (0, num_of_segments);
 }
 
+TEST (RegionGrowingRGBTest, SegmentWithIndices)
+{
+  // Same test as before, but now we pass a reduced set of indices to RegionGrowingRGB, which results in fewer clusters
+  pcl::IndicesPtr indices (new pcl::Indices(colored_cloud->size()-611));
+  std::iota(indices->begin(), indices->end(), 611);
+
+  RegionGrowingRGB<pcl::PointXYZRGB> rg;
+
+  rg.setInputCloud (colored_cloud);
+  rg.setIndices (indices);
+  rg.setDistanceThreshold (10);
+  rg.setRegionColorThreshold (5);
+  rg.setPointColorThreshold (6);
+  rg.setMinClusterSize (20);
+
+  std::vector <pcl::PointIndices> clusters;
+  rg.extract (clusters);
+  const auto num_of_segments = clusters.size ();
+  EXPECT_EQ (5, num_of_segments);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (RegionGrowingTest, Segment)
 {
@@ -90,6 +110,30 @@ TEST (RegionGrowingTest, Segment)
   rg.extract (clusters);
   const auto num_of_segments = clusters.size ();
   EXPECT_NE (0, num_of_segments);
+}
+
+TEST (RegionGrowingTest, SegmentWithIndices)
+{
+  // use colored_cloud, but with a reduced set of indices (colors are ignored)
+  pcl::IndicesPtr indices (new pcl::Indices(colored_cloud->size()-611));
+  std::iota(indices->begin(), indices->end(), 611);
+  // create dummy normals that all point into the same direction
+  pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
+  normals->resize(colored_cloud->size());
+  for(auto& normal: *normals) {
+    normal.normal_x = normal.normal_y = 0.0f;
+    normal.normal_z = 1.0f;
+  }
+
+  pcl::RegionGrowing<pcl::PointXYZRGB, pcl::Normal> rg;
+  rg.setInputCloud (colored_cloud);
+  rg.setInputNormals (normals);
+  rg.setIndices (indices);
+
+  std::vector <pcl::PointIndices> clusters;
+  rg.extract (clusters);
+  const auto num_of_segments = clusters.size ();
+  EXPECT_EQ (5, num_of_segments);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -417,7 +461,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  // Tranpose the cloud
+  // Transpose the cloud
   cloud_t_.reset(new PointCloud<PointXYZ>);
   *cloud_t_ = *cloud_;
   for (auto& point: *cloud_t_)

@@ -415,6 +415,7 @@ protected:
    * \param[in] match_indices indices of match M
    * \param[out] correspondences resulting correspondences
    */
+  PCL_DEPRECATED(1, 18, "this function has a bug and is generally not needed")
   virtual void
   linkMatchWithBase(const pcl::Indices& base_indices,
                     pcl::Indices& match_indices,
@@ -427,7 +428,7 @@ protected:
    *
    * \param[in] base_indices indices of base B
    * \param[in] match_indices indices of match M
-   * \param[in] correspondences corresondences between source and target
+   * \param[in] correspondences correspondences between source and target
    * \param[out] transformation resulting transformation matrix
    * \return
    * * < 0 MSE bigger than max_mse_
@@ -470,10 +471,10 @@ protected:
   /** \brief Number of threads for parallelization (standard = 1).
    * \note Only used if run compiled with OpenMP.
    */
-  int nr_threads_;
+  int nr_threads_{1};
 
   /** \brief Estimated overlap between source and target (standard = 0.5). */
-  float approx_overlap_;
+  float approx_overlap_{0.5f};
 
   /** \brief Delta value of 4pcs algorithm (standard = 1.0).
    * It can be used as:
@@ -482,7 +483,7 @@ protected:
    * * relative value (normalization = true), to adjust the internally calculated point
    * accuracy (= point density)
    */
-  float delta_;
+  float delta_{1.f};
 
   /** \brief Score threshold to stop calculation with success.
    * If not set by the user it depends on the size of the approximated overlap
@@ -491,34 +492,34 @@ protected:
 
   /** \brief The number of points to uniformly sample the source point cloud. (standard
    * = 0 => full cloud). */
-  int nr_samples_;
+  int nr_samples_{0};
 
   /** \brief Maximum normal difference of corresponding point pairs in degrees (standard
    * = 90). */
-  float max_norm_diff_;
+  float max_norm_diff_{90.f};
 
   /** \brief Maximum allowed computation time in seconds (standard = 0 => ~unlimited).
    */
-  int max_runtime_;
+  int max_runtime_{0};
 
   /** \brief Resulting fitness score of the best match. */
   float fitness_score_;
 
   /** \brief Estimated diameter of the target point cloud. */
-  float diameter_;
+  float diameter_{0.0f};
 
   /** \brief Estimated squared metric overlap between source and target.
    * \note Internally calculated using the estimated overlap and the extent of the
    * source cloud. It is used to derive the minimum sampling distance of the base points
    * as well as to calculated the number of tries to reliably find a correct match.
    */
-  float max_base_diameter_sqr_;
+  float max_base_diameter_sqr_{0.0f};
 
   /** \brief Use normals flag. */
-  bool use_normals_;
+  bool use_normals_{false};
 
   /** \brief Normalize delta flag. */
-  bool normalize_delta_;
+  bool normalize_delta_{true};
 
   /** \brief A pointer to the vector of source point indices to use after sampling. */
   pcl::IndicesPtr source_indices_;
@@ -529,30 +530,30 @@ protected:
   /** \brief Maximal difference between corresponding point pairs in source and target.
    * \note Internally calculated using an estimation of the point density.
    */
-  float max_pair_diff_;
+  float max_pair_diff_{0.0f};
 
   /** \brief Maximal difference between the length of the base edges and valid match
    * edges. \note Internally calculated using an estimation of the point density.
    */
-  float max_edge_diff_;
+  float max_edge_diff_{0.0f};
 
   /** \brief Maximal distance between coinciding intersection points to find valid
    * matches. \note Internally calculated using an estimation of the point density.
    */
-  float coincidation_limit_;
+  float coincidation_limit_{0.0f};
 
   /** \brief Maximal mean squared errors of a transformation calculated from a candidate
    * match. \note Internally calculated using an estimation of the point density.
    */
-  float max_mse_;
+  float max_mse_{0.0f};
 
   /** \brief Maximal squared point distance between source and target points to count as
    * inlier. \note Internally calculated using an estimation of the point density.
    */
-  float max_inlier_dist_sqr_;
+  float max_inlier_dist_sqr_{0.0f};
 
   /** \brief Definition of a small error. */
-  const float small_error_;
+  const float small_error_{0.00001f};
 };
 }; // namespace registration
 }; // namespace pcl

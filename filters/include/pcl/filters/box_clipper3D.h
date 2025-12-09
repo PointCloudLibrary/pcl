@@ -46,7 +46,8 @@ namespace pcl
   /**
     * \author Suat Gedikli <gedikli@willowgarage.com>
     * \brief Implementation of a box clipper in 3D. Actually it allows affine transformations, thus any parallelepiped in general pose.
-    *        The affine transformation is used to transform the point before clipping it using the unit cube centered at origin and with an extend of -1 to +1 in each dimension
+    *        The affine transformation is used to transform the point before clipping it using a cube centered at origin and with an extend of -1 to +1 in each dimension
+    * \sa CropBox
     * \ingroup filters
     */
   template<typename PointT>
@@ -61,7 +62,7 @@ namespace pcl
       /**
         * \author Suat Gedikli <gedikli@willowgarage.com>
         * \brief Constructor taking an affine transformation matrix, which allows also shearing of the clipping area
-        * \param[in] transformation the 3x3 affine transformation matrix that is used to describe the unit cube
+        * \param[in] transformation the 3 dimensional affine transformation that is used to describe the cube ([-1; +1] in each dimension). The transformation is applied to the point(s)!
         */
       BoxClipper3D (const Eigen::Affine3f& transformation);
 
@@ -75,7 +76,7 @@ namespace pcl
 
       /**
         * \brief Set the affine transformation
-        * \param[in] transformation
+        * \param[in] transformation applied to the point(s)
         */
       void setTransformation (const Eigen::Affine3f& transformation);
 
@@ -115,7 +116,7 @@ namespace pcl
       void transformPoint (const PointT& pointIn, PointT& pointOut) const;
     private:
       /**
-        * \brief the affine transformation that is applied before clipping is done on the unit cube.
+        * \brief the affine transformation that is applied before clipping is done on the [-1; +1] cube.
         */
       Eigen::Affine3f transformation_;
 

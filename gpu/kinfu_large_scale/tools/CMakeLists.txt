@@ -2,7 +2,7 @@ set(SUBSUBSYS_NAME tools)
 set(SUBSUBSYS_DESC "Kinfu large scale tools")
 set(SUBSUBSYS_DEPS gpu_kinfu_large_scale visualization)
 set(SUBSUBSYS_OPT_DEPS )
-set(EXT_DEPS openni openni2)
+set(EXT_DEPS glew openni openni2)
 set(DEFAULT TRUE)
 set(REASON "")
 
@@ -13,10 +13,7 @@ if(NOT build)
   return()
 endif()
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 file(GLOB hdrs "*.h*")
-include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
 
 ## STANDALONE TEXTURE MAPPING
 set(the_target pcl_kinfu_largeScale_texture_output)

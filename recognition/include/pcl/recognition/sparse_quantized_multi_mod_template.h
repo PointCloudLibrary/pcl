@@ -4,7 +4,7 @@
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
- *  All rights reserved. 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -44,24 +44,24 @@
 namespace pcl
 {
 
-  /** \brief Feature that defines a position and quantized value in a specific modality. 
+  /** \brief Feature that defines a position and quantized value in a specific modality.
     * \author Stefan Holzer
     */
   struct QuantizedMultiModFeature
   {
     /** \brief Constructor. */
-    QuantizedMultiModFeature () : x (0), y (0), modality_index (0), quantized_value (0) {}
+    QuantizedMultiModFeature () = default;
 
     /** \brief x-position. */
-    int x;
+    int x{0};
     /** \brief y-position. */
-    int y;
+    int y{0};
     /** \brief the index of the corresponding modality. */
-    std::size_t modality_index;
+    std::size_t modality_index{0u};
     /** \brief the quantized value attached to the feature. */
-    unsigned char quantized_value;
+    unsigned char quantized_value{0u};
 
-    /** \brief Compares whether two features are the same. 
+    /** \brief Compares whether two features are the same.
       * \param[in] base the feature to compare to.
       */
     bool
@@ -81,7 +81,7 @@ namespace pcl
 
     /** \brief Serializes the object to the specified stream.
       * \param[out] stream the stream the object will be serialized to. */
-    void 
+    void
     serialize (std::ostream & stream) const
     {
       write (stream, x);
@@ -92,7 +92,7 @@ namespace pcl
 
     /** \brief Deserializes the object from the specified stream.
       * \param[in] stream the stream the object will be deserialized from. */
-    void 
+    void
     deserialize (std::istream & stream)
     {
       read (stream, x);
@@ -103,7 +103,7 @@ namespace pcl
   };
 
   /** \brief A multi-modality template constructed from a set of quantized multi-modality features.
-    * \author Stefan Holzer 
+    * \author Stefan Holzer
     */
   struct SparseQuantizedMultiModTemplate
   {
@@ -118,7 +118,7 @@ namespace pcl
 
     /** \brief Serializes the object to the specified stream.
       * \param[out] stream the stream the object will be serialized to. */
-    void 
+    void
     serialize (std::ostream & stream) const
     {
       const int num_of_features = static_cast<int> (features.size ());
@@ -133,7 +133,7 @@ namespace pcl
 
     /** \brief Deserializes the object from the specified stream.
       * \param[in] stream the stream the object will be deserialized from. */
-    void 
+    void
     deserialize (std::istream & stream)
     {
       features.clear ();

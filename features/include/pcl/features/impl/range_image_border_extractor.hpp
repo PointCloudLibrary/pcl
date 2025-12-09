@@ -334,7 +334,7 @@ bool RangeImageBorderExtractor::calculateMainPrincipalCurvature(int x, int y, in
         bool& beam_valid = beams_valid[beam_idx++];
         if (step==1)
         {
-          beam_valid = !(x2==x && y2==y);
+          beam_valid = (x2!=x || y2!=y);
         }
         else
           if (!beam_valid)

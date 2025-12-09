@@ -2,10 +2,8 @@ set(SUBSYS_NAME tools)
 set(SUBSYS_DESC "Useful PCL-based command line tools")
 set(SUBSYS_DEPS io)
 set(SUBSYS_OPT_DEPS filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints ml visualization vtk)
-set(DEFAULT ON)
-set(REASON "")
 
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${SUBSYS_OPT_DEPS})
 
 if(NOT build)
@@ -186,6 +184,8 @@ if(TARGET pcl_filters)
     PCL_ADD_EXECUTABLE(pcl_mls_smoothing COMPONENT ${SUBSYS_NAME} SOURCES mls_smoothing.cpp)
     target_link_libraries (pcl_mls_smoothing pcl_common pcl_io pcl_surface pcl_filters)
 
+    PCL_ADD_EXECUTABLE(pcl_bilateral_upsampling COMPONENT ${SUBSYS_NAME} SOURCES bilateral_upsampling.cpp)
+    target_link_libraries(pcl_bilateral_upsampling pcl_common pcl_io pcl_surface)
   endif()
 
   if(TARGET pcl_keypoints)

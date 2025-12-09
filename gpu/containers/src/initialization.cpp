@@ -42,7 +42,9 @@
 #include <array> // replace c-style array with std::array
 #include <cstdio>
 
+#if !defined(HAVE_CUDA)
 #define HAVE_CUDA
+#endif
 //#include <pcl_config.h>
 
 #if !defined(HAVE_CUDA)
@@ -227,8 +229,10 @@ pcl::gpu::printCudaDeviceInfo(int device)
            prop.multiProcessorCount,
            sm_cores,
            sm_cores * prop.multiProcessorCount);
+    int clockRate;
+    cudaSafeCall(cudaDeviceGetAttribute(&clockRate, cudaDevAttrClockRate, dev));
     printf("  GPU Clock Speed:                               %.2f GHz\n",
-           prop.clockRate * 1e-6f);
+           clockRate * 1e-6f);
 
     // This is not available in the CUDA Runtime API, so we make the necessary calls the
     // driver API to support this for output
@@ -283,10 +287,13 @@ pcl::gpu::printCudaDeviceInfo(int device)
 
     printf(
         "  Concurrent copy and execution:                 %s with %d copy engine(s)\n",
-        (prop.deviceOverlap ? "Yes" : "No"),
+        (prop.asyncEngineCount ? "Yes" : "No"),
         prop.asyncEngineCount);
+    int kernelExecTimeoutEnabled;
+    cudaSafeCall(cudaDeviceGetAttribute(
+        &kernelExecTimeoutEnabled, cudaDevAttrKernelExecTimeout, dev));
     printf("  Run time limit on kernels:                     %s\n",
-           prop.kernelExecTimeoutEnabled ? "Yes" : "No");
+           kernelExecTimeoutEnabled ? "Yes" : "No");
     printf("  Integrated GPU sharing Host Memory:            %s\n",
            prop.integrated ? "Yes" : "No");
     printf("  Support host page-locked memory mapping:       %s\n",
@@ -305,8 +312,10 @@ pcl::gpu::printCudaDeviceInfo(int device)
     printf("  Device PCI Bus ID / PCI location ID:           %d / %d\n",
            prop.pciBusID,
            prop.pciDeviceID);
+    int propComputeMode;
+    cudaSafeCall(cudaDeviceGetAttribute(&propComputeMode, cudaDevAttrComputeMode, dev));
     printf("  Compute Mode:\n");
-    printf("      %s \n", computeMode[prop.computeMode]);
+    printf("      %s \n", computeMode[propComputeMode]);
   }
 
   printf("\n");

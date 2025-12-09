@@ -41,8 +41,7 @@
 #define PCL_SURFACE_RECONSTRUCTION_IMPL_H_
 
 #include <pcl/conversions.h> // for pcl::toPCLPointCloud2
-#include <pcl/search/kdtree.h> // for KdTree
-#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/auto.h>
 
 
 namespace pcl
@@ -67,14 +66,13 @@ SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
   {
     if (!tree_)
     {
-      if (input_->isOrganized ())
-        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-      else
-        tree_.reset (new pcl::search::KdTree<PointInT> (false));
+      tree_.reset (pcl::search::autoSelectMethod<PointInT>(input_, indices_, false));
     }
-
-    // Send the surface dataset to the spatial locator
-    tree_->setInputCloud (input_, indices_);
+    else
+    {
+      // Send the surface dataset to the spatial locator
+      tree_->setInputCloud (input_, indices_);
+    }
   }
 
   // Set up the output dataset
@@ -108,14 +106,13 @@ SurfaceReconstruction<PointInT>::reconstruct (pcl::PointCloud<PointInT> &points,
   {
     if (!tree_)
     {
-      if (input_->isOrganized ())
-        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-      else
-        tree_.reset (new pcl::search::KdTree<PointInT> (false));
+      tree_.reset (pcl::search::autoSelectMethod<PointInT>(input_, indices_, false));
     }
-
-    // Send the surface dataset to the spatial locator
-    tree_->setInputCloud (input_, indices_);
+    else
+    {
+      // Send the surface dataset to the spatial locator
+      tree_->setInputCloud (input_, indices_);
+    }
   }
 
   // Set up the output dataset
@@ -147,14 +144,13 @@ MeshConstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
   {
     if (!tree_)
     {
-      if (input_->isOrganized ())
-        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-      else
-        tree_.reset (new pcl::search::KdTree<PointInT> (false));
+      tree_.reset (pcl::search::autoSelectMethod<PointInT>(input_, indices_, false));
     }
-
-    // Send the surface dataset to the spatial locator
-    tree_->setInputCloud (input_, indices_);
+    else
+    {
+      // Send the surface dataset to the spatial locator
+      tree_->setInputCloud (input_, indices_);
+    }
   }
 
   // Set up the output dataset
@@ -182,14 +178,13 @@ MeshConstruction<PointInT>::reconstruct (std::vector<pcl::Vertices> &polygons)
   {
     if (!tree_)
     {
-      if (input_->isOrganized ())
-        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-      else
-        tree_.reset (new pcl::search::KdTree<PointInT> (false));
+      tree_.reset(pcl::search::autoSelectMethod<PointInT>(input_, indices_, false));
     }
-
-    // Send the surface dataset to the spatial locator
-    tree_->setInputCloud (input_, indices_);
+    else
+    {
+      // Send the surface dataset to the spatial locator
+      tree_->setInputCloud (input_, indices_);
+    }
   }
 
   // Set up the output dataset

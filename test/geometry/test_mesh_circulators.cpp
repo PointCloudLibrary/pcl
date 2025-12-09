@@ -90,21 +90,21 @@ class TestMeshCirculators : public ::testing::Test
       for (int i=0; i<7; ++i) mesh_.addVertex ();
 
       VertexIndices vi;
-      using VI = VertexIndex;
-      vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces_.push_back (vi); vi.clear ();
-      vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (3)); faces_.push_back (vi); vi.clear ();
-      vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (4)); faces_.push_back (vi); vi.clear ();
-      vi.push_back (VI (0)); vi.push_back (VI (4)); vi.push_back (VI (5)); faces_.push_back (vi); vi.clear ();
-      vi.push_back (VI (0)); vi.push_back (VI (5)); vi.push_back (VI (6)); faces_.push_back (vi); vi.clear ();
-      vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (1)); faces_.push_back (vi); vi.clear ();
+      
+      vi.emplace_back(0); vi.emplace_back(1); vi.emplace_back(2); faces_.push_back (vi); vi.clear ();
+      vi.emplace_back(0); vi.emplace_back(2); vi.emplace_back(3); faces_.push_back (vi); vi.clear ();
+      vi.emplace_back(0); vi.emplace_back(3); vi.emplace_back(4); faces_.push_back (vi); vi.clear ();
+      vi.emplace_back(0); vi.emplace_back(4); vi.emplace_back(5); faces_.push_back (vi); vi.clear ();
+      vi.emplace_back(0); vi.emplace_back(5); vi.emplace_back(6); faces_.push_back (vi); vi.clear ();
+      vi.emplace_back(0); vi.emplace_back(6); vi.emplace_back(1); faces_.push_back (vi); vi.clear ();
       for (std::size_t i=0; i<faces_.size (); ++i)
       {
         ASSERT_TRUE (mesh_.addFace (faces_ [i]).isValid ()) << "Face number " << i;
       }
       for (int i=1; i<=6; ++i)
       {
-        expected_123456_.push_back (VertexIndex (i));
-        expected_654321_.push_back (VertexIndex (7-i));
+        expected_123456_.emplace_back(i);
+        expected_654321_.emplace_back(7-i);
       }
     }
 
@@ -497,9 +497,9 @@ TEST_F (TestMeshCirculators, FaceAroundFaceIncrement)
   for (int i = 0; i < static_cast<int> (mesh_.sizeFaces ()); ++i)
   {
     expected.clear ();
-    expected.push_back (FaceIndex (i==(n-1) ?  0    : (i+1)));
-    expected.push_back (FaceIndex (i== 0    ? (n-1) : (i-1)));
-    expected.push_back (FaceIndex ());
+    expected.emplace_back(i==(n-1) ?  0    : (i+1));
+    expected.emplace_back(i== 0    ? (n-1) : (i-1));
+    expected.emplace_back();
 
     FAFC       circ     = mesh_.getFaceAroundFaceCirculator (FaceIndex (i));
     const FAFC circ_end = circ;
@@ -525,9 +525,9 @@ TEST_F (TestMeshCirculators, FaceAroundFaceDecrement)
   for (int i = 0; i < static_cast<int> (mesh_.sizeFaces ()); ++i)
   {
     expected.clear ();
-    expected.push_back (FaceIndex (i== 0    ? (n-1) : (i-1)));
-    expected.push_back (FaceIndex (i==(n-1) ?  0    : (i+1)));
-    expected.push_back (FaceIndex ());
+    expected.emplace_back(i== 0    ? (n-1) : (i-1));
+    expected.emplace_back(i==(n-1) ?  0    : (i+1));
+    expected.emplace_back();
 
     FAFC       circ     = mesh_.getFaceAroundFaceCirculator (FaceIndex (i));
     const FAFC circ_end = circ;

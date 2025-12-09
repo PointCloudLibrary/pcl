@@ -1,11 +1,9 @@
 set(SUBSYS_NAME tests_io)
 set(SUBSYS_DESC "Point cloud library io module unit tests")
-PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS io)
+PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS common io octree)
 set(OPT_DEPS visualization)
 
-set(DEFAULT ON)
-set(build TRUE)
-PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
 if(NOT build)
@@ -43,7 +41,6 @@ PCL_ADD_TEST(io_ply_io test_ply_io
 
 # Uses VTK readers to verify
 if(VTK_FOUND AND NOT ANDROID)
-  include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
   PCL_ADD_TEST (io_ply_mesh_io test_ply_mesh_io
                 FILES test_ply_mesh_io.cpp
                 LINK_WITH pcl_gtest pcl_io
@@ -56,7 +53,7 @@ PCL_ADD_TEST(point_cloud_image_extractors test_point_cloud_image_extractors
 
 PCL_ADD_TEST(buffers test_buffers
              FILES test_buffers.cpp
-             LINK_WITH pcl_gtest pcl_common)
+             LINK_WITH pcl_gtest pcl_common pcl_io)
 
 PCL_ADD_TEST(io_octree_compression test_octree_compression
         FILES test_octree_compression.cpp

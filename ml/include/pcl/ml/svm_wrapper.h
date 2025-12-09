@@ -47,6 +47,7 @@
 #include <limits> // for numeric_limits
 #include <string> // for string
 #include <vector>
+// NOLINTNEXTLINE(bugprone-macro-parentheses)
 #define Malloc(type, n) static_cast<type*>(malloc((n) * sizeof(type)))
 
 namespace pcl {
@@ -98,11 +99,11 @@ struct SVMModel : svm_model {
  */
 struct SVMDataPoint {
   /// It's the feature index. It has to be an integer number greater or equal to zero
-  int idx;
+  int idx{-1};
   /// The value assigned to the correspondent feature.
-  float value;
+  float value{0.0f};
 
-  SVMDataPoint() : idx(-1), value(0) {}
+  SVMDataPoint() = default;
 };
 
 /** The structure stores the features and the label of a single sample which has to be
@@ -128,9 +129,10 @@ protected:
   SVMParam param_;      // it stores the training parameters
   std::string class_name_; // The SVM class name.
 
-  char* line_;                 // buffer for line reading
-  int max_line_len_;           // max line length in the input file
-  bool labelled_training_set_; // it stores whether the input set of samples is labelled
+  char* line_{nullptr};     // buffer for line reading
+  int max_line_len_{10000}; // max line length in the input file
+  bool labelled_training_set_{
+      true}; // it stores whether the input set of samples is labelled
 
   /** Set for output printings during classification. */
   static void
@@ -177,7 +179,7 @@ protected:
 
 public:
   /**  Constructor. */
-  SVM() : prob_(), line_(nullptr), max_line_len_(10000), labelled_training_set_(true) {}
+  SVM() : prob_() {}
 
   /** Destructor. */
   ~SVM()
@@ -243,12 +245,12 @@ protected:
   using SVM::training_set_;
 
   /// Set to 1 to see the training output
-  bool debug_;
+  bool debug_{false};
   /// Set too 1 for cross validating the classifier
-  int cross_validation_;
+  int cross_validation_{0};
   /// Number of folds to be used during cross validation. It indicates in how many parts
   /// is split the input training set.
-  int nr_fold_;
+  int nr_fold_{0};
 
   /** To cross validate the classifier. It is automatic for probability estimate. */
   void
@@ -263,7 +265,7 @@ protected:
 
 public:
   /** Constructor. */
-  SVMTrain() : debug_(false), cross_validation_(0), nr_fold_(0)
+  SVMTrain()
   {
     class_name_ = "SVMTrain";
     svm_set_print_string_function(
@@ -385,8 +387,9 @@ protected:
   using SVM::scaling_;
   using SVM::training_set_;
 
-  bool model_extern_copied_; // Set to 0 if the model is loaded from an extern file.
-  bool predict_probability_; // Set to 1 to predict probabilities.
+  bool model_extern_copied_{
+      false}; // Set to 0 if the model is loaded from an extern file.
+  bool predict_probability_{false};             // Set to 1 to predict probabilities.
   std::vector<std::vector<double>> prediction_; // It stores the resulting prediction.
 
   /** It scales the input dataset using the model information. */
@@ -395,10 +398,7 @@ protected:
 
 public:
   /** Constructor. */
-  SVMClassify() : model_extern_copied_(false), predict_probability_(false)
-  {
-    class_name_ = "SvmClassify";
-  }
+  SVMClassify() { class_name_ = "SvmClassify"; }
 
   /** Destructor. */
   ~SVMClassify()

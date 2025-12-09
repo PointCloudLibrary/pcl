@@ -75,7 +75,7 @@ public:
         }
       }
     }
-    return (*this);
+    return *this;
   }
 
   /** \brief Empty constructor. */
@@ -343,6 +343,8 @@ public:
   inline Octree2BufBase&
   operator=(const Octree2BufBase& source)
   {
+    if (this == &source)
+      return *this;
     leaf_count_ = source.leaf_count_;
     branch_count_ = source.branch_count_;
     root_node_ = new (BranchNode)(*(source.root_node_));
@@ -352,7 +354,7 @@ public:
     tree_dirty_flag_ = source.tree_dirty_flag_;
     octree_depth_ = source.octree_depth_;
     dynamic_depth_enabled_ = source.dynamic_depth_enabled_;
-    return (*this);
+    return *this;
   }
 
   /** \brief Set the maximum amount of voxels per dimension.
@@ -972,33 +974,33 @@ protected:
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /** \brief Amount of leaf nodes   **/
-  std::size_t leaf_count_;
+  std::size_t leaf_count_{0};
 
   /** \brief Amount of branch nodes   **/
-  std::size_t branch_count_;
+  std::size_t branch_count_{1};
 
   /** \brief Pointer to root branch node of octree   **/
   BranchNode* root_node_;
 
   /** \brief Depth mask based on octree depth   **/
-  uindex_t depth_mask_;
+  uindex_t depth_mask_{0};
 
   /** \brief key range */
   OctreeKey max_key_;
 
   /** \brief Currently active octree buffer  **/
-  unsigned char buffer_selector_;
+  unsigned char buffer_selector_{0};
 
   /** \brief flags indicating if unused branches and leafs might exist in previous
    * buffer  **/
-  bool tree_dirty_flag_;
+  bool tree_dirty_flag_{false};
 
   /** \brief Octree depth */
-  uindex_t octree_depth_;
+  uindex_t octree_depth_{0};
 
   /** \brief Enable dynamic_depth
    *  \note Note that this parameter is ignored in octree2buf! */
-  bool dynamic_depth_enabled_;
+  bool dynamic_depth_enabled_{false};
 };
 } // namespace octree
 } // namespace pcl

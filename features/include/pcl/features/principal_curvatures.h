@@ -45,14 +45,13 @@
 namespace pcl
 {
   /** \brief PrincipalCurvaturesEstimation estimates the directions (eigenvectors) and magnitudes (eigenvalues) of
-    * principal surface curvatures for a given point cloud dataset containing points and normals.
+    * principal surface curvatures for a given point cloud dataset containing points and normals. The output contains 
+    * the principal curvature (eigenvector of the max eigenvalue), along with both the max (pc1) and min (pc2) 
+    * eigenvalues. Parallel execution is supported through OpenMP.
     *
     * The recommended PointOutT is pcl::PrincipalCurvatures.
     *
-    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
-    * \ref NormalEstimationOMP for an example on how to extend this to parallel implementations.
-    *
-    * \author Radu B. Rusu, Jared Glover
+    * \author Radu B. Rusu, Jared Glover, Alex Navarro
     * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT = pcl::PrincipalCurvatures>
@@ -73,15 +72,18 @@ namespace pcl
       using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
       using PointCloudIn = pcl::PointCloud<PointInT>;
 
-      /** \brief Empty constructor. */
-      PrincipalCurvaturesEstimation () : 
-        xyz_centroid_ (Eigen::Vector3f::Zero ()), 
-        demean_ (Eigen::Vector3f::Zero ()),
-        covariance_matrix_ (Eigen::Matrix3f::Zero ()),
-        eigenvector_ (Eigen::Vector3f::Zero ()),
-        eigenvalues_ (Eigen::Vector3f::Zero ())
+      /** \brief Initialize the scheduler and set the number of threads to use.
+        * \param nr_threads the number of hardware threads to use (0 sets the value to automatic)
+        * \param chunk_size PCL will use dynamic scheduling with this chunk size. Setting it too 
+        *                   low will lead to more parallelization overhead. Setting it too high 
+        *                   will lead to a worse balancing between the threads.
+        */
+      PrincipalCurvaturesEstimation (unsigned int nr_threads = 1, int chunk_size = 256) : 
+        chunk_size_(chunk_size) 
       {
         feature_name_ = "PrincipalCurvaturesEstimation";
+
+        setNumberOfThreads(nr_threads);
       };
 
       /** \brief Perform Principal Components Analysis (PCA) on the point normals of a surface patch in the tangent
@@ -101,7 +103,19 @@ namespace pcl
                                        int p_idx, const pcl::Indices &indices,
                                        float &pcx, float &pcy, float &pcz, float &pc1, float &pc2);
 
+      /** \brief Initialize the scheduler and set the number of threads to use. The default behavior is
+       *         single threaded exectution
+       * \param nr_threads the number of hardware threads to use (0 sets the value to automatic)
+       */
+      void
+      setNumberOfThreads (unsigned int nr_threads);
+
     protected:
+      /** \brief The number of threads the scheduler should use. */
+      unsigned int threads_;
+
+      /** \brief Chunk size for (dynamic) scheduling. */
+      int chunk_size_;
 
       /** \brief Estimate the principal curvature (eigenvector of the max eigenvalue), along with both the max (pc1)
         * and min (pc2) eigenvalues for all points given in <setInputCloud (), setIndices ()> using the surface in
@@ -110,24 +124,6 @@ namespace pcl
         */
       void
       computeFeature (PointCloudOut &output) override;
-
-    private:
-      /** \brief A pointer to the input dataset that contains the point normals of the XYZ dataset. */
-      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > projected_normals_;
-
-      /** \brief SSE aligned placeholder for the XYZ centroid of a surface patch. */
-      Eigen::Vector3f xyz_centroid_;
-
-      /** \brief Temporary point placeholder. */
-      Eigen::Vector3f demean_;
-
-      /** \brief Placeholder for the 3x3 covariance matrix at each surface patch. */
-      EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix_;
-
-      /** \brief SSE aligned eigenvectors placeholder for a covariance matrix. */
-      Eigen::Vector3f eigenvector_;
-      /** \brief eigenvalues placeholder for a covariance matrix. */
-      Eigen::Vector3f eigenvalues_;
   };
 }
 

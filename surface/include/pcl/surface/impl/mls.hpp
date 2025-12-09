@@ -44,8 +44,7 @@
 #include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/copy_point.h>
 #include <pcl/common/eigen.h>
-#include <pcl/search/kdtree.h> // for KdTree
-#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/auto.h>
 #include <pcl/surface/mls.h>
 #include <pcl/type_traits.h>
 
@@ -100,16 +99,14 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
   // Initialize the spatial locator
   if (!tree_)
   {
-    KdTreePtr tree;
-    if (input_->isOrganized ())
-      tree.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-    else
-      tree.reset (new pcl::search::KdTree<PointInT> (false));
+    KdTreePtr tree (pcl::search::autoSelectMethod<PointInT> (input_, false));
     setSearchMethod (tree);
   }
-
-  // Send the surface dataset to the spatial locator
-  tree_->setInputCloud (input_);
+  else
+  {
+    // Send the surface dataset to the spatial locator
+    tree_->setInputCloud (input_);
+  }
 
   switch (upsample_method_)
   {
@@ -420,8 +417,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
       p.y = pos[1];
       p.z = pos[2];
 
-      pcl::Indices nn_indices;
-      std::vector<float> nn_dists;
+      pcl::Indices nn_indices (1);
+      std::vector<float> nn_dists (1);
       tree_->nearestKSearch (p, 1, nn_indices, nn_dists);
       const auto input_index = nn_indices.front ();
 
@@ -796,8 +793,8 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
 
       // Computing coefficients
       const Eigen::MatrixXd P_weight = P * weight_vec.asDiagonal(); // size will be (nr_coeff_, nn_indices.size ());
-      P_weight_Pt = P_weight * P.transpose ();
-      c_vec = P_weight * f_vec;
+      P_weight_Pt.noalias() = P_weight * P.transpose ();
+      c_vec.noalias() = P_weight * f_vec;
       P_weight_Pt.llt ().solveInPlace (c_vec);
     }
   }
@@ -809,7 +806,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointC
                                                                           IndicesPtr &indices,
                                                                           float voxel_size,
                                                                           int dilation_iteration_num) :
-  voxel_grid_ (), data_size_ (), voxel_size_ (voxel_size)
+  voxel_grid_ (),  voxel_size_ (voxel_size)
 {
   pcl::getMinMax3D (*cloud, *indices, bounding_min_, bounding_max_);
   bounding_min_ -= Eigen::Vector4f::Constant(voxel_size_ * (dilation_iteration_num + 1));

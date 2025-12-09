@@ -50,6 +50,7 @@ namespace pcl
     class FittingSurfaceTDM : public FittingSurface
     {
     public:
+      using FittingSurface::assemble;
 
       /** \brief Parameters with TDM extensions for fitting */
       struct ParameterTDM : public FittingSurface::Parameter
@@ -94,6 +95,9 @@ namespace pcl
       updateSurf (double damp) override;
 
     protected:
+      using FittingSurface::assembleInterior;
+      using FittingSurface::assembleBoundary;
+      using FittingSurface::addPointConstraint;
 
       /** \brief Assemble point-to-surface constraints for interior points. */
       virtual void

@@ -91,7 +91,7 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::
     std::string path =
         source_->getModelDescriptorDir(models->at(i), training_dir_, descr_name_);
 
-    for (const auto& dir_entry : bf::directory_iterator(path)) {
+    for (const auto& dir_entry : pcl_fs::directory_iterator(path)) {
       std::string file_name = (dir_entry.path().filename()).string();
 
       std::vector<std::string> strs;
@@ -297,7 +297,6 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::reco
 
       // clang-format off
 #pragma omp parallel for \
-  default(none) \
   shared(VOXEL_SIZE_ICP_, cloud_voxelized_icp) \
   num_threads(omp_get_num_procs())
       // clang-format on
@@ -413,9 +412,9 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::init
         std::string path =
             source_->getModelDescriptorDir(models->at(i), training_dir_, descr_name_);
 
-        bf::path desc_dir = path;
-        if (!bf::exists(desc_dir))
-          bf::create_directory(desc_dir);
+        pcl_fs::path desc_dir = path;
+        if (!pcl_fs::exists(desc_dir))
+          pcl_fs::create_directory(desc_dir);
 
         const std::string path_view = path + "/view_" + std::to_string(v) + ".pcd";
         pcl::io::savePCDFileBinary(path_view, *processed);

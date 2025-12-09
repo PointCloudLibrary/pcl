@@ -40,12 +40,12 @@
 
 #include <pcl/apps/in_hand_scanner/integration.h>
 #include <pcl/apps/in_hand_scanner/offline_integration.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/transforms.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/pcd_io.h>
 
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/filesystem.hpp>
 
 #include <QApplication>
 #include <QFileDialog>
@@ -186,16 +186,16 @@ pcl::ihs::OfflineIntegration::getFilesFromDirectory(
     const std::string& extension,
     std::vector<std::string>& files) const
 {
-  if (path_dir.empty() || !boost::filesystem::exists(path_dir)) {
+  if (path_dir.empty() || !pcl_fs::exists(path_dir)) {
     std::cerr << "ERROR in offline_integration.cpp: Invalid path\n  '" << path_dir
               << "'\n";
     return (false);
   }
 
-  boost::filesystem::directory_iterator it_end;
-  for (boost::filesystem::directory_iterator it(path_dir); it != it_end; ++it) {
+  pcl_fs::directory_iterator it_end;
+  for (pcl_fs::directory_iterator it(path_dir); it != it_end; ++it) {
     if (!is_directory(it->status()) &&
-        boost::algorithm::to_upper_copy(boost::filesystem::extension(it->path())) ==
+        boost::algorithm::to_upper_copy(it->path().extension().string()) ==
             boost::algorithm::to_upper_copy(extension)) {
       files.push_back(it->path().string());
     }

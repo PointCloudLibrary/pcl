@@ -46,8 +46,7 @@
 #include <pcl/filters/local_maximum.h>
 #include <pcl/filters/project_inliers.h>
 #include <pcl/ModelCoefficients.h>
-#include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/auto.h> // for autoSelectMethod
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -92,12 +91,15 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (Indices &indices)
   // Initialize the search class
   if (!searcher_)
   {
-    if (input_->isOrganized ())
-      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
-    else
-      searcher_.reset (new pcl::search::KdTree<PointT> (false));
+    searcher_.reset (pcl::search::autoSelectMethod<PointT>(cloud_projected, false, pcl::search::Purpose::radius_search));
   }
-  searcher_->setInputCloud (cloud_projected);
+  else if (!searcher_->setInputCloud (cloud_projected))
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Error when initializing search method!\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
 
   // The arrays to be used
   indices.resize (indices_->size ());

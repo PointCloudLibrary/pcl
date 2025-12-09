@@ -49,8 +49,25 @@ namespace pcl {
  * http://www.robots.ox.ac.uk/~avsegal/resources/papers/Generalized_ICP.pdf
  * The approach is based on using anisotropic cost functions to optimize the alignment
  * after closest point assignments have been made.
- * The original code uses GSL and ANN while in ours we use an eigen mapped BFGS and
- * FLANN.
+ * The original code uses GSL and ANN while in ours we use FLANN and Newton's method
+ * for optimization (call `useBFGS` to switch to BFGS optimizer, however Newton
+ * is usually faster and more accurate).
+ * Basic usage example:
+ * \code
+ * pcl::GeneralizedIterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> reg;
+ * reg.setInputSource(src);
+ * reg.setInputTarget(tgt);
+ * // use default parameters or set them yourself, for example:
+ * // reg.setMaximumIterations(...);
+ * // reg.setTransformationEpsilon(...);
+ * // reg.setRotationEpsilon(...);
+ * // reg.setCorrespondenceRandomness(...);
+ * pcl::PointCloud<pcl::PointXYZ>::Ptr output(new pcl::PointCloud<pcl::PointXYZ>);
+ * // supply a better guess, if possible:
+ * Eigen::Matrix4f guess = Eigen::Matrix4f::Identity();
+ * reg.align(*output, guess);
+ * std::cout << reg.getFinalTransformation() << std::endl;
+ * \endcode
  * \author Nizar Sallem
  * \ingroup registration
  */
@@ -111,31 +128,26 @@ public:
   using Matrix3 = typename Eigen::Matrix<Scalar, 3, 3>;
   using Matrix4 =
       typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4;
+  using Matrix6d = Eigen::Matrix<double, 6, 6>;
   using AngleAxis = typename Eigen::AngleAxis<Scalar>;
 
   PCL_MAKE_ALIGNED_OPERATOR_NEW
 
   /** \brief Empty constructor. */
-  GeneralizedIterativeClosestPoint()
-  : k_correspondences_(20)
-  , gicp_epsilon_(0.001)
-  , rotation_epsilon_(2e-3)
-  , mahalanobis_(0)
-  , max_inner_iterations_(20)
-  , translation_gradient_tolerance_(1e-2)
-  , rotation_gradient_tolerance_(1e-2)
+  GeneralizedIterativeClosestPoint() : mahalanobis_(0)
   {
     min_number_correspondences_ = 4;
     reg_name_ = "GeneralizedIterativeClosestPoint";
     max_iterations_ = 200;
     transformation_epsilon_ = 5e-4;
     corr_dist_threshold_ = 5.;
+    setNumberOfThreads(0);
     rigid_transformation_estimation_ = [this](const PointCloudSource& cloud_src,
                                               const pcl::Indices& indices_src,
                                               const PointCloudTarget& cloud_tgt,
                                               const pcl::Indices& indices_tgt,
                                               Matrix4& transformation_matrix) {
-      estimateRigidTransformationBFGS(
+      estimateRigidTransformationNewton(
           cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
     };
   }
@@ -214,6 +226,23 @@ public:
                                   const pcl::Indices& indices_tgt,
                                   Matrix4& transformation_matrix);
 
+  /** \brief Estimate a rigid rotation transformation between a source and a target
+   * point cloud using an iterative non-linear Newton approach.
+   * \param[in] cloud_src the source point cloud dataset
+   * \param[in] indices_src the vector of indices describing
+   * the points of interest in \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[in] indices_tgt the vector of indices describing
+   * the correspondences of the interest points from \a indices_src
+   * \param[in,out] transformation_matrix the resultant transformation matrix
+   */
+  void
+  estimateRigidTransformationNewton(const PointCloudSource& cloud_src,
+                                    const pcl::Indices& indices_src,
+                                    const PointCloudTarget& cloud_tgt,
+                                    const pcl::Indices& indices_tgt,
+                                    Matrix4& transformation_matrix);
+
   /** \brief \return Mahalanobis distance matrix for the given point index */
   inline const Eigen::Matrix3d&
   mahalanobis(std::size_t index) const
@@ -276,6 +305,21 @@ public:
     return k_correspondences_;
   }
 
+  /** \brief Use BFGS optimizer instead of default Newton optimizer
+   */
+  void
+  useBFGS()
+  {
+    rigid_transformation_estimation_ = [this](const PointCloudSource& cloud_src,
+                                              const pcl::Indices& indices_src,
+                                              const PointCloudTarget& cloud_tgt,
+                                              const pcl::Indices& indices_tgt,
+                                              Matrix4& transformation_matrix) {
+      estimateRigidTransformationBFGS(
+          cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
+    };
+  }
+
   /** \brief Set maximum number of iterations at the optimization step
    * \param[in] max maximum number of iterations for the optimizer
    */
@@ -328,23 +372,30 @@ public:
     return rotation_gradient_tolerance_;
   }
 
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
+   */
+  void
+  setNumberOfThreads(unsigned int nr_threads = 0);
+
 protected:
   /** \brief The number of neighbors used for covariances computation.
    * default: 20
    */
-  int k_correspondences_;
+  int k_correspondences_{20};
 
   /** \brief The epsilon constant for gicp paper; this is NOT the convergence
    * tolerance
    * default: 0.001
    */
-  double gicp_epsilon_;
+  double gicp_epsilon_{0.001};
 
   /** The epsilon constant for rotation error. (In GICP the transformation epsilon
    * is split in rotation part and translation part).
    * default: 2e-3
    */
-  double rotation_epsilon_;
+  double rotation_epsilon_{2e-3};
 
   /** \brief base transformation */
   Matrix4 base_transformation_;
@@ -371,24 +422,24 @@ protected:
   std::vector<Eigen::Matrix3d> mahalanobis_;
 
   /** \brief maximum number of optimizations */
-  int max_inner_iterations_;
+  int max_inner_iterations_{20};
 
   /** \brief minimal translation gradient for early optimization stop */
-  double translation_gradient_tolerance_;
+  double translation_gradient_tolerance_{1e-2};
 
   /** \brief minimal rotation gradient for early optimization stop */
-  double rotation_gradient_tolerance_;
+  double rotation_gradient_tolerance_{1e-2};
 
   /** \brief compute points covariances matrices according to the K nearest
    * neighbors. K is set via setCorrespondenceRandomness() method.
-   * \param cloud pointer to point cloud
-   * \param tree KD tree performer for nearest neighbors search
+   * \param[in] cloud pointer to point cloud
+   * \param[in] tree KD tree performer for nearest neighbors search
    * \param[out] cloud_covariances covariances matrices for each point in the cloud
    */
   template <typename PointT>
   void
   computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud,
-                     const typename pcl::search::KdTree<PointT>::Ptr tree,
+                     const typename pcl::search::Search<PointT>::Ptr tree,
                      MatricesVector& cloud_covariances);
 
   /** \return trace of mat1 . mat2
@@ -447,6 +498,8 @@ protected:
     df(const Vector6d& x, Vector6d& df) override;
     void
     fdf(const Vector6d& x, double& f, Vector6d& df) override;
+    void
+    dfddf(const Vector6d& x, Vector6d& df, Matrix6d& ddf);
     BFGSSpace::Status
     checkGradient(const Vector6d& g) override;
 
@@ -459,6 +512,29 @@ protected:
                      const pcl::Indices& tgt_indices,
                      Matrix4& transformation_matrix)>
       rigid_transformation_estimation_;
+
+private:
+  void
+  getRDerivatives(double phi,
+                  double theta,
+                  double psi,
+                  Eigen::Matrix3d& dR_dPhi,
+                  Eigen::Matrix3d& dR_dTheta,
+                  Eigen::Matrix3d& dR_dPsi) const;
+
+  void
+  getR2ndDerivatives(double phi,
+                     double theta,
+                     double psi,
+                     Eigen::Matrix3d& ddR_dPhi_dPhi,
+                     Eigen::Matrix3d& ddR_dPhi_dTheta,
+                     Eigen::Matrix3d& ddR_dPhi_dPsi,
+                     Eigen::Matrix3d& ddR_dTheta_dTheta,
+                     Eigen::Matrix3d& ddR_dTheta_dPsi,
+                     Eigen::Matrix3d& ddR_dPsi_dPsi) const;
+
+  /** \brief The number of threads the scheduler should use. */
+  unsigned int threads_;
 };
 } // namespace pcl
 

@@ -2,7 +2,6 @@ set(SUBSYS_NAME octree)
 set(SUBSYS_DESC "Point cloud octree library")
 set(SUBSYS_DEPS common)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
@@ -17,7 +16,6 @@ set(srcs
 )
 
 set(incs
-  "include/pcl/${SUBSYS_NAME}/boost.h"
   "include/pcl/${SUBSYS_NAME}/octree_base.h"
   "include/pcl/${SUBSYS_NAME}/octree_container.h"
   "include/pcl/${SUBSYS_NAME}/octree_impl.h"
@@ -51,7 +49,6 @@ set(impl_incs
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
 target_link_libraries("${LIB_NAME}" pcl_common)
-target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 
 # Install include files

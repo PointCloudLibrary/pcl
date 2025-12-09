@@ -49,7 +49,7 @@ namespace tracking {
 /** Pyramidal Kanade Lucas Tomasi tracker.
  * This is an implementation of the Pyramidal Kanade Lucas Tomasi tracker that
  * operates on organized 3D keypoints with color/intensity information (this is
- * the default behaviour but you can alterate it by providing another operator
+ * the default behaviour but you can alternate it by providing another operator
  * as second template argument). It is an affine tracker that iteratively
  * computes the optical flow to find the best guess for a point p at t given its
  * location at t-1. User is advised to respect the Tomasi condition: the
@@ -253,22 +253,6 @@ public:
   {
     return (keypoints_);
   };
-
-  /** \return the status of points to track.
-   * Status == 0  --> points successfully tracked;
-   * Status < 0   --> point is lost;
-   * Status == -1 --> point is out of bond;
-   * Status == -2 --> optical flow can not be computed for this point.
-   */
-  PCL_DEPRECATED(1, 15, "use getStatusOfPointsToTrack instead")
-  inline pcl::PointIndicesConstPtr
-  getPointsToTrackStatus() const
-  {
-    pcl::PointIndicesPtr res(new pcl::PointIndices);
-    res->indices.insert(
-        res->indices.end(), keypoints_status_->begin(), keypoints_status_->end());
-    return (res);
-  }
 
   /** \return the status of points to track.
    * Status == 0  --> points successfully tracked;

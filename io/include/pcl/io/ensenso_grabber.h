@@ -85,7 +85,7 @@ namespace pcl
       EnsensoGrabber ();
 
       /** @brief Destructor inherited from the Grabber interface. It never throws. */
-      
+
       ~EnsensoGrabber () noexcept override;
 
       /** @brief Searches for available devices
@@ -232,7 +232,7 @@ namespace pcl
       /** @brief Clear the extrinsic calibration stored in the EEPROM by writing an identity matrix
        * @return True if successful, false otherwise */
       bool
-      clearEEPROMExtrinsicCalibration ();
+      clearEEPROMExtrinsicCalibration () const;
 
       /** @brief Update Link node in NxLib tree
        * @param[in] target "Hand" or "Workspace" for example
@@ -260,7 +260,7 @@ namespace pcl
        * @param[in] target "Hand" or "Workspace" for example
        * @return True if successful, false otherwise */
       bool
-      setExtrinsicCalibration (const std::string target = "Hand");
+      setExtrinsicCalibration (const std::string target = "Hand") const;
 
       /** @brief Update Link node in NxLib tree
        * @param[in] transformation Transformation matrix
@@ -278,7 +278,7 @@ namespace pcl
        * Use @ref storeEEPROMExtrinsicCalibration to permanently store this transformation */
       bool
       setExtrinsicCalibration (const Eigen::Affine3d &transformation,
-                               const std::string target = "Hand");
+                               const std::string target = "Hand") const;
 
       /** @brief Obtain the number of frames per second (FPS) */
       float
@@ -443,13 +443,13 @@ namespace pcl
       boost::signals2::signal<sig_cb_ensenso_point_cloud_images>* point_cloud_images_signal_;
 
       /** @brief Whether an Ensenso device is opened or not */
-      bool device_open_;
+      bool device_open_{false};
 
       /** @brief Whether an TCP port is opened or not */
-      bool tcp_open_;
+      bool tcp_open_{false};
 
       /** @brief Whether an Ensenso device is running or not */
-      bool running_;
+      bool running_{false};
 
       /** @brief Point cloud capture/processing frequency */
       pcl::EventFrequency frequency_;

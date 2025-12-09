@@ -48,6 +48,7 @@
 #include <pcl/filters/frustum_culling.h>
 #include <pcl/filters/sampling_surface_normal.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/voxel_grid_occlusion_estimation.h>
 #include <pcl/filters/voxel_grid_covariance.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/project_inliers.h>
@@ -56,6 +57,7 @@
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/median_filter.h>
 #include <pcl/filters/normal_refinement.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 #include <pcl/common/transforms.h>
 #include <pcl/common/eigen.h>
@@ -637,6 +639,19 @@ TEST (VoxelGrid, Filters)
   EXPECT_LE (std::abs (output[neighbors.at (0)].y - output[centroidIdx].y), 0.02);
   EXPECT_LE ( output[neighbors.at (0)].z - output[centroidIdx].z, 0.02 * 2);
 
+  // indices must be handled correctly
+  auto indices = grid.getIndices(); // original cloud indices
+  auto cloud_copied = std::make_shared<PointCloud<PointXYZ>>();
+  *cloud_copied = *cloud;
+  for (int i = 0; i < 100; i++) {
+    cloud_copied->emplace_back(100 + i, 100 + i, 100 + i);
+  }
+  grid.setInputCloud(cloud_copied);
+  grid.setIndices(indices);
+  grid.filter(output);
+
+  EXPECT_EQ(output.size(), 100); // additional points should be ignored
+
   // Test the pcl::PCLPointCloud2 method
   VoxelGrid<PCLPointCloud2> grid2;
 
@@ -718,6 +733,18 @@ TEST (VoxelGrid, Filters)
   EXPECT_LE (std::abs (output[neighbors2.at (0)].x - output[centroidIdx2].x), 0.02);
   EXPECT_LE (std::abs (output[neighbors2.at (0)].y - output[centroidIdx2].y), 0.02);
   EXPECT_LE (output[neighbors2.at (0)].z - output[centroidIdx2].z, 0.02 * 2);
+
+  // indices must be handled correctly
+  auto indices2 = grid2.getIndices(); // original cloud indices
+  auto cloud_blob2 = std::make_shared<PCLPointCloud2>();
+  toPCLPointCloud2(*cloud_copied, *cloud_blob2);
+
+  grid2.setInputCloud(cloud_blob2);
+  grid2.setIndices(indices2);
+  grid2.filter(output_blob);
+
+  fromPCLPointCloud2(output_blob, output);
+  EXPECT_EQ(output.size(), 100); // additional points should be ignored
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1352,7 +1379,7 @@ TEST (VoxelGridMinPoints, Filters)
 
   // Verify 2 clusters (0.11 and 0.31) passed threshold and verify their location and color
   EXPECT_EQ (outputMin4.size (), 2);
-  // Offset noise applied by offsets vec are 1e-3 magnitude, so check within 1e-2 
+  // Offset noise applied by offsets vec are 1e-3 magnitude, so check within 1e-2
   EXPECT_NEAR (outputMin4[0].x, input->at(1).x, 1e-2);
   EXPECT_NEAR (outputMin4[0].y, input->at(1).y, 1e-2);
   EXPECT_NEAR (outputMin4[0].z, input->at(1).z, 1e-2);
@@ -1468,19 +1495,43 @@ TEST (RadiusOutlierRemoval, Filters)
 {
   // Test the PointCloud<PointT> method
   PointCloud<PointXYZ> cloud_out;
+  PointCloud<PointXYZ> cloud_out_neg;
   // Remove outliers using a spherical density criterion
   RadiusOutlierRemoval<PointXYZ> outrem;
   outrem.setInputCloud (cloud);
   outrem.setRadiusSearch (0.02);
   outrem.setMinNeighborsInRadius (14);
+  outrem.setNumberOfThreads(4);
   outrem.filter (cloud_out);
 
   EXPECT_EQ (cloud_out.size (), 307);
   EXPECT_EQ (cloud_out.width, 307);
   EXPECT_TRUE (cloud_out.is_dense);
-  EXPECT_NEAR (cloud_out[cloud_out.size () - 1].x, -0.077893, 1e-4);
-  EXPECT_NEAR (cloud_out[cloud_out.size () - 1].y, 0.16039, 1e-4);
-  EXPECT_NEAR (cloud_out[cloud_out.size () - 1].z, -0.021299, 1e-4);
+
+  outrem.setNegative(true);
+  outrem.filter(cloud_out_neg);
+
+  EXPECT_EQ(cloud_out_neg.size(), 90);
+  EXPECT_TRUE(cloud_out_neg.is_dense);
+
+  PointCloud<PointXYZRGB> cloud_out_rgb;
+  PointCloud<PointXYZRGB> cloud_out_rgb_neg;
+  // Remove outliers using a spherical density criterion on non-dense pointcloud
+  RadiusOutlierRemoval<PointXYZRGB> outremNonDense;
+  outremNonDense.setInputCloud(cloud_organized);
+  outremNonDense.setRadiusSearch(0.02);
+  outremNonDense.setMinNeighborsInRadius(14);
+  outremNonDense.setNumberOfThreads(4);
+  outremNonDense.filter(cloud_out_rgb);
+
+  EXPECT_EQ(cloud_out_rgb.size(), 240801);
+  EXPECT_EQ(cloud_out_rgb.width, 240801);
+  //EXPECT_TRUE(cloud_out_rgb.is_dense);
+
+  outremNonDense.setNegative(true);
+  outremNonDense.filter(cloud_out_rgb_neg);
+  EXPECT_EQ(cloud_out_rgb_neg.size(), 606);
+  //EXPECT_TRUE(cloud_out_rgb_neg.is_dense);
 
   // Test the pcl::PCLPointCloud2 method
   PCLPointCloud2 cloud_out2;
@@ -1997,11 +2048,11 @@ TEST (FrustumCulling, Filters)
     Eigen::AngleAxisf (0 * M_PI / 180, Eigen::Vector3f::UnitY ()) *
     Eigen::AngleAxisf (0 * M_PI / 180, Eigen::Vector3f::UnitZ ());
 
-  camera_pose.block (0, 0, 3, 3) = R;
+  camera_pose.topLeftCorner<3, 3> () = R;
 
   Eigen::Vector3f T;
   T (0) = -5; T (1) = 0; T (2) = 0;
-  camera_pose.block (0, 3, 3, 1) = T;
+  camera_pose.block<3, 1> (0, 3) = T;
   camera_pose (3, 3) = 1;
 
   fc.setCameraPose (camera_pose);
@@ -2051,7 +2102,7 @@ TEST (FrustumCulling, Filters)
 
   Eigen::Matrix4f cam2robot;
   cam2robot << 0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1;
-  // Cut out object based on ROI 
+  // Cut out object based on ROI
   fc.setInputCloud (model);
   fc.setNegative (false);
   fc.setVerticalFOV (43);
@@ -2062,7 +2113,7 @@ TEST (FrustumCulling, Filters)
   fc.setCameraPose (cam2robot);
   fc.filter (*output);
   // Should extract milk cartoon with 13541 points
-  EXPECT_EQ (output->size (), 13541); 
+  EXPECT_EQ (output->size (), 13541);
   removed = fc.getRemovedIndices ();
   EXPECT_EQ (removed->size (), model->size () - output->size ());
 
@@ -2458,6 +2509,27 @@ TEST (NormalRefinement, Filters)
   // Expect mean/variance of error of refined to be smaller, i.e. closer to SAC model
   EXPECT_LT(err_refined_mean, err_est_mean);
   EXPECT_LT(err_refined_var, err_est_var);
+}
+
+TEST (VoxelGridOcclusionEstimation, Filters)
+{
+  auto input_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
+  input_cloud->emplace_back(0.0, 0.0, 0.0);
+  input_cloud->emplace_back(9.9, 9.9, 9.9); // we want a nice bounding box from (0, 0, 0) to (10, 10, 10)
+  input_cloud->sensor_origin_ << -0.1f, 0.5f, 0.5f, 0.0f; // just outside the bounding box. Most rays will enter at voxel (0, 0, 0)
+  pcl::VoxelGridOcclusionEstimation<pcl::PointXYZ> vg;
+  vg.setInputCloud (input_cloud);
+  vg.setLeafSize (1.0, 1.0, 1.0);
+  vg.initializeVoxelGrid ();
+  std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > occluded_voxels;
+  vg.occlusionEstimationAll (occluded_voxels);
+  for(std::size_t y=0; y<10; ++y) {
+    for (std::size_t z=0; z<10; ++z) {
+      if(y==9 && z==9) continue; // voxel (9, 9, 9) is occupied by point (9.9, 9.9, 9.9), so it will not be counted as occluded
+      Eigen::Vector3i cell(9, y, z);
+      EXPECT_NE(std::find(occluded_voxels.begin(), occluded_voxels.end(), cell), occluded_voxels.end()); // not equal means it was found
+    }
+  }
 }
 
 /* ---[ */

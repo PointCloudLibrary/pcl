@@ -3,18 +3,19 @@
 // Ensure the compiler is meeting the minimum C++ standard
 // MSVC is not checked via __cplusplus due to
 // https://developercommunity.visualstudio.com/content/problem/120156/-cplusplus-macro-still-defined-as-pre-c11-value.html
-#if (!defined(_MSC_VER) && __cplusplus < 201402L) || (defined(_MSC_VER) && _MSC_VER < 1900)
-  #error PCL requires C++14 or above
+#if defined(__cplusplus) && ((!defined(_MSC_VER) && __cplusplus < ${PCL__cplusplus}) || (defined(_MSC_VER) && _MSC_VER < ${PCL_REQUIRES_MSC_VER}) || (defined(_MSVC_LANG) && _MSVC_LANG < ${PCL__cplusplus}))
+  #error C++ standard too low (PCL requires ${PCL__cplusplus} or above)
 #endif
 
 #define BUILD_@CMAKE_BUILD_TYPE@
+#cmakedefine PCL_SYMBOL_VISIBILITY_HIDDEN
 /* PCL version information */
 #define PCL_MAJOR_VERSION ${PCL_VERSION_MAJOR}
 #define PCL_MINOR_VERSION ${PCL_VERSION_MINOR}
 #define PCL_REVISION_VERSION ${PCL_VERSION_PATCH}
 #define PCL_DEV_VERSION ${PCL_DEV_VERSION}
 #define PCL_VERSION_PRETTY "${PCL_VERSION_PRETTY}"
-#define PCL_VERSION_CALC(MAJ, MIN, PATCH) (MAJ*100000+MIN*100+PATCH)
+#define PCL_VERSION_CALC(MAJ, MIN, PATCH) ((MAJ)*100000+(MIN)*100+(PATCH))
 #define PCL_VERSION \
     PCL_VERSION_CALC(PCL_MAJOR_VERSION, PCL_MINOR_VERSION, PCL_REVISION_VERSION)
 #define PCL_VERSION_COMPARE(OP, MAJ, MIN, PATCH) \
@@ -34,6 +35,8 @@
   #endif //PCL_MINOR_VERSION
 #endif 
 
+#define PCL_USES_EIGEN_HANDMADE_ALIGNED_MALLOC ${PCL_USES_EIGEN_HANDMADE_ALIGNED_MALLOC}
+
 #cmakedefine HAVE_OPENNI 1
 
 #cmakedefine HAVE_OPENNI2 1
@@ -46,14 +49,32 @@
 
 #cmakedefine HAVE_DAVIDSDK 1
 
+#ifndef PCL_HAS_NANOFLANN
+#cmakedefine PCL_HAS_NANOFLANN 1
+#endif
+
+#ifndef PCL_HAS_FLANN
+#cmakedefine PCL_HAS_FLANN 1
+#endif
+
 // SSE macros
 #cmakedefine HAVE_POSIX_MEMALIGN
 #cmakedefine HAVE_MM_MALLOC
 
 #cmakedefine HAVE_PNG
 
+#cmakedefine HAVE_ZLIB
+
+#cmakedefine HAVE_CJSON
+
+#cmakedefine PCL_PREFER_BOOST_FILESYSTEM
+
 /* Precompile for a minimal set of point types instead of all. */
 #cmakedefine PCL_ONLY_CORE_POINT_TYPES
+
+#define PCL_XYZ_POINT_TYPES @PCL_XYZ_POINT_TYPES@
+
+#define PCL_NORMAL_POINT_TYPES @PCL_NORMAL_POINT_TYPES@
 
 /* Do not precompile for any point types at all. */
 #cmakedefine PCL_NO_PRECOMPILE
@@ -87,3 +108,4 @@
 
 #cmakedefine HAVE_QVTK 1
 
+#cmakedefine PCL_VISUALIZATION_AVAILABLE

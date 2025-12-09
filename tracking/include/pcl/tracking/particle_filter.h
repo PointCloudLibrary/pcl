@@ -50,30 +50,7 @@ public:
 
   /** \brief Empty constructor. */
   ParticleFilterTracker()
-  : iteration_num_(1)
-  , particle_num_()
-  , min_indices_(1)
-  , ref_()
-  , particles_()
-  , coherence_()
-  , resample_likelihood_thr_(0.0)
-  , occlusion_angle_thr_(M_PI / 2.0)
-  , alpha_(15.0)
-  , representative_state_()
-  , use_normal_(false)
-  , motion_()
-  , motion_ratio_(0.25)
-  , pass_x_()
-  , pass_y_()
-  , pass_z_()
-  , transed_reference_vector_()
-  , change_detector_()
-  , changed_(false)
-  , change_counter_(0)
-  , change_detector_filter_(10)
-  , change_detector_interval_(10)
-  , change_detector_resolution_(0.01)
-  , use_change_detector_(false)
+  : representative_state_(), motion_(), pass_x_(), pass_y_(), pass_z_()
   {
     tracker_name_ = "ParticleFilterTracker";
     pass_x_.setFilterFieldName("x");
@@ -495,7 +472,7 @@ protected:
 
   /** \brief Resampling phase of particle filter method. Sampling the particles
    * according to the weights calculated in weight method. In particular,
-   * "sample with replacement" is archieved by walker's alias method.
+   * "sample with replacement" is achieved by walker's alias method.
    */
   virtual void
   resample();
@@ -558,48 +535,48 @@ protected:
   testChangeDetection(const PointCloudInConstPtr& input);
 
   /** \brief The number of iteration of particlefilter. */
-  int iteration_num_;
+  int iteration_num_{1};
 
   /** \brief The number of the particles. */
-  int particle_num_;
+  int particle_num_{0};
 
   /** \brief The minimum number of points which the hypothesis should have. */
-  int min_indices_;
+  int min_indices_{1};
 
   /** \brief Adjustment of the particle filter. */
-  double fit_ratio_;
+  double fit_ratio_{0.0};
 
   /** \brief A pointer to reference point cloud. */
-  PointCloudInConstPtr ref_;
+  PointCloudInConstPtr ref_{nullptr};
 
   /** \brief A pointer to the particles  */
-  PointCloudStatePtr particles_;
+  PointCloudStatePtr particles_{nullptr};
 
   /** \brief A pointer to PointCloudCoherence. */
-  CloudCoherencePtr coherence_;
+  CloudCoherencePtr coherence_{nullptr};
 
   /** \brief The diagonal elements of covariance matrix of the step noise. the
    * covariance matrix is used at every resample method.
    */
-  std::vector<double> step_noise_covariance_;
+  std::vector<double> step_noise_covariance_{};
 
   /** \brief The diagonal elements of covariance matrix of the initial noise.
    * the covariance matrix is used when initialize the particles.
    */
-  std::vector<double> initial_noise_covariance_;
+  std::vector<double> initial_noise_covariance_{};
 
   /** \brief The mean values of initial noise. */
-  std::vector<double> initial_noise_mean_;
+  std::vector<double> initial_noise_mean_{};
 
   /** \brief The threshold for the particles to be re-initialized. */
-  double resample_likelihood_thr_;
+  double resample_likelihood_thr_{0.0};
 
   /** \brief The threshold for the points to be considered as occluded. */
-  double occlusion_angle_thr_;
+  double occlusion_angle_thr_{M_PI / 2.0};
 
   /** \brief The weight to be used in normalization of the weights of the
    * particles. */
-  double alpha_;
+  double alpha_{15.0};
 
   /** \brief The result of tracking. */
   StateT representative_state_;
@@ -609,13 +586,13 @@ protected:
   Eigen::Affine3f trans_;
 
   /** \brief A flag to use normal or not. defaults to false. */
-  bool use_normal_;
+  bool use_normal_{false};
 
   /** \brief Difference between the result in t and t-1. */
   StateT motion_;
 
   /** \brief Ratio of hypothesis to use motion model. */
-  double motion_ratio_;
+  double motion_ratio_{0.25};
 
   /** \brief Pass through filter to crop the pointclouds within the hypothesis
    * bounding box. */
@@ -628,30 +605,31 @@ protected:
   pcl::PassThrough<PointInT> pass_z_;
 
   /** \brief A list of the pointers to pointclouds. */
-  std::vector<PointCloudInPtr> transed_reference_vector_;
+  std::vector<PointCloudInPtr> transed_reference_vector_{};
 
   /** \brief Change detector used as a trigger to track. */
-  typename pcl::octree::OctreePointCloudChangeDetector<PointInT>::Ptr change_detector_;
+  typename pcl::octree::OctreePointCloudChangeDetector<PointInT>::Ptr change_detector_{
+      nullptr};
 
   /** \brief A flag to be true when change of pointclouds is detected. */
-  bool changed_;
+  bool changed_{false};
 
   /** \brief A counter to skip change detection. */
-  unsigned int change_counter_;
+  unsigned int change_counter_{0};
 
   /** \brief Minimum points in a leaf when calling change detector. defaults
    * to 10. */
-  unsigned int change_detector_filter_;
+  unsigned int change_detector_filter_{10};
 
   /** \brief The number of interval frame to run change detection. defaults
    * to 10. */
-  unsigned int change_detector_interval_;
+  unsigned int change_detector_interval_{10};
 
   /** \brief Resolution of change detector. defaults to 0.01. */
-  double change_detector_resolution_;
+  double change_detector_resolution_{0.01};
 
   /** \brief The flag which will be true if using change detection. */
-  bool use_change_detector_;
+  bool use_change_detector_{false};
 };
 } // namespace tracking
 } // namespace pcl

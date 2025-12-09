@@ -45,7 +45,9 @@
 // Use e.g. like this:
 // PCL_INFO_STREAM("Info: this is a point: " << pcl::PointXYZ(1.0, 2.0, 3.0) << std::endl);
 // PCL_ERROR_STREAM("Error: an Eigen vector: " << std::endl << Eigen::Vector3f(1.0, 2.0, 3.0) << std::endl);
+// NOLINTBEGIN(bugprone-macro-parentheses)
 #define PCL_LOG_STREAM(LEVEL, STREAM, CSTR, ATTR, FG, ARGS) if(pcl::console::isVerbosityLevelEnabled(pcl::console::LEVEL)) { fflush(stdout); pcl::console::change_text_color(CSTR, pcl::console::ATTR, pcl::console::FG); STREAM << ARGS; pcl::console::reset_text_color(CSTR); }
+// NOLINTEND(bugprone-macro-parentheses)
 #define PCL_ALWAYS_STREAM(ARGS)  PCL_LOG_STREAM(L_ALWAYS,  std::cout, stdout, TT_RESET,  TT_WHITE,  ARGS)
 #define PCL_ERROR_STREAM(ARGS)   PCL_LOG_STREAM(L_ERROR,   std::cerr, stderr, TT_BRIGHT, TT_RED,    ARGS)
 #define PCL_WARN_STREAM(ARGS)    PCL_LOG_STREAM(L_WARN,    std::cerr, stderr, TT_BRIGHT, TT_YELLOW, ARGS)
@@ -60,6 +62,7 @@
 #define PCL_INFO(...)    pcl::console::print (pcl::console::L_INFO, __VA_ARGS__)
 #define PCL_DEBUG(...)   pcl::console::print (pcl::console::L_DEBUG, __VA_ARGS__)
 #define PCL_VERBOSE(...) pcl::console::print (pcl::console::L_VERBOSE, __VA_ARGS__)
+#define PCL_HIGH(...)    pcl::console::print_highlight (__VA_ARGS__)
 
 #define PCL_ASSERT_ERROR_PRINT_CHECK(pred, msg) \
     do \

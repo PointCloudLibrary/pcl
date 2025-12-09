@@ -47,6 +47,8 @@
 #include <boost/random/mersenne_twister.hpp> // for mt19937
 #include <boost/random/uniform_int.hpp> // for uniform_int
 #include <boost/random/variate_generator.hpp> // for variate_generator
+#include <random>
+#include <numeric> // for iota
 
 #include <pcl/memory.h>
 #include <pcl/console/print.h>
@@ -92,7 +94,7 @@ namespace pcl
       {
         // Create a random number generator object
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
+          rng_alg_.seed (std::random_device()());
         else
           rng_alg_.seed (12345u);
 
@@ -102,39 +104,12 @@ namespace pcl
     public:
       /** \brief Constructor for base SampleConsensusModel.
         * \param[in] cloud the input point cloud dataset
-        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
-        */
-      SampleConsensusModel (const PointCloudConstPtr &cloud, bool random = false) 
-        : input_ ()
-        , radius_min_ (-std::numeric_limits<double>::max ())
-        , radius_max_ (std::numeric_limits<double>::max ())
-        , samples_radius_ (0.)
-        , samples_radius_search_ ()
-        , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
-        , custom_model_constraints_ ([](auto){return true;})
-      {
-        if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time (nullptr)));
-        else
-          rng_alg_.seed (12345u);
-
-        // Sets the input cloud and creates a vector of "fake" indices
-        setInputCloud (cloud);
-
-        // Create a random number generator object
-        rng_gen_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_int<> > (rng_alg_, *rng_dist_)); 
-      }
-
-      /** \brief Constructor for base SampleConsensusModel.
-        * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModel (const PointCloudConstPtr &cloud, 
-                            const Indices &indices,
-                            bool random = false) 
+      SampleConsensusModel (const PointCloudConstPtr &cloud, const Indices &indices, const bool random = false)
         : input_ (cloud)
-        , indices_ (new Indices (indices))
+        , indices_(new Indices(indices))
         , radius_min_ (-std::numeric_limits<double>::max ())
         , radius_max_ (std::numeric_limits<double>::max ())
         , samples_radius_ (0.)
@@ -143,9 +118,16 @@ namespace pcl
         , custom_model_constraints_ ([](auto){return true;})
       {
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
+          rng_alg_.seed (std::random_device()());
         else
           rng_alg_.seed (12345u);
+
+        // If no indices are provided, use all points
+        if (indices_->empty())
+        {
+          indices_->resize(cloud->size());
+          std::iota(indices_->begin(), indices_->end(), 0);
+        }
 
         if (indices_->size () > input_->size ())
         {
@@ -159,7 +141,14 @@ namespace pcl
 
         // Create a random number generator object
         rng_gen_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_int<> > (rng_alg_, *rng_dist_)); 
-       };
+      }
+
+      /** \brief Constructor for base SampleConsensusModel.
+        * \param[in] cloud the input point cloud dataset
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
+        */
+      SampleConsensusModel (const PointCloudConstPtr &cloud, const bool random = false)
+        : SampleConsensusModel(cloud, Indices(), random) {};
 
       /** \brief Destructor for base SampleConsensusModel. */
       virtual ~SampleConsensusModel () = default;

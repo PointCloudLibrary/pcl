@@ -42,6 +42,7 @@
 #define PCL_FEATURES_IMPL_CPPF_H_
 
 #include <pcl/features/cppf.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>

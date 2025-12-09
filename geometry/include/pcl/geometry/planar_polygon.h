@@ -39,8 +39,8 @@
 
 #pragma once
 
-#include <pcl/ModelCoefficients.h>
 #include <pcl/memory.h>
+#include <pcl/ModelCoefficients.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 

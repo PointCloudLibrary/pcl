@@ -2,7 +2,7 @@ set(SUBSUBSYS_NAME tools)
 set(SUBSUBSYS_DESC "Kinfu tools")
 set(SUBSUBSYS_DEPS gpu_kinfu visualization)
 set(SUBSUBSYS_OPT_DEPS opencv)
-set(EXT_DEPS openni)
+set(EXT_DEPS glew openni)
 set(DEFAULT TRUE)
 set(REASON "")
 
@@ -13,10 +13,7 @@ if(NOT build)
   return()
 endif()
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 file(GLOB hdrs "*.h*")
-include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
 
 ## KINECT FUSION
 set(the_target pcl_kinfu_app)

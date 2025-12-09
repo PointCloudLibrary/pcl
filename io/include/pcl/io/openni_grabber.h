@@ -422,25 +422,25 @@ namespace pcl
 
       std::string rgb_frame_id_;
       std::string depth_frame_id_;
-      unsigned image_width_;
-      unsigned image_height_;
-      unsigned depth_width_;
-      unsigned depth_height_;
+      unsigned image_width_{0};
+      unsigned image_height_{0};
+      unsigned depth_width_{0};
+      unsigned depth_height_{0};
 
-      bool image_required_;
-      bool depth_required_;
-      bool ir_required_;
-      bool sync_required_;
+      bool image_required_{false};
+      bool depth_required_{false};
+      bool ir_required_{false};
+      bool sync_required_{false};
 
-      boost::signals2::signal<sig_cb_openni_image>* image_signal_;
-      boost::signals2::signal<sig_cb_openni_depth_image>* depth_image_signal_;
-      boost::signals2::signal<sig_cb_openni_ir_image>* ir_image_signal_;
-      boost::signals2::signal<sig_cb_openni_image_depth_image>* image_depth_image_signal_;
-      boost::signals2::signal<sig_cb_openni_ir_depth_image>* ir_depth_image_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud>* point_cloud_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud_i>* point_cloud_i_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* point_cloud_rgb_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud_rgba>* point_cloud_rgba_signal_;
+      boost::signals2::signal<sig_cb_openni_image>* image_signal_{};
+      boost::signals2::signal<sig_cb_openni_depth_image>* depth_image_signal_{};
+      boost::signals2::signal<sig_cb_openni_ir_image>* ir_image_signal_{};
+      boost::signals2::signal<sig_cb_openni_image_depth_image>* image_depth_image_signal_{};
+      boost::signals2::signal<sig_cb_openni_ir_depth_image>* ir_depth_image_signal_{};
+      boost::signals2::signal<sig_cb_openni_point_cloud>* point_cloud_signal_{};
+      boost::signals2::signal<sig_cb_openni_point_cloud_i>* point_cloud_i_signal_{};
+      boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* point_cloud_rgb_signal_{};
+      boost::signals2::signal<sig_cb_openni_point_cloud_rgba>* point_cloud_rgba_signal_{};
 
       struct modeComp
       {
@@ -460,13 +460,13 @@ namespace pcl
       } ;
       std::map<int, XnMapOutputMode> config2xn_map_;
 
-      openni_wrapper::OpenNIDevice::CallbackHandle depth_callback_handle;
-      openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle;
-      openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle;
-      bool running_;
+      openni_wrapper::OpenNIDevice::CallbackHandle depth_callback_handle{};
+      openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle{};
+      openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle{};
+      bool running_{false};
 
-      mutable unsigned rgb_array_size_;
-      mutable unsigned depth_buffer_size_;
+      mutable unsigned rgb_array_size_{0};
+      mutable unsigned depth_buffer_size_{0};
       mutable boost::shared_array<unsigned char> rgb_array_;
       mutable boost::shared_array<unsigned short> depth_buffer_;
       mutable boost::shared_array<unsigned short> ir_buffer_;

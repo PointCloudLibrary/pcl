@@ -58,7 +58,7 @@ TransformationEstimationSVDScale<PointSource, PointTarget, Scalar>::
 
   // Assemble the correlation matrix H = source * target'
   Eigen::Matrix<Scalar, 3, 3> H =
-      (cloud_src_demean * cloud_tgt_demean.transpose()).topLeftCorner(3, 3);
+      (cloud_src_demean * cloud_tgt_demean.transpose()).template topLeftCorner<3, 3>();
 
   // Compute the Singular Value Decomposition
   Eigen::JacobiSVD<Eigen::Matrix<Scalar, 3, 3>> svd(
@@ -76,7 +76,7 @@ TransformationEstimationSVDScale<PointSource, PointTarget, Scalar>::
 
   // rotated cloud
   Eigen::Matrix<Scalar, 4, 4> R4;
-  R4.block(0, 0, 3, 3) = R;
+  R4.template topLeftCorner<3, 3>() = R;
   R4(0, 3) = 0;
   R4(1, 3) = 0;
   R4(2, 3) = 0;
@@ -96,9 +96,10 @@ TransformationEstimationSVDScale<PointSource, PointTarget, Scalar>::
   }
 
   float scale = sum_tt / sum_ss;
-  transformation_matrix.topLeftCorner(3, 3) = scale * R;
-  const Eigen::Matrix<Scalar, 3, 1> Rc(scale * R * centroid_src.head(3));
-  transformation_matrix.block(0, 3, 3, 1) = centroid_tgt.head(3) - Rc;
+  transformation_matrix.template topLeftCorner<3, 3>() = scale * R;
+  const Eigen::Matrix<Scalar, 3, 1> Rc(scale * R * centroid_src.template head<3>());
+  transformation_matrix.template block<3, 1>(0, 3) =
+      centroid_tgt.template head<3>() - Rc;
 }
 
 } // namespace registration

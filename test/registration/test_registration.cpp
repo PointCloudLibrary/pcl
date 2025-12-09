@@ -155,30 +155,26 @@ TEST (PCL, findFeatureCorrespondences)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This test if the ICP algorithm can successfully find the transformation of a cloud that has been
-// moved 0.7 in x direction.
+// moved 0.2 in z direction.
 // It indirectly test the KDTree doesn't get an empty input cloud, see #3624
 // It is more or less a copy of https://github.com/PointCloudLibrary/pcl/blob/cc7fe363c6463a0abc617b1e17e94ab4bd4169ef/doc/tutorials/content/sources/iterative_closest_point/iterative_closest_point.cpp
 TEST(PCL, ICP_translated)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in(new pcl::PointCloud<pcl::PointXYZ>(5,1));
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
 
   // Fill in the CloudIn data
-  for (auto& point : *cloud_in)
-  {
-    point.x = 1024 * rand() / (RAND_MAX + 1.0f);
-    point.y = 1024 * rand() / (RAND_MAX + 1.0f);
-    point.z = 1024 * rand() / (RAND_MAX + 1.0f);
-  }
+  *cloud_in = cloud_source;
 
   *cloud_out = *cloud_in;
 
   for (auto& point : *cloud_out)
-    point.x += 0.7f;
+    point.z += 0.2f;
 
   pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
   icp.setInputSource(cloud_in);
   icp.setInputTarget(cloud_out);
+  icp.setMaximumIterations (50);
 
   pcl::PointCloud<pcl::PointXYZ> Final;
   icp.align(Final);
@@ -190,9 +186,12 @@ TEST(PCL, ICP_translated)
   EXPECT_LT(icp.getFitnessScore(), 1e-6);
 
   // Ensure that the translation found is within acceptable threshold.
-  EXPECT_NEAR(icp.getFinalTransformation()(0, 3), 0.7, 2e-3);
+  EXPECT_NEAR(icp.getFinalTransformation()(0, 0), 1.0, 2e-3);
+  EXPECT_NEAR(icp.getFinalTransformation()(1, 1), 1.0, 2e-3);
+  EXPECT_NEAR(icp.getFinalTransformation()(2, 2), 1.0, 2e-3);
+  EXPECT_NEAR(icp.getFinalTransformation()(0, 3), 0.0, 2e-3);
   EXPECT_NEAR(icp.getFinalTransformation()(1, 3), 0.0, 2e-3);
-  EXPECT_NEAR(icp.getFinalTransformation()(2, 3), 0.0, 2e-3);
+  EXPECT_NEAR(icp.getFinalTransformation()(2, 3), 0.2, 2e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -585,6 +584,68 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   EXPECT_LT (reg.getFitnessScore (), 0.0001);
 }
 
+TEST (PCL, GeneralizedIterativeClosestPointBFGS)
+{ // same as above, but uses BFGS optimizer
+  using PointT = PointXYZ;
+  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
+  copyPointCloud (cloud_source, *src);
+  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
+  copyPointCloud (cloud_target, *tgt);
+  PointCloud<PointT> output;
+
+  GeneralizedIterativeClosestPoint<PointT, PointT> reg;
+  reg.useBFGS ();
+  reg.setInputSource (src);
+  reg.setInputTarget (tgt);
+  reg.setMaximumIterations (50);
+  reg.setTransformationEpsilon (1e-8);
+
+  // Register
+  reg.align (output);
+  EXPECT_EQ (output.size (), cloud_source.size ());
+  EXPECT_LT (reg.getFitnessScore (), 0.0001);
+
+  // Check again, for all possible caching schemes
+  for (int iter = 0; iter < 4; iter++)
+  {
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
+    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    // Ensure that, when force_cache is not set, we are robust to the wrong input
+    if (force_cache)
+      tree->setInputCloud (tgt);
+    reg.setSearchMethodTarget (tree, force_cache);
+
+    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
+    if (force_cache_reciprocal)
+      tree_recip->setInputCloud (src);
+    reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
+
+    // Register
+    reg.align (output);
+    EXPECT_EQ (output.size (), cloud_source.size ());
+    EXPECT_LT (reg.getFitnessScore (), 0.001);
+  }
+
+  // Test guess matrix
+  Eigen::Isometry3f transform = Eigen::Isometry3f (Eigen::AngleAxisf (0.25 * M_PI, Eigen::Vector3f::UnitX ())
+                                                 * Eigen::AngleAxisf (0.50 * M_PI, Eigen::Vector3f::UnitY ())
+                                                 * Eigen::AngleAxisf (0.33 * M_PI, Eigen::Vector3f::UnitZ ()));
+  transform.translation () = Eigen::Vector3f (0.1, 0.2, 0.3);
+  PointCloud<PointT>::Ptr transformed_tgt (new PointCloud<PointT>);
+  pcl::transformPointCloud (*tgt, *transformed_tgt, transform.matrix ()); // transformed_tgt is now a copy of tgt with a transformation matrix applied
+
+  GeneralizedIterativeClosestPoint<PointT, PointT> reg_guess;
+  reg_guess.useBFGS ();
+  reg_guess.setInputSource (src);
+  reg_guess.setInputTarget (transformed_tgt);
+  reg_guess.setMaximumIterations (50);
+  reg_guess.setTransformationEpsilon (1e-8);
+  reg_guess.align (output, transform.matrix ());
+  EXPECT_EQ (output.size (), cloud_source.size ());
+  EXPECT_LT (reg.getFitnessScore (), 0.0001);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GeneralizedIterativeClosestPoint6D)
 {
@@ -593,7 +654,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
   PointCloud<PointT>::Ptr src_full (new PointCloud<PointT>);
   copyPointCloud (cloud_with_color, *src_full);
   PointCloud<PointT>::Ptr tgt_full (new PointCloud<PointT>);
-  sampleRandomTransform (delta_transform, M_PI/0.1, .03);
+  sampleRandomTransform (delta_transform, 0.25*M_PI, .03);
   pcl::transformPointCloud (cloud_with_color, *tgt_full, delta_transform);
   PointCloud<PointT> output;
 
@@ -616,7 +677,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
   // Register
   reg.align (output);
   EXPECT_EQ (output.size (), src->size ());
-  EXPECT_LT (reg.getFitnessScore (), 0.003);
+  EXPECT_LT (reg.getFitnessScore (), 1e-4);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
@@ -637,7 +698,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
     // Register
     reg.align (output);
     EXPECT_EQ (output.size (), src->size ());
-    EXPECT_LT (reg.getFitnessScore (), 0.003);
+    EXPECT_LT (reg.getFitnessScore (), 1e-4);
   }
 }
 
@@ -724,18 +785,21 @@ TEST (PCL, PyramidFeatureHistogram)
   EXPECT_NEAR (similarity_value3, 0.873699546, 1e-3);
 }
 
-// Suat G: disabled, since the transformation does not look correct.
-// ToDo: update transformation from the ground truth.
-#if 0
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PPFRegistration)
 {
-  // Transform the source cloud by a large amount
-  Eigen::Vector3f initial_offset (100, 0, 0);
-  float angle = M_PI/6;
-  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, sin (angle / 2));
+  Eigen::Matrix4f bun0_to_bun4_groundtruth;
+  bun0_to_bun4_groundtruth <<
+    0.825336f, 0.000000f, -0.564642f, 0.037267f,
+    0.000000f, 1.000000f,  0.000000f, 0.000000f,
+    0.564642f, 0.000000f,  0.825336f, 0.038325f,
+    0.000000f, 0.000000f,  0.000000f, 1.000000f;
+
+  // apply some additional, random transformation to show that the initial point cloud poses do not matter
+  const Eigen::Affine3f additional_transformation = Eigen::Translation3f(-0.515f, 0.260f, -0.845f) *
+      Eigen::AngleAxisf(-1.627f, Eigen::Vector3f(0.354f, 0.878f, -0.806f).normalized());
   PointCloud<PointXYZ> cloud_source_transformed;
-  transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
+  transformPointCloud (cloud_source, cloud_source_transformed, additional_transformation);
 
 
   // Create shared pointers
@@ -747,7 +811,7 @@ TEST (PCL, PPFRegistration)
   NormalEstimation<PointXYZ, Normal> normal_estimation;
   search::KdTree<PointXYZ>::Ptr search_tree (new search::KdTree<PointXYZ> ());
   normal_estimation.setSearchMethod (search_tree);
-  normal_estimation.setRadiusSearch (0.05);
+  normal_estimation.setKSearch(30); // nearest-k-search seems to work better than radius-search
   PointCloud<Normal>::Ptr normals_target (new PointCloud<Normal> ()),
       normals_source_transformed (new PointCloud<Normal> ());
   normal_estimation.setInputCloud (cloud_target_ptr);
@@ -769,41 +833,41 @@ TEST (PCL, PPFRegistration)
 
 
   // Train the source cloud - create the hash map search structure
-  PPFHashMapSearch::Ptr hash_map_search (new PPFHashMapSearch (15.0 / 180 * M_PI,
+  PPFHashMapSearch::Ptr hash_map_search (new PPFHashMapSearch (2.0 * M_PI / 36, // divide into 36 steps
                                                                0.05));
   hash_map_search->setInputFeatureCloud (features_source_transformed);
 
   // Finally, do the registration
   PPFRegistration<PointNormal, PointNormal> ppf_registration;
-  ppf_registration.setSceneReferencePointSamplingRate (20);
+  ppf_registration.setSceneReferencePointSamplingRate (5);
   ppf_registration.setPositionClusteringThreshold (0.15);
-  ppf_registration.setRotationClusteringThreshold (45.0 / 180 * M_PI);
+  ppf_registration.setRotationClusteringThreshold (25.0 / 180 * M_PI);
   ppf_registration.setSearchMethod (hash_map_search);
-  ppf_registration.setInputCloud (cloud_source_transformed_with_normals);
+  ppf_registration.setInputSource (cloud_source_transformed_with_normals);
   ppf_registration.setInputTarget (cloud_target_with_normals);
 
   PointCloud<PointNormal> cloud_output;
   ppf_registration.align (cloud_output);
   Eigen::Matrix4f transformation = ppf_registration.getFinalTransformation ();
 
-  EXPECT_NEAR (transformation(0, 0), -0.153768, 1e-4);
-  EXPECT_NEAR (transformation(0, 1), -0.628136, 1e-4);
-  EXPECT_NEAR (transformation(0, 2), 0.762759, 1e-4);
-  EXPECT_NEAR (transformation(0, 3), 15.472, 1e-4);
-  EXPECT_NEAR (transformation(1, 0), 0.967397, 1e-4);
-  EXPECT_NEAR (transformation(1, 1), -0.252918, 1e-4);
-  EXPECT_NEAR (transformation(1, 2), -0.0132578, 1e-4);
-  EXPECT_NEAR (transformation(1, 3), -96.6221, 1e-4);
-  EXPECT_NEAR (transformation(2, 0), 0.201243, 1e-4);
-  EXPECT_NEAR (transformation(2, 1), 0.735852, 1e-4);
-  EXPECT_NEAR (transformation(2, 2), 0.646547, 1e-4);
-  EXPECT_NEAR (transformation(2, 3), -20.134, 1e-4);
-  EXPECT_NEAR (transformation(3, 0), 0.000000, 1e-4);
-  EXPECT_NEAR (transformation(3, 1), 0.000000, 1e-4);
-  EXPECT_NEAR (transformation(3, 2), 0.000000, 1e-4);
-  EXPECT_NEAR (transformation(3, 3), 1.000000, 1e-4);
+  const Eigen::Matrix4f reference_transformation = bun0_to_bun4_groundtruth * additional_transformation.inverse().matrix();
+  EXPECT_NEAR (transformation(0, 0), reference_transformation(0, 0), 0.1);
+  EXPECT_NEAR (transformation(0, 1), reference_transformation(0, 1), 0.1);
+  EXPECT_NEAR (transformation(0, 2), reference_transformation(0, 2), 0.1);
+  EXPECT_NEAR (transformation(0, 3), reference_transformation(0, 3), 0.1);
+  EXPECT_NEAR (transformation(1, 0), reference_transformation(1, 0), 0.1);
+  EXPECT_NEAR (transformation(1, 1), reference_transformation(1, 1), 0.1);
+  EXPECT_NEAR (transformation(1, 2), reference_transformation(1, 2), 0.1);
+  EXPECT_NEAR (transformation(1, 3), reference_transformation(1, 3), 0.1);
+  EXPECT_NEAR (transformation(2, 0), reference_transformation(2, 0), 0.1);
+  EXPECT_NEAR (transformation(2, 1), reference_transformation(2, 1), 0.1);
+  EXPECT_NEAR (transformation(2, 2), reference_transformation(2, 2), 0.1);
+  EXPECT_NEAR (transformation(2, 3), reference_transformation(2, 3), 0.1);
+  EXPECT_NEAR (transformation(3, 0), 0.0f, 1e-6);
+  EXPECT_NEAR (transformation(3, 1), 0.0f, 1e-6);
+  EXPECT_NEAR (transformation(3, 2), 0.0f, 1e-6);
+  EXPECT_NEAR (transformation(3, 3), 1.0f, 1e-6);
 }
-#endif
 
 /* ---[ */
 int
@@ -835,7 +899,7 @@ main (int argc, char** argv)
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 
-  // Tranpose the cloud_model
+  // Transpose the cloud_model
   /*for (std::size_t i = 0; i < cloud_model.size (); ++i)
   {
   //  cloud_model[i].z += 1;

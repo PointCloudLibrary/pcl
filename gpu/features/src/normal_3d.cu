@@ -55,7 +55,8 @@ namespace pcl
                 CTA_SIZE = 256,
                 WAPRS = CTA_SIZE / Warp::WARP_SIZE,
 
-                MIN_NEIGHBOORS = 1
+                // if there are fewer than 3 neighbors, the normal is definitely garbage
+                MIN_NEIGHBOORS = 3
             };
 
             struct plus 
@@ -86,12 +87,13 @@ namespace pcl
                 {
                     constexpr float NaN = std::numeric_limits<float>::quiet_NaN();
                     normals.data[idx] = make_float4(NaN, NaN, NaN, NaN);
+                    return;
                 }
 
                 const int *ibeg = indices.ptr(idx);
                 const int *iend = ibeg + size;
 
-                //copmpute centroid
+                //compute centroid
                 float3 c = make_float3(0.f, 0.f, 0.f);
                 for(const int *t = ibeg + lane; t < iend; t += Warp::STRIDE)                
                     c += fetch(*t);
@@ -151,7 +153,7 @@ namespace pcl
                     float3 evals;
 
                     eigen33.compute(tmp, vec_tmp, evecs, evals);
-                    //evecs[0] - eigenvector with the lowerst eigenvalue
+                    //evecs[0] - eigenvector with the lowest eigenvalue
 
                     // Compute the curvature surface change
                     float eig_sum = evals.x + evals.y + evals.z;
@@ -178,7 +180,7 @@ namespace pcl
 
         };
 
-        __global__ void EstimateNormaslKernel(const NormalsEstimator est) { est(); }
+        __global__ void EstimateNormalsKernel(const NormalsEstimator est) { est(); }
 
 
         struct FlipNormal
@@ -240,11 +242,11 @@ void pcl::device::computeNormals(const PointCloud& cloud, const NeighborIndices&
     est.points = cloud;
     est.normals = normals;
 
-    //printFuncAttrib(EstimateNormaslKernel);
+    //printFuncAttrib(EstimateNormalsKernel);
 
     int block = NormalsEstimator::CTA_SIZE;
     int grid = divUp((int)normals.size(), NormalsEstimator::WAPRS);
-    EstimateNormaslKernel<<<grid, block>>>(est);
+    EstimateNormalsKernel<<<grid, block>>>(est);
 
     cudaSafeCall( cudaGetLastError() );        
     cudaSafeCall(cudaDeviceSynchronize());

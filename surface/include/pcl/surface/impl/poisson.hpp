@@ -60,29 +60,7 @@ using namespace pcl;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
-pcl::Poisson<PointNT>::Poisson ()
-  : depth_ (8)
-  , min_depth_ (5)
-  , point_weight_ (4)
-  , scale_ (1.1f)
-  , solver_divide_ (8)
-  , iso_divide_ (8)
-  , samples_per_node_ (1.0)
-  , confidence_ (false)
-  , output_polygons_ (false)
-  , no_reset_samples_ (false)
-  , no_clip_tree_ (false)
-  , manifold_ (true)
-  , refine_ (3)
-  , kernel_depth_ (8)
-  , degree_ (2)
-  , non_adaptive_weights_ (false)
-  , show_residual_ (false)
-  , min_iterations_ (8)
-  , solver_accuracy_ (1e-3f)
-  , threads_(1)
-{
-}
+pcl::Poisson<PointNT>::Poisson () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>

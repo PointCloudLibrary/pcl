@@ -135,7 +135,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   /// nr_subdiv^3 for RGB and nr_subdiv^3 for the angular features
-  pfhrgb_histogram_.setZero (2 * nr_subdiv_ * nr_subdiv_ * nr_subdiv_);
+  pfhrgb_histogram_.setZero (static_cast<Eigen::Index>(2) * nr_subdiv_ * nr_subdiv_ * nr_subdiv_);
   pfhrgb_tuple_.setZero (7);
 
   // Allocate enough space to hold the results

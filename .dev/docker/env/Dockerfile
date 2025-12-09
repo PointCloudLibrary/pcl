@@ -11,7 +11,7 @@ ARG EIGEN_MINIMUM_VERSION=3.3.7
 ARG ENSENSOSDK_VERSION=3.2.489
 
 # See https://github.com/IntelRealSense/librealsense/tags for available tags of releases
-ARG REALSENSE_VERSION=2.50.0
+ARG REALSENSE_VERSION=2.56.3
 
 # Check https://packages.ubuntu.com/search?suite=all&arch=any&searchon=names&keywords=libvtk%20qt-dev
 # for available packages for chosen UBUNTU_VERSION
@@ -28,15 +28,19 @@ RUN apt-get update \
       build-essential \
       clang \
       clang-tidy \
+      git \
       libbenchmark-dev \
       libblas-dev \
       libboost-serialization-dev \
       libboost-filesystem-dev \
       libboost-iostreams-dev \
       libboost-system-dev \
+      libcjson-dev \
       libflann-dev \
       libglew-dev \
+      freeglut3-dev \
       libgtest-dev \
+      libomp-dev \
       libopenni-dev \
       libopenni2-dev \
       libpcap-dev \
@@ -51,6 +55,9 @@ RUN apt-get update \
       software-properties-common \
       wget \
       xvfb \
+ && if dpkg --compare-versions $(lsb_release -sr) ge 22.04; then \
+      apt-get -V install -y libnanoflann-dev ; \
+    fi \
  && if [ "$USE_LATEST_CMAKE" = true ] ; then \
       cmake_ubuntu_version=$(lsb_release -cs) ; \
       if ! wget -q --method=HEAD "https://apt.kitware.com/ubuntu/dists/$cmake_ubuntu_version/Release"; then \

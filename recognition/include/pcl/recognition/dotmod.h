@@ -59,6 +59,7 @@ namespace pcl
   /**
     * \brief Template matching using the DOTMOD approach.
     * \author Stefan Holzer, Stefan Hinterstoisser
+    * \ingroup recognition
     */
   class PCL_EXPORTS DOTMOD
   {

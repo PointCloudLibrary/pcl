@@ -40,6 +40,7 @@
 #include <limits>
 
 #include <pcl/pcl_base.h>
+#include <pcl/Vertices.h> // for Vertices
 
 namespace pcl
 {
@@ -115,11 +116,7 @@ namespace pcl
       using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       /** \brief Empty constructor. */
-      ExtractPolygonalPrismData () : planar_hull_ (), min_pts_hull_ (3), 
-                                     height_limit_min_ (0),
-                                     height_limit_max_(std::numeric_limits<float>::max()),
-                                     vpx_ (0), vpy_ (0), vpz_ (0)
-      {};
+      ExtractPolygonalPrismData () = default;
 
       /** \brief Provide a pointer to the input planar hull dataset.
         * \note Please see the example in the class description for how to obtain this.
@@ -127,6 +124,16 @@ namespace pcl
         */
       inline void 
       setInputPlanarHull (const PointCloudConstPtr &hull) { planar_hull_ = hull; }
+
+       /** \brief Provide a vector of the concave polygons indices, as recieved from ConcaveHull::polygons.
+       * \note This is only needed when using ConcaveHull that has more than one polygon.
+       * \param[in] polygons - see ConcaveHull::polygons
+       */
+      inline void
+      setPolygons(const std::vector<pcl::Vertices>& polygons)
+      {
+        polygons_ = polygons;
+      }
 
       /** \brief Get a pointer the input planar hull dataset. */
       inline PointCloudConstPtr 
@@ -187,23 +194,26 @@ namespace pcl
 
     protected:
       /** \brief A pointer to the input planar hull dataset. */
-      PointCloudConstPtr planar_hull_;
+      PointCloudConstPtr planar_hull_{nullptr};
+
+      /** \brief polygons indices vectors, as recieved from ConcaveHull */
+      std::vector<pcl::Vertices> polygons_;
 
       /** \brief The minimum number of points needed on the convex hull. */
-      int min_pts_hull_;
+      int min_pts_hull_{3};
 
       /** \brief The minimum allowed height (distance to the model) a point
         * will be considered from. 
         */
-      double height_limit_min_;
+      double height_limit_min_{0.0};
 
       /** \brief The maximum allowed height (distance to the model) a point
         * will be considered from. 
         */
-      double height_limit_max_;
+      double height_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Values describing the data acquisition viewpoint. Default: 0,0,0. */
-      float vpx_, vpy_, vpz_;
+      float vpx_{0.0f}, vpy_{0.0f}, vpz_{0.0f};
 
       /** \brief Class getName method. */
       virtual std::string 

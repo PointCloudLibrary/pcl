@@ -14,7 +14,7 @@ The <b>pcl_octree</b> implementation provides efficient nearest neighbor search 
 such as "Neighbors within Voxel Search”, “K Nearest Neighbor Search” and 
 “Neighbors within Radius Search”. It automatically adjusts its dimension to the point 
 data set. A set of leaf node classes provide additional functionality, such as 
-spacial "occupancy" and "point density per voxel" checks. Functions for serialization 
+spatial "occupancy" and "point density per voxel" checks. Functions for serialization 
 and deserialization enable to efficiently encode the octree structure into a binary format.
 Furthermore, a memory pool implementation reduces expensive memory allocation and 
 deallocation operations in scenarios where octrees needs to be created at high rate. 

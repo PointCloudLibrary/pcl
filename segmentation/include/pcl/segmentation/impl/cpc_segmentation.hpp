@@ -42,15 +42,7 @@
 #include <pcl/segmentation/cpc_segmentation.h>
 
 template <typename PointT>
-pcl::CPCSegmentation<PointT>::CPCSegmentation () :
-    max_cuts_ (20),
-    min_segment_size_for_cutting_ (400),
-    min_cut_score_ (0.16),
-    use_local_constrains_ (true),
-    use_directed_weights_ (true),
-    ransac_itrs_ (10000)
-{
-}
+pcl::CPCSegmentation<PointT>::CPCSegmentation () = default;
 
 template <typename PointT>
 pcl::CPCSegmentation<PointT>::~CPCSegmentation () = default;
@@ -167,12 +159,11 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (std::uint32_t depth_levels_left
       continue;
     }
 
-    Eigen::VectorXf model_coefficients;
-    weight_sac.getModelCoefficients (model_coefficients);
+    Eigen::VectorXf model_coefficients = weight_sac.getModelCoefficients ();
 
     model_coefficients[3] += std::numeric_limits<float>::epsilon ();    
 
-    weight_sac.getInliers (*support_indices);
+    *support_indices = weight_sac.getInliers ();
 
     // the support_indices which are actually cut (if not locally constrain:  cut_support_indices = support_indices
     pcl::Indices cut_support_indices;

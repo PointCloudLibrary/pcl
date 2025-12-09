@@ -104,7 +104,7 @@ Features
 **Background**
 
 	A theoretical primer explaining how features work in PCL can be found in the `3D Features tutorial
-	<http://pointclouds.org/documentation/tutorials/how_features_work.php>`_.
+	<https://pcl.readthedocs.io/projects/tutorials/en/master/how_features_work.html>`_.
 	
 	The *features* library contains data structures and mechanisms for 3D feature estimation from point cloud data. 3D features are representations at certain 3D points, or positions, in space, which describe geometrical patterns based on the information available around the point. The data space selected around the query point is usually referred to as the *k-neighborhood*.
 
@@ -247,9 +247,9 @@ Kd-tree
 
 **Background**
 
-	A theoretical primer explaining how Kd-trees work can be found in the `Kd-tree tutorial <http://pointclouds.org/documentation/tutorials/kdtree_search.php#kdtree-search>`_.
+	A theoretical primer explaining how Kd-trees work can be found in the `Kd-tree tutorial <https://pcl.readthedocs.io/projects/tutorials/en/master/kdtree_search.html>`_.
 
-	The *kdtree* library provides the kd-tree data-structure, using `FLANN <http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN>`_, that allows for fast `nearest neighbor searches <https://en.wikipedia.org/wiki/Nearest_neighbor_search>`_.
+	The *kdtree* library provides the kd-tree data-structure, using `FLANN <http://www.cs.ubc.ca/research/flann/>`_, that allows for fast `nearest neighbor searches <https://en.wikipedia.org/wiki/Nearest_neighbor_search>`_.
 
 	A `Kd-tree <https://en.wikipedia.org/wiki/Kd-tree>`_ (k-dimensional tree) is a space-partitioning data structure that stores a set of k-dimensional points in a tree structure that enables efficient range searches and nearest neighbor searches. Nearest neighbor searches are a core operation when working with point cloud data and can be used to find correspondences between groups of points or feature descriptors or to define the local neighborhood around a point or points.
 
@@ -261,7 +261,7 @@ Kd-tree
 
 **Documentation:** https://pointclouds.org/documentation/group__kdtree.html
 
-**Tutorials:** http://pointclouds.org/documentation/tutorials/#kdtree-tutorial
+**Tutorials:** https://pcl.readthedocs.io/projects/tutorials/en/master/kdtree_search.html
 
 **Interacts with:** Common_
 
@@ -291,7 +291,7 @@ Octree
 
 	The *octree* library provides efficient methods for creating a hierarchical tree data structure from point cloud data. This enables spatial partitioning, downsampling and search operations on the point data set. Each octree node has either eight children or no children. The root node describes a cubic bounding box which encapsulates all points. At every tree level, this space becomes subdivided by a factor of 2 which results in an increased voxel resolution.
 
-	The *octree* implementation provides efficient nearest neighbor search routines, such as "Neighbors within Voxel Search”, “K Nearest Neighbor Search” and “Neighbors within Radius Search”. It automatically adjusts its dimension to the point data set. A set of leaf node classes provide additional functionality, such as spacial "occupancy" and "point density per voxel" checks. Functions for serialization and deserialization enable to efficiently encode the octree structure into a binary format. Furthermore, a memory pool implementation reduces expensive memory allocation and deallocation operations in scenarios where octrees needs to be created at high rate.
+	The *octree* implementation provides efficient nearest neighbor search routines, such as "Neighbors within Voxel Search”, “K Nearest Neighbor Search” and “Neighbors within Radius Search”. It automatically adjusts its dimension to the point data set. A set of leaf node classes provide additional functionality, such as spatial "occupancy" and "point density per voxel" checks. Functions for serialization and deserialization enable to efficiently encode the octree structure into a binary format. Furthermore, a memory pool implementation reduces expensive memory allocation and deallocation operations in scenarios where octrees needs to be created at high rate.
 
 	The following figure illustrates the voxel bounding boxes of an octree nodes at lowest tree level. The octree voxels are surrounding every 3D point from the Stanford bunny's surface. The red dots represent the point data. This image is created with the `octree_viewer`_.
 
@@ -331,7 +331,7 @@ Segmentation
 
 	The *segmentation* library contains algorithms for segmenting a point cloud into distinct clusters. These algorithms are best suited for processing a point cloud that is composed of a number of spatially isolated regions. In such cases, clustering is often used to break the cloud down into its constituent parts, which can then be processed independently.
 	
-	A theoretical primer explaining how clustering methods work can be found in the `cluster extraction tutorial <http://pointclouds.org/documentation/tutorials/cluster_extraction.php#cluster-extraction>`_.
+	A theoretical primer explaining how clustering methods work can be found in the `cluster extraction tutorial <https://pcl.readthedocs.io/projects/tutorials/en/master/cluster_extraction.html>`_.
 	The two figures illustrate the results of plane model segmentation (left) and cylinder model segmentation (right). 
 	
 	.. image:: images/plane_model_seg.jpg
@@ -378,7 +378,7 @@ Sample Consensus
 
 	The *sample_consensus* library holds SAmple Consensus (SAC) methods like RANSAC and models like planes and cylinders. These can be combined freely in order to detect specific models and their parameters in point clouds.
 	
-	A theoretical primer explaining how sample consensus algorithms work can be found in the `Random Sample Consensus tutorial <http://pointclouds.org/documentation/tutorials/random_sample_consensus.php#random-sample-consensus>`_
+	A theoretical primer explaining how sample consensus algorithms work can be found in the `Random Sample Consensus tutorial <https://pcl.readthedocs.io/projects/tutorials/en/master/random_sample_consensus.html>`_
 
 	Some of the models implemented in this library include: lines, planes, cylinders, and spheres. Plane fitting is often applied to the task of detecting common indoor surfaces, such as walls, floors, and table tops. Other models can be used to detect and segment objects with common geometric structures (e.g., fitting a cylinder model to a mug).
 
@@ -505,10 +505,10 @@ I/O
 
 	The *io* library contains classes and functions for reading and writing point cloud data (PCD) files, as well as capturing point clouds from a variety of sensing devices. An introduction to some of these capabilities can be found in the following tutorials:
 
-    * `The PCD (Point Cloud Data) file format <http://pointclouds.org/documentation/tutorials/pcd_file_format.php#pcd-file-format>`_
-    * `Reading PointCloud data from PCD files <http://pointclouds.org/documentation/tutorials/reading_pcd.php#reading-pcd>`_
-    * `Writing PointCloud data to PCD files <http://pointclouds.org/documentation/tutorials/writing_pcd.php#writing-pcd>`_
-    * `The OpenNI Grabber Framework in PCL <http://pointclouds.org/documentation/tutorials/openni_grabber.php#openni-grabber>`_
+    * `The PCD (Point Cloud Data) file format <https://pcl.readthedocs.io/projects/tutorials/en/master/pcd_file_format.html>`_
+    * `Reading PointCloud data from PCD files <https://pcl.readthedocs.io/projects/tutorials/en/master/reading_pcd.html>`_
+    * `Writing PointCloud data to PCD files <https://pcl.readthedocs.io/projects/tutorials/en/master/writing_pcd.html>`_
+    * `The OpenNI Grabber Framework in PCL <https://pcl.readthedocs.io/projects/tutorials/en/master/openni_grabber.html>`_
 
 
 |
@@ -682,7 +682,7 @@ Binaries
 This section provides a quick reference for some of the common tools in PCL. 
 
 
-	* ``pcl_viewer``: a quick way for visualizing PCD (Point Cloud Data) files. More information about PCD files can be found in the `PCD file format tutorial <http://pointclouds.org/documentation/tutorials/pcd_file_format.php>`_.
+	* ``pcl_viewer``: a quick way for visualizing PCD (Point Cloud Data) files. More information about PCD files can be found in the `PCD file format tutorial <https://pcl.readthedocs.io/projects/tutorials/en/master/pcd_file_format.html>`_.
 
 		**Syntax is: pcl_viewer <file_name 1..N>.<pcd or vtk> <options>**, where options are:
 		

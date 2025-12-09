@@ -11,7 +11,8 @@ namespace tracking {
  * \ingroup tracking
  */
 template <typename PointInT>
-class NearestPairPointCloudCoherence : public PointCloudCoherence<PointInT> {
+class PCL_EXPORTS NearestPairPointCloudCoherence
+: public PointCloudCoherence<PointInT> {
 public:
   using PointCloudCoherence<PointInT>::getClassName;
   using PointCloudCoherence<PointInT>::coherence_name_;
@@ -29,7 +30,6 @@ public:
 
   /** \brief empty constructor */
   NearestPairPointCloudCoherence()
-  : new_target_(false), search_(), maximum_distance_(std::numeric_limits<double>::max())
   {
     coherence_name_ = "NearestPairPointCloudCoherence";
   }
@@ -82,13 +82,13 @@ protected:
   initCompute() override;
 
   /** \brief A flag which is true if target_input_ is updated */
-  bool new_target_;
+  bool new_target_{false};
 
   /** \brief A pointer to the spatial search object. */
-  SearchPtr search_;
+  SearchPtr search_{nullptr};
 
   /** \brief max of distance for points to be taken into account*/
-  double maximum_distance_;
+  double maximum_distance_{std::numeric_limits<double>::max()};
 
   /** \brief compute the nearest pairs and compute coherence using
    * point_coherences_ */

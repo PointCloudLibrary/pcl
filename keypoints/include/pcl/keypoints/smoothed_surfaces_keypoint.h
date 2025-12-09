@@ -72,13 +72,10 @@ namespace pcl
 
       SmoothedSurfacesKeypoint ()
         : Keypoint<PointT, PointT> (),
-          neighborhood_constant_ (0.5f),
           clouds_ (),
           cloud_normals_ (),
           cloud_trees_ (),
-          normals_ (),
-          input_scale_ (0.0f),
-          input_index_ ()
+          normals_ ()
       {
         name_ = "SmoothedSurfacesKeypoint";
 
@@ -116,14 +113,14 @@ namespace pcl
       initCompute () override;
 
     private:
-      float neighborhood_constant_;
+      float neighborhood_constant_{0.5f};
       std::vector<PointCloudTConstPtr> clouds_;
       std::vector<PointCloudNTConstPtr> cloud_normals_;
       std::vector<KdTreePtr> cloud_trees_;
       PointCloudNTConstPtr normals_;
       std::vector<std::pair<float, std::size_t> > scales_;
-      float input_scale_;
-      std::size_t input_index_;
+      float input_scale_{0.0f};
+      std::size_t input_index_{0u};
 
       static bool
       compareScalesFunction (const std::pair<float, std::size_t> &a,

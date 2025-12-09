@@ -41,8 +41,7 @@
 #define PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
 
 #include <pcl/filters/statistical_outlier_removal.h>
-#include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/auto.h> // for autoSelectMethod
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -51,12 +50,15 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   // Initialize the search class
   if (!searcher_)
   {
-    if (input_->isOrganized ())
-      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
-    else
-      searcher_.reset (new pcl::search::KdTree<PointT> (false));
+    searcher_.reset (pcl::search::autoSelectMethod<PointT>(input_, false, pcl::search::Purpose::many_knn_search));
   }
-  searcher_->setInputCloud (input_);
+  else if (!searcher_->setInputCloud (input_))
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Error when initializing search method!\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
 
   // The arrays to be used
   const int searcher_k = mean_k_ + 1;  // Find one more, since results include the query point.
@@ -87,11 +89,11 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       continue;
     }
 
-    // Calculate the mean distance to its neighbors
+    // Calculate the mean distance to its neighbors.
     double dist_sum = 0.0;
-    for (int k = 1; k < searcher_k; ++k)  // k = 0 is the query point
-      dist_sum += sqrt (nn_dists[k]);
-    distances[iii] = static_cast<float> (dist_sum / mean_k_);
+    for (std::size_t k = 1; k < nn_dists.size(); ++k) // k = 0 is the query point
+      dist_sum += sqrt(nn_dists[k]);
+    distances[iii] = static_cast<float>(dist_sum / (nn_dists.size() - 1));
     valid_distances++;
   }
 

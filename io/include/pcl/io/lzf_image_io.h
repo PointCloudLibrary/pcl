@@ -161,10 +161,10 @@ namespace pcl
                     std::vector<char> &output); 
 
         /** \brief The image width, as read from the file. */
-        std::uint32_t width_;
+        std::uint32_t width_{0};
 
         /** \brief The image height, as read from the file. */
-        std::uint32_t height_;
+        std::uint32_t height_{0};
 
         /** \brief The image type string, as read from the file. */
         std::string image_type_identifier_;
@@ -189,9 +189,7 @@ namespace pcl
         using LZFImageReader::readParameters;
 
         /** Empty constructor */
-        LZFDepth16ImageReader () 
-          : z_multiplication_factor_ (0.001)      // Set default multiplication factor
-        {}
+        LZFDepth16ImageReader () = default;
 
         /** Empty destructor */
         ~LZFDepth16ImageReader () override = default;
@@ -223,7 +221,7 @@ namespace pcl
         /** \brief Z-value depth multiplication factor 
           * (i.e., if raw data is in [mm] and we want [m], we need to multiply with 0.001)
           */
-        double z_multiplication_factor_;
+        double z_multiplication_factor_{0.001};
     };
 
     /** \brief PCL-LZF 24-bit RGB image format reader.
@@ -480,9 +478,7 @@ namespace pcl
     {
       public:
         /** Empty constructor */
-        LZFDepth16ImageWriter () 
-          : z_multiplication_factor_ (0.001)      // Set default multiplication factor
-        {}
+        LZFDepth16ImageWriter () = default;
 
         /** Empty destructor */
         ~LZFDepth16ImageWriter () override = default;
@@ -519,7 +515,7 @@ namespace pcl
         /** \brief Z-value depth multiplication factor 
           * (i.e., if raw data is in [mm] and we want [m], we need to multiply with 0.001)
           */
-        double z_multiplication_factor_;
+        double z_multiplication_factor_{0.001};
     };
 
     /** \brief PCL-LZF 24-bit RGB image format writer.

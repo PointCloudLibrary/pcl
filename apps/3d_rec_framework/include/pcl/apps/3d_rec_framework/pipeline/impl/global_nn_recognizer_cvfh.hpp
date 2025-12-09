@@ -51,8 +51,8 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::
   const std::string dir = path + "/roll_trans_" + std::to_string(view_id) + '_' +
                           std::to_string(d_id) + ".txt";
 
-  const bf::path file_path = dir;
-  if (bf::exists(file_path)) {
+  const pcl_fs::path file_path = dir;
+  if (pcl_fs::exists(file_path)) {
     PersistenceUtils::readMatrixFromFile(dir, pose_matrix);
     return true;
   }
@@ -108,7 +108,7 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::
     std::string path =
         source_->getModelDescriptorDir(models->at(i), training_dir_, descr_name_);
 
-    for (const auto& dir_entry : bf::directory_iterator(path)) {
+    for (const auto& dir_entry : pcl_fs::directory_iterator(path)) {
       std::string file_name = (dir_entry.path().filename()).string();
 
       std::vector<std::string> strs;
@@ -456,7 +456,6 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::rec
 
       // clang-format off
 #pragma omp parallel for \
-  default(none) \
   shared(cloud_voxelized_icp, VOXEL_SIZE_ICP_) \
   num_threads(omp_get_num_procs())
       // clang-format on
@@ -609,9 +608,9 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::ini
         std::string path =
             source_->getModelDescriptorDir(models->at(i), training_dir_, descr_name_);
 
-        bf::path desc_dir = path;
-        if (!bf::exists(desc_dir))
-          bf::create_directory(desc_dir);
+        pcl_fs::path desc_dir = path;
+        if (!pcl_fs::exists(desc_dir))
+          pcl_fs::create_directory(desc_dir);
 
         const std::string path_view = path + "/view_" + std::to_string(v) + ".pcd";
         pcl::io::savePCDFileBinary(path_view, *processed);

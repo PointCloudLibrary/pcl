@@ -338,7 +338,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   }
 
 #ifdef _OPENMP
-  Eigen::Vector3d *omp_mem = new Eigen::Vector3d[threads_];
+  auto *omp_mem = new Eigen::Vector3d[threads_];
 
   for (std::size_t i = 0; i < threads_; i++)
     omp_mem[i].setZero (3);
@@ -373,7 +373,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       Eigen::Matrix3d cov_m = Eigen::Matrix3d::Zero ();
       getScatterMatrix (static_cast<int> (index), cov_m);
 
-      Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver (cov_m);
+      const Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver (cov_m, Eigen::EigenvaluesOnly);
 
       const double& e1c = solver.eigenvalues ()[2];
       const double& e2c = solver.eigenvalues ()[1];

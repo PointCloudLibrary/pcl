@@ -72,7 +72,8 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   const unsigned max_skip = max_iterations_ * 10;
   
   // Number of samples to try randomly
-  std::size_t fraction_nr_points = pcl_lrint (static_cast<double>(sac_model_->getIndices ()->size ()) * fraction_nr_pretest_ / 100.0);
+  const std::size_t fraction_nr_points = (fraction_nr_pretest_ < 0.0 ? nr_samples_pretest_ : pcl_lrint (static_cast<double>(sac_model_->getIndices ()->size ()) * fraction_nr_pretest_ / 100.0));
+  PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Using %lu points for RMSAC pre-test.\n", fraction_nr_points);
 
   // Iterate
   while (iterations_ < k && skipped_count < max_skip)
@@ -108,8 +109,11 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
     // Iterate through the 3d points and calculate the distances from them to the model
     sac_model_->getDistancesToModel (model_coefficients, distances);
 
-    if (distances.empty () && k > 1.0)
+    if (distances.empty ())
+    {
+      ++ skipped_count;
       continue;
+    }
 
     for (const double &distance : distances)
       d_cur_penalty += std::min (distance, threshold_);

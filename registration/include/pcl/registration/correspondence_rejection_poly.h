@@ -78,14 +78,7 @@ public:
   using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
   /** \brief Empty constructor */
-  CorrespondenceRejectorPoly()
-  : iterations_(10000)
-  , cardinality_(3)
-  , similarity_threshold_(0.75f)
-  , similarity_threshold_squared_(0.75f * 0.75f)
-  {
-    rejection_name_ = "CorrespondenceRejectorPoly";
-  }
+  CorrespondenceRejectorPoly() { rejection_name_ = "CorrespondenceRejectorPoly"; }
 
   /** \brief Get a list of valid correspondences after rejection from the original set
    * of correspondences.
@@ -371,17 +364,17 @@ protected:
   PointCloudTargetConstPtr target_;
 
   /** \brief Number of iterations to run */
-  int iterations_;
+  int iterations_{10000};
 
   /** \brief The polygon cardinality used during rejection */
-  int cardinality_;
+  int cardinality_{3};
 
   /** \brief Lower edge length threshold in [0,1] used for verifying polygon
    * similarities, where 1 is a perfect match */
-  float similarity_threshold_;
+  float similarity_threshold_{0.75f};
 
   /** \brief Squared value if \ref similarity_threshold_, only for internal use */
-  float similarity_threshold_squared_;
+  float similarity_threshold_squared_{0.75f * 0.75f};
 };
 } // namespace registration
 } // namespace pcl

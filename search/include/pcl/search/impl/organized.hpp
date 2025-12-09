@@ -82,7 +82,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   {
     for (; idx < xEnd; ++idx)
     {
-      if (!mask_[idx] || !isFinite ((*input_)[idx]))
+      if (!mask_[idx])
         continue;
 
       float dist_x = (*input_)[idx].x - query.x;
@@ -329,7 +329,7 @@ pcl::search::OrganizedNeighbor<PointT>::computeCameraMatrix (Eigen::Matrix3f& ca
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void
+template<typename PointT> bool
 pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
 {
   // internally we calculate with double but store the result into float matrices.
@@ -337,7 +337,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   if (input_->height == 1 || input_->width == 1)
   {
     PCL_ERROR ("[pcl::%s::estimateProjectionMatrix] Input dataset is not organized!\n", this->getName ().c_str ());
-    return;
+    return false;
   }
   
   const unsigned ySkip = (std::max) (input_->height >> pyramid_level_, static_cast<unsigned>(1));
@@ -358,11 +358,12 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   }
 
   double residual_sqr = pcl::estimateProjectionMatrix<PointT> (input_, projection_matrix_, indices);
+  PCL_DEBUG_STREAM("[pcl::" << this->getName () << "::estimateProjectionMatrix] projection matrix=" << std::endl << projection_matrix_ << std::endl << "residual_sqr=" << residual_sqr << std::endl);
   
   if (std::abs (residual_sqr) > eps_ * static_cast<float>(indices.size ()))
   {
-    PCL_ERROR ("[pcl::%s::estimateProjectionMatrix] Input dataset is not from a projective device!\nResidual (MSE) %f, using %d valid points\n", this->getName ().c_str (), residual_sqr / double (indices.size()), indices.size ());
-    return;
+    PCL_ERROR ("[pcl::%s::estimateProjectionMatrix] Input dataset is not from a projective device!\nResidual (MSE) %g, using %d valid points\n", this->getName ().c_str (), residual_sqr / double (indices.size()), indices.size ());
+    return false;
   }
 
   // get left 3x3 sub matrix, which contains K * R, with K = camera matrix = [[fx s cx] [0 fy cy] [0 0 1]]
@@ -370,7 +371,27 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   KR_ = projection_matrix_.topLeftCorner <3, 3> ();
 
   // precalculate KR * KR^T needed by calculations during nn-search
-  KR_KRT_ = KR_ * KR_.transpose ();
+  KR_KRT_.noalias() = KR_ * KR_.transpose ();
+  return true;
+}
+
+template<typename PointT> bool
+pcl::search::OrganizedNeighbor<PointT>::testProjectionMatrix () const
+{
+  // test: project a few points at known image coordinates and test if the projected coordinates are close
+  for(std::size_t i=0; i<11; ++i) {
+    const std::size_t test_index = input_->size()*i/11u;
+    if (!mask_[test_index])
+      continue;
+    const auto& test_point = (*input_)[test_index];
+    pcl::PointXY q;
+    if (!projectPoint(test_point, q) || std::abs(q.x-test_index%input_->width)>1 || std::abs(q.y-test_index/input_->width)>1) {
+      PCL_WARN ("[pcl::%s::testProjectionMatrix] Input dataset does not seem to be from a projective device! (point %zu (%g,%g,%g) projected to pixel coordinates (%g,%g), but actual pixel coordinates are (%zu,%zu))\n",
+                this->getName ().c_str (), test_index, test_point.x, test_point.y, test_point.z, q.x, q.y, static_cast<std::size_t>(test_index%input_->width), static_cast<std::size_t>(test_index/input_->width));
+      return false;
+    }
+  }
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

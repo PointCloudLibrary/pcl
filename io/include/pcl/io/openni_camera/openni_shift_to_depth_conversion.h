@@ -41,6 +41,7 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
+#include <cassert> // for assert
 #include <cstdint>
 #include <vector>
 #include <limits>
@@ -53,7 +54,7 @@ namespace openni_wrapper
   {
     public:
       /** \brief Constructor. */
-      ShiftToDepthConverter () : init_(false) {}
+      ShiftToDepthConverter () = default;
 
       /** \brief Destructor. */
       virtual ~ShiftToDepthConverter () = default;
@@ -113,7 +114,7 @@ namespace openni_wrapper
 
     protected:
       std::vector<float> lookupTable_;
-      bool init_;
+      bool init_{false};
   } ;
 }
 

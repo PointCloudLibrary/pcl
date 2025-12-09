@@ -38,6 +38,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/colors.h>
 
+#include <cassert>
 #include <array>
 
 /// Glasbey lookup table

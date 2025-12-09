@@ -36,11 +36,12 @@
  */
 
 #include <pcl/common/io.h>  // for getFieldSize
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/io/ascii_io.h>
 #include <istream>
 #include <fstream>
-#include <boost/filesystem.hpp>
+
 #include <boost/lexical_cast.hpp> // for lexical_cast
 #include <boost/algorithm/string.hpp> // for split
 #include <cstdint>
@@ -88,14 +89,14 @@ pcl::ASCIIReader::readHeader (const std::string& file_name,
 {
   pcl::utils::ignore(offset); //offset is not used for ascii file implementation
 	
-  boost::filesystem::path fpath = file_name;
+  pcl_fs::path fpath = file_name;
 
-  if (!boost::filesystem::exists (fpath))
+  if (!pcl_fs::exists (fpath))
   {
     PCL_ERROR ("[%s] File %s does not exist.\n", name_.c_str (), file_name.c_str ());
     return (-1);
   }
-  if (boost::filesystem::extension (fpath) != extension_)
+  if (fpath.extension ().string () != extension_)
   {
     PCL_ERROR ("[%s] File does not have %s extension. \n", name_.c_str(), extension_.c_str());
     return -1;
@@ -197,7 +198,7 @@ pcl::ASCIIReader::parse (
 #define ASSIGN_TOKEN(CASE_LABEL)                                                       \
   case CASE_LABEL: {                                                                   \
     *(reinterpret_cast<pcl::traits::asType_t<CASE_LABEL>*>(data_target)) =             \
-        boost::lexical_cast<pcl::traits::asType_t<CASE_LABEL>>(token);                 \
+        boost::lexical_cast<pcl::traits::asType_t<(CASE_LABEL)>>(token);               \
     return sizeof(pcl::traits::asType_t<CASE_LABEL>);                                  \
   }
   switch (field.datatype)

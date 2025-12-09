@@ -20,8 +20,8 @@
 #include <vtkPointPicker.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkPropPicker.h>
-#include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
 #include <vtkSelection.h>
 #include <vtkSelectionNode.h>
 #include <vtkTransform.h>
@@ -409,7 +409,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
         trans_view(x, y) = float(view_transform->GetElement(x, y));
 
     // NOTE: vtk view coordinate system is different than the standard camera
-    // coordinates (z forward, y down, x right) thus, the fliping in y and z
+    // coordinates (z forward, y down, x right) thus, the flipping in y and z
     for (auto& point : cloud->points) {
       point.getVector4fMap() = trans_view * point.getVector4fMap();
       point.y *= -1.0f;
@@ -430,7 +430,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
     transOCtoCC->Concatenate(cam_tmp->GetViewTransformMatrix());
 
     // NOTE: vtk view coordinate system is different than the standard camera
-    // coordinates (z forward, y down, x right) thus, the fliping in y and z
+    // coordinates (z forward, y down, x right) thus, the flipping in y and z
     vtkSmartPointer<vtkMatrix4x4> cameraSTD = vtkSmartPointer<vtkMatrix4x4>::New();
     cameraSTD->Identity();
     cameraSTD->SetElement(0, 0, 1);

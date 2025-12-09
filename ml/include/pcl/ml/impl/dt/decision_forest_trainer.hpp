@@ -46,7 +46,7 @@ template <class FeatureType,
           class NodeType>
 DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     DecisionForestTrainer()
-: num_of_trees_to_train_(1), decision_tree_trainer_()
+: decision_tree_trainer_()
 {}
 
 template <class FeatureType,

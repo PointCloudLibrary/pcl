@@ -175,23 +175,23 @@ namespace pcl
       openni_wrapper::DeviceONI::Ptr device_;
       std::string rgb_frame_id_;
       std::string depth_frame_id_;
-      bool running_;
-      unsigned image_width_;
-      unsigned image_height_;
-      unsigned depth_width_;
-      unsigned depth_height_;
-      openni_wrapper::OpenNIDevice::CallbackHandle depth_callback_handle;
-      openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle;
-      openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle;
-      boost::signals2::signal<sig_cb_openni_image >*            image_signal_;
-      boost::signals2::signal<sig_cb_openni_depth_image >*      depth_image_signal_;
-      boost::signals2::signal<sig_cb_openni_ir_image >*         ir_image_signal_;
-      boost::signals2::signal<sig_cb_openni_image_depth_image>* image_depth_image_signal_;
-      boost::signals2::signal<sig_cb_openni_ir_depth_image>*    ir_depth_image_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud >*      point_cloud_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud_i >*    point_cloud_i_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud_rgb >*  point_cloud_rgb_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud_rgba >*  point_cloud_rgba_signal_;
+      bool running_{false};
+      unsigned image_width_{0};
+      unsigned image_height_{0};
+      unsigned depth_width_{0};
+      unsigned depth_height_{0};
+      openni_wrapper::OpenNIDevice::CallbackHandle depth_callback_handle{};
+      openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle{};
+      openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle{};
+      boost::signals2::signal<sig_cb_openni_image >*            image_signal_{};
+      boost::signals2::signal<sig_cb_openni_depth_image >*      depth_image_signal_{};
+      boost::signals2::signal<sig_cb_openni_ir_image >*         ir_image_signal_{};
+      boost::signals2::signal<sig_cb_openni_image_depth_image>* image_depth_image_signal_{};
+      boost::signals2::signal<sig_cb_openni_ir_depth_image>*    ir_depth_image_signal_{};
+      boost::signals2::signal<sig_cb_openni_point_cloud >*      point_cloud_signal_{};
+      boost::signals2::signal<sig_cb_openni_point_cloud_i >*    point_cloud_i_signal_{};
+      boost::signals2::signal<sig_cb_openni_point_cloud_rgb >*  point_cloud_rgb_signal_{};
+      boost::signals2::signal<sig_cb_openni_point_cloud_rgba >*  point_cloud_rgba_signal_{};
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW

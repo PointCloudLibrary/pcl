@@ -211,7 +211,7 @@ public:
 
 private:
   /** The number of trees to train. */
-  std::size_t num_of_trees_to_train_;
+  std::size_t num_of_trees_to_train_{1};
 
   /** The trainer for the decision trees of the forest. */
   pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>

@@ -44,7 +44,12 @@
 #include <pcl/outofcore/octree_base.h>
 
 // JSON
+#include <pcl/pcl_config.h> // for HAVE_CJSON
+#if defined(HAVE_CJSON)
+#include <cjson/cJSON.h>
+#else
 #include <pcl/outofcore/cJSON.h>
+#endif
 
 #include <pcl/filters/random_sample.h>
 #include <pcl/filters/extract_indices.h>
@@ -93,7 +98,7 @@ namespace pcl
       root_node_->m_tree_ = this;
 
       // Set the path to the outofcore octree metadata (unique to the root folder) ending in .octree
-      boost::filesystem::path treepath = root_name.parent_path () / (boost::filesystem::basename (root_name) + TREE_EXTENSION_);
+      boost::filesystem::path treepath = root_name.parent_path () / (root_name.stem ().string () + TREE_EXTENSION_);
 
       //Load the JSON metadata
       metadata_->loadMetadataFromDisk (treepath);
@@ -169,7 +174,7 @@ namespace pcl
       root_node_->m_tree_ = this;
       
       // Set root nodes file path
-      boost::filesystem::path treepath = dir / (boost::filesystem::basename (root_name) + TREE_EXTENSION_);
+      boost::filesystem::path treepath = dir / (root_name.stem ().string () + TREE_EXTENSION_);
 
       //fill the fields of the metadata
       metadata_->setCoordinateSystem (coord_sys);
@@ -699,9 +704,9 @@ namespace pcl
     template<typename ContainerT, typename PointT> bool
     OutofcoreOctreeBase<ContainerT, PointT>::checkExtension (const boost::filesystem::path& path_name)
     {
-      if (boost::filesystem::extension (path_name) != OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension)
+      if (path_name.extension ().string () != OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension)
       {
-        PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBase] Wrong root node file extension: %s. The tree must have a root node ending in %s\n", boost::filesystem::extension (path_name).c_str (), OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension.c_str () );
+        PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBase] Wrong root node file extension: %s. The tree must have a root node ending in %s\n", path_name.extension ().string ().c_str (), OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension.c_str () );
         return (false);
       }
 

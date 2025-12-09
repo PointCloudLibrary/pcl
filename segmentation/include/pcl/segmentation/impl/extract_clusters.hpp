@@ -39,7 +39,7 @@
 #define PCL_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
 
 #include <pcl/segmentation/extract_clusters.h>
-#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/auto.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -106,9 +106,8 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
       for (std::size_t j = 0; j < seed_queue.size (); ++j)
         r.indices[j] = seed_queue[j];
 
-      // These two lines should not be needed: (can anyone confirm?) -FF
+      // After clustering, indices are out of order, so sort them
       std::sort (r.indices.begin (), r.indices.end ());
-      r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
       r.header = cloud.header;
       clusters.push_back (r);   // We could avoid a copy by working directly in the vector
@@ -203,10 +202,8 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
         // This is the only place where indices come into play
         r.indices[j] = seed_queue[j];
 
-      // These two lines should not be needed: (can anyone confirm?) -FF
-      //r.indices.assign(seed_queue.begin(), seed_queue.end());
+      // After clustering, indices are out of order, so sort them
       std::sort (r.indices.begin (), r.indices.end ());
-      r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
       r.header = cloud.header;
       clusters.push_back (r);   // We could avoid a copy by working directly in the vector
@@ -237,14 +234,13 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
   // Initialize the spatial locator
   if (!tree_)
   {
-    if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
-    else
-      tree_.reset (new pcl::search::KdTree<PointT> (false));
+    tree_.reset (pcl::search::autoSelectMethod<PointT>(input_, indices_, false, pcl::search::Purpose::radius_search));
   }
-
-  // Send the input dataset to the spatial locator
-  tree_->setInputCloud (input_, indices_);
+  else
+  {
+    // Send the input dataset to the spatial locator
+    tree_->setInputCloud (input_, indices_);
+  }
   extractEuclideanClusters (*input_, *indices_, tree_, static_cast<float> (cluster_tolerance_), clusters, min_pts_per_cluster_, max_pts_per_cluster_);
 
   //tree_->setInputCloud (input_);

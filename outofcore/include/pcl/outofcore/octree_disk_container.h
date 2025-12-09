@@ -44,6 +44,7 @@
 #include <string>
 
 // Boost
+#include <boost/random/mersenne_twister.hpp> // for boost::mt19937
 #include <boost/uuid/random_generator.hpp>
 
 #include <pcl/common/utils.h> // pcl::utils::ignore

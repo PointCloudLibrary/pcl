@@ -43,6 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/search/kdtree.h>
 #include <pcl/surface/organized_fast_mesh.h>
 
 using namespace pcl;

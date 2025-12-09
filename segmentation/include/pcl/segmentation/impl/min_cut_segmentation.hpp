@@ -42,31 +42,12 @@
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp> // for boykov_kolmogorov_max_flow
 #include <pcl/segmentation/min_cut_segmentation.h>
 #include <pcl/search/search.h>
-#include <pcl/search/kdtree.h>
+#include <pcl/search/auto.h>
 #include <cmath>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::MinCutSegmentation<PointT>::MinCutSegmentation () :
-  inverse_sigma_ (16.0),
-  binary_potentials_are_valid_ (false),
-  epsilon_ (0.0001),
-  radius_ (16.0),
-  unary_potentials_are_valid_ (false),
-  source_weight_ (0.8),
-  search_ (),
-  number_of_neighbours_ (14),
-  graph_is_valid_ (false),
-  foreground_points_ (0),
-  background_points_ (0),
-  clusters_ (0),
-  vertices_ (0),
-  edge_marker_ (0),
-  source_ (),/////////////////////////////////
-  sink_ (),///////////////////////////////////
-  max_flow_ (0.0)
-{
-}
+pcl::MinCutSegmentation<PointT>::MinCutSegmentation () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -309,7 +290,13 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
     return (false);
 
   if (!search_)
-    search_.reset (new pcl::search::KdTree<PointT>);
+  {
+    search_.reset (pcl::search::autoSelectMethod<PointT>(input_, indices_, true, pcl::search::Purpose::many_knn_search));
+  }
+  else
+  {
+    search_->setInputCloud (input_, indices_);
+  }
 
   graph_.reset (new mGraph);
 
@@ -344,7 +331,6 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
 
   pcl::Indices neighbours;
   std::vector<float> distances;
-  search_->setInputCloud (input_, indices_);
   for (std::size_t i_point = 0; i_point < number_of_indices; i_point++)
   {
     index_t point_index = (*indices_)[i_point];
@@ -598,6 +584,6 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
   return (colored_cloud);
 }
 
-#define PCL_INSTANTIATE_MinCutSegmentation(T) template class pcl::MinCutSegmentation<T>;
+#define PCL_INSTANTIATE_MinCutSegmentation(T) template class PCL_EXPORTS pcl::MinCutSegmentation<T>;
 
 #endif    // PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_

@@ -113,6 +113,8 @@ RangeImage::RangeImage () :
   unobserved_point.range = -std::numeric_limits<float>::infinity ();
 }
 
+RangeImage::~RangeImage () = default;
+
 /////////////////////////////////////////////////////////////////////////
 void
 RangeImage::reset ()
@@ -238,7 +240,7 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   width = right-left+1; height = bottom-top+1;
   image_offset_x_ = left+oldRangeImage.image_offset_x_;
   image_offset_y_ = top+oldRangeImage.image_offset_y_;
-  points.resize (width*height);
+  points.resize (static_cast<std::size_t>(width)*static_cast<std::size_t>(height));
   
   //std::cout << oldRangeImage.width<<"x"<<oldRangeImage.height<<" -> "<<width<<"x"<<height<<"\n";
   
@@ -289,9 +291,9 @@ RangeImage::getRangesArray () const
 void 
 RangeImage::getIntegralImage (float*& integral_image, int*& valid_points_num_image) const
 {
-  integral_image = new float[width*height];
+  integral_image = new float[static_cast<std::size_t>(width)*static_cast<std::size_t>(height)];
   float* integral_image_ptr = integral_image;
-  valid_points_num_image = new int[width*height];
+  valid_points_num_image = new int[static_cast<std::size_t>(width)*static_cast<std::size_t>(height)];
   int* valid_points_num_image_ptr = valid_points_num_image;
   for (int y = 0; y < static_cast<int> (height); ++y)
   {
@@ -350,7 +352,7 @@ RangeImage::getHalfImage (RangeImage& half_image) const
   half_image.height = height/2;
   half_image.is_dense = is_dense;
   half_image.clear ();
-  half_image.resize (half_image.width*half_image.height);
+  half_image.resize (half_image.width, half_image.height);
   
   int src_start_x = 2*half_image.image_offset_x_ - image_offset_x_,
       src_start_y = 2*half_image.image_offset_y_ - image_offset_y_;
@@ -394,7 +396,7 @@ RangeImage::getSubImage (int sub_image_image_offset_x, int sub_image_image_offse
   sub_image.height = sub_image_height;
   sub_image.is_dense = is_dense;
   sub_image.clear ();
-  sub_image.resize (sub_image.width*sub_image.height);
+  sub_image.resize (sub_image.width, sub_image.height);
   
   int src_start_x = combine_pixels*sub_image.image_offset_x_ - image_offset_x_,
       src_start_y = combine_pixels*sub_image.image_offset_y_ - image_offset_y_;
@@ -865,7 +867,6 @@ RangeImage::getOverlap (const RangeImage& other_range_image, const Eigen::Affine
   float max_distance_squared = max_distance*max_distance;
   
 #pragma omp parallel for \
-  default(none) \
   shared(max_distance_squared, other_range_image, pixel_step, relative_transformation, search_radius) \
   schedule(dynamic, 1) \
   reduction(+ : valid_points_counter) \

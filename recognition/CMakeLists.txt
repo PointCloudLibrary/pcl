@@ -2,8 +2,9 @@ set(SUBSYS_NAME recognition)
 set(SUBSYS_DESC "Point cloud recognition library")
 set(SUBSYS_DEPS common io search kdtree octree features filters registration sample_consensus ml)
 
-set(build TRUE)
-PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
+set(DEFAULT ON)
+
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -21,7 +22,6 @@ set(LINEMOD_IMPLS
 )
 
 set(incs
-  "include/pcl/${SUBSYS_NAME}/boost.h"
   "include/pcl/${SUBSYS_NAME}/color_gradient_dot_modality.h"
   "include/pcl/${SUBSYS_NAME}/color_gradient_modality.h"
   "include/pcl/${SUBSYS_NAME}/color_modality.h"
@@ -38,20 +38,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/dense_quantized_multi_mod_template.h"
   "include/pcl/${SUBSYS_NAME}/sparse_quantized_multi_mod_template.h"
   "include/pcl/${SUBSYS_NAME}/surface_normal_modality.h"
-  "include/pcl/${SUBSYS_NAME}/line_rgbd.h"
   "include/pcl/${SUBSYS_NAME}/implicit_shape_model.h"
-  "include/pcl/${SUBSYS_NAME}/auxiliary.h"
-  "include/pcl/${SUBSYS_NAME}/hypothesis.h"
-  "include/pcl/${SUBSYS_NAME}/model_library.h"
-  "include/pcl/${SUBSYS_NAME}/rigid_transform_space.h"
-  "include/pcl/${SUBSYS_NAME}/obj_rec_ransac.h"
-  "include/pcl/${SUBSYS_NAME}/orr_graph.h"
-  "include/pcl/${SUBSYS_NAME}/orr_octree_zprojection.h"
-  "include/pcl/${SUBSYS_NAME}/trimmed_icp.h"
-  "include/pcl/${SUBSYS_NAME}/orr_octree.h"
-  "include/pcl/${SUBSYS_NAME}/simple_octree.h"
-  "include/pcl/${SUBSYS_NAME}/voxel_structure.h"
-  "include/pcl/${SUBSYS_NAME}/bvh.h"
 )
 
 set(ransac_based_incs
@@ -91,9 +78,6 @@ set(cg_incs
 )
 
 set(impl_incs
-  "include/pcl/${SUBSYS_NAME}/impl/line_rgbd.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/simple_octree.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/voxel_structure.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/implicit_shape_model.hpp"
 )
 
@@ -115,7 +99,10 @@ set(cg_impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/cg/geometric_consistency.hpp"
 )
 
+# The cpp files have been ordered so that files with a long compile time appear at the top, to efficiently build in parallel. Do not reorder alphabetically!
 set(srcs
+  src/cg/geometric_consistency.cpp
+  src/cg/hough_3d.cpp
   src/linemod.cpp
   src/quantizable_modality.cpp
   src/dotmod.cpp
@@ -124,8 +111,6 @@ set(srcs
   src/hv/hv_papazov.cpp
   src/hv/hv_go.cpp
   src/hv/greedy_verification.cpp
-  src/cg/hough_3d.cpp
-  src/cg/geometric_consistency.cpp
   src/ransac_based/obj_rec_ransac.cpp
   src/ransac_based/model_library.cpp
   src/ransac_based/orr_octree.cpp
@@ -135,24 +120,19 @@ set(srcs
   src/implicit_shape_model.cpp
 )
 
-if(HAVE_METSLIB)
-  set(metslib_incs "")
-else()
-  set(metslib_incs
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/mets.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/metslib_config.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/model.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/observer.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh"
-  )
-endif()
+set(metslib_incs
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/mets.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/metslib_config.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/model.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/observer.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh"
+)
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs} ${face_detection_incs} ${ransac_based_incs} ${ransac_based_impl_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs} ${metslib_incs})
 target_link_libraries("${LIB_NAME}" pcl_common pcl_kdtree pcl_octree pcl_search pcl_features pcl_registration pcl_sample_consensus pcl_filters pcl_ml pcl_io)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
@@ -169,7 +149,4 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/hv" ${hv_impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/cg" ${cg_impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/linemod" ${LINEMOD_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/linemod" ${LINEMOD_IMPLS})
-
-if(NOT HAVE_METSLIB)
-  PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/3rdparty/metslib" ${metslib_incs})
-endif()
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/3rdparty/metslib" ${metslib_incs})

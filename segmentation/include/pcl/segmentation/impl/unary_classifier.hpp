@@ -49,17 +49,11 @@
 #include <pcl/features/normal_3d.h> // for NormalEstimation
 #include <pcl/segmentation/unary_classifier.h>
 #include <pcl/common/io.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::UnaryClassifier<PointT>::UnaryClassifier () :
-  input_cloud_ (new pcl::PointCloud<PointT>),
-  label_field_ (false),
-  normal_radius_search_ (0.01f),
-  fpfh_radius_search_ (0.05f),
-  feature_threshold_ (5.0)
-{
-}
+pcl::UnaryClassifier<PointT>::UnaryClassifier() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -427,6 +421,6 @@ pcl::UnaryClassifier<PointT>::segment (pcl::PointCloud<pcl::PointXYZRGBL>::Ptr &
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define PCL_INSTANTIATE_UnaryClassifier(T) template class pcl::UnaryClassifier<T>;
+#define PCL_INSTANTIATE_UnaryClassifier(T) template class PCL_EXPORTS pcl::UnaryClassifier<T>;
 
 #endif    // PCL_UNARY_CLASSIFIER_HPP_

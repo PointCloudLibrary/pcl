@@ -269,7 +269,7 @@ void
 pcl::RobotEyeGrabber::socketThreadLoop ()
 {
   asyncSocketReceive();
-  io_service_.reset();
+  io_service_.restart();
   io_service_.run();
 }
 

@@ -119,10 +119,10 @@ private:
   bool non_maximal_suppression_{false};
   bool hysteresis_thresholding_{false};
 
-  float hysteresis_threshold_low_{20};
-  float hysteresis_threshold_high_{80};
-  float non_max_suppression_radius_x_{3};
-  float non_max_suppression_radius_y_{3};
+  float hysteresis_threshold_low_{20.0f};
+  float hysteresis_threshold_high_{80.0f};
+  float non_max_suppression_radius_x_{3.0f};
+  float non_max_suppression_radius_y_{3.0f};
 
 public:
   Edge() : output_type_(OUTPUT_X), detector_kernel_type_(SOBEL) {}

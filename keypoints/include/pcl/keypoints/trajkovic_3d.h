@@ -85,7 +85,6 @@ namespace pcl
         , window_size_ (window_size)
         , first_threshold_ (first_threshold)
         , second_threshold_ (second_threshold)
-        , threads_ (1)
       {
         name_ = "TrajkovicKeypoint3D";
       }
@@ -204,7 +203,7 @@ namespace pcl
       /// second threshold for corner evaluation
       float second_threshold_;
       /// number of threads to be used
-      unsigned int threads_;
+      unsigned int threads_{1};
       /// point cloud normals
       NormalsConstPtr normals_;
       /// point cloud response

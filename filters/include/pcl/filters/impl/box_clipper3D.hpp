@@ -41,7 +41,6 @@ template<typename PointT>
 pcl::BoxClipper3D<PointT>::BoxClipper3D (const Eigen::Affine3f& transformation)
 : transformation_ (transformation)
 {
-  //inverse_transformation_ = transformation_.inverse ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,15 +60,13 @@ template<typename PointT> void
 pcl::BoxClipper3D<PointT>::setTransformation (const Eigen::Affine3f& transformation)
 {
   transformation_ = transformation;
-  //inverse_transformation_ = transformation_.inverse ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::BoxClipper3D<PointT>::setTransformation (const Eigen::Vector3f& rodrigues, const Eigen::Vector3f& translation, const Eigen::Vector3f& box_size)
 {
-  transformation_ = Eigen::Translation3f (translation) * Eigen::AngleAxisf(rodrigues.norm (), rodrigues.normalized ()) * Eigen::Scaling (box_size);
-  //inverse_transformation_ = transformation_.inverse ();
+  transformation_ = (Eigen::Translation3f (translation) * Eigen::AngleAxisf(rodrigues.norm (), rodrigues.normalized ()) * Eigen::Scaling (0.5f * box_size)).inverse ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

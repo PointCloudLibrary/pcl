@@ -44,10 +44,12 @@
 #include <pcl/geometry/mesh_elements.h>
 #include <pcl/geometry/mesh_indices.h>
 #include <pcl/geometry/mesh_traits.h>
+#include <pcl/exceptions.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 
+#include <cassert>
 #include <type_traits>
 #include <vector>
 
@@ -1332,7 +1334,7 @@ protected:
                  HalfEdgeIndex& /*idx_free_half_edge*/,
                  std::true_type /*is_manifold*/) const
   {
-    return !(is_new_ab && is_new_bc && !is_isolated_b);
+    return (!is_new_ab || !is_new_bc || is_isolated_b);
   }
 
   /** \brief Check if the half-edge bc is the next half-edge of ab.
@@ -1803,14 +1805,14 @@ protected:
                                 typename IndexContainerT::value_type());
     Index ind_old(0), ind_new(0);
 
-    typename ElementContainerT::const_iterator it_e_old = elements.begin();
+    auto it_e_old = elements.cbegin();
     auto it_e_new = elements.begin();
 
-    typename DataContainerT::const_iterator it_d_old = data_cloud.begin();
+    auto it_d_old = data_cloud.cbegin();
     auto it_d_new = data_cloud.begin();
 
     auto it_ind_new = new_indices.begin();
-    typename IndexContainerT::const_iterator it_ind_new_end = new_indices.end();
+    auto it_ind_new_end = new_indices.cend();
 
     while (it_ind_new != it_ind_new_end) {
       if (!this->isDeleted(ind_old)) {
@@ -1832,9 +1834,8 @@ protected:
       data_cloud.resize(ind_new.get());
     }
     else if (it_d_old != data_cloud.begin() || it_d_new != data_cloud.begin()) {
-      std::cerr << "TODO: Bug in MeshBase::remove!\n";
       assert(false);
-      exit(EXIT_FAILURE);
+      PCL_THROW_EXCEPTION(PCLException, "TODO: Bug in MeshBase::remove!")
     }
 
     return (new_indices);

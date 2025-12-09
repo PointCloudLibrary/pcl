@@ -53,9 +53,8 @@ Work in progress: patch by Marco (AUG,19th 2012)
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/parse.h>
-
-#include <boost/filesystem.hpp>
 
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
 #include <pcl/gpu/kinfu_large_scale/raycaster.h>
@@ -123,20 +122,19 @@ namespace pcl
 
 std::vector<std::string> getPcdFilesInDir(const std::string& directory)
 {
-  namespace fs = boost::filesystem;
-  fs::path dir(directory);
+  pcl_fs::path dir(directory);
 
   std::cout << "path: " << directory << std::endl;
-  if (directory.empty() || !fs::exists(dir) || !fs::is_directory(dir))
+  if (directory.empty() || !pcl_fs::exists(dir) || !pcl_fs::is_directory(dir))
           PCL_THROW_EXCEPTION (pcl::IOException, "No valid PCD directory given!\n");
 
   std::vector<std::string> result;
-  fs::directory_iterator pos(dir);
-  fs::directory_iterator end;           
+  pcl_fs::directory_iterator pos(dir);
+  pcl_fs::directory_iterator end;           
 
   for(; pos != end ; ++pos)
-    if (fs::is_regular_file(pos->status()) )
-      if (fs::extension(*pos) == ".pcd")
+    if (pcl_fs::is_regular_file(pos->status()) )
+      if (pos->path().extension().string() == ".pcd")
       {
         result.push_back (pos->path ().string ());
         std::cout << "added: " << result.back() << std::endl;
@@ -1330,7 +1328,7 @@ main (int argc, char* argv[])
   pcl::gpu::printShortCudaDeviceInfo (device);
 
   //  if (checkIfPreFermiGPU(device))
-  //    return std::cout << std::endl << "Kinfu is supported only for Fermi and Kepler arhitectures. It is not even compiled for pre-Fermi by default. Exiting..." << std::endl, 1;
+  //    return std::cout << std::endl << "Kinfu is supported only for Fermi and Kepler architectures. It is not even compiled for pre-Fermi by default. Exiting..." << std::endl, 1;
 
   pcl::shared_ptr<pcl::Grabber> capture;
   bool triggered_capture = false;

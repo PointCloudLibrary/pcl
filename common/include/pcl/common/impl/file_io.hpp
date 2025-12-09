@@ -39,7 +39,8 @@
 #ifndef PCL_COMMON_FILE_IO_IMPL_HPP_
 #define PCL_COMMON_FILE_IO_IMPL_HPP_
 
-#include <boost/filesystem.hpp>
+#include <pcl/common/pcl_filesystem.h>
+
 #include <boost/range/iterator_range.hpp>
 
 #include <algorithm>
@@ -53,12 +54,12 @@ namespace pcl
 
 void getAllPcdFilesInDirectory(const std::string& directory, std::vector<std::string>& file_names)
 {
-  boost::filesystem::path p(directory);
-  if(boost::filesystem::is_directory(p))
+  pcl_fs::path p(directory);
+  if(pcl_fs::is_directory(p))
   {
-    for(const auto& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(p), {}))
+    for(const auto& entry : boost::make_iterator_range(pcl_fs::directory_iterator(p), {}))
     {
-      if (boost::filesystem::is_regular_file(entry))
+      if (pcl_fs::is_regular_file(entry))
       {
         if (entry.path().extension() == ".pcd")
           file_names.emplace_back(entry.path().filename().string());

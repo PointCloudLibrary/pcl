@@ -51,8 +51,7 @@ using namespace pcl::recognition;
 ModelLibrary::ModelLibrary (float pair_width, float voxel_size, float max_coplanarity_angle)
 : pair_width_ (pair_width),
   voxel_size_ (voxel_size),
-  max_coplanarity_angle_ (max_coplanarity_angle),
-  ignore_coplanar_opps_ (true)
+  max_coplanarity_angle_ (max_coplanarity_angle)
 {
   num_of_cells_[0] = 60;
   num_of_cells_[1] = 60;
@@ -174,7 +173,7 @@ ModelLibrary::addToHashTable (Model* model, const ORROctree::Node::Data* data1, 
   HashTableCell* cell = hash_table_.getVoxel (key);
 
   // Insert the pair (data1,data2) belonging to 'model'
-  (*cell)[model].push_back (std::pair<const ORROctree::Node::Data*, const ORROctree::Node::Data*> (data1, data2));
+  (*cell)[model].emplace_back(data1, data2);
 
   return (true);
 }

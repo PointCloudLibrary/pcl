@@ -194,7 +194,7 @@ main (int argc, char ** argv)
       return (1);
     }
  
-    cloud->points.reserve (depth_dims[0] * depth_dims[1]);
+    cloud->reserve (static_cast<std::size_t>(depth_dims[0]) * static_cast<std::size_t>(depth_dims[1]));
     cloud->width = depth_dims[0];
     cloud->height = depth_dims[1];
     cloud->is_dense = false;

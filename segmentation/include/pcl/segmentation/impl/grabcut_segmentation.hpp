@@ -40,16 +40,15 @@
 #include <pcl/common/distances.h>
 #include <pcl/common/io.h> // for getFieldIndex
 #include <pcl/common/point_tests.h> // for pcl::isFinite
-#include <pcl/search/organized.h>
-#include <pcl/search/kdtree.h>
+#include <pcl/search/auto.h>
 
 
 namespace pcl
 {
 
 template <>
-float squaredEuclideanDistance (const pcl::segmentation::grabcut::Color &c1,
-                                const pcl::segmentation::grabcut::Color &c2)
+inline float squaredEuclideanDistance (const pcl::segmentation::grabcut::Color &c1,
+                                       const pcl::segmentation::grabcut::Color &c2)
 {
   return ((c1.r-c2.r)*(c1.r-c2.r)+(c1.g-c2.g)*(c1.g-c2.g)+(c1.b-c2.b)*(c1.b-c2.b));
 }
@@ -112,10 +111,7 @@ GrabCut<PointT>::initCompute ()
 
   // Initialize the spatial locator
   if (!tree_ && !input_->isOrganized ())
-  {
-    tree_.reset (new pcl::search::KdTree<PointT> (true));
-    tree_->setInputCloud (input_);
-  }
+    tree_.reset (pcl::search::autoSelectMethod<PointT> (input_, true, pcl::search::Purpose::many_knn_search));
 
   const std::size_t indices_size = indices_->size ();
   trimap_ = std::vector<segmentation::grabcut::TrimapValue> (indices_size, TrimapUnknown);

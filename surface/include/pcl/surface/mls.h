@@ -79,10 +79,10 @@ namespace pcl
     /** \brief Data structure used to store the MLS projection results */
     struct MLSProjectionResults
     {
-      MLSProjectionResults () : u (0), v (0) {}
+      MLSProjectionResults () = default;
 
-      double u;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
-      double v;               /**< \brief The v-coordinate of the projected point in local MLS frame. */
+      double u{0.0};               /**< \brief The u-coordinate of the projected point in local MLS frame. */
+      double v{0.0};               /**< \brief The v-coordinate of the projected point in local MLS frame. */
       Eigen::Vector3d point;  /**< \brief The projected point. */
       Eigen::Vector3d normal; /**< \brief The projected point's normal. */
       PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -143,16 +143,6 @@ namespace pcl
       */
     Eigen::Vector2f
     calculatePrincipalCurvatures (const double u, const double v) const;
-
-    /** \brief Calculate the principal curvatures using the polynomial surface.
-      * \param[in] u The u-coordinate of the point in local MLS frame.
-      * \param[in] v The v-coordinate of the point in local MLS frame.
-      * \return The principal curvature [k1, k2] at the provided uv coordinates.
-      * \note If an error occurs then 1e-5 is returned.
-      */
-    PCL_DEPRECATED(1, 15, "use calculatePrincipalCurvatures() instead")
-    inline Eigen::Vector2f
-    calculatePrincipleCurvatures (const double u, const double v) const { return calculatePrincipalCurvatures(u, v); };
 
     /** \brief Project a point orthogonal to the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
@@ -307,20 +297,9 @@ namespace pcl
       MovingLeastSquares () : CloudSurfaceProcessing<PointInT, PointOutT> (),
                               distinct_cloud_ (),
                               tree_ (),
-                              order_ (2),
-                              search_radius_ (0.0),
-                              sqr_gauss_param_ (0.0),
-                              compute_normals_ (false),
+                              
                               upsample_method_ (NONE),
-                              upsampling_radius_ (0.0),
-                              upsampling_step_ (0.0),
-                              desired_num_points_in_radius_ (0),
-                              cache_mls_results_ (true),
-                              projection_method_ (MLSResult::SIMPLE),
-                              threads_ (1),
-                              voxel_size_ (1.0),
-                              dilation_iteration_num_ (0),
-                              nr_coeff_ (),
+                              
                               rng_uniform_distribution_ ()
                               {};
 
@@ -523,28 +502,28 @@ namespace pcl
 
     protected:
       /** \brief The point cloud that will hold the estimated normals, if set. */
-      NormalCloudPtr normals_;
+      NormalCloudPtr normals_{nullptr};
 
       /** \brief The distinct point cloud that will be projected to the MLS surface. */
-      PointCloudInConstPtr distinct_cloud_;
+      PointCloudInConstPtr distinct_cloud_{nullptr};
 
       /** \brief The search method template for indices. */
       SearchMethod search_method_;
 
       /** \brief A pointer to the spatial search object. */
-      KdTreePtr tree_;
+      KdTreePtr tree_{nullptr};
 
       /** \brief The order of the polynomial to be fit. */
-      int order_;
+      int order_{2};
 
       /** \brief The nearest neighbors search radius for each point. */
-      double search_radius_;
+      double search_radius_{0.0};
 
       /** \brief Parameter for distance based weighting of neighbors (search_radius_ * search_radius_ works fine) */
-      double sqr_gauss_param_;
+      double sqr_gauss_param_{0.0};
 
       /** \brief Parameter that specifies whether the normals should be computed for the input cloud or not */
-      bool compute_normals_;
+      bool compute_normals_{false};
 
       /** \brief Parameter that specifies the upsampling method to be used */
       UpsamplingMethod upsample_method_;
@@ -552,33 +531,33 @@ namespace pcl
       /** \brief Radius of the circle in the local point plane that will be sampled
         * \note Used only in the case of SAMPLE_LOCAL_PLANE upsampling
         */
-      double upsampling_radius_;
+      double upsampling_radius_{0.0};
 
       /** \brief Step size for the local plane sampling
         * \note Used only in the case of SAMPLE_LOCAL_PLANE upsampling
         */
-      double upsampling_step_;
+      double upsampling_step_{0.0};
 
       /** \brief Parameter that specifies the desired number of points within the search radius
         * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
         */
-      int desired_num_points_in_radius_;
+      int desired_num_points_in_radius_{0};
 
       /** \brief True if the mls results for the input cloud should be stored
         * \note This is forced to be true when using upsampling methods VOXEL_GRID_DILATION or DISTINCT_CLOUD.
         */
-      bool cache_mls_results_;
+      bool cache_mls_results_{true};
 
       /** \brief Stores the MLS result for each point in the input cloud
         * \note Used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling
         */
-      std::vector<MLSResult> mls_results_;
+      std::vector<MLSResult> mls_results_{};
 
       /** \brief Parameter that specifies the projection method to be used. */
-      MLSResult::ProjectionMethod projection_method_;
+      MLSResult::ProjectionMethod projection_method_{MLSResult::SIMPLE};
 
       /** \brief The maximum number of threads the scheduler should use. */
-      unsigned int threads_;
+      unsigned int threads_{1};
 
 
       /** \brief A minimalistic implementation of a voxel grid, necessary for the point cloud upsampling
@@ -587,7 +566,7 @@ namespace pcl
       class MLSVoxelGrid
       {
         public:
-          struct Leaf { Leaf () : valid (true) {} bool valid; };
+          struct Leaf { Leaf () = default; bool valid{true}; };
 
           MLSVoxelGrid (PointCloudInConstPtr& cloud,
                         IndicesPtr &indices,
@@ -633,23 +612,23 @@ namespace pcl
           using HashMap = std::map<std::uint64_t, Leaf>;
           HashMap voxel_grid_;
           Eigen::Vector4f bounding_min_, bounding_max_;
-          std::uint64_t data_size_;
+          std::uint64_t data_size_{0};
           float voxel_size_;
           PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
 
 
       /** \brief Voxel size for the VOXEL_GRID_DILATION upsampling method */
-      float voxel_size_;
+      float voxel_size_{1.0f};
 
       /** \brief Number of dilation steps for the VOXEL_GRID_DILATION upsampling method */
-      int dilation_iteration_num_;
+      int dilation_iteration_num_{0};
 
       /** \brief Number of coefficients, to be computed from the requested order.*/
-      int nr_coeff_;
+      int nr_coeff_{0};
 
       /** \brief Collects for each point in output the corresponding point in the input. */
-      PointIndicesPtr corresponding_input_indices_;
+      PointIndicesPtr corresponding_input_indices_{nullptr};
 
       /** \brief Search for the nearest neighbors of a given point using a radius search
         * \param[in] index the index of the query point

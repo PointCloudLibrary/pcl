@@ -34,6 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
+#include <pcl/gpu/containers/initialization.h>
 #include <pcl/gpu/octree/octree.hpp>
 #include <pcl/gpu/utils/timers_cuda.hpp>
 #include <pcl/gpu/utils/safe_call.hpp>
@@ -166,12 +167,6 @@ void pcl::gpu::Octree::radiusSearch(const Queries& queries, const Indices& indic
     
     const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
     static_cast<OctreeImpl*>(impl)->radiusSearch(q, indices, radius, results);
-}
-
-void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndices& results) const
-{
-    ResultSqrDists sqr_distance;
-    approxNearestSearch(queries, results, sqr_distance);
 }
 
 void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndices& results, ResultSqrDists& sqr_distance) const

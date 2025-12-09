@@ -103,18 +103,18 @@ estimateProjectionMatrix (
 
   while (pointIt)
   {
-    unsigned yIdx = pointIt.getCurrentPointIndex () / cloud->width;
-    unsigned xIdx = pointIt.getCurrentPointIndex () % cloud->width;
+    Scalar yIdx = pointIt.getCurrentPointIndex () / cloud->width;
+    Scalar xIdx = pointIt.getCurrentPointIndex () % cloud->width;
 
     const PointT& point = *pointIt;
     if (std::isfinite (point.x))
     {
-      Scalar xx = point.x * point.x;
-      Scalar xy = point.x * point.y;
-      Scalar xz = point.x * point.z;
-      Scalar yy = point.y * point.y;
-      Scalar yz = point.y * point.z;
-      Scalar zz = point.z * point.z;
+      Scalar xx = static_cast<Scalar>(point.x) * static_cast<Scalar>(point.x);
+      Scalar xy = static_cast<Scalar>(point.x) * static_cast<Scalar>(point.y);
+      Scalar xz = static_cast<Scalar>(point.x) * static_cast<Scalar>(point.z);
+      Scalar yy = static_cast<Scalar>(point.y) * static_cast<Scalar>(point.y);
+      Scalar yz = static_cast<Scalar>(point.y) * static_cast<Scalar>(point.z);
+      Scalar zz = static_cast<Scalar>(point.z) * static_cast<Scalar>(point.z);
       Scalar xx_yy = xIdx * xIdx + yIdx * yIdx;
 
       A.coeffRef (0) += xx;
@@ -213,6 +213,10 @@ estimateProjectionMatrix (
 
   if (projection_matrix.coeff (0) < 0)
     projection_matrix *= -1.0;
+
+  // if the bottom row is all zeros, except for the second-to-last element, then scale the whole projection matrix (convention)
+  if(std::abs(eigen_vectors.coeff (96))<1e-7 && std::abs(eigen_vectors.coeff (108))<1e-7 && std::abs(eigen_vectors.coeff (120))>1e-5 && std::abs(eigen_vectors.coeff (132))<1e-7)
+    projection_matrix /= projection_matrix.coeffRef (10);
 
   return (residual);
 }

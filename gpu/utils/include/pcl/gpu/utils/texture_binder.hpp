@@ -37,57 +37,6 @@
 #ifndef PCL_GPU_UTILS_TEXTURE_BINDER_HPP_
 #define PCL_GPU_UTILS_TEXTURE_BINDER_HPP_
 
-#include <pcl/gpu/utils/safe_call.hpp>
-#include <pcl/gpu/containers/device_array.h>
-
-namespace pcl
-{
-  namespace gpu
-  {
-    class TextureBinder
-    {
-    public:        
-      template<class T, enum cudaTextureReadMode readMode>
-      TextureBinder(const DeviceArray2D<T>& arr, const struct texture<T, 2, readMode>& tex) : texref(&tex)
-      {
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();  
-        cudaSafeCall( cudaBindTexture2D(0, tex, arr.ptr(), desc, arr.cols(), arr.rows(), arr.step()) );        
-      }
-
-      template<class T, enum cudaTextureReadMode readMode>
-      TextureBinder(const DeviceArray<T>& arr, const struct texture<T, 1, readMode> &tex) : texref(&tex)
-      {
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();  
-        cudaSafeCall( cudaBindTexture(0, tex, arr.ptr(), desc, arr.sizeBytes()) );
-      }
-
-      template<class T, enum cudaTextureReadMode readMode>
-      TextureBinder(const PtrStepSz<T>& arr, const struct texture<T, 2, readMode>& tex) : texref(&tex)
-      {
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();  
-        cudaSafeCall( cudaBindTexture2D(0, tex, arr.data, desc, arr.cols, arr.rows, arr.step) );        
-      }
-
-      template<class T, enum cudaTextureReadMode readMode>
-      TextureBinder(const PtrSz<T>& arr, const struct texture<T, 1, readMode> &tex) : texref(&tex)
-      {
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();  
-        cudaSafeCall( cudaBindTexture(0, tex, arr.data, desc, arr.size * arr.elemSize()) );
-      }
-
-      ~TextureBinder()
-      {
-        cudaSafeCall( cudaUnbindTexture(texref) );
-      }
-    private:
-      const struct textureReference *texref;    
-    };
-  }
-
-  namespace device
-  {
-      using pcl::gpu::TextureBinder;
-  }
-}
+PCL_DEPRECATED_HEADER(1, 17, "This has been deprecated, please include it from pcl/gpu/containers.")
 
 #endif /* PCL_GPU_UTILS_TEXTURE_BINDER_HPP_*/

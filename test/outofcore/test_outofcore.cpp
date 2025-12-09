@@ -44,6 +44,7 @@
 
 #include <pcl/test/gtest.h>
 
+#include <list>
 #include <vector>
 #include <iostream>
 #include <random>
@@ -98,7 +99,7 @@ AlignedPointTVector points;
 bool 
 compPt (const PointT &p1, const PointT &p2)
 {
-  return !(p1.x != p2.x || p1.y != p2.y || p1.z != p2.z);
+  return (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z);
 }
 
 TEST (PCL, Outofcore_Octree_Build)
@@ -394,7 +395,7 @@ class OutofcoreTest : public testing::Test
 {
   protected:
 
-    OutofcoreTest () : smallest_voxel_dim () {}
+    OutofcoreTest () = default;
 
     void SetUp () override
     {
@@ -420,7 +421,7 @@ class OutofcoreTest : public testing::Test
 
     }
 
-    double smallest_voxel_dim;
+    double smallest_voxel_dim{3.0f};
 
 };
 
@@ -444,7 +445,7 @@ TEST_F (OutofcoreTest, Outofcore_Constructors)
   AlignedPointTVector some_points;
 
   for (unsigned int i=0; i< numPts; i++)
-    some_points.push_back (PointT (static_cast<float>(rand () % 1024), static_cast<float>(rand () % 1024), static_cast<float>(rand () % 1024)));
+    some_points.emplace_back(static_cast<float>(rand () % 1024), static_cast<float>(rand () % 1024), static_cast<float>(rand () % 1024));
   
 
   //(Case 1)

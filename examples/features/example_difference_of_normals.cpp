@@ -13,6 +13,7 @@
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/search/organized.h> // for OrganizedNeighbor
 
 #include <pcl/features/don.h>
 
@@ -46,8 +47,9 @@ int main (int argc, char *argv[])
   bool approx = false;
   constexpr double decimation = 100;
 
-  if(argc < 2){
+  if(argc < 3){
     std::cerr << "Expected 2 arguments: inputfile outputfile" << std::endl;
+    return 0;
   }
 
   ///The file to read from.
@@ -64,19 +66,6 @@ int main (int argc, char *argv[])
         std::cout << "Loading point cloud...";
         pcl::fromPCLPointCloud2 (blob, *cloud);
         std::cout << "done." << std::endl;
-
-  SearchPtr tree;
-
-  if (cloud->isOrganized ())
-  {
-    tree.reset (new pcl::search::OrganizedNeighbor<PointT> ());
-  }
-  else
-  {
-      tree.reset (new pcl::search::KdTree<PointT> (false));
-  }
-
-  tree->setInputCloud (cloud);
 
   PointCloud<PointT>::Ptr small_cloud_downsampled;
   PointCloud<PointT>::Ptr large_cloud_downsampled;
@@ -108,7 +97,6 @@ int main (int argc, char *argv[])
   // Compute normals using both small and large scales at each point
   pcl::NormalEstimationOMP<PointT, PointNT> ne;
   ne.setInputCloud (cloud);
-        ne.setSearchMethod (tree);
 
   /**
    * NOTE: setting viewpoint is very important, so that we can ensure

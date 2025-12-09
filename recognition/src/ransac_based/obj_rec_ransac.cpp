@@ -48,17 +48,8 @@ pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size
   position_discretization_ (5.0f*voxel_size_),
   rotation_discretization_ (5.0f*AUX_DEG_TO_RADIANS),
   abs_zdist_thresh_ (1.5f*voxel_size_),
-  relative_obj_size_ (0.05f),
-  visibility_ (0.2f),
-  relative_num_of_illegal_pts_ (0.02f),
-  intersection_fraction_ (0.03f),
   max_coplanarity_angle_ (3.0f*AUX_DEG_TO_RADIANS),
-  scene_bounds_enlargement_factor_ (0.25f), // 25% enlargement
-  ignore_coplanar_opps_ (true),
-  frac_of_points_for_icp_refinement_ (0.3f),
-  do_icp_hypotheses_refinement_ (true),
-  model_library_ (pair_width, voxel_size, max_coplanarity_angle_),
-  rec_mode_ (ObjRecRANSAC::FULL_RECOGNITION)
+  model_library_ (pair_width, voxel_size, max_coplanarity_angle_)
 {
 }
 
@@ -305,7 +296,8 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(std::list<HypothesisBase>& hypot
 #endif
 
   // Compute the bounds for the positional discretization
-  float b[6]; scene_octree_.getBounds (b);
+  float b[6] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+  scene_octree_.getBounds (b);
   float enlr = scene_bounds_enlargement_factor_*std::max (std::max (b[1]-b[0], b[3]-b[2]), b[5]-b[4]);
   b[0] -= enlr; b[1] += enlr;
   b[2] -= enlr; b[3] += enlr;
@@ -429,7 +421,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfCloseHypotheses (HypothesisOctree& h
   i = 0;
 
   // Now create the graph connectivity such that each two neighboring rotation spaces are neighbors in the graph
-  for ( std::vector<HypothesisOctree::Node*>::const_iterator hypo = hypo_leaves.begin () ; hypo != hypo_leaves.end () ; ++hypo, ++i )
+  for ( auto hypo = hypo_leaves.cbegin () ; hypo != hypo_leaves.cend () ; ++hypo, ++i )
   {
     // Compute the fitness of the graph node
     graph.getNodes ()[i]->setFitness (static_cast<int> ((*hypo)->getData ().explained_pixels_.size ()));

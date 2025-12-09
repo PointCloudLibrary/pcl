@@ -46,7 +46,7 @@
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/console/print.h> // for PCL_ERROR
 #include <pcl/search/search.h>
-#include <pcl/search/kdtree.h>
+#include <pcl/search/auto.h>
 
 #include <queue>
 #include <cmath>
@@ -54,26 +54,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
-pcl::RegionGrowing<PointT, NormalT>::RegionGrowing () :
-  min_pts_per_cluster_ (1),
-  max_pts_per_cluster_ (std::numeric_limits<pcl::uindex_t>::max ()),
-  smooth_mode_flag_ (true),
-  curvature_flag_ (true),
-  residual_flag_ (false),
-  theta_threshold_ (30.0f / 180.0f * static_cast<float> (M_PI)),
-  residual_threshold_ (0.05f),
-  curvature_threshold_ (0.05f),
-  neighbour_number_ (30),
-  search_ (),
-  normals_ (),
-  point_neighbours_ (0),
-  point_labels_ (0),
-  normal_flag_ (true),
-  num_pts_in_segment_ (0),
-  clusters_ (0),
-  number_of_segments_ (0)
-{
-}
+pcl::RegionGrowing<PointT, NormalT>::RegionGrowing() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
@@ -322,18 +303,22 @@ pcl::RegionGrowing<PointT, NormalT>::prepareForSegmentation ()
   if (neighbour_number_ == 0)
     return (false);
 
-  // if user didn't set search method
-  if (!search_)
-    search_.reset (new pcl::search::KdTree<PointT>);
-
   if (indices_)
   {
     if (indices_->empty ())
       PCL_ERROR ("[pcl::RegionGrowing::prepareForSegmentation] Empty given indices!\n");
-    search_->setInputCloud (input_, indices_);
+    if (!search_)
+      search_.reset (pcl::search::autoSelectMethod<PointT>(input_, indices_, true, pcl::search::Purpose::many_knn_search));
+    else
+      search_->setInputCloud (input_, indices_);
   }
   else
-    search_->setInputCloud (input_);
+  {
+    if (!search_)
+      search_.reset (pcl::search::autoSelectMethod<PointT>(input_, true, pcl::search::Purpose::many_knn_search));
+    else
+      search_->setInputCloud (input_);
+  }
 
   return (true);
 }
@@ -342,30 +327,27 @@ pcl::RegionGrowing<PointT, NormalT>::prepareForSegmentation ()
 template <typename PointT, typename NormalT> void
 pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
 {
-  int point_number = static_cast<int> (indices_->size ());
   pcl::Indices neighbours;
   std::vector<float> distances;
 
   point_neighbours_.resize (input_->size (), neighbours);
   if (input_->is_dense)
   {
-    for (int i_point = 0; i_point < point_number; i_point++)
+    for (const auto& point_index: (*indices_))
     {
-      const auto point_index = (*indices_)[i_point];
       neighbours.clear ();
-      search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
+      search_->nearestKSearch ((*input_)[point_index], neighbour_number_, neighbours, distances);
       point_neighbours_[point_index].swap (neighbours);
     }
   }
   else
   {
-    for (int i_point = 0; i_point < point_number; i_point++)
+    for (const auto& point_index: (*indices_))
     {
-      neighbours.clear ();
-      const auto point_index = (*indices_)[i_point];
       if (!pcl::isFinite ((*input_)[point_index]))
         continue;
-      search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
+      neighbours.clear ();
+      search_->nearestKSearch ((*input_)[point_index], neighbour_number_, neighbours, distances);
       point_neighbours_[point_index].swap (neighbours);
     }
   }
@@ -727,5 +709,5 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
   return (colored_cloud);
 }
 
-#define PCL_INSTANTIATE_RegionGrowing(T) template class pcl::RegionGrowing<T, pcl::Normal>;
+#define PCL_INSTANTIATE_RegionGrowing(T) template class PCL_EXPORTS pcl::RegionGrowing<T, pcl::Normal>;
 

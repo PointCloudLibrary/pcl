@@ -131,12 +131,7 @@ PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms(
 
 template <typename PointFeature>
 PyramidFeatureHistogram<PointFeature>::PyramidFeatureHistogram()
-: nr_dimensions(0)
-, nr_levels(0)
-, nr_features(0)
-, feature_representation_(new DefaultPointRepresentation<PointFeature>)
-, is_computed_(false)
-, hist_levels()
+: feature_representation_(new DefaultPointRepresentation<PointFeature>), hist_levels()
 {}
 
 template <typename PointFeature>
@@ -304,8 +299,8 @@ PyramidFeatureHistogram<PointFeature>::compute()
   if (!initializeHistogram())
     return;
 
+  std::vector<float> feature_vector; // put here to reuse memory
   for (const auto& point : *input_) {
-    std::vector<float> feature_vector;
     // NaN is converted to very high number that gives out of bound exception.
     if (!pcl::isFinite(point))
       continue;

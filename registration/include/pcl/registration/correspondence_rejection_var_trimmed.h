@@ -73,7 +73,6 @@ public:
 
   /** \brief Empty constructor. */
   CorrespondenceRejectorVarTrimmed()
-  : trimmed_distance_(0), factor_(), min_ratio_(0.05), max_ratio_(0.95), lambda_(0.95)
   {
     rejection_name_ = "CorrespondenceRejectorVarTrimmed";
   }
@@ -224,26 +223,26 @@ protected:
   /** \brief The inlier distance threshold (based on the computed trim factor) between
    * two correspondent points in source <-> target.
    */
-  double trimmed_distance_;
+  double trimmed_distance_{0.0};
 
   /** \brief The factor for correspondence rejection. Only factor times the total points
    * sorted based on the correspondence distances will be considered as inliers.
    * Remaining points are rejected. This factor is computed internally
    */
-  double factor_;
+  double factor_{0.0};
 
   /** \brief The minimum overlap ratio between the input and target clouds
    */
-  double min_ratio_;
+  double min_ratio_{0.05};
 
   /** \brief The maximum overlap ratio between the input and target clouds
    */
-  double max_ratio_;
+  double max_ratio_{0.95};
 
   /** \brief part of the term that balances the root mean square difference. This is an
    * internal parameter
    */
-  double lambda_;
+  double lambda_{0.95};
 
   using DataContainerPtr = DataContainerInterface::Ptr;
 

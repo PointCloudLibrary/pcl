@@ -3,19 +3,15 @@ set(SUBSUBSYS_DESC "PCLModeler: PCL based reconstruction platform")
 set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search apps)
 set(SUBSUBSYS_EXT_DEPS vtk ${QTX})
 set(REASON "")
+set(DEFAULT OFF)
 
 # QVTK?
 if(NOT HAVE_QVTK)
-  set(DEFAULT AUTO_OFF)
   set(REASON "VTK was not built with Qt support.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-  set(DEFAULT TRUE)
-  set(REASON)
 endif()
 
-# Default to not building for now
-if(${DEFAULT} STREQUAL "TRUE")
-  set(DEFAULT FALSE)
+if(NOT HAVE_QVTK)  
+  set(REASON "VTK was not built with Qt support.")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
@@ -27,8 +23,6 @@ if(NOT build)
   return()
 endif()
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 # Set Qt files and resources here
 set(uis
   main_window.ui
@@ -39,7 +33,7 @@ set(resources
 )
 
 set(incs
-   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/scene_tree.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/parameter_dialog.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/thread_controller.h"
@@ -118,7 +112,8 @@ PCL_ADD_EXECUTABLE(
     ${incs}
     ${impl_incs})
 
-target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QTX}::Widgets)
+target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_registration pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QTX}::Widgets)
+target_include_directories(${EXE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs})

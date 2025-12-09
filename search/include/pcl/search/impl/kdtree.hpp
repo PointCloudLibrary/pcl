@@ -48,12 +48,21 @@ pcl::search::KdTree<PointT,Tree>::KdTree (bool sorted)
 {
 }
 
+template <typename PointT, class Tree>
+pcl::search::KdTree<PointT,Tree>::KdTree (const std::string& name, bool sorted)
+  : pcl::search::Search<PointT> (name, sorted)
+{
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, class Tree> void
 pcl::search::KdTree<PointT,Tree>::setPointRepresentation (
     const PointRepresentationConstPtr &point_representation)
 {
-  tree_->setPointRepresentation (point_representation);
+  if(tree_)
+    tree_->setPointRepresentation (point_representation);
+  else
+    PCL_ERROR("Calling setPointRepresentation on KdTreeNanoflann that has been cast to KdTree is not possible in this PCL version. Call setPointRepresentation directly on the KdTreeNanoflann object.\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -68,11 +77,14 @@ pcl::search::KdTree<PointT,Tree>::setSortedResults (bool sorted_results)
 template <typename PointT, class Tree> void
 pcl::search::KdTree<PointT,Tree>::setEpsilon (float eps)
 {
-  tree_->setEpsilon (eps);
+  if(tree_)
+    tree_->setEpsilon (eps);
+  else
+    PCL_ERROR("Calling setEpsilon on KdTreeNanoflann that has been cast to KdTree is not possible in this PCL version. Call setEpsilon directly on the KdTreeNanoflann object.\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, class Tree> void
+template <typename PointT, class Tree> bool
 pcl::search::KdTree<PointT,Tree>::setInputCloud (
     const PointCloudConstPtr& cloud, 
     const IndicesConstPtr& indices)
@@ -80,6 +92,7 @@ pcl::search::KdTree<PointT,Tree>::setInputCloud (
   tree_->setInputCloud (cloud, indices);
   input_ = cloud;
   indices_ = indices;
+  return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

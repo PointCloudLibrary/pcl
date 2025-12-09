@@ -43,6 +43,6 @@
 #include <pcl/recognition/impl/implicit_shape_model.hpp>
 
 // Instantiations of specific point types
-template class pcl::features::ISMVoteList<pcl::PointXYZ>;
+template class PCL_EXPORTS pcl::features::ISMVoteList<pcl::PointXYZ>;
 
-template class pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal>;
+template class PCL_EXPORTS pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal>;

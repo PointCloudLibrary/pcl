@@ -37,6 +37,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/io/ply_io.h>
 
 #include <algorithm>
@@ -46,12 +47,7 @@
 #include <string>
 #include <tuple>
 
-// https://www.boost.org/doc/libs/1_70_0/libs/filesystem/doc/index.htm#Coding-guidelines
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp> // for split
-
-namespace fs = boost::filesystem;
 
 std::tuple<std::function<void ()>, std::function<void ()> >
 pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std::size_t count)
@@ -413,8 +409,16 @@ void
 pcl::PLYReader::vertexIntensityCallback (pcl::io::ply::uint8 intensity)
 {
   pcl::io::ply::float32 intensity_ (intensity);
-  cloud_->at<pcl::io::ply::float32>(vertex_count_, vertex_offset_before_) = intensity_;
-  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
+  try
+  {
+    cloud_->at<pcl::io::ply::float32>(vertex_count_, vertex_offset_before_) = intensity_;
+    vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
+  }
+  catch(const std::out_of_range&)
+  {
+    PCL_WARN ("[pcl::PLYReader::vertexIntensityCallback] Incorrect data index specified (%lu)!\n", vertex_count_ * cloud_->point_step + vertex_offset_before_);
+    assert(false);
+  }
 }
 
 void
@@ -439,7 +443,7 @@ pcl::PLYReader::vertexEndCallback ()
 void
 pcl::PLYReader::rangeGridBeginCallback ()
 {
-  range_grid_->push_back (std::vector <int> ());
+  range_grid_->emplace_back();
 }
 
 void
@@ -463,7 +467,7 @@ pcl::PLYReader::rangeGridEndCallback () {}
 void
 pcl::PLYReader::faceBeginCallback ()
 {
-  polygons_->push_back (pcl::Vertices ());
+  polygons_->emplace_back();
 }
 
 void
@@ -562,9 +566,11 @@ pcl::PLYReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   cloud_->width = cloud_->height = 0;
   origin = Eigen::Vector4f::Zero ();
   orientation = Eigen::Quaternionf::Identity ();
+  origin_ = Eigen::Vector4f::Zero ();
+  orientation_ = Eigen::Matrix3f::Identity ();
   if (!parse (file_name))
   {
-    PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
+    PCL_ERROR ("[pcl::PLYReader::readHeader] problem parsing header!\n");
     return (-1);
   }
   cloud_->row_step = cloud_->point_step * cloud_->width;
@@ -580,7 +586,7 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   int data_type;
   unsigned int data_idx;
 
-  if (!fs::exists (file_name))
+  if (!pcl_fs::exists (file_name))
   {
     PCL_ERROR ("[pcl::PLYReader::read] File (%s) not found!\n",file_name.c_str ());
     return (-1);
@@ -653,8 +659,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     cloud_->data.swap (data);
   }
 
-  orientation_ = Eigen::Quaternionf (orientation);
-  origin_ = origin;
+  orientation = Eigen::Quaternionf (orientation_);
+  origin = origin_;
 
   for (auto &field : cloud_->fields)
   {
@@ -674,12 +680,13 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
                       Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                       int &ply_version, const int offset)
 {
+  PCL_DEBUG("[pcl::PLYReader::read] Reading PolygonMesh from file: %s.\n", file_name.c_str());
   // kept only for backward compatibility
   int data_type;
   unsigned int data_idx;
   polygons_ = &(mesh.polygons);
 
-  if (!fs::exists (file_name))
+  if (!pcl_fs::exists (file_name))
   {
     PCL_ERROR ("[pcl::PLYReader::read] File (%s) not found!\n",file_name.c_str ());
     return (-1);
@@ -752,8 +759,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
     cloud_->data.swap (data);
   }
 
-  orientation_ = Eigen::Quaternionf (orientation);
-  origin_ = origin;
+  orientation = Eigen::Quaternionf (orientation_);
+  origin = origin_;
 
   for (auto &field : cloud_->fields)
   {
@@ -1197,10 +1204,10 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
 
 ////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PLYWriter::writeBinary (const std::string &file_name,
-                             const pcl::PCLPointCloud2 &cloud,
-                             const Eigen::Vector4f &origin,
-                             const Eigen::Quaternionf &orientation,
+pcl::PLYWriter::writeBinary (const std::string& file_name,
+                             const pcl::PCLPointCloud2& cloud,
+                             const Eigen::Vector4f& origin,
+                             const Eigen::Quaternionf& orientation,
                              bool use_camera)
 {
   if (cloud.data.empty ())
@@ -1210,14 +1217,36 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
   }
 
   std::ofstream fs;
-  fs.open (file_name.c_str ());      // Open file
+  fs.open (file_name.c_str (),
+           std::ios::out | std::ios::binary |
+               std::ios::trunc); // Open file in binary mode and erase current contents
+                                 // if any
   if (!fs)
   {
-    PCL_ERROR ("[pcl::PLYWriter::writeBinary] Error during opening (%s)!\n", file_name.c_str ());
+    PCL_ERROR ("[pcl::PLYWriter::writeBinary] Error during opening (%s)!\n",
+               file_name.c_str ());
     return (-1);
   }
 
-  unsigned int nr_points  = cloud.width * cloud.height;
+  if (!(writeBinary (fs, cloud, origin, orientation, use_camera) == 0))
+  {
+    fs.close();
+    return -1;
+  }
+  fs.close();
+  return 0;
+}
+
+int
+pcl::PLYWriter::writeBinary (std::ostream& os,
+                             const pcl::PCLPointCloud2& cloud,
+                             const Eigen::Vector4f& origin,
+                             const Eigen::Quaternionf& orientation,
+                             bool use_camera)
+{
+  os.imbue(std::locale::classic());
+  
+  unsigned int nr_points = cloud.width * cloud.height;
 
   // Compute the range_grid, if necessary, and then write out the PLY header
   bool doRangeGrid = !use_camera && cloud.height > 1;
@@ -1234,17 +1263,17 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
     // If no x-coordinate field exists, then assume all points are valid
     if (xfield < 0)
     {
-      for (unsigned int i=0; i < nr_points; ++i)
+      for (unsigned int i = 0; i < nr_points; ++i)
         rangegrid[i] = i;
       valid_points = nr_points;
     }
     // Otherwise, look at their x-coordinates to determine if points are valid
     else
     {
-      for (std::size_t i=0; i < nr_points; ++i)
+      for (std::size_t i = 0; i < nr_points; ++i)
       {
-        const float& value = cloud.at<float>(i, cloud.fields[xfield].offset);
-        if (std::isfinite(value))
+        const float& value = cloud.at<float> (i, cloud.fields[xfield].offset);
+        if (std::isfinite (value))
         {
           rangegrid[i] = valid_points;
           ++valid_points;
@@ -1253,21 +1282,11 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
           rangegrid[i] = -1;
       }
     }
-    fs << generateHeader (cloud, origin, orientation, true, use_camera, valid_points);
+    os << generateHeader (cloud, origin, orientation, true, use_camera, valid_points);
   }
   else
   {
-    fs << generateHeader (cloud, origin, orientation, true, use_camera, nr_points);
-  }
-
-  // Close the file
-  fs.close ();
-  // Open file in binary appendable
-  std::ofstream fpout (file_name.c_str (), std::ios::app | std::ios::binary);
-  if (!fpout)
-  {
-    PCL_ERROR ("[pcl::PLYWriter::writeBinary] Error during reopening (%s)!\n", file_name.c_str ());
-    return (-1);
+    os << generateHeader (cloud, origin, orientation, true, use_camera, nr_points);
   }
 
   // Iterate through the points
@@ -1282,16 +1301,17 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
     {
       int count = cloud.fields[d].count;
       if (count == 0)
-        count = 1; //workaround
+        count = 1; // workaround
       if (count > 1)
       {
         static unsigned int ucount (count);
-        fpout.write (reinterpret_cast<const char*> (&ucount), sizeof (unsigned int));
+        os.write (reinterpret_cast<const char*> (&ucount), sizeof (unsigned int));
       }
       // Ignore invalid padded dimensions that are inherited from binary data
       if (cloud.fields[d].name == "_")
       {
-        total += cloud.fields[d].count; // jump over this many elements in the string token
+        total +=
+            cloud.fields[d].count; // jump over this many elements in the string token
         continue;
       }
 
@@ -1299,70 +1319,93 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
       {
         switch (cloud.fields[d].datatype)
         {
-          case pcl::PCLPointField::INT8:
+        case pcl::PCLPointField::INT8:
+        {
+          os.write (
+              &cloud.at<char> (i, cloud.fields[d].offset + (total + c) * sizeof (char)),
+              sizeof (char));
+          break;
+        }
+        case pcl::PCLPointField::UINT8:
+        {
+          os.write (
+              reinterpret_cast<const char*> (&cloud.at<unsigned char> (
+                  i, cloud.fields[d].offset + (total + c) * sizeof (unsigned char))),
+              sizeof (unsigned char));
+          break;
+        }
+        case pcl::PCLPointField::INT16:
+        {
+          os.write (reinterpret_cast<const char*> (&cloud.at<short> (
+                        i, cloud.fields[d].offset + (total + c) * sizeof (short))),
+                    sizeof (short));
+          break;
+        }
+        case pcl::PCLPointField::UINT16:
+        {
+          os.write (
+              reinterpret_cast<const char*> (&cloud.at<unsigned short> (
+                  i, cloud.fields[d].offset + (total + c) * sizeof (unsigned short))),
+              sizeof (unsigned short));
+          break;
+        }
+        case pcl::PCLPointField::INT32:
+        {
+          os.write (reinterpret_cast<const char*> (&cloud.at<int> (
+                        i, cloud.fields[d].offset + (total + c) * sizeof (int))),
+                    sizeof (int));
+          break;
+        }
+        case pcl::PCLPointField::UINT32:
+        {
+          if (cloud.fields[d].name.find ("rgba") == std::string::npos)
           {
-            fpout.write (&cloud.at<char>(i, cloud.fields[d].offset + (total + c) * sizeof (char)), sizeof (char));
-            break;
+            os.write (
+                reinterpret_cast<const char*> (&cloud.at<unsigned int> (
+                    i, cloud.fields[d].offset + (total + c) * sizeof (unsigned int))),
+                sizeof (unsigned int));
           }
-          case pcl::PCLPointField::UINT8:
+          else
           {
-            fpout.write (reinterpret_cast<const char*> (&cloud.at<unsigned char>(i, cloud.fields[d].offset + (total + c) * sizeof (unsigned char))), sizeof (unsigned char));
-            break;
+            const auto& color = cloud.at<pcl::RGB> (
+                i, cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB));
+            os.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.a), sizeof (unsigned char));
           }
-          case pcl::PCLPointField::INT16:
+          break;
+        }
+        case pcl::PCLPointField::FLOAT32:
+        {
+          if (cloud.fields[d].name.find ("rgb") == std::string::npos)
           {
-            fpout.write (reinterpret_cast<const char*> (&cloud.at<short>(i, cloud.fields[d].offset + (total + c) * sizeof (short))), sizeof (short));
-            break;
+            os.write (reinterpret_cast<const char*> (&cloud.at<float> (
+                          i, cloud.fields[d].offset + (total + c) * sizeof (float))),
+                      sizeof (float));
           }
-          case pcl::PCLPointField::UINT16:
+          else
           {
-            fpout.write (reinterpret_cast<const char*> (&cloud.at<unsigned short>(i, cloud.fields[d].offset + (total + c) * sizeof (unsigned short))), sizeof (unsigned short));
-            break;
+            const auto& color = cloud.at<pcl::RGB> (
+                i, cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB));
+            os.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
+            os.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
           }
-          case pcl::PCLPointField::INT32:
-          {
-            fpout.write (reinterpret_cast<const char*> (&cloud.at<int>(i, cloud.fields[d].offset + (total + c) * sizeof (int))), sizeof (int));
-            break;
-          }
-          case pcl::PCLPointField::UINT32:
-          {
-            if (cloud.fields[d].name.find ("rgba") == std::string::npos)
-            {
-              fpout.write (reinterpret_cast<const char*> (&cloud.at<unsigned int>(i, cloud.fields[d].offset + (total + c) * sizeof (unsigned int))), sizeof (unsigned int));
-            }
-            else
-            {
-              const auto& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB));
-              fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
-              fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
-              fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
-              fpout.write (reinterpret_cast<const char*> (&color.a), sizeof (unsigned char));
-            }
-            break;
-          }
-          case pcl::PCLPointField::FLOAT32:
-          {
-            if (cloud.fields[d].name.find ("rgb") == std::string::npos)
-            {
-              fpout.write (reinterpret_cast<const char*> (&cloud.at<float>(i, cloud.fields[d].offset + (total + c) * sizeof (float))), sizeof (float));
-            }
-            else
-            {
-              const auto& color = cloud.at<pcl::RGB>(i, cloud.fields[d].offset + (total + c) * sizeof (pcl::RGB));
-              fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
-              fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
-              fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
-            }
-            break;
-          }
-          case pcl::PCLPointField::FLOAT64:
-          {
-            fpout.write (reinterpret_cast<const char*> (&cloud.at<double>(i, cloud.fields[d].offset + (total + c) * sizeof (double))), sizeof (double));
-            break;
-          }
-          default:
-            PCL_WARN ("[pcl::PLYWriter::writeBinary] Incorrect field data type specified (%d)!\n", cloud.fields[d].datatype);
-            break;
+          break;
+        }
+        case pcl::PCLPointField::FLOAT64:
+        {
+          os.write (reinterpret_cast<const char*> (&cloud.at<double> (
+                        i, cloud.fields[d].offset + (total + c) * sizeof (double))),
+                    sizeof (double));
+          break;
+        }
+        default:
+          PCL_WARN ("[pcl::PLYWriter::writeBinary] Incorrect field data type specified "
+                    "(%d)!\n",
+                    cloud.fields[d].datatype);
+          break;
         }
       }
     }
@@ -1375,17 +1418,17 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
     for (int i = 0; i < 3; ++i)
     {
       if (origin[3] != 0)
-        t = origin[i]/origin[3];
+        t = origin[i] / origin[3];
       else
         t = origin[i];
-      fpout.write (reinterpret_cast<const char*> (&t), sizeof (float));
+      os.write (reinterpret_cast<const char*> (&t), sizeof (float));
     }
     Eigen::Matrix3f R = orientation.toRotationMatrix ();
     for (int i = 0; i < 3; ++i)
       for (int j = 0; j < 3; ++j)
-    {
-      fpout.write (reinterpret_cast<const char*> (&R (i, j)),sizeof (float));
-    }
+      {
+        os.write (reinterpret_cast<const char*> (&R (i, j)), sizeof (float));
+      }
 
     /////////////////////////////////////////////////////
     // Append those properties directly.               //
@@ -1403,41 +1446,44 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
 
     const float zerof = 0;
     for (int i = 0; i < 5; ++i)
-      fpout.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
+      os.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
 
     // width and height
     int width = cloud.width;
-    fpout.write (reinterpret_cast<const char*> (&width), sizeof (int));
+    os.write (reinterpret_cast<const char*> (&width), sizeof (int));
 
     int height = cloud.height;
-    fpout.write (reinterpret_cast<const char*> (&height), sizeof (int));
+    os.write (reinterpret_cast<const char*> (&height), sizeof (int));
 
     for (int i = 0; i < 2; ++i)
-      fpout.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
+      os.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
   }
   else if (doRangeGrid)
   {
     // Write out range_grid
-    for (std::size_t i=0; i < nr_points; ++i)
+    for (std::size_t i = 0; i < nr_points; ++i)
     {
       pcl::io::ply::uint8 listlen;
 
       if (rangegrid[i] >= 0)
       {
         listlen = 1;
-        fpout.write (reinterpret_cast<const char*> (&listlen), sizeof (pcl::io::ply::uint8));
-        fpout.write (reinterpret_cast<const char*> (&rangegrid[i]), sizeof (pcl::io::ply::int32));
+        os.write (reinterpret_cast<const char*> (&listlen),
+                  sizeof (pcl::io::ply::uint8));
+        os.write (reinterpret_cast<const char*> (&rangegrid[i]),
+                  sizeof (pcl::io::ply::int32));
       }
       else
       {
         listlen = 0;
-        fpout.write (reinterpret_cast<const char*> (&listlen), sizeof (pcl::io::ply::uint8));
+        os.write (reinterpret_cast<const char*> (&listlen),
+                  sizeof (pcl::io::ply::uint8));
       }
     }
   }
 
   // Close file
-  fpout.close ();
+  
   return (0);
 }
 

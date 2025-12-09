@@ -43,6 +43,7 @@
 #include <cstdlib>
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/common/io.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/lzf.h>
 #include <pcl/io/pcd_io.h>
@@ -51,7 +52,6 @@
 
 #include <cstring>
 #include <cerrno>
-#include <boost/filesystem.hpp> // for permissions
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -69,10 +69,13 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
   else
     PCL_DEBUG ("[pcl::PCDWriter::setLockingPermissions] File %s could not be locked!\n", file_name.c_str ());
 
-  namespace fs = boost::filesystem;
   try
   {
-    fs::permissions (fs::path (file_name), fs::add_perms | fs::set_gid_on_exe);
+#ifdef PCL_USING_STD_FILESYSTEM
+    pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::perms::set_gid, pcl_fs::perm_options::add);
+#else
+    pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::add_perms | pcl_fs::set_gid_on_exe);
+#endif
   }
   catch (const std::exception &e)
   {
@@ -90,10 +93,13 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
   pcl::utils::ignore(file_name, lock);
 #ifndef _WIN32
 #ifndef NO_MANDATORY_LOCKING
-  namespace fs = boost::filesystem;
   try
   {
-    fs::permissions (fs::path (file_name), fs::remove_perms | fs::set_gid_on_exe);
+#ifdef PCL_USING_STD_FILESYSTEM
+    pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::perms::set_gid, pcl_fs::perm_options::remove);
+#else
+    pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::remove_perms | pcl_fs::set_gid_on_exe);
+#endif
   }
   catch (const std::exception &e)
   {
@@ -319,15 +325,19 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
       // Read the header + comments line by line until we get to <DATA>
       if (line_type.substr (0, 4) == "DATA")
       {
-        data_idx = static_cast<int> (fs.tellg ());
         if (st.at (1).substr (0, 17) == "binary_compressed")
-         data_type = 2;
-        else
-          if (st.at (1).substr (0, 6) == "binary")
-            data_type = 1;
-        continue;
+          data_type = 2;
+        else if (st.at (1).substr (0, 6) == "binary")
+          data_type = 1;
+        else if (st.at (1).substr (0, 5) == "ascii")
+          data_type = 0;
+        else {
+          PCL_WARN("[pcl::PCDReader::readHeader] Unknown DATA format: %s\n", line.c_str());
+          continue;
+        }
+        data_idx = static_cast<int> (fs.tellg ());
       }
-      break;
+      break;  // DATA is the last header entry, everything after it will be interpreted as point cloud data
     }
   }
   catch (const char *exception)
@@ -385,9 +395,9 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
                             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
                             int &pcd_version, int &data_type, unsigned int &data_idx, const int offset)
 {
-  if (file_name.empty() || !boost::filesystem::exists (file_name))
+  if (file_name.empty ())
   {
-    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
+    PCL_ERROR ("[pcl::PCDReader::readHeader] No file name given!\n");
     return (-1);
   }
 
@@ -395,9 +405,23 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   // std::getline() corrupting the result of ifstream::tellg()
   std::ifstream fs;
   fs.open (file_name.c_str (), std::ios::binary);
+
+  if (!fs.good ())
+  {
+    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
+    return (-1);
+  }
+
   if (!fs.is_open () || fs.fail ())
   {
-    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror (errno)); 
+    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror (errno));
+    fs.close ();
+    return (-1);
+  }
+
+  if (fs.peek() ==  std::ifstream::traits_type::eof())
+  {
+    PCL_ERROR ("[pcl::PCDReader::readHeader] File '%s' is empty.\n", file_name.c_str ());
     fs.close ();
     return (-1);
   }
@@ -489,7 +513,7 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
         {
 #define COPY_STRING(CASE_LABEL)                                                        \
   case CASE_LABEL: {                                                                   \
-    copyStringValue<pcl::traits::asType_t<CASE_LABEL>>(                                \
+    copyStringValue<pcl::traits::asType_t<(CASE_LABEL)>>(                              \
         st.at(total + c), cloud, idx, d, c, is);                                       \
     break;                                                                             \
   }
@@ -620,11 +644,11 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     {
       for (uindex_t c = 0; c < cloud.fields[d].count; ++c)
       {
-#define SET_CLOUD_DENSE(CASE_LABEL)                                                    \
-  case CASE_LABEL: {                                                                   \
-    if (!isValueFinite<pcl::traits::asType_t<CASE_LABEL>>(cloud, i, point_size, d, c)) \
-      cloud.is_dense = false;                                                          \
-    break;                                                                             \
+#define SET_CLOUD_DENSE(CASE_LABEL)                                                      \
+  case CASE_LABEL: {                                                                     \
+    if (!isValueFinite<pcl::traits::asType_t<(CASE_LABEL)>>(cloud, i, point_size, d, c)) \
+      cloud.is_dense = false;                                                            \
+    break;                                                                               \
   }
         switch (cloud.fields[d].datatype)
         {
@@ -657,7 +681,13 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   pcl::console::TicToc tt;
   tt.tic ();
 
-  if (file_name.empty() || !boost::filesystem::exists (file_name))
+  if (file_name.empty ())
+  {
+    PCL_ERROR ("[pcl::PCDReader::read] No file name given!\n");
+    return (-1);
+  }
+
+  if (!pcl_fs::exists (file_name))
   {
     PCL_ERROR ("[pcl::PCDReader::read] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
@@ -1130,7 +1160,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
       {
 #define COPY_VALUE(CASE_LABEL)                                                         \
   case CASE_LABEL: {                                                                   \
-    copyValueString<pcl::traits::asType_t<CASE_LABEL>>(                                \
+    copyValueString<pcl::traits::asType_t<(CASE_LABEL)>>(                              \
         cloud, i, point_size, d, c, stream);                                           \
     break;                                                                             \
   }

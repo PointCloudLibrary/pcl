@@ -68,7 +68,9 @@
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
 #include <pcl/sample_consensus/sac_model_normal_sphere.h>
+#define SAC_MODEL_STICK_DONT_WARN_DEPRECATED
 #include <pcl/sample_consensus/sac_model_stick.h>
+#undef SAC_MODEL_STICK_DONT_WARN_DEPRECATED
 #include <pcl/sample_consensus/sac_model_ellipse3d.h>
 
 #include <pcl/memory.h>  // for static_pointer_cast
@@ -106,11 +108,10 @@ pcl::SACSegmentation<PointT>::segment (PointIndices &inliers, ModelCoefficients 
   }
 
   // Get the model inliers
-  sac_->getInliers (inliers.indices);
+  inliers.indices = sac_->getInliers ();
 
   // Get the model coefficients
-  Eigen::VectorXf coeff (model_->getModelSize ());
-  sac_->getModelCoefficients (coeff);
+  Eigen::VectorXf coeff = sac_->getModelCoefficients ();
 
   // If the user needs optimized coefficients
   if (optimize_coefficients_)
@@ -155,6 +156,7 @@ pcl::SACSegmentation<PointT>::initSACModel (const int model_type)
     }
     case SACMODEL_STICK:
     {
+      PCL_WARN ("[pcl::%s::initSACModel] SACMODEL_STICK is deprecated: Use SACMODEL_LINE instead (It will be removed in PCL 1.17)\n", getClassName ().c_str ());
       PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_STICK\n", getClassName ().c_str ());
       model_.reset (new SampleConsensusModelStick<PointT> (input_, *indices_));
       double min_radius, max_radius;

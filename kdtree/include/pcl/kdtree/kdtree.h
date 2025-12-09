@@ -43,6 +43,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
 #include <pcl/common/copy_point.h>
+#include <cassert>
 
 namespace pcl
 {
@@ -72,7 +73,7 @@ namespace pcl
         * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise.
         */
       KdTree (bool sorted = true) : input_(),
-                                    epsilon_(0.0f), min_pts_(1), sorted_(sorted),
+                                     sorted_(sorted),
                                     point_representation_ (new DefaultPointRepresentation<PointT>)
       {
       };
@@ -331,6 +332,15 @@ namespace pcl
         return (min_pts_);
       }
 
+      /** \brief Gets whether the results should be sorted (ascending in the distance) or not
+        * Otherwise the results may be returned in any order.
+        */
+      inline bool
+      getSortedResults () const
+      {
+        return (sorted_);
+      }
+
     protected:
       /** \brief The input point cloud dataset containing the points we need to use. */
       PointCloudConstPtr input_;
@@ -339,10 +349,10 @@ namespace pcl
       IndicesConstPtr indices_;
 
       /** \brief Epsilon precision (error bound) for nearest neighbors searches. */
-      float epsilon_;
+      float epsilon_{0.0f};
 
       /** \brief Minimum allowed number of k nearest neighbors points that a viable result must contain. */
-      int min_pts_;
+      int min_pts_{1};
 
       /** \brief Return the radius search neighbours sorted **/
       bool sorted_;

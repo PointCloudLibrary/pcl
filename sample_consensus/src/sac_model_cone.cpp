@@ -37,6 +37,53 @@
  */
 
 #include <pcl/sample_consensus/impl/sac_model_cone.hpp>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
+
+int pcl::internal::optimizeModelCoefficientsCone (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z)
+{
+  if(pts_x.size() != pts_y.size() || pts_y.size() != pts_z.size()) {
+    PCL_ERROR("[pcl::internal::optimizeModelCoefficientsCone] Sizes not equal!\n");
+    return Eigen::LevenbergMarquardtSpace::ImproperInputParameters;
+  }
+  if(coeff.size() != 7) {
+    PCL_ERROR("[pcl::internal::optimizeModelCoefficientsCone] Coefficients have wrong size\n");
+    return Eigen::LevenbergMarquardtSpace::ImproperInputParameters;
+  }
+  struct ConeOptimizationFunctor : pcl::Functor<float>
+  {
+    ConeOptimizationFunctor (const Eigen::ArrayXf& x, const Eigen::ArrayXf& y, const Eigen::ArrayXf& z) :
+      pcl::Functor<float>(x.size()), pts_x(x), pts_y(y), pts_z(z)
+      {}
+
+    int
+    operator() (const Eigen::VectorXf &x, Eigen::VectorXf &fvec) const
+    {
+      Eigen::Vector3f axis_dir(x[3], x[4], x[5]);
+      axis_dir.normalize();
+      const Eigen::ArrayXf bx = Eigen::ArrayXf::Constant(pts_x.size(), x[0]) - pts_x;
+      const Eigen::ArrayXf by = Eigen::ArrayXf::Constant(pts_x.size(), x[1]) - pts_y;
+      const Eigen::ArrayXf bz = Eigen::ArrayXf::Constant(pts_x.size(), x[2]) - pts_z;
+      const Eigen::ArrayXf actual_cone_radius = std::tan(x[6]) *
+          (bx*axis_dir.x()+by*axis_dir.y()+bz*axis_dir.z());
+      // compute the distance of point b to the line (cross product), then subtract the actual cone radius
+      fvec = ((axis_dir.y() * bz - axis_dir.z() * by).square()
+             +(axis_dir.z() * bx - axis_dir.x() * bz).square()
+             +(axis_dir.x() * by - axis_dir.y() * bx).square()).sqrt()
+             -actual_cone_radius.abs();
+      return (0);
+    }
+
+    const Eigen::ArrayXf& pts_x, pts_y, pts_z;
+  };
+
+  ConeOptimizationFunctor functor (pts_x, pts_y, pts_z);
+  Eigen::NumericalDiff<ConeOptimizationFunctor> num_diff (functor);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<ConeOptimizationFunctor>, float> lm (num_diff);
+  const int info = lm.minimize (coeff);
+  PCL_DEBUG ("[pcl::internal::optimizeModelCoefficientsCone] LM solver finished with exit code %i, having a residual norm of %g.\n",
+             info, lm.fvec.norm ());
+  return info;
+}
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>

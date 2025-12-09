@@ -298,7 +298,7 @@ namespace pcl
   class PCL_EXPORTS PCDWriter : public FileWriter
   {
     public:
-      PCDWriter() : map_synchronization_(false) {}
+      PCDWriter() = default;
       ~PCDWriter() override = default;
 
       /** \brief Set whether mmap() synchornization via msync() is desired before munmap() calls.
@@ -615,7 +615,7 @@ namespace pcl
 
     private:
       /** \brief Set to true if msync() should be called before munmap(). Prevents data loss on NFS systems. */
-      bool map_synchronization_;
+      bool map_synchronization_{false};
   };
 
   namespace io

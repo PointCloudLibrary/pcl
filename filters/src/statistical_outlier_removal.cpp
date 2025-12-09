@@ -194,14 +194,9 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
 
   // Initialize the spatial locator
   if (!tree_)
-  {
-    if (cloud->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
-    else
-      tree_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
-  }
-
-  tree_->setInputCloud (cloud);
+    tree_.reset (pcl::search::autoSelectMethod<pcl::PointXYZ>(cloud, false, pcl::search::Purpose::many_knn_search));
+  else
+    tree_->setInputCloud (cloud);
 
   // Allocate enough space to hold the results
   Indices nn_indices (mean_k_);
@@ -227,11 +222,11 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
       continue;
     }
 
-    // Minimum distance (if mean_k_ == 2) or mean distance
-    double dist_sum = 0;
-    for (int j = 1; j < mean_k_; ++j)
-      dist_sum += sqrt (nn_dists[j]);
-    distances[cp] = static_cast<float> (dist_sum / (mean_k_ - 1));
+    // Calculate the mean distance to its neighbors.
+    double dist_sum = 0.0;
+    for (std::size_t k = 1; k < nn_dists.size(); ++k) // k = 0 is the query point
+      dist_sum += sqrt(nn_dists[k]);
+    distances[cp] = static_cast<float>(dist_sum / (nn_dists.size() - 1));
     valid_distances++;
   }
 

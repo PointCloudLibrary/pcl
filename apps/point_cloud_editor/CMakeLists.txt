@@ -1,12 +1,9 @@
 set(SUBSUBSYS_NAME point_cloud_editor)
 set(SUBSUBSYS_DESC "Point Cloud Editor - Simple editor for 3D point clouds")
 set(SUBSUBSYS_DEPS common filters io apps)
-set(SUBSUBSYS_EXT_DEPS vtk ${QTX} OpenGL)
-
-# Default to not building for now
-if(${DEFAULT} STREQUAL "TRUE")
-  set(DEFAULT FALSE)
-endif()
+set(SUBSUBSYS_EXT_DEPS vtk ${QTX} OpenGL OpenGL_GLU)
+set(REASON "")
+set(DEFAULT OFF)
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build NAME ${SUBSUBSYS_NAME} PARENT_NAME ${SUBSYS_NAME} DEPS ${SUBSUBSYS_DEPS} EXT_DEPS ${SUBSUBSYS_EXT_DEPS})
@@ -71,11 +68,6 @@ set(SRCS
   src/denoiseParameterForm.cpp
 )
 
-include_directories(
-  "${CMAKE_CURRENT_BINARY_DIR}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-)
-
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
 PCL_ADD_EXECUTABLE(
   ${EXE_NAME}
@@ -87,6 +79,7 @@ PCL_ADD_EXECUTABLE(
     ${INCS})
 
 target_link_libraries("${EXE_NAME}" ${QTX}::Widgets ${QTX}::OpenGL ${OPENGL_LIBRARIES} ${BOOST_LIBRARIES} pcl_common pcl_io pcl_filters)
+target_include_directories(${EXE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 if (${QTX} MATCHES "Qt6")
   target_link_libraries("${EXE_NAME}" ${QTX}::OpenGLWidgets)
 endif()

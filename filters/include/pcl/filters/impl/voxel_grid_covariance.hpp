@@ -175,7 +175,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       // Accumulate point sum for centroid calculation
       leaf.mean_ += pt3d;
       // Accumulate x*xT for single pass covariance calculation
-      leaf.cov_ += pt3d * pt3d.transpose ();
+      leaf.cov_.noalias() += pt3d * pt3d.transpose ();
 
       // Do we need to process all the fields?
       if (!downsample_all_data_)
@@ -231,7 +231,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       // Accumulate point sum for centroid calculation
       leaf.mean_ += pt3d;
       // Accumulate x*xT for single pass covariance calculation
-      leaf.cov_ += pt3d * pt3d.transpose ();
+      leaf.cov_.noalias() += pt3d * pt3d.transpose ();
 
       // Do we need to process all the fields?
       if (!downsample_all_data_)
@@ -349,7 +349,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
           eigen_val (1, 1) = min_covar_eigvalue;
         }
 
-        leaf.cov_ = leaf.evecs_ * eigen_val * leaf.evecs_.inverse ();
+        leaf.cov_.noalias() = leaf.evecs_ * eigen_val * leaf.evecs_.inverse ();
       }
       leaf.evals_ = eigen_val.diagonal ();
 
@@ -442,11 +442,11 @@ pcl::VoxelGridCovariance<PointT>::getAllNeighborsAtPoint(const PointT& reference
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& cell_cloud)
+pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& cell_cloud, int pnt_per_cell) const
 {
   cell_cloud.clear ();
 
-  int pnt_per_cell = 1000;
+  // for now, we use random generator and normal distribution from boost instead of std because switching to std would make this function up to 2.8 times slower
   boost::mt19937 rng;
   boost::normal_distribution<> nd (0.0, 1.0);
   boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
@@ -463,7 +463,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
   // Generate points for each occupied voxel with sufficient points.
   for (auto it = leaves_.begin (); it != leaves_.end (); ++it)
   {
-    Leaf& leaf = it->second;
+    const Leaf& leaf = it->second;
 
     if (leaf.nr_points >= min_points_per_voxel_)
     {
@@ -475,7 +475,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
       for (int i = 0; i < pnt_per_cell; i++)
       {
         rand_point = Eigen::Vector3d (var_nor (), var_nor (), var_nor ());
-        dist_point = cell_mean + cholesky_decomp * rand_point;
+        dist_point.noalias() = cell_mean + cholesky_decomp * rand_point;
         cell_cloud.push_back (PointXYZ (static_cast<float> (dist_point (0)), static_cast<float> (dist_point (1)), static_cast<float> (dist_point (2))));
       }
     }

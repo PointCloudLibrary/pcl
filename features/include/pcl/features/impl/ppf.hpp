@@ -43,6 +43,7 @@
 #include <pcl/features/ppf.h>
 #include <pcl/features/pfh.h>
 #include <pcl/features/pfh_tools.h> // for computePairFeatures
+#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>

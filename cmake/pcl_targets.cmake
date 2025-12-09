@@ -118,9 +118,6 @@ macro(PCL_SUBSYS_DEPEND _var)
         if(NOT _status)
           set(${_var} FALSE)
           PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires ${_dep}.")
-        else()
-          PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
-          include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
         endif()
       endforeach()
     endif()
@@ -132,12 +129,6 @@ macro(PCL_SUBSYS_DEPEND _var)
           set(${_var} FALSE)
           PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires external library ${_dep}.")
         endif()
-      endforeach()
-    endif()
-    if(ARGS_OPT_DEPS)
-      foreach(_dep ${ARGS_OPT_DEPS})
-        PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
-        include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
       endforeach()
     endif()
   endif()
@@ -181,7 +172,7 @@ endmacro()
 function(PCL_ADD_LIBRARY _name)
   set(options)
   set(oneValueArgs COMPONENT)
-  set(multiValueArgs SOURCES)
+  set(multiValueArgs SOURCES INCLUDES)
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   if(ARGS_UNPARSED_ARGUMENTS)
@@ -192,32 +183,53 @@ function(PCL_ADD_LIBRARY _name)
     message(FATAL_ERROR "PCL_ADD_LIBRARY requires parameter COMPONENT.")
   endif()
 
-  add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
-  PCL_ADD_VERSION_INFO(${_name})
-  target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+  if(NOT ARGS_SOURCES)
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.19)
+      add_library(${_name} INTERFACE ${ARGS_INCLUDES})
 
-  target_link_libraries(${_name} Threads::Threads)
-  if(TARGET OpenMP::OpenMP_CXX)
-    target_link_libraries(${_name} OpenMP::OpenMP_CXX)
+      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+    else()
+      add_library(${_name} INTERFACE)
+    endif()
+    
+    target_include_directories(${_name} INTERFACE
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+    )
+  else()
+    add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
+    PCL_ADD_VERSION_INFO(${_name})
+    target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+
+    target_include_directories(${_name} PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+    )
+
+    target_link_libraries(${_name} Threads::Threads)
+    if(TARGET OpenMP::OpenMP_CXX)
+      target_link_libraries(${_name} OpenMP::OpenMP_CXX)
+    endif()
+
+    if((UNIX AND NOT ANDROID) OR MINGW)
+      target_link_libraries(${_name} m ${ATOMIC_LIBRARY})
+    endif()
+
+    if(MINGW)
+      target_link_libraries(${_name} gomp)
+    endif()
+
+    if(MSVC)
+      target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+    endif()
+    
+    set_target_properties(${_name} PROPERTIES
+      VERSION ${PCL_VERSION}
+      SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
+      DEFINE_SYMBOL "PCLAPI_EXPORTS")
+
+      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
-
-  if((UNIX AND NOT ANDROID) OR MINGW)
-    target_link_libraries(${_name} m ${ATOMIC_LIBRARY})
-  endif()
-
-  if(MINGW)
-    target_link_libraries(${_name} gomp)
-  endif()
-
-  if(MSVC)
-    target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
-  endif()
-
-  set_target_properties(${_name} PROPERTIES
-    VERSION ${PCL_VERSION}
-    SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
-    DEFINE_SYMBOL "PCLAPI_EXPORTS")
-  set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
   install(TARGETS ${_name}
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
@@ -238,7 +250,7 @@ endfunction()
 function(PCL_CUDA_ADD_LIBRARY _name)
   set(options)
   set(oneValueArgs COMPONENT)
-  set(multiValueArgs SOURCES)
+  set(multiValueArgs SOURCES INCLUDES)
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   if(ARGS_UNPARSED_ARGUMENTS)
@@ -250,24 +262,44 @@ function(PCL_CUDA_ADD_LIBRARY _name)
   endif()
 
   REMOVE_VTK_DEFINITIONS()
+  if(NOT ARGS_SOURCES)
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.19)
+      add_library(${_name} INTERFACE ${ARGS_INCLUDES})
 
-  add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
+      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+    else()
+      add_library(${_name} INTERFACE)
+    endif()
 
-  PCL_ADD_VERSION_INFO(${_name})
+    target_include_directories(${_name} INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+    )
 
-  target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
-
-  target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
-
-  if(MSVC)
-    target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+  else()
+    add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
+  
+    PCL_ADD_VERSION_INFO(${_name})
+  
+    target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+  
+    target_include_directories(${_name} PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+    )
+  
+    target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
+  
+    if(MSVC)
+      target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+    endif()
+  
+    set_target_properties(${_name} PROPERTIES
+      VERSION ${PCL_VERSION}
+      SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
+      DEFINE_SYMBOL "PCLAPI_EXPORTS")
+    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
-
-  set_target_properties(${_name} PROPERTIES
-    VERSION ${PCL_VERSION}
-    SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
-    DEFINE_SYMBOL "PCLAPI_EXPORTS")
-  set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
   install(TARGETS ${_name}
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
@@ -400,16 +432,10 @@ macro(PCL_ADD_TEST _name _exename)
 
   #Only applies to MSVC
   if(MSVC)
-    #Requires CMAKE version 3.13.0
-    if(CMAKE_VERSION VERSION_LESS "3.13.0" AND (NOT ArgumentWarningShown))
-      message(WARNING "Arguments for unit test projects are not added - this requires at least CMake 3.13. Can be added manually in \"Project settings -> Debugging -> Command arguments\"")
-      SET (ArgumentWarningShown TRUE PARENT_SCOPE)
-    else()
-      #Only add if there are arguments to test
-      if(ARGS_ARGUMENTS)
-        string (REPLACE ";" " " ARGS_ARGUMENTS_STR "${ARGS_ARGUMENTS}")
-        set_target_properties(${_exename} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS ${ARGS_ARGUMENTS_STR})
-      endif()
+    #Only add if there are arguments to test
+    if(ARGS_ARGUMENTS)
+      string (REPLACE ";" " " ARGS_ARGUMENTS_STR "${ARGS_ARGUMENTS}")
+      set_target_properties(${_exename} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS ${ARGS_ARGUMENTS_STR})
     endif()
   endif()
 
@@ -450,15 +476,10 @@ function(PCL_ADD_BENCHMARK _name)
   if(MSVC)
     #Requires CMAKE version 3.13.0
     get_target_property(BenchmarkArgumentWarningShown run_benchmarks PCL_BENCHMARK_ARGUMENTS_WARNING_SHOWN)
-    if(CMAKE_VERSION VERSION_LESS "3.13.0" AND (NOT BenchmarkArgumentWarningShown))
-      message(WARNING "Arguments for benchmark projects are not added - this requires at least CMake 3.13. Can be added manually in \"Project settings -> Debugging -> Command arguments\"")
-      set_target_properties(run_benchmarks PROPERTIES PCL_BENCHMARK_ARGUMENTS_WARNING_SHOWN TRUE)
-    else()
-      #Only add if there are arguments to test
-      if(ARGS_ARGUMENTS)
-        string (REPLACE ";" " " ARGS_ARGUMENTS_STR "${ARGS_ARGUMENTS}")
-        set_target_properties(benchmark_${_name} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS ${ARGS_ARGUMENTS_STR})
-      endif()
+    #Only add if there are arguments to test
+    if(ARGS_ARGUMENTS)
+      string (REPLACE ";" " " ARGS_ARGUMENTS_STR "${ARGS_ARGUMENTS}")
+      set_target_properties(benchmark_${_name} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS ${ARGS_ARGUMENTS_STR})
     endif()
   endif()
 

@@ -42,18 +42,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::DinastGrabber (const int device_position)
-  : image_width_ (320)
-  , image_height_ (240)
-  , sync_packet_size_ (512)
-  , fov_ (64. * M_PI / 180.)
-  , context_ (nullptr)
-  , device_handle_ (nullptr)
-  , bulk_ep_ (std::numeric_limits<unsigned char>::max ())
-  , second_image_ (false)
-  , running_ (false)
 {
-  image_size_ = image_width_ * image_height_;
-  dist_max_2d_ = 1. / (image_width_ / 2.);
   onInit(device_position);
   
   point_cloud_signal_ = createSignal<sig_cb_dinast_point_cloud> ();
@@ -364,7 +353,7 @@ pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
                                       int length)
 {
   // The direction of the transfer is inferred from the requesttype field of the setup packet.
-  unsigned char requesttype = (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN);
+  const unsigned char requesttype = (static_cast<unsigned char>(LIBUSB_RECIPIENT_DEVICE) | static_cast<unsigned char>(LIBUSB_REQUEST_TYPE_VENDOR) | static_cast<unsigned char>(LIBUSB_ENDPOINT_IN));
   // The value field for the setup packet
   std::uint16_t value = 0x02;
   // The index field for the setup packet
@@ -388,7 +377,7 @@ pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
                                       int length)
 {
   // The direction of the transfer is inferred from the requesttype field of the setup packet.
-  unsigned char requesttype = (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT);
+  const unsigned char requesttype = (static_cast<unsigned char>(LIBUSB_RECIPIENT_DEVICE) | static_cast<unsigned char>(LIBUSB_REQUEST_TYPE_VENDOR) | static_cast<unsigned char>(LIBUSB_ENDPOINT_OUT));
   // The value field for the setup packet
   std::uint16_t value = 0x01;
   // The index field for the setup packet

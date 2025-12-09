@@ -101,8 +101,18 @@ public:
       point_representation_;
   using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_indices_;
 
-  using KdTree = pcl::search::KdTree<PointTarget>;
-  using KdTreePtr = typename KdTree::Ptr;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::KdTree;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreePtr;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeConstPtr;
+
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeReciprocal;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeReciprocalPtr;
+  using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::
+      KdTreeReciprocalConstPtr;
 
   using PointCloudSource = pcl::PointCloud<PointSource>;
   using PointCloudSourcePtr = typename PointCloudSource::Ptr;
@@ -122,7 +132,7 @@ public:
    * Sets the number of neighbors to be considered in the target point cloud (k_) to 10.
    */
   CorrespondenceEstimationNormalShooting()
-  : source_normals_(), source_normals_transformed_(), k_(10)
+  : source_normals_(), source_normals_transformed_()
   {
     corr_name_ = "CorrespondenceEstimationNormalShooting";
   }
@@ -156,9 +166,9 @@ public:
 
   /** \brief Blob method for setting the source normals */
   void
-  setSourceNormals(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setSourceNormals(const pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
-    NormalsPtr cloud(new PointCloudNormals);
+    const NormalsPtr cloud(new PointCloudNormals);
     fromPCLPointCloud2(*cloud2, *cloud);
     setSourceNormals(cloud);
   }
@@ -172,7 +182,7 @@ public:
   void
   determineCorrespondences(
       pcl::Correspondences& correspondences,
-      double max_distance = std::numeric_limits<double>::max()) override;
+      const double max_distance = std::numeric_limits<double>::max()) override;
 
   /** \brief Determine the reciprocal correspondences between input and target cloud.
    * A correspondence is considered reciprocal if both Src_i has Tgt_i as a
@@ -185,7 +195,7 @@ public:
   void
   determineReciprocalCorrespondences(
       pcl::Correspondences& correspondences,
-      double max_distance = std::numeric_limits<double>::max()) override;
+      const double max_distance = std::numeric_limits<double>::max()) override;
 
   /** \brief Set the number of nearest neighbours to be considered in the target
    * point cloud. By default, we use k = 10 nearest neighbors.
@@ -193,7 +203,7 @@ public:
    * \param[in] k the number of nearest neighbours to be considered
    */
   inline void
-  setKSearch(unsigned int k)
+  setKSearch(const unsigned int k)
   {
     k_ = k;
   }
@@ -238,7 +248,7 @@ private:
   NormalsPtr source_normals_transformed_;
 
   /** \brief The number of neighbours to be considered in the target point cloud */
-  unsigned int k_;
+  unsigned int k_{10};
 };
 } // namespace registration
 } // namespace pcl

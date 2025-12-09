@@ -38,7 +38,7 @@ public:
   using CacheIterator = typename Cache::iterator;
 
   LRUCache (std::size_t c) :
-      capacity_ (c), size_ (0)
+      capacity_ (c)
   {
     assert(capacity_ != 0);
   }
@@ -169,7 +169,7 @@ public:
   std::size_t capacity_;
 
   // Current cache size in kilobytes
-  std::size_t size_;
+  std::size_t size_{0};
 
   // LRU key index LRU[0] ... MRU[N]
   KeyIndex key_index_;

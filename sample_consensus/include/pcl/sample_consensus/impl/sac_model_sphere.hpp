@@ -41,7 +41,6 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 
-#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_sphere.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -354,14 +353,20 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
     return;
   }
 
-  OptimizationFunctor functor (this, inliers);
-  Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
-  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, float> lm (num_diff);
-  int info = lm.minimize (optimized_coefficients);
+  Eigen::ArrayXf pts_x(inliers.size());
+  Eigen::ArrayXf pts_y(inliers.size());
+  Eigen::ArrayXf pts_z(inliers.size());
+  std::size_t pos = 0;
+  for(const auto& index : inliers) {
+    pts_x[pos] = (*input_)[index].x;
+    pts_y[pos] = (*input_)[index].y;
+    pts_z[pos] = (*input_)[index].z;
+    ++pos;
+  }
+  pcl::internal::optimizeModelCoefficientsSphere(optimized_coefficients, pts_x, pts_y, pts_z);
 
-  // Compute the L2 norm of the residuals
-  PCL_DEBUG ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g \nFinal solution: %g %g %g %g\n",
-             info, lm.fvec.norm (), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3], optimized_coefficients[0], optimized_coefficients[1], optimized_coefficients[2], optimized_coefficients[3]);
+  PCL_DEBUG ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] Initial solution: %g %g %g %g \nFinal solution: %g %g %g %g\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3], optimized_coefficients[0], optimized_coefficients[1], optimized_coefficients[2], optimized_coefficients[3]);
 }
 
 //////////////////////////////////////////////////////////////////////////

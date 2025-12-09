@@ -42,6 +42,7 @@
 #include <memory>
 #include <mutex>
 #include <random>
+#include <list>
 
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>
@@ -160,8 +161,15 @@ namespace pcl
         void
         queryFrustum (const double planes[24], std::list<std::string>& file_names, const std::uint32_t query_depth, const bool skip_vfc_check = false);
 
+        /** \warning This function is only available if the visualization module is available and the preprocessor symbol `PCL_VISUALIZATION_AVAILABLE` is defined.
+         */
+#ifdef PCL_VISUALIZATION_AVAILABLE
         void
         queryFrustum (const double planes[24], const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix, std::list<std::string>& file_names, const std::uint32_t query_depth, const bool skip_vfc_check = false);
+#else
+        void
+        queryFrustum (const double planes[24], const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix, std::list<std::string>& file_names, const std::uint32_t query_depth, const bool skip_vfc_check = false) = delete;
+#endif
 
         //point extraction
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 

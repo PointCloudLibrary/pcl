@@ -132,7 +132,7 @@ CMake window. Let's check also the `Advanced` checkbox to show some advanced CMa
 variable value, we can either browse the CMake variables to look for it, or we can use the `Search:` field to type the variable name.
 
 .. image:: images/windows/cmake_grouped_advanced.png
-    :alt: CMake groupped and advanced variables
+    :alt: CMake grouped and advanced variables
     :align: center
 	
 Let's check whether CMake did actually find the needed third party dependencies or not :
@@ -332,3 +332,6 @@ Using PCL
 We finally managed to compile the Point Cloud Library (PCL) as binaries for
 Windows. You can start using them in your project by following the
 :ref:`using_pcl_pcl_config` tutorial. 
+
+.. note::
+	You may get errors when your program is linked if you use specific point types that are not used so often (so for example `pcl::PointXYZ` and `pcl::PointXYZI` are usually not affected). Of course, the first thing you should check is whether you correctly link to all PCL libraries (`target_link_libraries(<my_executable> ${PCL_LIBRARIES})` in CMake). The next thing you can try is adding `#define PCL_NO_PRECOMPILE` before including any PCL headers. The background is that on Windows, PCL is always compiled with `PCL_ONLY_CORE_POINT_TYPES` enabled, otherwise some PCL modules (e.g. pcl_features) would fail to build due to limitations of the Windows linker. The effect is that the templated classes are only instantiated for some commonly used point types, not for all. For further explanations, see the :ref:`adding_custom_ptype` tutorial.

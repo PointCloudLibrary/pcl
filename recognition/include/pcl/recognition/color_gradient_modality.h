@@ -240,7 +240,7 @@ namespace pcl
     private:
 
       /** \brief Determines whether variable numbers of features are extracted or not. */
-      bool variable_feature_nr_;
+      bool variable_feature_nr_{false};
 
       /** \brief Stores a smoothed version of the input cloud. */
 	    pcl::PointCloud<pcl::RGB>::Ptr smoothed_input_;
@@ -249,15 +249,15 @@ namespace pcl
       FeatureSelectionMethod feature_selection_method_;
 
       /** \brief The threshold applied on the gradient magnitudes (for quantization). */
-      float gradient_magnitude_threshold_;
+      float gradient_magnitude_threshold_{10.0f};
       /** \brief The threshold applied on the gradient magnitudes for feature extraction. */
-      float gradient_magnitude_threshold_feature_extraction_;
+      float gradient_magnitude_threshold_feature_extraction_{55.0f};
 
       /** \brief The point cloud which holds the max-RGB gradients. */
       pcl::PointCloud<pcl::GradientXY> color_gradients_;
 
       /** \brief The spreading size. */
-      std::size_t spreading_size_;
+      std::size_t spreading_size_{8};
   
       /** \brief The map which holds the quantized max-RGB gradients. */
       pcl::QuantizedMap quantized_color_gradients_;
@@ -274,12 +274,8 @@ namespace pcl
 template <typename PointInT>
 pcl::ColorGradientModality<PointInT>::
 ColorGradientModality ()
-  : variable_feature_nr_ (false)
-  , smoothed_input_ (new pcl::PointCloud<pcl::RGB> ())
+  : smoothed_input_ (new pcl::PointCloud<pcl::RGB> ())
   , feature_selection_method_ (DISTANCE_MAGNITUDE_SCORE)
-  , gradient_magnitude_threshold_ (10.0f)
-  , gradient_magnitude_threshold_feature_extraction_ (55.0f)
-  , spreading_size_ (8)
 {
 }
 
@@ -372,7 +368,7 @@ processInputData ()
 
 	convolution.setInputCloud (rgb_input_);
 	convolution.setKernel (gaussian_kernel);
-
+  convolution.setBordersPolicy(pcl::filters::Convolution<pcl::RGB, pcl::RGB>::BORDERS_POLICY_DUPLICATE);
   convolution.convolve (*smoothed_input_);
 
   // extract color gradients

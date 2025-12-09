@@ -40,22 +40,17 @@
 
 #include <pcl/common/common.h>
 #include <pcl/filters/uniform_sampling.h>
+#include <pcl/common/point_tests.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
+pcl::UniformSampling<PointT>::applyFilter (Indices &indices)
 {
-  // Has the input dataset been set already?
-  if (!input_)
-  {
-    PCL_WARN ("[pcl::%s::detectKeypoints] No input dataset given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.clear ();
-    return;
-  }
+  // The arrays to be used
+  indices.resize (indices_->size ());
+  removed_indices_->resize (indices_->size ());
 
-  output.height       = 1;                    // downsampling breaks the organized structure
-  output.is_dense     = true;                 // we filter out invalid points
+  int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
 
   Eigen::Vector4f min_p, max_p;
   // Get the minimum and maximum dimensions
@@ -79,35 +74,36 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   // Set up the division multiplier
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
-  removed_indices_->clear();
   // First pass: build a set of leaves with the point index closest to the leaf center
-  for (std::size_t cp = 0; cp < indices_->size (); ++cp)
+  for (const auto& cp : *indices_)
   {
     if (!input_->is_dense)
     {
       // Check if the point is invalid
-      if (!std::isfinite ((*input_)[(*indices_)[cp]].x) || 
-          !std::isfinite ((*input_)[(*indices_)[cp]].y) || 
-          !std::isfinite ((*input_)[(*indices_)[cp]].z))
+      if (!pcl::isXYZFinite ((*input_)[cp]))
       {
         if (extract_removed_indices_)
-          removed_indices_->push_back ((*indices_)[cp]);
+          (*removed_indices_)[rii++] = cp;
         continue;
       }
     }
 
     Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
-    ijk[0] = static_cast<int> (std::floor ((*input_)[(*indices_)[cp]].x * inverse_leaf_size_[0]));
-    ijk[1] = static_cast<int> (std::floor ((*input_)[(*indices_)[cp]].y * inverse_leaf_size_[1]));
-    ijk[2] = static_cast<int> (std::floor ((*input_)[(*indices_)[cp]].z * inverse_leaf_size_[2]));
+    ijk[0] = static_cast<int> (std::floor ((*input_)[cp].x * inverse_leaf_size_[0]));
+    ijk[1] = static_cast<int> (std::floor ((*input_)[cp].y * inverse_leaf_size_[1]));
+    ijk[2] = static_cast<int> (std::floor ((*input_)[cp].z * inverse_leaf_size_[2]));
 
     // Compute the leaf index
     int idx = (ijk - min_b_).dot (divb_mul_);
     Leaf& leaf = leaves_[idx];
+
+    // Increment the count of points in this voxel
+    ++leaf.count;
+
     // First time we initialize the index
     if (leaf.idx == -1)
     {
-      leaf.idx = (*indices_)[cp];
+      leaf.idx = cp;
       continue;
     }
 
@@ -115,30 +111,36 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
     Eigen::Vector4f voxel_center = (ijk.cast<float>() + Eigen::Vector4f::Constant(0.5)) * search_radius_;
     voxel_center[3] = 0;
     // Check to see if this point is closer to the leaf center than the previous one we saved
-    float diff_cur   = ((*input_)[(*indices_)[cp]].getVector4fMap () - voxel_center).squaredNorm ();
+    float diff_cur   = ((*input_)[cp].getVector4fMap () - voxel_center).squaredNorm ();
     float diff_prev  = ((*input_)[leaf.idx].getVector4fMap ()        - voxel_center).squaredNorm ();
 
     // If current point is closer, copy its index instead
     if (diff_cur < diff_prev)
     {
       if (extract_removed_indices_)
-        removed_indices_->push_back (leaf.idx);
-      leaf.idx = (*indices_)[cp];
+        (*removed_indices_)[rii++] = leaf.idx;
+      leaf.idx = cp;
     }
     else
     {
       if (extract_removed_indices_)
-        removed_indices_->push_back ((*indices_)[cp]);
+        (*removed_indices_)[rii++] = cp;
     }
   }
+  removed_indices_->resize(rii);
 
   // Second pass: go over all leaves and copy data
-  output.resize (leaves_.size ());
-  int cp = 0;
-
+  indices.resize (leaves_.size ());
   for (const auto& leaf : leaves_)
-    output[cp++] = (*input_)[leaf.second.idx];
-  output.width = output.size ();
+  {
+    if (leaf.second.count >= min_points_per_voxel_)
+      indices[oii++] = leaf.second.idx;
+  }
+ 
+  indices.resize (oii);
+  if(negative_){
+     indices.swap(*removed_indices_);
+  }
 }
 
 #define PCL_INSTANTIATE_UniformSampling(T) template class PCL_EXPORTS pcl::UniformSampling<T>;

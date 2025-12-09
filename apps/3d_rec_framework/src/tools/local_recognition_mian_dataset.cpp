@@ -22,17 +22,17 @@
 #include <flann/algorithms/dist.h>
 
 void
-getScenesInDirectory(bf::path& dir,
+getScenesInDirectory(pcl_fs::path& dir,
                      std::string& rel_path_so_far,
                      std::vector<std::string>& relative_paths)
 {
   // list models in MODEL_FILES_DIR_ and return list
-  for (const auto& dir_entry : bf::directory_iterator(dir)) {
+  for (const auto& dir_entry : pcl_fs::directory_iterator(dir)) {
     // check if its a directory, then get models in it
-    if (bf::is_directory(dir_entry)) {
+    if (pcl_fs::is_directory(dir_entry)) {
       std::string so_far =
           rel_path_so_far + (dir_entry.path().filename()).string() + "/";
-      bf::path curr_path = dir_entry.path();
+      pcl_fs::path curr_path = dir_entry.path();
       getScenesInDirectory(curr_path, so_far, relative_paths);
     }
     else {
@@ -86,7 +86,7 @@ recognizeAndVisualize(
 {
 
   // read mians scenes
-  bf::path ply_files_dir = scenes_dir;
+  pcl_fs::path ply_files_dir = scenes_dir;
   std::vector<std::string> files;
   std::string start;
   getScenesInDirectory(ply_files_dir, start, files);
@@ -223,18 +223,18 @@ recognizeAndVisualize(
 }
 
 void
-getModelsInDirectory(bf::path& dir,
+getModelsInDirectory(pcl_fs::path& dir,
                      std::string& rel_path_so_far,
                      std::vector<std::string>& relative_paths,
                      std::string& ext)
 {
-  for (const auto& dir_entry : bf::directory_iterator(dir)) {
+  for (const auto& dir_entry : pcl_fs::directory_iterator(dir)) {
     // check if its a directory, then get models in it
-    if (bf::is_directory(dir_entry)) {
+    if (pcl_fs::is_directory(dir_entry)) {
       std::string so_far =
           rel_path_so_far + (dir_entry.path().filename()).string() + "/";
 
-      bf::path curr_path = dir_entry.path();
+      pcl_fs::path curr_path = dir_entry.path();
       getModelsInDirectory(curr_path, so_far, relative_paths, ext);
     }
     else {
@@ -315,8 +315,8 @@ main(int argc, char** argv)
     return -1;
   }
 
-  bf::path models_dir_path = path;
-  if (!bf::exists(models_dir_path)) {
+  pcl_fs::path models_dir_path = path;
+  if (!pcl_fs::exists(models_dir_path)) {
     PCL_ERROR("Models dir path %s does not exist, use -models_dir [dir] option\n",
               path.c_str());
     return -1;
@@ -324,7 +324,7 @@ main(int argc, char** argv)
   std::vector<std::string> files;
   std::string start;
   std::string ext = std::string("ply");
-  bf::path dir = models_dir_path;
+  pcl_fs::path dir = models_dir_path;
   getModelsInDirectory(dir, start, files, ext);
   assert(files.size() == 4);
 

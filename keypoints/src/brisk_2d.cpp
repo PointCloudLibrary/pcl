@@ -54,8 +54,6 @@ const int pcl::keypoints::brisk::Layer::CommonParams::TWOTHIRDSAMPLE = 1;
 /////////////////////////////////////////////////////////////////////////////////////////
 // construct telling the octaves number:
 pcl::keypoints::brisk::ScaleSpace::ScaleSpace (int octaves)
-  : safety_factor_ (1.0)
-  , basic_size_ (12.0)
 {
   if (octaves == 0)
     layers_ = 1;
@@ -1194,7 +1192,7 @@ pcl::keypoints::brisk::ScaleSpace::subpixel2D (
     return (static_cast<float>(coeff6) / 18.0f);
   }
 
-  if (!(H_det > 0 && coeff1 < 0))
+  if (H_det <= 0 || coeff1 >= 0)
   {
     // The maximum must be at the one of the 4 patch corners.
     int tmp_max = coeff3 + coeff4 + coeff5;

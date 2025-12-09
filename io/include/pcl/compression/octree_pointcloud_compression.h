@@ -55,7 +55,7 @@ namespace pcl
   namespace io
   {
     /** \brief @b Octree pointcloud compression class
-     *  \note This class enables compression and decompression of point cloud data based on octree data structures.
+     *  \note This class enables compression and decompression of point cloud data based on octree data structures. It is a lossy compression. See also `PCDWriter` for another way to compress point cloud data.
      *  \note
      *  \note typename: PointT: type of point used in pointcloud
      *  \author Julius Kammerl (julius@kammerl.de)
@@ -106,13 +106,11 @@ namespace pcl
           color_coder_ (),
           point_coder_ (),
           do_voxel_grid_enDecoding_ (doVoxelGridDownDownSampling_arg), i_frame_rate_ (iFrameRate_arg),
-          i_frame_counter_ (0), frame_ID_ (0), point_count_ (0), i_frame_ (true),
-          do_color_encoding_ (doColorEncoding_arg), cloud_with_color_ (false), data_with_color_ (false),
-          point_color_offset_ (0), b_show_statistics_ (showStatistics_arg), 
-          compressed_point_data_len_ (), compressed_color_data_len_ (), selected_profile_(compressionProfile_arg),
+          
+          do_color_encoding_ (doColorEncoding_arg),  b_show_statistics_ (showStatistics_arg), 
+           selected_profile_(compressionProfile_arg),
           point_resolution_(pointResolution_arg), octree_resolution_(octreeResolution_arg),
-          color_bit_resolution_(colorBitResolution_arg),
-          object_count_(0)
+          color_bit_resolution_(colorBitResolution_arg)
         {
           initialization();
         }
@@ -266,22 +264,22 @@ namespace pcl
         /** \brief Static range coder instance */
         StaticRangeCoder entropy_coder_;
 
-        bool do_voxel_grid_enDecoding_;
-        std::uint32_t i_frame_rate_;
-        std::uint32_t i_frame_counter_;
-        std::uint32_t frame_ID_;
-        std::uint64_t point_count_;
-        bool i_frame_;
+        bool do_voxel_grid_enDecoding_{false};
+        std::uint32_t i_frame_rate_{0};
+        std::uint32_t i_frame_counter_{0};
+        std::uint32_t frame_ID_{0};
+        std::uint64_t point_count_{0};
+        bool i_frame_{true};
 
-        bool do_color_encoding_;
-        bool cloud_with_color_;
-        bool data_with_color_;
-        unsigned char point_color_offset_;
+        bool do_color_encoding_{false};
+        bool cloud_with_color_{false};
+        bool data_with_color_{false};
+        unsigned char point_color_offset_{0};
 
         //bool activating statistics
-        bool b_show_statistics_;
-        std::uint64_t compressed_point_data_len_;
-        std::uint64_t compressed_color_data_len_;
+        bool b_show_statistics_{false};
+        std::uint64_t compressed_point_data_len_{0};
+        std::uint64_t compressed_color_data_len_{0};
 
         // frame header identifier
         static const char* frame_header_identifier_;
@@ -291,7 +289,7 @@ namespace pcl
         const double octree_resolution_;
         const unsigned char color_bit_resolution_;
 
-        std::size_t object_count_;
+        std::size_t object_count_{0};
 
       };
 

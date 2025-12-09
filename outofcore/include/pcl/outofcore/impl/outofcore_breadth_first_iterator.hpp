@@ -101,7 +101,7 @@ namespace pcl
         this->currentNode_ = nullptr;
       }
 
-      return (*this);
+      return *this;
     }
 
     ////////////////////////////////////////////////////////////////////////////////

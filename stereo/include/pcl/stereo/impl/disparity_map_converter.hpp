@@ -47,15 +47,7 @@
 
 template <typename PointT>
 pcl::DisparityMapConverter<PointT>::DisparityMapConverter()
-: center_x_(0.0f)
-, center_y_(0.0f)
-, focal_length_(0.0f)
-, baseline_(0.0f)
-, is_color_(false)
-, disparity_map_width_(640)
-, disparity_map_height_(480)
-, disparity_threshold_min_(0.0f)
-, disparity_threshold_max_(std::numeric_limits<float>::max())
+: disparity_threshold_max_(std::numeric_limits<float>::max())
 {}
 
 template <typename PointT>

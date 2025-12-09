@@ -85,13 +85,12 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   PointInT p0 = (*input_)[(*indices_)[0]];
   PointInT p1 = (*input_)[(*indices_)[indices_->size () - 1]];
   PointInT p2 = (*input_)[(*indices_)[indices_->size () / 2]];
-  Eigen::Array4f dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
-  while (!( (dy1dy2[0] != dy1dy2[1]) || (dy1dy2[2] != dy1dy2[1]) ) )
+  while (!pcl::isXYZFinite(p0) || !pcl::isXYZFinite(p1) || !pcl::isXYZFinite(p2) || 
+  (p1.getVector3fMap() - p0.getVector3fMap()).cross(p2.getVector3fMap() - p0.getVector3fMap()).stableNorm() < Eigen::NumTraits<float>::dummy_precision ())
   {
     p0 = (*input_)[(*indices_)[rand () % indices_->size ()]];
     p1 = (*input_)[(*indices_)[rand () % indices_->size ()]];
     p2 = (*input_)[(*indices_)[rand () % indices_->size ()]];
-    dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
   }
     
   pcl::PointCloud<PointInT> normal_calc_cloud;

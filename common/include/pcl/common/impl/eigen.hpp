@@ -308,10 +308,21 @@ eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenve
   computeRoots (scaledMat, eigenvalues);
 
   eigenvalue = eigenvalues (0) * scale;
-
-  scaledMat.diagonal ().array () -= eigenvalues (0);
-
-  eigenvector = detail::getLargest3x3Eigenvector<Vector> (scaledMat).vector;
+  if ( (eigenvalues (1) - eigenvalues (0)) > Eigen::NumTraits < Scalar > ::epsilon ()) {
+    // usual case: first and second are not equal (so first and third are also not equal).
+    // second and third could be equal, but that does not matter here
+    scaledMat.diagonal ().array () -= eigenvalues (0);
+    eigenvector = detail::getLargest3x3Eigenvector<Vector> (scaledMat).vector;
+  }
+  else if ( (eigenvalues (2) - eigenvalues (0)) > Eigen::NumTraits < Scalar > ::epsilon ()) {
+    // first and second equal: choose any unit vector that is orthogonal to third eigenvector
+    scaledMat.diagonal ().array () -= eigenvalues (2);
+    eigenvector = detail::getLargest3x3Eigenvector<Vector> (scaledMat).vector.unitOrthogonal ();
+  }
+  else {
+    // all three equal: just use an arbitrary unit vector
+    eigenvector << Scalar (1.0), Scalar (0.0), Scalar (0.0);
+  }
 }
 
 
@@ -901,8 +912,8 @@ transformBetween2CoordinateSystems (const Eigen::Matrix<Scalar, Eigen::Dynamic, 
   // Identity matrix = transform to CS2 to CS3
   // Note: if CS1 == CS2 --> transformation = T3
   transformation = Eigen::Transform<Scalar, 3, Eigen::Affine>::Identity ();
-  transformation.linear () = T3.linear () * T2.linear ().inverse ();
-  transformation.translation () = to0 - (transformation.linear () * fr0);
+  transformation.linear ().noalias () = T3.linear () * T2.linear ().inverse ();
+  transformation.translation ().noalias () = to0 - (transformation.linear () * fr0);
   return (true);
 }
 

@@ -503,41 +503,11 @@ namespace pcl
   {
     Eigen::Matrix<Scalar, Eigen::Dynamic, 1> line_x;
     Eigen::Matrix<Scalar, Eigen::Dynamic, 1> line_y;
+    line_x.resize (6);
+    line_y.resize (6);
     line_x << origin, x_direction;
     line_y << origin, y_direction;
     return (checkCoordinateSystem<Scalar> (line_x, line_y, norm_limit, dot_limit));
-  }
-
-  inline bool
-  checkCoordinateSystem (const Eigen::Matrix<double, 3, 1> &origin,
-                         const Eigen::Matrix<double, 3, 1> &x_direction,
-                         const Eigen::Matrix<double, 3, 1> &y_direction,
-                         const double norm_limit = 1e-3,
-                         const double dot_limit = 1e-3)
-  {
-    Eigen::Matrix<double, Eigen::Dynamic, 1> line_x;
-    Eigen::Matrix<double, Eigen::Dynamic, 1> line_y;
-    line_x.resize (6);
-    line_y.resize (6);
-    line_x << origin, x_direction;
-    line_y << origin, y_direction;
-    return (checkCoordinateSystem<double> (line_x, line_y, norm_limit, dot_limit));
-  }
-
-  inline bool
-  checkCoordinateSystem (const Eigen::Matrix<float, 3, 1> &origin,
-                         const Eigen::Matrix<float, 3, 1> &x_direction,
-                         const Eigen::Matrix<float, 3, 1> &y_direction,
-                         const float norm_limit = 1e-3,
-                         const float dot_limit = 1e-3)
-  {
-    Eigen::Matrix<float, Eigen::Dynamic, 1> line_x;
-    Eigen::Matrix<float, Eigen::Dynamic, 1> line_y;
-    line_x.resize (6);
-    line_y.resize (6);
-    line_x << origin, x_direction;
-    line_y << origin, y_direction;
-    return (checkCoordinateSystem<float> (line_x, line_y, norm_limit, dot_limit));
   }
 
 /** \brief Compute the transformation between two coordinate systems

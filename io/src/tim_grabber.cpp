@@ -184,8 +184,8 @@ pcl::TimGrabber::start ()
 
   try {
     boost::asio::ip::tcp::resolver resolver (tim_io_service_);
-    tcp_endpoint_ = *resolver.resolve (tcp_endpoint_);
-    tim_socket_.connect (tcp_endpoint_);
+    boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve (tcp_endpoint_);
+    boost::asio::connect(tim_socket_, endpoints);
   }
   catch (std::exception& e)
   {

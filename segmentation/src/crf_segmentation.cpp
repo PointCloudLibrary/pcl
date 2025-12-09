@@ -43,6 +43,6 @@
 #include <pcl/segmentation/impl/crf_segmentation.hpp>
 
 // Instantiations of specific point types
-template class pcl::CrfSegmentation<pcl::PointXYZRGB>;
-template class pcl::CrfSegmentation<pcl::PointXYZRGBA>;
-template class pcl::CrfSegmentation<pcl::PointXYZRGBNormal>;
+template class PCL_EXPORTS pcl::CrfSegmentation<pcl::PointXYZRGB>;
+template class PCL_EXPORTS pcl::CrfSegmentation<pcl::PointXYZRGBA>;
+template class PCL_EXPORTS pcl::CrfSegmentation<pcl::PointXYZRGBNormal>;

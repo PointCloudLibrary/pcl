@@ -82,11 +82,11 @@ public:
     trans(2, 2) = 1; // Rotation around the Z-axis
 
     // Copy the rotation and translation components
-    trans.block(0, 3, 4, 1) = Eigen::Matrix<Scalar, 4, 1>(p[0], p[1], 0, 1.0);
+    trans.template block<4, 1>(0, 3) = Eigen::Matrix<Scalar, 4, 1>(p[0], p[1], 0, 1.0);
 
     // Compute w from the unit quaternion
     Eigen::Rotation2D<Scalar> r(p[2]);
-    trans.topLeftCorner(2, 2) = r.toRotationMatrix();
+    trans.template topLeftCorner<2, 2>() = r.toRotationMatrix();
   }
 };
 } // namespace registration

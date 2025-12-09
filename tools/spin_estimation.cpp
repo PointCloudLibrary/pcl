@@ -167,7 +167,6 @@ main (int argc, char** argv)
   //spin_est.setInputWithNormals (xyznormals, xyznormals);
   spin_est.setInputCloud (xyznormals);
   spin_est.setInputNormals (xyznormals);
-  spin_est.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
   spin_est.setRadiusSearch (radius);
 
   if (find_argument(argc, argv, "-radial") > 0)

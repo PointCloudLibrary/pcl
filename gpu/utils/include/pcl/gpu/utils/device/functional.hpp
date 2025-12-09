@@ -39,15 +39,12 @@
 #define PCL_DEVICE_FUNCTIONAL_HPP_
 
 #include <thrust/functional.h>
+#include <cuda.h>
 
 namespace pcl
 {
     namespace device
     {
-        // Function Objects
-
-        using thrust::unary_function;
-        using thrust::binary_function;
 
         // Arithmetic Operations
 
@@ -79,14 +76,20 @@ namespace pcl
         using thrust::bit_or;
         using thrust::bit_xor;
 
-        template <typename T> struct bit_not : unary_function<T, T>
+        template <typename T> struct bit_not
         {
+            typedef T argument_type;
+            typedef T result_type;
             __forceinline__ __device__ T operator ()(const T& v) const {return ~v;}
         };
 
         // Generalized Identity Operations
 
-        using thrust::identity;    
+        #if CUDA_VERSION >= 13000
+        using cuda::std::identity;
+        #else
+        using thrust::identity;
+        #endif
         using thrust::project1st;
         using thrust::project2nd;
 

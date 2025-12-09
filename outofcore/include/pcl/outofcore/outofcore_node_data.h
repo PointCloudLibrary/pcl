@@ -40,7 +40,12 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/pcl_config.h> // for HAVE_CJSON
+#if defined(HAVE_CJSON)
+#include <cjson/cJSON.h>
+#else
 #include <pcl/outofcore/cJSON.h>
+#endif
 
 #include <pcl/common/eigen.h>
 
@@ -176,7 +181,7 @@ namespace pcl
         /** \brief Metadata (JSON) file pathname (oct_idx extension JSON file) */
         boost::filesystem::path metadata_filename_;
         /** \brief Outofcore library version identifier */
-        int outofcore_version_;
+        int outofcore_version_{0};
 
         /** \brief Computes the midpoint; used when bounding box is changed */
         inline void 

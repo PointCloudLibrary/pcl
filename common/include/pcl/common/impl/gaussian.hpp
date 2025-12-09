@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/common/gaussian.h>
+#include <cassert>
 
 namespace pcl
 {

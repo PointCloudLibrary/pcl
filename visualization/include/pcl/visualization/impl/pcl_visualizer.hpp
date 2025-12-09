@@ -259,9 +259,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!std::isfinite ((*cloud)[i].x) ||
-          !std::isfinite ((*cloud)[i].y) ||
-          !std::isfinite ((*cloud)[i].z))
+      if (!pcl::isXYZFinite((*cloud)[i]))
         continue;
 
       std::copy (&(*cloud)[i].x, &(*cloud)[i].x + 3, &data[ptr]);
@@ -482,7 +480,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
   const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   const std::string &id, int viewport)
 {
-  return (!addPolygon<PointT> (cloud, 0.5, 0.5, 0.5, id, viewport));
+  return (addPolygon<PointT> (cloud, 0.5, 0.5, 0.5, id, viewport));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -603,7 +601,7 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2,
 template <typename P1, typename P2> bool
 pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, const std::string &id, int viewport)
 {
-  return (!addLine (pt1, pt2, 0.5, 0.5, 0.5, id, viewport));
+  return (addLine (pt1, pt2, 0.5, 0.5, 0.5, id, viewport));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -906,6 +904,8 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
       for (vtkIdType x = 0; x < normals->width; x += point_step)
       {
         PointT p = (*cloud)(x, y);
+        if (!pcl::isFinite(p) || !pcl::isNormalFinite((*normals)(x, y)))
+          continue;
         p.x += (*normals)(x, y).normal[0] * scale;
         p.y += (*normals)(x, y).normal[1] * scale;
         p.z += (*normals)(x, y).normal[2] * scale;
@@ -922,14 +922,18 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
         lines->InsertCellPoint (2 * cell_count + 1);
         cell_count ++;
     }
+    nr_normals = cell_count;
   }
   else
   {
     nr_normals = (cloud->size () - 1) / level + 1 ;
     pts = new float[2 * nr_normals * 3];
 
-    for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = j * level)
+    vtkIdType j = 0;
+    for (vtkIdType i = 0; (j < nr_normals) && (i < static_cast<vtkIdType>(cloud->size())); i += level)
     {
+      if (!pcl::isFinite((*cloud)[i]) || !pcl::isNormalFinite((*normals)[i]))
+        continue;
       PointT p = (*cloud)[i];
       p.x += (*normals)[i].normal[0] * scale;
       p.y += (*normals)[i].normal[1] * scale;
@@ -945,7 +949,9 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
       lines->InsertNextCell (2);
       lines->InsertCellPoint (2 * j);
       lines->InsertCellPoint (2 * j + 1);
+      ++j;
     }
+    nr_normals = j;
   }
 
   data->SetArray (&pts[0], 2 * nr_normals * 3, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
@@ -1244,10 +1250,10 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
 
   Eigen::Affine3f source_transformation;
   source_transformation.linear () = source_points->sensor_orientation_.matrix ();
-  source_transformation.translation () = source_points->sensor_origin_.head (3);
+  source_transformation.translation () = source_points->sensor_origin_.template head<3> ();
   Eigen::Affine3f target_transformation;
   target_transformation.linear () = target_points->sensor_orientation_.matrix ();
-  target_transformation.translation () = target_points->sensor_origin_.head (3);
+  target_transformation.translation () = target_points->sensor_origin_.template head<3> ();
 
   int j = 0;
   // Draw lines between the best corresponding points

@@ -401,7 +401,7 @@ TEST (PCL, TransformationEstimationSVD)
   // Check if the estimation with correspondences gives the same results
   Eigen::Matrix4f T_SVD_2;
   pcl::Correspondences corr; corr.reserve (source->size ());
-  for (std::size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
+  for (std::size_t i=0; i<source->size (); ++i) corr.emplace_back(i, i, 0.f);
   trans_est_svd.estimateRigidTransformation(*source, *target, corr, T_SVD_2);
 
   const Eigen::Quaternionf   R_SVD_2 (T_SVD_2.topLeftCorner  <3, 3> ());
@@ -444,7 +444,7 @@ TEST (PCL, TransformationEstimationDualQuaternion)
   // Check if the estimation with correspondences gives the same results
   Eigen::Matrix4f T_DQ_2;
   pcl::Correspondences corr; corr.reserve (source->size ());
-  for (std::size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
+  for (std::size_t i=0; i<source->size (); ++i) corr.emplace_back(i, i, 0.f);
   trans_est_dual_quaternion.estimateRigidTransformation(*source, *target, corr, T_DQ_2);
 
   const Eigen::Quaternionf   R_DQ_2 (T_DQ_2.topLeftCorner  <3, 3> ());
@@ -540,7 +540,7 @@ TEST (PCL, TransformationEstimationLM)
   pcl::Correspondences corr;
   corr.reserve (source->size ());
   for (std::size_t i = 0; i < source->size (); ++i)
-    corr.push_back (pcl::Correspondence (i, i, 0.f));
+    corr.emplace_back(i, i, 0.f);
   trans_est_lm_float.estimateRigidTransformation (*source, *target, corr, T_LM_2_float);
 
   const Eigen::Quaternionf   R_LM_2_float (T_LM_2_float.topLeftCorner  <3, 3> ());
@@ -578,7 +578,7 @@ TEST (PCL, TransformationEstimationLM)
   corr.clear ();
   corr.reserve (source->size ());
   for (std::size_t i = 0; i < source->size (); ++i)
-    corr.push_back (pcl::Correspondence (i, i, 0.f));
+    corr.emplace_back(i, i, 0.f);
   trans_est_lm_double.estimateRigidTransformation (*source, *target, corr, T_LM_2_double);
 
   const Eigen::Quaterniond   R_LM_2_double (T_LM_2_double.topLeftCorner  <3, 3> ());
@@ -733,7 +733,7 @@ main (int argc, char** argv)
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 
-  // Tranpose the cloud_model
+  // Transpose the cloud_model
   /*for (std::size_t i = 0; i < cloud_model.size (); ++i)
   {
   //  cloud_model[i].z += 1;

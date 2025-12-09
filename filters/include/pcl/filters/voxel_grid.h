@@ -45,16 +45,29 @@
 namespace pcl
 {
   /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
+      * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
+      * \param[in] x_idx the index of the X channel
+      * \param[in] y_idx the index of the Y channel
+      * \param[in] z_idx the index of the Z channel
+      * \param[out] min_pt the minimum data point
+      * \param[out] max_pt the maximum data point
+   */
+  PCL_EXPORTS void
+  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
+              Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
+
+  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
     * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
+    * \param[in] indices the point cloud indices that need to be considered
     * \param[in] x_idx the index of the X channel
     * \param[in] y_idx the index of the Y channel
     * \param[in] z_idx the index of the Z channel
     * \param[out] min_pt the minimum data point
     * \param[out] max_pt the maximum data point
-    */
+   */
   PCL_EXPORTS void
-  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
-               Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
+  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const Indices &indices, int x_idx, int y_idx, int z_idx,
+              Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
 
   /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
     * \note Performs internal data filtering as well.
@@ -69,9 +82,29 @@ namespace pcl
     * \param[out] max_pt the maximum data point
     * \param[in] limit_negative \b false if data \b inside of the [min_distance; max_distance] interval should be
     * considered, \b true otherwise.
-    */
+   */
   PCL_EXPORTS void
   getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
+              const std::string &distance_field_name, float min_distance, float max_distance,
+              Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
+
+  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
+    * \note Performs internal data filtering as well.
+    * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
+    * \param[in] indices the point cloud indices that need to be considered
+    * \param[in] x_idx the index of the X channel
+    * \param[in] y_idx the index of the Y channel
+    * \param[in] z_idx the index of the Z channel
+    * \param[in] distance_field_name the name of the dimension to filter data along to
+    * \param[in] min_distance the minimum acceptable value in \a distance_field_name data
+    * \param[in] max_distance the maximum acceptable value in \a distance_field_name data
+    * \param[out] min_pt the minimum data point
+    * \param[out] max_pt the maximum data point
+    * \param[in] limit_negative \b false if data \b inside of the [min_distance; max_distance] interval should be
+    * considered, \b true otherwise.
+   */
+  PCL_EXPORTS void
+  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const Indices &indices, int x_idx, int y_idx, int z_idx,
                const std::string &distance_field_name, float min_distance, float max_distance,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
@@ -196,17 +229,10 @@ namespace pcl
       VoxelGrid () :
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
-        downsample_all_data_ (true),
-        save_leaf_layout_ (false),
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
-        divb_mul_ (Eigen::Vector4i::Zero ()),
-        
-        filter_limit_min_ (std::numeric_limits<float>::lowest()),
-        filter_limit_max_ (std::numeric_limits<float>::max()),
-        filter_limit_negative_ (false),
-        min_points_per_voxel_ (0)
+        divb_mul_ (Eigen::Vector4i::Zero ())
       {
         filter_name_ = "VoxelGrid";
       }
@@ -460,10 +486,10 @@ namespace pcl
       Eigen::Array4f inverse_leaf_size_;
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
-      bool downsample_all_data_;
+      bool downsample_all_data_{true};
 
       /** \brief Set to true if leaf layout information needs to be saved in \a leaf_layout_. */
-      bool save_leaf_layout_;
+      bool save_leaf_layout_{false};
 
       /** \brief The leaf layout information for fast access to cells relative to current position **/
       std::vector<int> leaf_layout_;
@@ -475,16 +501,16 @@ namespace pcl
       std::string filter_field_name_;
 
       /** \brief The minimum allowed filter value a point will be considered from. */
-      double filter_limit_min_;
+      double filter_limit_min_{std::numeric_limits<float>::lowest()};
 
       /** \brief The maximum allowed filter value a point will be considered from. */
-      double filter_limit_max_;
+      double filter_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
-      bool filter_limit_negative_;
+      bool filter_limit_negative_{false};
 
       /** \brief Minimum number of points per voxel for the centroid to be computed */
-      unsigned int min_points_per_voxel_;
+      unsigned int min_points_per_voxel_{0};
 
       using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
@@ -522,17 +548,11 @@ namespace pcl
       VoxelGrid () :
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
-        downsample_all_data_ (true),
-        save_leaf_layout_ (false),
+
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
         div_b_ (Eigen::Vector4i::Zero ()),
-        divb_mul_ (Eigen::Vector4i::Zero ()),
-        
-        filter_limit_min_ (std::numeric_limits<float>::lowest()),
-        filter_limit_max_ (std::numeric_limits<float>::max()),
-        filter_limit_negative_ (false),
-        min_points_per_voxel_ (0)
+        divb_mul_ (Eigen::Vector4i::Zero ())
       {
         filter_name_ = "VoxelGrid";
       }
@@ -808,12 +828,12 @@ namespace pcl
       Eigen::Array4f inverse_leaf_size_;
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
-      bool downsample_all_data_;
+      bool downsample_all_data_{true};
 
       /** \brief Set to true if leaf layout information needs to be saved in \a
         * leaf_layout.
         */
-      bool save_leaf_layout_;
+      bool save_leaf_layout_{false};
 
       /** \brief The leaf layout information for fast access to cells relative
         * to current position
@@ -829,16 +849,16 @@ namespace pcl
       std::string filter_field_name_;
 
       /** \brief The minimum allowed filter value a point will be considered from. */
-      double filter_limit_min_;
+      double filter_limit_min_{std::numeric_limits<float>::lowest()};
 
       /** \brief The maximum allowed filter value a point will be considered from. */
-      double filter_limit_max_;
+      double filter_limit_max_{std::numeric_limits<float>::max()};
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
-      bool filter_limit_negative_;
+      bool filter_limit_negative_{false};
 
       /** \brief Minimum number of points per voxel for the centroid to be computed */
-      unsigned int min_points_per_voxel_;
+      unsigned int min_points_per_voxel_{0};
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param[out] output the resultant point cloud
@@ -846,6 +866,21 @@ namespace pcl
       void
       applyFilter (PCLPointCloud2 &output) override;
   };
+
+  namespace internal
+  {
+    /** \brief Used internally in voxel grid classes.
+      */
+    struct cloud_point_index_idx
+    {
+      unsigned int idx;
+      unsigned int cloud_point_index;
+
+      cloud_point_index_idx() = default;
+      cloud_point_index_idx (unsigned int idx_, unsigned int cloud_point_index_) : idx (idx_), cloud_point_index (cloud_point_index_) {}
+      bool operator < (const cloud_point_index_idx &p) const { return (idx < p.idx); }
+    };
+  }
 }
 
 #ifdef PCL_NO_PRECOMPILE

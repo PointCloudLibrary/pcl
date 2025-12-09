@@ -110,4 +110,4 @@ You should see results similar those below as well as a visualization of the ali
   Loaded 112586 data points from room_scan1.pcd
   Loaded 112624 data points from room_scan2.pcd
   Filtered cloud contains 12433 data points from room_scan2.pcd
-  Normal Distributions Transform has converged:1 score: 0.638694
+  Normal Distributions Transform has converged, score: 0.638694

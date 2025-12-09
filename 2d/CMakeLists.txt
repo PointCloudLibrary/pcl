@@ -2,9 +2,8 @@ set(SUBSYS_NAME 2d)
 set(SUBSYS_DESC "Point cloud 2d")
 set(SUBSYS_DEPS common filters)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS vtk)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -30,13 +29,10 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/morphology.hpp"
 )
 
-if(${VTK_FOUND})
-  set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging)
-endif()
-
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} INCLUDES ${incs} ${impl_incs})
+target_link_libraries(${LIB_NAME} INTERFACE pcl_filters)
+
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} HEADER_ONLY)
 
 #Install include files

@@ -41,6 +41,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/time.h>
 #include <pcl/exceptions.h>
 #include <pcl/console/parse.h>
@@ -54,7 +55,6 @@
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/png_io.h>
-#include <boost/filesystem.hpp>
 
 #include <functional>
 #include <iostream>
@@ -66,19 +66,18 @@ using namespace std::chrono_literals;
 
 std::vector<std::string> getPcdFilesInDir(const std::string& directory)
 {
-  namespace fs = boost::filesystem;
-  fs::path dir(directory);
+  pcl_fs::path dir(directory);
         
-  if (!fs::exists(dir) || !fs::is_directory(dir))
+  if (!pcl_fs::exists(dir) || !pcl_fs::is_directory(dir))
     PCL_THROW_EXCEPTION(pcl::IOException, "Wrong PCD directory");
     
   std::vector<std::string> result;
-  fs::directory_iterator pos(dir);
-  fs::directory_iterator end;           
+  pcl_fs::directory_iterator pos(dir);
+  pcl_fs::directory_iterator end;           
 
   for(; pos != end ; ++pos)
-    if (fs::is_regular_file(pos->status()) )
-      if (fs::extension(*pos) == ".pcd")
+    if (pcl_fs::is_regular_file(pos->status()) )
+      if (pos->path().extension().string() == ".pcd")
         result.push_back(pos->path().string());
     
   return result;  

@@ -44,6 +44,7 @@
 #include <pcl/features/cvfh.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/common/centroid.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void
@@ -96,6 +97,8 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
               static_cast<std::size_t>(normals.size()));
     return;
   }
+  // If tree gives sorted results, we can skip the first one because it is the query point itself
+  const std::size_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
 
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
@@ -124,8 +127,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
         continue;
       }
 
-      // skip index 0, since nn_indices[0] == idx, worth it?
-      for (std::size_t j = 1; j < nn_indices.size (); ++j)
+      for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)
       {
         if (processed[nn_indices[j]]) // Has this point been processed before ?
           continue;

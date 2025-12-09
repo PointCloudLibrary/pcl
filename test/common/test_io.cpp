@@ -52,29 +52,6 @@ PointXYZRGB pt_xyz_rgb;
 PointXYZ pt_xyz;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, concatenateFields)
-{
-  bool status = isSamePointType<PointXYZ, PointXYZ> ();
-  EXPECT_TRUE (status);
-  status = isSamePointType<PointXYZ, PointXY> ();
-  EXPECT_FALSE (status);
-  status = isSamePointType<PointXY, PointXYZ> ();
-  EXPECT_FALSE (status);
-  status = isSamePointType<PointNormal, PointNormal> ();
-  EXPECT_TRUE (status);
-  status = isSamePointType<PointNormal, PointXYZRGBNormal> ();
-  EXPECT_FALSE (status);
-  status = isSamePointType<PointXYZRGB, PointXYZRGB> ();
-  EXPECT_TRUE (status);
-  
-  // Even though it's the "same" type, rgb != rgba
-  status = isSamePointType<PointXYZRGB, PointXYZRGBA> ();
-  EXPECT_FALSE (status);
-  status = isSamePointType<PointXYZRGBA, PointXYZRGB> ();
-  EXPECT_FALSE (status);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, copyPointCloud)
 {
   CloudXYZRGBA cloud_xyz_rgba;
@@ -271,6 +248,128 @@ TEST (PCL, CopyPointCloudWithSameTypes)
   pcl::copyPointCloud (cloud_in_empty, cloud_out);
 
   ASSERT_EQ (0, cloud_out.size ());
+}
+
+TEST (toPCLPointCloud2NoPadding, PointXYZI)
+{
+  pcl::PointCloud<pcl::PointXYZI> cloud;
+  cloud.resize(static_cast<pcl::uindex_t>(2), static_cast<pcl::uindex_t>(2));
+  cloud[0].x = 1.0; cloud[0].y = 2.0; cloud[0].z = 3.0; cloud[0].intensity = 123.0;
+  cloud[1].x = -1.0; cloud[1].y = -2.0; cloud[1].z = -3.0; cloud[1].intensity = -123.0;
+  cloud[2].x = 0.1; cloud[2].y = 0.2; cloud[2].z = 0.3; cloud[2].intensity = 12.3;
+  cloud[3].x = 0.0; cloud[3].y = -1.7; cloud[3].z = 100.0; cloud[3].intensity = 3.14;
+  pcl::PCLPointCloud2 msg;
+  pcl::toPCLPointCloud2(cloud, msg, false);
+  EXPECT_EQ (msg.height, cloud.height);
+  EXPECT_EQ (msg.width, cloud.width);
+  EXPECT_EQ (msg.fields.size(), 4);
+  EXPECT_EQ (msg.fields[0].name, "x");
+  EXPECT_EQ (msg.fields[0].offset, 0);
+  EXPECT_EQ (msg.fields[0].datatype, pcl::PCLPointField::FLOAT32);
+  EXPECT_EQ (msg.fields[0].count, 1);
+  EXPECT_EQ (msg.fields[1].name, "y");
+  EXPECT_EQ (msg.fields[1].offset, 4);
+  EXPECT_EQ (msg.fields[1].datatype, pcl::PCLPointField::FLOAT32);
+  EXPECT_EQ (msg.fields[1].count, 1);
+  EXPECT_EQ (msg.fields[2].name, "z");
+  EXPECT_EQ (msg.fields[2].offset, 8);
+  EXPECT_EQ (msg.fields[2].datatype, pcl::PCLPointField::FLOAT32);
+  EXPECT_EQ (msg.fields[2].count, 1);
+  EXPECT_EQ (msg.fields[3].name, "intensity");
+  EXPECT_EQ (msg.fields[3].offset, 12);
+  EXPECT_EQ (msg.fields[3].datatype, pcl::PCLPointField::FLOAT32);
+  EXPECT_EQ (msg.fields[3].count, 1);
+  EXPECT_EQ (msg.point_step, 16);
+  EXPECT_EQ (msg.row_step, 16*cloud.width);
+  EXPECT_EQ (msg.data.size(), 16*cloud.width*cloud.height);
+  EXPECT_EQ (msg.at<float>(0, 0), 1.0f);
+  EXPECT_EQ (msg.at<float>(3, 4), -1.7f);
+  EXPECT_EQ (msg.at<float>(1, 8), -3.0f);
+  EXPECT_EQ (msg.at<float>(2, 12), 12.3f);
+  pcl::PointCloud<pcl::PointXYZI> cloud2;
+  pcl::fromPCLPointCloud2(msg, cloud2);
+  for(std::size_t i=0; i<cloud2.size(); ++i) {
+    EXPECT_EQ (cloud[i].x, cloud2[i].x);
+    EXPECT_EQ (cloud[i].y, cloud2[i].y);
+    EXPECT_EQ (cloud[i].z, cloud2[i].z);
+    EXPECT_EQ (cloud[i].intensity, cloud2[i].intensity);
+  }
+}
+
+TEST(PCL, fromPCLPointCloud2CastingXYZI)
+{
+  // test fromPCLPointCloud2, but in PCLPointCloud2 the fields have different types than in PointXYZI
+  pcl::PCLPointCloud2 msg;
+  msg.height = 2;
+  msg.width = 2;
+  msg.fields.resize(4);
+  msg.fields[0].name = "x";
+  msg.fields[0].offset = 0;
+  msg.fields[0].datatype = pcl::PCLPointField::FLOAT64;
+  msg.fields[0].count = 1;
+  msg.fields[1].name = "y";
+  msg.fields[1].offset = 8;
+  msg.fields[1].datatype = pcl::PCLPointField::FLOAT64;
+  msg.fields[1].count = 1;
+  msg.fields[2].name = "z";
+  msg.fields[2].offset = 16;
+  msg.fields[2].datatype = pcl::PCLPointField::FLOAT64;
+  msg.fields[2].count = 1;
+  msg.fields[3].name = "intensity";
+  msg.fields[3].offset = 24;
+  msg.fields[3].datatype = pcl::PCLPointField::UINT16;
+  msg.fields[3].count = 1;
+  msg.point_step = 32;
+  msg.row_step = 32*msg.width;
+  msg.data.resize(32*msg.width*msg.height);
+  for(std::size_t i=0; i<msg.width*msg.height; ++i) {
+    msg.at<double>(i, 0) = 1.0*i;
+    msg.at<double>(i, 8) = -1.6*i;
+    msg.at<double>(i, 16) = -3.141*i;
+    msg.at<std::uint16_t>(i, 24) = 123*i;
+  }
+  pcl::PointCloud<pcl::PointXYZI> cloud;
+  pcl::fromPCLPointCloud2(msg, cloud);
+  for(std::size_t i=0; i<msg.width*msg.height; ++i) {
+    EXPECT_EQ(cloud[i].x, 1.0f*i);
+    EXPECT_EQ(cloud[i].y, -1.6f*i);
+    EXPECT_EQ(cloud[i].z, -3.141f*i);
+    EXPECT_EQ(cloud[i].intensity, 123.0f*i);
+  }
+}
+
+TEST(PCL, fromPCLPointCloud2CastingSHOT352)
+{
+  // test whether casting also works if point type contains arrays
+  pcl::PCLPointCloud2 msg;
+  msg.height = 2;
+  msg.width = 2;
+  msg.fields.resize(2);
+  msg.fields[0].name = "shot";
+  msg.fields[0].offset = 0;
+  msg.fields[0].datatype = pcl::PCLPointField::INT64;
+  msg.fields[0].count = 352;
+  msg.fields[1].name = "rf";
+  msg.fields[1].offset = 352*8;
+  msg.fields[1].datatype = pcl::PCLPointField::FLOAT64;
+  msg.fields[1].count = 9;
+  msg.point_step = (352*8+9*8);
+  msg.row_step = msg.point_step*msg.width;
+  msg.data.resize(msg.point_step*msg.width*msg.height);
+  for(std::size_t i=0; i<msg.width*msg.height; ++i) {
+    for(std::size_t j=0; j<352; ++j)
+      msg.at<std::int64_t>(i, 8*j) = 1000*i+j;
+    for(std::size_t j=0; j<9; ++j)
+      msg.at<double>(i, 352*8+8*j) = (10*i+j)/10.0;
+  }
+  pcl::PointCloud<pcl::SHOT352> cloud;
+  pcl::fromPCLPointCloud2(msg, cloud);
+  for(std::size_t i=0; i<msg.width*msg.height; ++i) {
+    for(std::size_t j=0; j<352; ++j)
+      EXPECT_EQ(cloud[i].descriptor[j], 1000*i+j);
+    for(std::size_t j=0; j<9; ++j)
+      EXPECT_EQ(cloud[i].rf[j], (10*i+j)/10.0f);
+  }
 }
 
 /* ---[ */

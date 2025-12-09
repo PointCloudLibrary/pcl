@@ -113,8 +113,9 @@ namespace pcl
         /** \brief Pass the input dataset that the search will be performed on.
           * \param[in] cloud a const pointer to the PointCloud data
           * \param[in] indices the point indices subset that is to be used from the cloud
+          * \return True if successful, false if an error occurred, for example because the point cloud is unsuited for the search method.
           */
-        virtual void
+        virtual bool
         setInputCloud (const PointCloudConstPtr& cloud, 
                        const IndicesConstPtr &indices = IndicesConstPtr ());
 
@@ -383,7 +384,7 @@ namespace pcl
             pc.resize (cloud.size ());
             for (std::size_t i = 0; i < cloud.size (); ++i)
               pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (cloud[i], pc[i]));
-            radiusSearch (pc, Indices (), radius, k_indices, k_sqr_distances, max_nn);
+            radiusSearch (pc, Indices(), radius, k_indices, k_sqr_distances, max_nn);
           }
           else
           {
@@ -394,6 +395,19 @@ namespace pcl
           }
         }
 
+        /** \brief Set the number of threads to use for searching over multiple points or indices
+         * \param[in] nr_threads the number of threads to use (0 automatically sets the threads based on the hardware)
+         */
+        void setNumberOfThreads(unsigned int nr_threads) {
+          #ifdef _OPENMP
+          num_threads_ = nr_threads != 0 ? nr_threads : omp_get_num_procs();
+          #else
+          if (nr_threads != 1) {
+            PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
+          }
+          #endif
+        }
+
       protected:
         void 
         sortResults (Indices& indices, std::vector<float>& distances) const;
@@ -402,6 +416,9 @@ namespace pcl
         IndicesConstPtr indices_;
         bool sorted_results_;
         std::string name_;
+
+        /** \brief The number of threads to use when searching over multiple points or indices */
+        unsigned int num_threads_{1};
         
       private:
         struct Compare

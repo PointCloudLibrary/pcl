@@ -252,7 +252,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
 
   if (poly_data->GetPoints () == nullptr)
   {
-    PCL_ERROR ("[pcl::io::vtk2mesh] Given vtkPolyData is misformed (contains nullpointer instead of points).\n");
+    PCL_ERROR ("[pcl::io::vtk2mesh] Given vtkPolyData is malformed (contains nullpointer instead of points).\n");
     return (0);
   }
   vtkSmartPointer<vtkPoints> mesh_points = poly_data->GetPoints ();
@@ -410,7 +410,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::TextureMe
     {
       float tex[2];
       texture_coords->GetTupleValue (i, tex);
-      mesh.tex_coordinates.front ().push_back (Eigen::Vector2f (tex[0], tex[1]));
+      mesh.tex_coordinates.front ().emplace_back(tex[0], tex[1]);
     }
   }
   else
@@ -531,7 +531,7 @@ pcl::io::saveRangeImagePlanarFilePNG (
     for (int x = 0; x < dims[0]; x++)
       {
       float* pixel = static_cast<float*>(image->GetScalarPointer(x,y,0));
-      pixel[0] = range_image(y,x).range;
+      *pixel = range_image(x,y).range;
       }
     }
 

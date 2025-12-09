@@ -49,6 +49,7 @@
 #include <pcl/io/ascii_io.h>
 #include <pcl/io/obj_io.h>
 #include <fstream>
+#include <iomanip> // for setprecision
 #include <locale>
 #include <stdexcept>
 
@@ -1081,7 +1082,7 @@ TEST(PCL, OBJRead)
   fs.close ();
 
   pcl::PCLPointCloud2 blob;
-  pcl::OBJReader objreader = pcl::OBJReader();
+  pcl::OBJReader objreader;
   int res = objreader.read ("test_obj.obj", blob);
   EXPECT_NE (res, -1);
   EXPECT_EQ (blob.width, 8);
@@ -1120,8 +1121,53 @@ TEST(PCL, OBJRead)
   EXPECT_EQ (blob.fields[5].count, 1);
   EXPECT_EQ (blob.fields[5].datatype, pcl::PCLPointField::FLOAT32);
 
+  auto fblob = reinterpret_cast<const float*>(blob.data.data());
+
+  size_t offset_p = 0;
+  size_t offset_vn = blob.fields[3].offset / 4;
+  for (size_t i = 0; i < blob.width; ++i, offset_p += 6, offset_vn += 6)
+  {
+    Eigen::Vector3f expected_normal =
+        Eigen::Vector3f(fblob[offset_p], fblob[offset_p + 1], fblob[offset_p + 2])
+            .normalized();
+
+    Eigen::Vector3f actual_normal =
+        Eigen::Vector3f(fblob[offset_vn], fblob[offset_vn + 1], fblob[offset_vn + 2])
+            .normalized();
+
+    EXPECT_NEAR(expected_normal.x(), actual_normal.x(), 1e-4);
+    EXPECT_NEAR(expected_normal.y(), actual_normal.y(), 1e-4);
+    EXPECT_NEAR(expected_normal.z(), actual_normal.z(), 1e-4);
+  }
+
   remove ("test_obj.obj");
   remove ("test_obj.mtl");
+}
+
+TEST(PCL, loadOBJWithoutFaces)
+{
+  std::ofstream fs;
+  fs.open ("test_obj.obj");
+  fs << "v -1.000000 -1.000000 1.000000\n"
+        "v -1.000000 1.000000 1.000000\n"
+        "v 1.000000 -1.000000 1.000000\n"
+        "v 1.000000 1.000000 1.000000\n"
+        "vn -1.0000 0.0000 0.0000\n"
+        "vn 0.0000 0.0000 -1.0000\n"
+        "vn 1.0000 0.0000 0.0000\n"
+        "vn 0.0000 1.0000 0.0000\n";
+
+  fs.close ();
+  pcl::PointCloud<pcl::PointNormal> point_cloud;
+  pcl::io::loadOBJFile("test_obj.obj", point_cloud);
+  EXPECT_EQ(point_cloud.size(), 4);
+  EXPECT_NEAR(point_cloud[0].normal_x, -1.0, 1e-5);
+  EXPECT_NEAR(point_cloud[1].normal_z, -1.0, 1e-5);
+  EXPECT_NEAR(point_cloud[2].normal_x, 1.0, 1e-5);
+  EXPECT_NEAR(point_cloud[3].normal_y, 1.0, 1e-5);
+  EXPECT_NEAR(point_cloud[1].normal_y, 0.0, 1e-5);
+  EXPECT_NEAR(point_cloud[3].normal_z, 0.0, 1e-5);
+  remove ("test_obj.obj");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1682,6 +1728,30 @@ TYPED_TEST (AutoIOTest, AutoLoadCloudFiles)
   remove ("test_autoio.pcd");
   remove ("test_autoio.ply");
   remove ("test_autoio.ifs");
+}
+
+TEST(PCL, IFS)
+{
+  // Write a cloud to an IFS file and check if it is the same after loading
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  cloud->push_back(pcl::PointXYZ(1.0, 2.0, 3.0));
+  cloud->push_back(pcl::PointXYZ(4.0, 5.0, 6.0));
+
+  pcl::io::saveIFSFile("test.ifs", *cloud);
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr loaded(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::io::loadIFSFile("test.ifs", *loaded);
+
+  EXPECT_EQ(cloud->size(), loaded->size());
+  for (size_t i = 0; i < cloud->size(); ++i)
+  {
+    const auto& src = cloud->points[i];
+    const auto& dst = loaded->points[i];
+    EXPECT_EQ(src.x, dst.x);
+    EXPECT_EQ(src.y, dst.y);
+    EXPECT_EQ(src.z, dst.z);
+  }
+  remove("test.ifs");
 }
 
 /* ---[ */

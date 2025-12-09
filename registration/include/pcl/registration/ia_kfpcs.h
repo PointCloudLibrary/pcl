@@ -44,8 +44,18 @@ namespace registration {
  * on keypoints as described in: "Markerless point cloud registration with
  * keypoint-based 4-points congruent sets", Pascal Theiler, Jan Dirk Wegner, Konrad
  * Schindler. ISPRS Annals II-5/W2, 2013. Presented at ISPRS Workshop Laser Scanning,
- * Antalya, Turkey, 2013. \note Method has since been improved and some variations to
- * the paper exist. \author P.W.Theiler \ingroup registration
+ * Antalya, Turkey, 2013.
+ * \note Method has since been improved and some variations to the paper exist.
+ *
+ * The main differences to FPCSInitialAlignment are:
+ * <ol>
+ *   <li> KFPCSInitialAlignment stores all solution candidates instead of only the best
+ * one
+ *   <li> KFPCSInitialAlignment uses an MSAC approach to score candidates instead of
+ * counting inliers
+ * </ol>
+ * \author P.W.Theiler
+ * \ingroup registration
  */
 template <typename PointSource,
           typename PointTarget,
@@ -187,8 +197,6 @@ protected:
   using FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::fitness_score_;
   using FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
       score_threshold_;
-  using FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-      linkMatchWithBase;
   using FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::validateMatch;
 
   /** \brief Internal computation initialization. */
@@ -235,23 +243,23 @@ protected:
   /** \brief Lower boundary for translation costs calculation.
    * \note If not set by the user, the translation costs are not used during evaluation.
    */
-  float lower_trl_boundary_;
+  float lower_trl_boundary_{-1.f};
 
   /** \brief Upper boundary for translation costs calculation.
    * \note If not set by the user, it is calculated from the estimated overlap and the
    * diameter of the point cloud.
    */
-  float upper_trl_boundary_;
+  float upper_trl_boundary_{-1.f};
 
   /** \brief Weighting factor for translation costs (standard = 0.5). */
-  float lambda_;
+  float lambda_{0.5f};
 
   /** \brief Container for resulting vector of registration candidates. */
   MatchingCandidates candidates_;
 
   /** \brief Flag if translation score should be used in validation (internal
    * calculation). */
-  bool use_trl_score_;
+  bool use_trl_score_{false};
 
   /** \brief Subset of input indices on which we evaluate candidates.
    * To speed up the evaluation, we only use a fix number of indices defined during

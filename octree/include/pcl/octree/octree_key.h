@@ -143,7 +143,7 @@ public:
       static_cast<unsigned char>(sizeof(uindex_t) * 8);
 
   // Indices addressing a voxel at (X, Y, Z)
-
+  // NOLINTBEGIN(modernize-use-default-member-init)
   union {
     struct {
       uindex_t x;
@@ -152,6 +152,7 @@ public:
     };
     uindex_t key_[3];
   };
+  // NOLINTEND(modernize-use-default-member-init)
 };
 } // namespace octree
 } // namespace pcl

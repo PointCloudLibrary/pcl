@@ -34,7 +34,7 @@
 
 #ifndef METS_ABSTRACT_SEARCH_HH_
 #define METS_ABSTRACT_SEARCH_HH_
-
+//NOLINTBEGIN
 namespace mets {
 
   /// @defgroup common Common components
@@ -346,5 +346,5 @@ mets::best_ever_solution::accept(const mets::feasible_solution& sol)
     }
   return false;
 }
-
+//NOLINTEND
 #endif

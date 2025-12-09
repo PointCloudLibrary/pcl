@@ -411,78 +411,6 @@ pcl::visualization::PointCloudColorHandlerHSVField<pcl::PCLPointCloud2>::getColo
   return scalars;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2>::PointCloudColorHandlerGenericField (
-    const pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloudConstPtr &cloud,
-    const std::string &field_name) : 
-  pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloudColorHandler (cloud),
-  field_name_ (field_name)
-{
-  field_idx_  = pcl::getFieldIndex (*cloud, field_name);
-  capable_ = field_idx_ != -1;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-vtkSmartPointer<vtkDataArray>
-pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2>::getColor () const
-{
-  if (!capable_ || !cloud_)
-    return nullptr;
-
-  auto scalars = vtkSmartPointer<vtkFloatArray>::New ();
-  scalars->SetNumberOfComponents (1);
-
-  vtkIdType nr_points = cloud_->width * cloud_->height;
-  scalars->SetNumberOfTuples (nr_points);
-
-  float* colors = new float[nr_points];
-  float field_data;
-  int j = 0;
-  int point_offset = cloud_->fields[field_idx_].offset;
-
-  // If XYZ present, check if the points are invalid
-  int x_idx = pcl::getFieldIndex (*cloud_, "x");
-  if (x_idx != -1)
-  {
-    float x_data, y_data, z_data;
-    int x_point_offset = cloud_->fields[x_idx].offset;
-    
-    // Color every point
-    for (vtkIdType cp = 0; cp < nr_points; ++cp,
-                                           point_offset += cloud_->point_step, 
-                                           x_point_offset += cloud_->point_step)
-    {
-      memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
-      memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
-      memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
-      if (!std::isfinite (x_data) || !std::isfinite (y_data) || !std::isfinite (z_data))
-        continue;
-
-      // Copy the value at the specified field
-      memcpy (&field_data, &cloud_->data[point_offset], pcl::getFieldSize (cloud_->fields[field_idx_].datatype));
-      colors[j] = field_data;
-      j++;
-    }
-  }
-  // No XYZ data checks
-  else
-  {
-    // Color every point
-    for (vtkIdType cp = 0; cp < nr_points; ++cp, point_offset += cloud_->point_step)
-    {
-      // Copy the value at the specified field
-      //memcpy (&field_data, &cloud_->data[point_offset], sizeof (float));
-      memcpy (&field_data, &cloud_->data[point_offset], pcl::getFieldSize (cloud_->fields[field_idx_].datatype));
-
-      if (!std::isfinite (field_data))
-        continue;
-      colors[j] = field_data;
-      j++;
-    }
-  }
-  scalars->SetArray (colors, j, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
-  return scalars;
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PCLPointCloud2>::PointCloudColorHandlerRGBAField (
@@ -575,6 +503,10 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::Point
   field_idx_ = pcl::getFieldIndex (*cloud, "label");
   capable_ = field_idx_ != -1;
   static_mapping_ = static_mapping;
+  if (field_idx_ != -1 && cloud_->fields[field_idx_].datatype != pcl::PCLPointField::PointFieldTypes::UINT32) {
+    capable_ = false;
+    PCL_ERROR("[pcl::PointCloudColorHandlerLabelField] This currently only works with uint32 fields, but label field has a different type.\n");
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

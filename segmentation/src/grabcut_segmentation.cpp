@@ -47,7 +47,6 @@
 const int pcl::segmentation::grabcut::BoykovKolmogorov::TERMINAL = -1;
 
 pcl::segmentation::grabcut::BoykovKolmogorov::BoykovKolmogorov (std::size_t max_nodes)
-  : flow_value_(0.0)
 {
   if (max_nodes > 0)
   {
@@ -461,7 +460,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::adoptOrphans (std::deque<int>& orp
       if (cut_[jt->first] != tree_label) continue;
 
       // check edge capacity
-      const capacitated_edge::iterator kt = nodes_[jt->first].find (u);
+      const auto kt = nodes_[jt->first].find (u);
       if (((tree_label == TARGET) && (jt->second <= 0.0)) ||
           ((tree_label == SOURCE) && (kt->second <= 0.0)))
         continue;
@@ -484,7 +483,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::adoptOrphans (std::deque<int>& orp
     // free the orphan subtree and remove it from the active set
     if (b_free_orphan)
     {
-      for (capacitated_edge::const_iterator jt = nodes_[u].begin (); jt != nodes_[u].end (); ++jt)
+      for (auto jt = nodes_[u].cbegin (); jt != nodes_[u].cend (); ++jt)
       {
         if ((cut_[jt->first] == tree_label) && (parents_[jt->first].first == u))
         {
@@ -618,10 +617,18 @@ pcl::segmentation::grabcut::GaussianFitter::fit (Gaussian& g, std::size_t total_
     {
       // Compute eigenvalues and vectors using SVD
       Eigen::JacobiSVD<Eigen::Matrix3f> svd (g.covariance, Eigen::ComputeFullU);
-      // Store highest eigenvalue
-      g.eigenvalue = svd.singularValues ()[0];
-      // Store corresponding eigenvector
-      g.eigenvector = svd.matrixU ().col (0);
+#if EIGEN_VERSION_AT_LEAST(3, 4, 0)
+      if (svd.info() == Eigen::ComputationInfo::Success) {
+#endif
+        // Store highest eigenvalue
+        g.eigenvalue = svd.singularValues ()[0];
+        // Store corresponding eigenvector
+        g.eigenvector = svd.matrixU ().col (0);
+#if EIGEN_VERSION_AT_LEAST(3, 4, 0)
+      } else {
+        PCL_WARN("[grabcut::GaussianFitter::fit] Eigen::JacobiSVD was unsuccessful!\n");
+      }
+#endif
     }
   }
 }

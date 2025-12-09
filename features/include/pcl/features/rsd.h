@@ -138,6 +138,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::search_parameter_;
       using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::tree_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
       using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
@@ -151,7 +152,7 @@ namespace pcl
       RSDEstimation ()
       {
         feature_name_ = "RadiusSurfaceDescriptor";
-      };
+      }
 
       /** \brief Set the number of subdivisions for the considered distance interval.
         * \param[in] nr_subdiv the number of subdivisions

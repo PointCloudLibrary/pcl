@@ -9,7 +9,7 @@
 namespace pcl {
 namespace tracking {
 struct _ParticleXYZRPY {
-  PCL_ADD_POINT4D;
+  PCL_ADD_POINT4D
   union {
     struct {
       float roll;
@@ -236,7 +236,7 @@ operator-(const ParticleXYZRPY& a, const ParticleXYZRPY& b)
 namespace pcl {
 namespace tracking {
 struct _ParticleXYZR {
-  PCL_ADD_POINT4D;
+  PCL_ADD_POINT4D
   union {
     struct {
       float roll;
@@ -420,7 +420,7 @@ operator-(const ParticleXYZR& a, const ParticleXYZR& b)
 namespace pcl {
 namespace tracking {
 struct _ParticleXYRPY {
-  PCL_ADD_POINT4D;
+  PCL_ADD_POINT4D
   union {
     struct {
       float roll;
@@ -610,7 +610,7 @@ operator-(const ParticleXYRPY& a, const ParticleXYRPY& b)
 namespace pcl {
 namespace tracking {
 struct _ParticleXYRP {
-  PCL_ADD_POINT4D;
+  PCL_ADD_POINT4D
   union {
     struct {
       float roll;
@@ -797,7 +797,7 @@ operator-(const ParticleXYRP& a, const ParticleXYRP& b)
 namespace pcl {
 namespace tracking {
 struct _ParticleXYR {
-  PCL_ADD_POINT4D;
+  PCL_ADD_POINT4D
   union {
     struct {
       float roll;

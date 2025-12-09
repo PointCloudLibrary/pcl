@@ -17,15 +17,18 @@ pr:
 resources:
   containers:
     - container: winx86
-      image: pointcloudlibrary/env:winx86
+      image: pointcloudlibrary/env:windows2022-x86
     - container: winx64
-      image: pointcloudlibrary/env:winx64
-    - container: env1804
-      image: pointcloudlibrary/env:18.04
+      image: pointcloudlibrary/env:windows2022-x64
     - container: env2004
       image: pointcloudlibrary/env:20.04
     - container: env2204
       image: pointcloudlibrary/env:22.04
+    - container: env2404
+      image: pointcloudlibrary/env:24.04
+
+variables:
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 
 stages:
   - stage: formatting
@@ -40,20 +43,21 @@ stages:
       - job: ubuntu
         displayName: Ubuntu
         pool:
-          vmImage: 'Ubuntu 20.04'
+          vmImage: 'ubuntu-24.04'
         strategy:
           matrix:
-            18.04 GCC:  # oldest LTS
-              CONTAINER: env1804
+            20.04 GCC:  # oldest LTS
+              CONTAINER: env2004
               CC: gcc
               CXX: g++
               BUILD_GPU: ON
-              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-            22.04 GCC:  # latest Ubuntu
-              CONTAINER: env2204
+              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON -DCMAKE_CXX_STANDARD=14 -DCMAKE_CUDA_STANDARD=14'
+            24.04 GCC:  # latest Ubuntu
+              CONTAINER: env2404
               CC: gcc
               CXX: g++
-              BUILD_GPU: OFF # There are currently incompatibilities between GCC 11.2 and CUDA 11.5
+              BUILD_GPU: ON
+              CMAKE_ARGS: '-DCMAKE_CXX_STANDARD=17 -DCMAKE_CUDA_STANDARD=17'
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
@@ -73,12 +77,12 @@ stages:
           vmImage: '$(VMIMAGE)'
         strategy:
           matrix:
-            Big Sur 11:
-              VMIMAGE: 'macOS-11'
-              OSX_VERSION: '11'
-            Monterey 12:
-              VMIMAGE: 'macOS-12'
-              OSX_VERSION: '12'
+            Sonoma 14:
+              VMIMAGE: 'macOS-14'
+              OSX_VERSION: '14'
+            Sequoia 15:
+              VMIMAGE: 'macOS-15'
+              OSX_VERSION: '15'
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: '$(Agent.WorkFolder)/build'
@@ -95,14 +99,14 @@ stages:
         dependsOn: osx
         condition: succeededOrFailed()
         pool:
-          vmImage: 'Ubuntu 20.04'
+          vmImage: 'ubuntu-24.04'
         strategy:
           matrix:
-            20.04 Clang:
-              CONTAINER: env2004
+            22.04 Clang:
+              CONTAINER: env2204
               CC: clang
               CXX: clang++
-              BUILD_GPU: ON
+              BUILD_GPU: OFF # There are currently incompatibilities between GCC 11.2 and CUDA 11.5 (Ubuntu 22.04)
               CMAKE_ARGS: ''
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
@@ -118,11 +122,11 @@ stages:
         dependsOn: osx
         condition: succeededOrFailed()
         pool:
-          vmImage: 'Ubuntu 20.04'
+          vmImage: 'ubuntu-24.04'
         strategy:
           matrix:
-            20.04 Clang:
-              CONTAINER: env2004
+            22.04 Clang:
+              CONTAINER: env2204
               CC: clang
               CXX: clang++
               INDEX_SIGNED: OFF
@@ -143,7 +147,7 @@ stages:
       - job: Windows
         displayName: Windows Build
         pool:
-          vmImage: 'windows-2019'
+          vmImage: 'windows-2022'
         strategy:
           matrix:
             x86:
@@ -155,7 +159,7 @@ stages:
               CONTAINER: winx64
               PLATFORM: 'x64'
               ARCHITECTURE: 'x86_amd64'
-              GENERATOR: '"Visual Studio 16 2019" -A x64'
+              GENERATOR: '"Visual Studio 17 2022" -A x64'
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:

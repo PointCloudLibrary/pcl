@@ -157,7 +157,7 @@ public:
 
     viewer_.showCloud(getLatestPointCloud());
 
-    boost::asio::io_service io_service;
+    boost::asio::io_context io_service;
     tcp::endpoint endpoint(tcp::v4(), static_cast<unsigned short>(port_));
     tcp::acceptor acceptor(io_service, endpoint);
     tcp::socket socket(io_service);

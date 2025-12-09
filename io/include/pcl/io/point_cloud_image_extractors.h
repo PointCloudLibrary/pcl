@@ -84,9 +84,7 @@ namespace pcl
         using ConstPtr = shared_ptr<const PointCloudImageExtractor<PointT> >;
 
         /** \brief Constructor. */
-        PointCloudImageExtractor ()
-        : paint_nans_with_black_ (false)
-        {}
+        PointCloudImageExtractor () = default;
 
         /** \brief Destructor. */
         virtual ~PointCloudImageExtractor () = default;
@@ -118,7 +116,7 @@ namespace pcl
 
         /// A flag that controls if image pixels corresponding to NaN (infinite)
         /// points should be painted black.
-        bool paint_nans_with_black_;
+        bool paint_nans_with_black_{false};
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -303,7 +301,7 @@ namespace pcl
 
       private:
 
-        ColorMode color_mode_;
+        ColorMode color_mode_{COLORS_MONO};
     };
 
     //////////////////////////////////////////////////////////////////////////////////////

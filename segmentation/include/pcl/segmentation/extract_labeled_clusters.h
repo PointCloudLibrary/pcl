@@ -44,33 +44,6 @@ namespace pcl {
  * between points
  * \param[in] cloud the point cloud message
  * \param[in] tree the spatial locator (e.g., kd-tree) used for nearest neighbors
- * searching
- * \note the tree has to be created as a spatial locator on \a cloud
- * \param[in] tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
- * \param[out] labeled_clusters the resultant clusters containing point indices (as a
- * vector of PointIndices)
- * \param[in] min_pts_per_cluster minimum number of points that a cluster may contain
- * (default: 1)
- * \param[in] max_pts_per_cluster maximum number of points that a cluster may contain
- * (default: max int)
- * \param[in] max_label
- * \ingroup segmentation
- */
-template <typename PointT>
-PCL_DEPRECATED(1, 14, "Use of max_label is deprecated")
-void extractLabeledEuclideanClusters(
-    const PointCloud<PointT>& cloud,
-    const typename search::Search<PointT>::Ptr& tree,
-    float tolerance,
-    std::vector<std::vector<PointIndices>>& labeled_clusters,
-    unsigned int min_pts_per_cluster,
-    unsigned int max_pts_per_cluster,
-    unsigned int max_label);
-
-/** \brief Decompose a region of space into clusters based on the Euclidean distance
- * between points
- * \param[in] cloud the point cloud message
- * \param[in] tree the spatial locator (e.g., kd-tree) used for nearest neighbors
  * searching \note the tree has to be created as a spatial locator on \a cloud
  * \param[in] tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
  * \param[out] labeled_clusters the resultant clusters containing point indices
@@ -115,12 +88,7 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Empty constructor. */
-  LabeledEuclideanClusterExtraction()
-  : tree_()
-  , cluster_tolerance_(0)
-  , min_pts_per_cluster_(1)
-  , max_pts_per_cluster_(std::numeric_limits<int>::max())
-  , max_label_(std::numeric_limits<int>::max()){};
+  LabeledEuclideanClusterExtraction() = default;
 
   /** \brief Provide a pointer to the search object.
    * \param[in] tree a pointer to the spatial search object.
@@ -190,24 +158,6 @@ public:
     return (max_pts_per_cluster_);
   }
 
-  /** \brief Set the maximum number of labels in the cloud.
-   * \param[in] max_label the maximum
-   */
-  PCL_DEPRECATED(1, 14, "Max label is being deprecated")
-  inline void
-  setMaxLabels(unsigned int max_label)
-  {
-    max_label_ = max_label;
-  }
-
-  /** \brief Get the maximum number of labels */
-  PCL_DEPRECATED(1, 14, "Max label is being deprecated")
-  inline unsigned int
-  getMaxLabels() const
-  {
-    return (max_label_);
-  }
-
   /** \brief Cluster extraction in a PointCloud given by <setInputCloud (), setIndices
    * ()> \param[out] labeled_clusters the resultant point clusters
    */
@@ -222,22 +172,23 @@ protected:
   using BasePCLBase::input_;
 
   /** \brief A pointer to the spatial search object. */
-  KdTreePtr tree_;
+  KdTreePtr tree_{nullptr};
 
   /** \brief The spatial cluster tolerance as a measure in the L2 Euclidean space. */
-  double cluster_tolerance_;
+  double cluster_tolerance_{0.0};
 
   /** \brief The minimum number of points that a cluster needs to contain in order to be
    * considered valid (default = 1). */
-  int min_pts_per_cluster_;
+  int min_pts_per_cluster_{1};
 
   /** \brief The maximum number of points that a cluster needs to contain in order to be
    * considered valid (default = MAXINT). */
-  int max_pts_per_cluster_;
+  int max_pts_per_cluster_{std::numeric_limits<int>::max()};
 
   /** \brief The maximum number of labels we can find in this pointcloud (default =
    * MAXINT)*/
-  unsigned int max_label_;
+  PCL_DEPRECATED(1, 18, "this member variable is unused")
+  unsigned int max_label_{std::numeric_limits<unsigned int>::max()};
 
   /** \brief Class getName method. */
   virtual std::string

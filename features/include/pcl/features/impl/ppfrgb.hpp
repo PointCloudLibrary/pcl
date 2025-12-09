@@ -40,6 +40,7 @@
 
 #include <pcl/features/ppfrgb.h>
 #include <pcl/features/pfhrgb.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>

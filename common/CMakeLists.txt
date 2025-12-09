@@ -2,9 +2,8 @@ set(SUBSYS_NAME common)
 set(SUBSYS_DESC "Point cloud common library")
 set(SUBSYS_DEPS)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS eigen boost)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS eigen3 boost)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -60,7 +59,6 @@ set(incs
   include/pcl/types.h
   include/pcl/point_cloud.h
   include/pcl/point_struct_traits.h
-  include/pcl/point_traits.h
   include/pcl/type_traits.h
   include/pcl/point_types_conversion.h
   include/pcl/point_representation.h
@@ -80,11 +78,9 @@ set(incs
   include/pcl/PointIndices.h
   include/pcl/register_point_struct.h
   include/pcl/conversions.h
-  include/pcl/make_shared.h
 )
 
 set(common_incs
-  include/pcl/common/boost.h
   include/pcl/common/angles.h
   include/pcl/common/bivariate_polynomial.h
   include/pcl/common/centroid.h
@@ -98,6 +94,7 @@ set(common_incs
   include/pcl/common/file_io.h
   include/pcl/common/intersections.h
   include/pcl/common/norms.h
+  include/pcl/common/pcl_filesystem.h
   include/pcl/common/piecewise_linear_function.h
   include/pcl/common/polynomial_calculations.h
   include/pcl/common/poses_from_matches.h
@@ -174,12 +171,7 @@ set(kissfft_srcs
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
 
-target_include_directories(${LIB_NAME} PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include> 
-)
-
-target_link_libraries(${LIB_NAME} Boost::boost)
+target_link_libraries(${LIB_NAME} Boost::boost Eigen3::Eigen)
 
 if(MSVC AND NOT (MSVC_VERSION LESS 1915))
   # MSVC resolved a byte alignment issue in compiler version 15.9

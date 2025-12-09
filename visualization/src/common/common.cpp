@@ -533,7 +533,7 @@ pcl::visualization::Camera::computeViewMatrix (Eigen::Matrix4d &view_mat) const
 	view_mat.block <1, 3> (2, 0) = -zAxis;
 	view_mat.row (3) << 0, 0, 0, 1;
 
-	view_mat.block <3, 1> (0, 3) = view_mat.topLeftCorner<3, 3> () * (-posv);
+	view_mat.block <3, 1> (0, 3).noalias() = view_mat.topLeftCorner<3, 3> () * (-posv);
 }
 
 ///////////////////////////////////////////////////////////////////////

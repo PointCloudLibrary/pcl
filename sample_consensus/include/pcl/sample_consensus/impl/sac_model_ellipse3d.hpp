@@ -16,7 +16,6 @@
 #include <pcl/common/concatenate.h>
 
 #include <Eigen/Eigenvalues>
-#include <complex>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -163,22 +162,22 @@ pcl::SampleConsensusModelEllipse3D<PointT>::computeModelCoefficients (const Indi
   const float con_F(neigvec(5));
 
   // Build matrix M0
-  const Eigen::MatrixXf M0 = (Eigen::MatrixXf(3, 3)
+  const Eigen::Matrix3f M0 = (Eigen::Matrix3f()
     << con_F, con_D/2.0, con_E/2.0,
       con_D/2.0, con_A, con_B/2.0,
       con_E/2.0, con_B/2.0, con_C)
     .finished();
 
   // Build matrix M
-  const Eigen::MatrixXf M = (Eigen::MatrixXf(2, 2)
+  const Eigen::Matrix2f M = (Eigen::Matrix2f()
     << con_A, con_B/2.0,
       con_B/2.0, con_C)
     .finished();
 
   // Calculate the eigenvalues and eigenvectors of matrix M
-  Eigen::EigenSolver<Eigen::MatrixXf> solver_M(M);
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix2f> solver_M(M, Eigen::EigenvaluesOnly);
 
-  Eigen::VectorXf eigvals_M = solver_M.eigenvalues().real();
+  Eigen::Vector2f eigvals_M = solver_M.eigenvalues();
 
   // Order the eigenvalues so that |lambda_0 - con_A| <= |lambda_0 - con_C|
   float aux_eigval(0.0);
@@ -200,12 +199,12 @@ pcl::SampleConsensusModelEllipse3D<PointT>::computeModelCoefficients (const Indi
   Eigen::Vector3f p_ctr;
   float aux_par(0.0);
   if (par_a > par_b) {
-    p_ctr = p0 + Rot * Eigen::Vector3f(par_h, par_k, 0.0);
+    p_ctr.noalias() = p0 + Rot * Eigen::Vector3f(par_h, par_k, 0.0);
   } else {
     aux_par = par_a;
     par_a = par_b;
     par_b = aux_par;
-    p_ctr = p0 + Rot * Eigen::Vector3f(par_k, par_h, 0.0);
+    p_ctr.noalias() = p0 + Rot * Eigen::Vector3f(par_k, par_h, 0.0);
   }
 
   // Center (x, y, z)
@@ -235,7 +234,7 @@ pcl::SampleConsensusModelEllipse3D<PointT>::computeModelCoefficients (const Indi
   model_coefficients[10] = static_cast<float>(x_axis[2]);
 
 
-  PCL_DEBUG ("[pcl::SampleConsensusModelEllipse3D::computeModelCoefficients] Model is (%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g).\n",
+  PCL_DEBUG ("[pcl::SampleConsensusModelEllipse3D::computeModelCoefficients] Model is (%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g).\n",
              model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
              model_coefficients[4], model_coefficients[5], model_coefficients[6], model_coefficients[7],
              model_coefficients[8], model_coefficients[9], model_coefficients[10]);
@@ -312,12 +311,14 @@ pcl::SampleConsensusModelEllipse3D<PointT>::selectWithinDistance (
     Indices &inliers)
 {
   inliers.clear();
+  error_sqr_dists_.clear();
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
   {
     return;
   }
   inliers.reserve (indices_->size ());
+  error_sqr_dists_.reserve (indices_->size ());
 
   // c : Ellipse Center
   const Eigen::Vector3f c(model_coefficients[0], model_coefficients[1], model_coefficients[2]);
@@ -358,10 +359,12 @@ pcl::SampleConsensusModelEllipse3D<PointT>::selectWithinDistance (
     float th_opt;
     const Eigen::Vector2f distanceVector = dvec2ellipse(params, p_(0), p_(1), th_opt);
 
-    if (distanceVector.squaredNorm() < squared_threshold)
+    const double sqr_dist = distanceVector.squaredNorm();
+    if (sqr_dist < squared_threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
       inliers.push_back ((*indices_)[i]);
+      error_sqr_dists_.push_back (sqr_dist);
     }
   }
 }
@@ -447,13 +450,12 @@ pcl::SampleConsensusModelEllipse3D<PointT>::optimizeModelCoefficients (
   OptimizationFunctor functor(this, inliers);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff(functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm(num_diff);
-  Eigen::VectorXd coeff;
+  Eigen::VectorXd coeff = model_coefficients.cast<double>();
   int info = lm.minimize(coeff);
-  for (Eigen::Index i = 0; i < coeff.size (); ++i)
-    optimized_coefficients[i] = static_cast<float> (coeff[i]);
+  optimized_coefficients = coeff.cast<float>();
 
   // Compute the L2 norm of the residuals
-  PCL_DEBUG ("[pcl::SampleConsensusModelEllipse3D::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g %g %g %g %g %g %g \nFinal solution: %g %g %g %g %g %g %g %g %g %g %g %g %g\n",
+  PCL_DEBUG ("[pcl::SampleConsensusModelEllipse3D::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g %g %g %g %g\nFinal solution: %g %g %g %g %g %g %g %g %g %g %g\n",
             info, lm.fvec.norm (),
 
             model_coefficients[0],

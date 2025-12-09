@@ -178,7 +178,7 @@ namespace openni_wrapper
       void 
       setDepthRegistration (bool on_off);
 
-      /** \return whether the depth stream is registered to the RGB camera fram or not. */
+      /** \return whether the depth stream is registered to the RGB camera frame or not. */
       bool 
       isDepthRegistered () const noexcept;
 
@@ -485,7 +485,7 @@ namespace openni_wrapper
 
       struct ShiftConversion
       {
-        ShiftConversion() : init_(false) {}
+        ShiftConversion() = default;
 
         XnUInt16 zero_plane_distance_;
         XnFloat zero_plane_pixel_size_;
@@ -498,7 +498,7 @@ namespace openni_wrapper
         XnUInt32 shift_scale_;
         XnUInt32 min_depth_;
         XnUInt32 max_depth_;
-        bool init_;
+        bool init_{false};
 
       } shift_conversion_parameters_;
 

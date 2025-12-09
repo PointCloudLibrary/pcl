@@ -46,11 +46,11 @@
 #include <pcl/io/openni2/openni2_device.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/exceptions.h>
 #include <iostream>
-#include <boost/filesystem.hpp> // for exists
 
 using namespace pcl::io::openni2;
 
@@ -73,24 +73,6 @@ namespace
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::io::OpenNI2Grabber::OpenNI2Grabber (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
-  : color_resize_buffer_(0)
-  , depth_resize_buffer_(0)
-  , ir_resize_buffer_(0)
-  , image_width_ ()
-  , image_height_ ()
-  , depth_width_ ()
-  , depth_height_ ()
-  , image_required_ (false)
-  , depth_required_ (false)
-  , ir_required_ (false)
-  , sync_required_ (false)
-  , image_signal_ (), depth_image_signal_ (), ir_image_signal_ (), image_depth_image_signal_ ()
-  , ir_depth_image_signal_ (), point_cloud_signal_ (), point_cloud_i_signal_ ()
-  , point_cloud_rgb_signal_ (), point_cloud_rgba_signal_ ()
-  , depth_callback_handle_ (), image_callback_handle_ (), ir_callback_handle_ ()
-  , running_ (false)
-  , rgb_parameters_(std::numeric_limits<double>::quiet_NaN () )
-  , depth_parameters_(std::numeric_limits<double>::quiet_NaN () )
 {
   // initialize driver
   updateModeMaps (); // registering mapping from PCL enum modes to openni::VideoMode and vice versa
@@ -310,7 +292,7 @@ pcl::io::OpenNI2Grabber::setupDevice (const std::string& device_id, const Mode& 
 
   try
   {
-    if (boost::filesystem::exists (device_id))
+    if (pcl_fs::exists (device_id))
     {
       device_ = deviceManager->getFileDevice (device_id);	// Treat as file path
     }

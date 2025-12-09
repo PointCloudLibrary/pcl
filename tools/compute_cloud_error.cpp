@@ -42,7 +42,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/search/auto.h>
 
 
 using namespace pcl;
@@ -112,8 +112,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
   {
 //    print_highlight (stderr, "Computing using the nearest neighbor correspondence heuristic.\n");
 
-    KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
-    tree->setInputCloud (xyz_target);
+    pcl::search::Search<PointXYZ>::Ptr tree(pcl::search::autoSelectMethod<PointXYZ>(xyz_target, false, pcl::search::Purpose::one_knn_search));
 
     for (std::size_t point_i = 0; point_i < xyz_source->size (); ++ point_i)
     {
@@ -144,8 +143,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
     PointCloud<Normal>::Ptr normals_target (new PointCloud<Normal> ());
     fromPCLPointCloud2 (*cloud_target, *normals_target);
 
-    KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
-    tree->setInputCloud (xyz_target);
+    pcl::search::Search<PointXYZ>::Ptr tree(pcl::search::autoSelectMethod<PointXYZ>(xyz_target, false, pcl::search::Purpose::one_knn_search));
 
     for (std::size_t point_i = 0; point_i < xyz_source->size (); ++ point_i)
     {

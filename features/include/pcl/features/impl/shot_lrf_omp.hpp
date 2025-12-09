@@ -74,7 +74,8 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (
 #pragma omp parallel for \
   default(none) \
   shared(output) \
-  num_threads(threads_)
+  num_threads(threads_) \
+  schedule(dynamic, 64)
   for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t> (indices_->size ()); ++i)
   {
     // point result
@@ -84,9 +85,6 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (
     //output_rf.confidence = getLocalRF ((*indices_)[i], rf);
     //if (output_rf.confidence == std::numeric_limits<float>::max ())
 
-    pcl::Indices n_indices;
-    std::vector<float> n_sqr_distances;
-    this->searchForNeighbors ((*indices_)[i], search_parameter_, n_indices, n_sqr_distances);
     if (getLocalRF ((*indices_)[i], rf) == std::numeric_limits<float>::max ())
     {
       output.is_dense = false;

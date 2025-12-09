@@ -2,7 +2,6 @@ set(SUBSYS_NAME kdtree)
 set(SUBSYS_DESC "Point cloud kd-tree library")
 set(SUBSYS_DEPS common)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS flann)
 
@@ -12,9 +11,11 @@ if(NOT build)
   return()
 endif()
 
-set(srcs
-  src/kdtree_flann.cpp
-)
+if(FLANN_FOUND)
+  set(srcs
+    src/kdtree_flann.cpp
+  )
+endif()
 
 set(incs
   "include/pcl/${SUBSYS_NAME}/kdtree.h"
@@ -28,10 +29,14 @@ set(impl_incs
 )
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
-target_link_libraries("${LIB_NAME}" pcl_common FLANN::FLANN)
-set(EXT_DEPS flann)
+if(FLANN_FOUND)
+  PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
+  target_link_libraries("${LIB_NAME}" pcl_common FLANN::FLANN)
+  set(EXT_DEPS flann)
+else()
+  PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} INCLUDES ${incs} ${impl_incs})
+  target_link_libraries("${LIB_NAME}" INTERFACE pcl_common)
+endif()
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
 
 # Install include files

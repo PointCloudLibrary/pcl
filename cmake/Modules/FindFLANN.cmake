@@ -48,31 +48,39 @@ if(flann_FOUND)
   unset(flann_FOUND)
   set(FLANN_FOUND ON)
 
-  # Create interface library that effectively becomes an alias for the appropriate (static/dynamic) imported FLANN target
-  add_library(FLANN::FLANN INTERFACE IMPORTED)
-
   if(TARGET flann::flann_cpp_s AND TARGET flann::flann_cpp)
     if(PCL_FLANN_REQUIRED_TYPE MATCHES "SHARED")
-      set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp)
       set(FLANN_LIBRARY_TYPE SHARED)
     elseif(PCL_FLANN_REQUIRED_TYPE MATCHES "STATIC")
-      set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp_s)
       set(FLANN_LIBRARY_TYPE STATIC)
     else()
       if(PCL_SHARED_LIBS)
-        set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp)
         set(FLANN_LIBRARY_TYPE SHARED)
       else()
-        set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp_s)
         set(FLANN_LIBRARY_TYPE STATIC)
       endif()
     endif()
   elseif(TARGET flann::flann_cpp_s)
-    set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp_s)
     set(FLANN_LIBRARY_TYPE STATIC)
   else()
-    set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp)
     set(FLANN_LIBRARY_TYPE SHARED)
+  endif()
+
+  if(CMAKE_VERSION VERSION_LESS 3.18.0)
+    # Create interface library that effectively becomes an alias for the appropriate (static/dynamic) imported FLANN target
+    add_library(FLANN::FLANN INTERFACE IMPORTED)
+
+    if(FLANN_LIBRARY_TYPE MATCHES SHARED)
+      set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp)
+    else()
+      set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp_s)
+    endif()
+  else()
+    if(FLANN_LIBRARY_TYPE MATCHES SHARED)
+      add_library(FLANN::FLANN ALIAS flann::flann_cpp)
+    else()
+      add_library(FLANN::FLANN ALIAS flann::flann_cpp_s)
+    endif()
   endif()
 
   # Determine FLANN installation root based on the path to the processed Config file
@@ -96,8 +104,6 @@ find_path(FLANN_INCLUDE_DIR
     flann/flann.hpp
   HINTS
     ${PC_FLANN_INCLUDE_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
   PATHS
     $ENV{PROGRAMFILES}/Flann
     $ENV{PROGRAMW6432}/Flann
@@ -110,8 +116,6 @@ find_library(FLANN_LIBRARY_SHARED
     flann_cpp
   HINTS
     ${PC_FLANN_LIBRARY_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
   PATHS
     $ENV{PROGRAMFILES}/Flann
     $ENV{PROGRAMW6432}/Flann
@@ -124,8 +128,6 @@ find_library(FLANN_LIBRARY_DEBUG_SHARED
     flann_cpp-gd flann_cppd
   HINTS
     ${PC_FLANN_LIBRARY_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
   PATHS
     $ENV{PROGRAMFILES}/Flann
     $ENV{PROGRAMW6432}/Flann
@@ -138,8 +140,6 @@ find_library(FLANN_LIBRARY_STATIC
     flann_cpp_s
   HINTS
     ${PC_FLANN_LIBRARY_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
   PATHS
     $ENV{PROGRAMFILES}/Flann
     $ENV{PROGRAMW6432}/Flann
@@ -152,8 +152,6 @@ find_library(FLANN_LIBRARY_DEBUG_STATIC
     flann_cpp_s-gd flann_cpp_sd
   HINTS
     ${PC_FLANN_LIBRARY_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
   PATHS
     $ENV{PROGRAMFILES}/Flann
     $ENV{PROGRAMW6432}/Flann

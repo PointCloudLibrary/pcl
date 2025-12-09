@@ -43,6 +43,7 @@
 
 #include <pcl/common/copy_point.h>
 #include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for isXYZFinite
 
 namespace pcl {
 
@@ -98,8 +99,8 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
 {
   // Only update source kd-tree if a new target cloud was set
   if (source_cloud_updated_ && !force_no_recompute_reciprocal_) {
-    if (point_representation_)
-      tree_reciprocal_->setPointRepresentation(point_representation_);
+    if (point_representation_reciprocal_)
+      tree_reciprocal_->setPointRepresentation(point_representation_reciprocal_);
     // If the target indices have been given via setIndicesTarget
     if (indices_)
       tree_reciprocal_->setInputCloud(getInputSource(), getIndicesSource());
@@ -112,59 +113,107 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
   return (true);
 }
 
+namespace detail {
+
+template <
+    typename PointTarget,
+    typename PointSource,
+    typename Index,
+    typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr>
+const PointSource&
+pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
+{
+  return (*input)[idx];
+}
+
+template <
+    typename PointTarget,
+    typename PointSource,
+    typename Index,
+    typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr>
+PointTarget
+pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
+{
+  // Copy the source data to a target PointTarget format so we can search in the tree
+  PointTarget pt;
+  copyPoint((*input)[idx], pt);
+  return pt;
+}
+
+} // namespace detail
+
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorrespondences(
-    pcl::Correspondences& correspondences, double max_distance)
+    pcl::Correspondences& correspondences, const double max_distance)
 {
   if (!initCompute())
     return;
-
-  double max_dist_sqr = max_distance * max_distance;
 
   correspondences.resize(indices_->size());
 
   pcl::Indices index(1);
   std::vector<float> distance(1);
-  pcl::Correspondence corr;
-  unsigned int nr_valid_correspondences = 0;
+  std::vector<pcl::Correspondences> per_thread_correspondences(num_threads_);
+  for (auto& corrs : per_thread_correspondences) {
+    corrs.reserve(2 * indices_->size() / num_threads_);
+  }
+  const double max_dist_sqr = max_distance * max_distance;
 
-  // Check if the template types are the same. If true, avoid a copy.
-  // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
-  // macro!
-  if (isSamePointType<PointSource, PointTarget>()) {
-    // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
-      tree_->nearestKSearch((*input_)[idx], 1, index, distance);
-      if (distance[0] > max_dist_sqr)
-        continue;
+#pragma omp parallel for default(none)                                                 \
+    shared(max_dist_sqr, per_thread_correspondences) firstprivate(index, distance)     \
+        num_threads(num_threads_)
+  // Iterate over the input set of source indices
+  for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
+    const auto& idx = (*indices_)[i];
+    // Check if the template types are the same. If true, avoid a copy.
+    // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
+    // macro!
+    const auto& pt = detail::pointCopyOrRef<PointTarget, PointSource>(input_, idx);
+    if (!input_->is_dense && !pcl::isXYZFinite(pt))
+      continue;
+    tree_->nearestKSearch(pt, 1, index, distance);
+    if (distance[0] > max_dist_sqr)
+      continue;
 
-      corr.index_query = idx;
-      corr.index_match = index[0];
-      corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
-    }
+    pcl::Correspondence corr;
+    corr.index_query = idx;
+    corr.index_match = index[0];
+    corr.distance = distance[0];
+
+#ifdef _OPENMP
+    const int thread_num = omp_get_thread_num();
+#else
+    const int thread_num = 0;
+#endif
+
+    per_thread_correspondences[thread_num].emplace_back(corr);
+  }
+
+  if (num_threads_ == 1) {
+    correspondences = std::move(per_thread_correspondences.front());
   }
   else {
-    PointTarget pt;
+    const unsigned int nr_correspondences = std::accumulate(
+        per_thread_correspondences.begin(),
+        per_thread_correspondences.end(),
+        static_cast<unsigned int>(0),
+        [](const auto sum, const auto& corr) { return sum + corr.size(); });
+    correspondences.resize(nr_correspondences);
 
-    // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
-      // Copy the source data to a target PointTarget format so we can search in the
-      // tree
-      copyPoint((*input_)[idx], pt);
-
-      tree_->nearestKSearch(pt, 1, index, distance);
-      if (distance[0] > max_dist_sqr)
-        continue;
-
-      corr.index_query = idx;
-      corr.index_match = index[0];
-      corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
+    // Merge per-thread correspondences while keeping them ordered
+    auto insert_loc = correspondences.begin();
+    for (const auto& corrs : per_thread_correspondences) {
+      const auto new_insert_loc = std::move(corrs.begin(), corrs.end(), insert_loc);
+      std::inplace_merge(correspondences.begin(),
+                         insert_loc,
+                         insert_loc + corrs.size(),
+                         [](const auto& lhs, const auto& rhs) {
+                           return lhs.index_query < rhs.index_query;
+                         });
+      insert_loc = new_insert_loc;
     }
   }
-  correspondences.resize(nr_valid_correspondences);
   deinitCompute();
 }
 
@@ -172,7 +221,7 @@ template <typename PointSource, typename PointTarget, typename Scalar>
 void
 CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     determineReciprocalCorrespondences(pcl::Correspondences& correspondences,
-                                       double max_distance)
+                                       const double max_distance)
 {
   if (!initCompute())
     return;
@@ -181,72 +230,83 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
   // Set the internal point representation of choice
   if (!initComputeReciprocal())
     return;
-  double max_dist_sqr = max_distance * max_distance;
 
   correspondences.resize(indices_->size());
   pcl::Indices index(1);
   std::vector<float> distance(1);
   pcl::Indices index_reciprocal(1);
   std::vector<float> distance_reciprocal(1);
-  pcl::Correspondence corr;
-  unsigned int nr_valid_correspondences = 0;
-  int target_idx = 0;
+  std::vector<pcl::Correspondences> per_thread_correspondences(num_threads_);
+  for (auto& corrs : per_thread_correspondences) {
+    corrs.reserve(2 * indices_->size() / num_threads_);
+  }
+  const double max_dist_sqr = max_distance * max_distance;
 
-  // Check if the template types are the same. If true, avoid a copy.
-  // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
-  // macro!
-  if (isSamePointType<PointSource, PointTarget>()) {
-    // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
-      tree_->nearestKSearch((*input_)[idx], 1, index, distance);
-      if (distance[0] > max_dist_sqr)
-        continue;
+#pragma omp parallel for default(none)                                                 \
+    shared(max_dist_sqr, per_thread_correspondences)                                   \
+        firstprivate(index, distance, index_reciprocal, distance_reciprocal)           \
+            num_threads(num_threads_)
+  // Iterate over the input set of source indices
+  for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
+    const auto& idx = (*indices_)[i];
+    // Check if the template types are the same. If true, avoid a copy.
+    // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
+    // macro!
 
-      target_idx = index[0];
+    const auto& pt_src = detail::pointCopyOrRef<PointTarget, PointSource>(input_, idx);
+    if (!input_->is_dense && !pcl::isXYZFinite(pt_src))
+      continue;
+    tree_->nearestKSearch(pt_src, 1, index, distance);
+    if (distance[0] > max_dist_sqr)
+      continue;
 
-      tree_reciprocal_->nearestKSearch(
-          (*target_)[target_idx], 1, index_reciprocal, distance_reciprocal);
-      if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
-        continue;
+    const auto target_idx = index[0];
+    const auto& pt_tgt =
+        detail::pointCopyOrRef<PointSource, PointTarget>(target_, target_idx);
 
-      corr.index_query = idx;
-      corr.index_match = index[0];
-      corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
-    }
+    tree_reciprocal_->nearestKSearch(pt_tgt, 1, index_reciprocal, distance_reciprocal);
+    if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
+      continue;
+
+    pcl::Correspondence corr;
+    corr.index_query = idx;
+    corr.index_match = index[0];
+    corr.distance = distance[0];
+
+#ifdef _OPENMP
+    const int thread_num = omp_get_thread_num();
+#else
+    const int thread_num = 0;
+#endif
+
+    per_thread_correspondences[thread_num].emplace_back(corr);
+  }
+
+  if (num_threads_ == 1) {
+    correspondences = std::move(per_thread_correspondences.front());
   }
   else {
-    PointTarget pt_src;
-    PointSource pt_tgt;
+    const unsigned int nr_correspondences = std::accumulate(
+        per_thread_correspondences.begin(),
+        per_thread_correspondences.end(),
+        static_cast<unsigned int>(0),
+        [](const auto sum, const auto& corr) { return sum + corr.size(); });
+    correspondences.resize(nr_correspondences);
 
-    // Iterate over the input set of source indices
-    for (const auto& idx : (*indices_)) {
-      // Copy the source data to a target PointTarget format so we can search in the
-      // tree
-      copyPoint((*input_)[idx], pt_src);
-
-      tree_->nearestKSearch(pt_src, 1, index, distance);
-      if (distance[0] > max_dist_sqr)
-        continue;
-
-      target_idx = index[0];
-
-      // Copy the target data to a target PointSource format so we can search in the
-      // tree_reciprocal
-      copyPoint((*target_)[target_idx], pt_tgt);
-
-      tree_reciprocal_->nearestKSearch(
-          pt_tgt, 1, index_reciprocal, distance_reciprocal);
-      if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
-        continue;
-
-      corr.index_query = idx;
-      corr.index_match = index[0];
-      corr.distance = distance[0];
-      correspondences[nr_valid_correspondences++] = corr;
+    // Merge per-thread correspondences while keeping them ordered
+    auto insert_loc = correspondences.begin();
+    for (const auto& corrs : per_thread_correspondences) {
+      const auto new_insert_loc = std::move(corrs.begin(), corrs.end(), insert_loc);
+      std::inplace_merge(correspondences.begin(),
+                         insert_loc,
+                         insert_loc + corrs.size(),
+                         [](const auto& lhs, const auto& rhs) {
+                           return lhs.index_query < rhs.index_query;
+                         });
+      insert_loc = new_insert_loc;
     }
   }
-  correspondences.resize(nr_valid_correspondences);
+
   deinitCompute();
 }
 

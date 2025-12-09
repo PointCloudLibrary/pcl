@@ -126,11 +126,7 @@ public:
       typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4;
 
   /** \brief Empty constructor. */
-  JointIterativeClosestPoint()
-  {
-    IterativeClosestPoint<PointSource, PointTarget, Scalar>();
-    reg_name_ = "JointIterativeClosestPoint";
-  };
+  JointIterativeClosestPoint() { reg_name_ = "JointIterativeClosestPoint"; };
 
   /** \brief Empty destructor */
   ~JointIterativeClosestPoint() override = default;

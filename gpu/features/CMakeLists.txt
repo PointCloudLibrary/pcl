@@ -3,7 +3,6 @@ set(SUBSYS_PATH gpu/features)
 set(SUBSYS_DESC "Temporary GPU_common module. Weak CUDA dependency: a code that use this module requires CUDA Toolkit installed, but should be compiled without nvcc")
 set(SUBSYS_DEPS common gpu_containers gpu_utils gpu_octree geometry)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_SET_SUBSYS_INCLUDE_DIR("${SUBSYS_NAME}" "${SUBSYS_PATH}")
@@ -25,7 +24,6 @@ file(GLOB srcs_utils src/utils/*.hpp)
 source_group("Source Files\\utils" FILES ${srcs_utils})
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src")
 PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${cuda} ${srcs_utils}  ${dev_incs})
 target_link_libraries("${LIB_NAME}" pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree)
 

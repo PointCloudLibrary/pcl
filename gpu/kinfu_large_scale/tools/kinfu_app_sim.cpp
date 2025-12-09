@@ -1382,7 +1382,7 @@ print_cli_help ()
   std::cout << "";
   std::cout << " For RGBD benchmark (Requires OpenCV):" << std::endl; 
   std::cout << "    -eval <eval_folder> [-match_file <associations_file_in_the_folder>]" << std::endl;
-  std::cout << " For Simuation (Requires pcl::simulation):" << std::endl; 
+  std::cout << " For Simulation (Requires pcl::simulation):" << std::endl; 
   std::cout << "    -plyfile                        : path to ply file for simulation testing " << std::endl;
     
   return 0;

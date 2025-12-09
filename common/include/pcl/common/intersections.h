@@ -81,18 +81,18 @@ namespace pcl
     * \note Described in: "Intersection of Two Planes, John Krumm, Microsoft Research, Redmond, WA, USA"
     * \param[in] plane_a coefficients of plane A and plane B in the form ax + by + cz + d = 0
     * \param[in] plane_b coefficients of line where line.tail<3>() = direction vector and
-    * line.head<3>() the point on the line clossest to (0, 0, 0)
+    * line.head<3>() the point on the line closest to (0, 0, 0)
     * \param[out] line the intersected line to be filled
     * \param[in] angular_tolerance tolerance in radians
     * \return true if succeeded/planes aren't parallel
     */
-  PCL_EXPORTS template <typename Scalar> bool
+  template <typename Scalar> bool
   planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
                               const Eigen::Matrix<Scalar, 4, 1> &plane_b,
                               Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line,
                               double angular_tolerance = 0.1);
 
-  PCL_EXPORTS inline bool
+  inline bool
   planeWithPlaneIntersection (const Eigen::Vector4f &plane_a,
                               const Eigen::Vector4f &plane_b,
                               Eigen::VectorXf &line,
@@ -101,7 +101,7 @@ namespace pcl
     return (planeWithPlaneIntersection<float> (plane_a, plane_b, line, angular_tolerance));
   }
 
-  PCL_EXPORTS inline bool
+  inline bool
   planeWithPlaneIntersection (const Eigen::Vector4d &plane_a,
                               const Eigen::Vector4d &plane_b,
                               Eigen::VectorXd &line,
@@ -121,7 +121,7 @@ namespace pcl
     * \param[out] intersection_point the three coordinates x, y, z of the intersection point
     * \return true if succeeded/planes aren't parallel
     */
-  PCL_EXPORTS template <typename Scalar> bool
+  template <typename Scalar> bool
   threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
                            const Eigen::Matrix<Scalar, 4, 1> &plane_b,
                            const Eigen::Matrix<Scalar, 4, 1> &plane_c,
@@ -129,7 +129,7 @@ namespace pcl
                            double determinant_tolerance = 1e-6);
 
 
-  PCL_EXPORTS inline bool
+  inline bool
   threePlanesIntersection (const Eigen::Vector4f &plane_a,
                            const Eigen::Vector4f &plane_b,
                            const Eigen::Vector4f &plane_c,
@@ -140,7 +140,7 @@ namespace pcl
                                             intersection_point, determinant_tolerance));
   }
 
-  PCL_EXPORTS inline bool
+  inline bool
   threePlanesIntersection (const Eigen::Vector4d &plane_a,
                            const Eigen::Vector4d &plane_b,
                            const Eigen::Vector4d &plane_c,

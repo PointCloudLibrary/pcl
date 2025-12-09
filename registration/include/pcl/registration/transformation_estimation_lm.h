@@ -96,12 +96,14 @@ public:
   TransformationEstimationLM&
   operator=(const TransformationEstimationLM& src)
   {
+    if (this == &src)
+      return *this;
     tmp_src_ = src.tmp_src_;
     tmp_tgt_ = src.tmp_tgt_;
     tmp_idx_src_ = src.tmp_idx_src_;
     tmp_idx_tgt_ = src.tmp_idx_tgt_;
     warp_point_ = src.warp_point_;
-    return (*this);
+    return *this;
   }
 
   /** \brief Destructor. */
@@ -202,16 +204,16 @@ protected:
   }
 
   /** \brief Temporary pointer to the source dataset. */
-  mutable const PointCloudSource* tmp_src_;
+  mutable const PointCloudSource* tmp_src_{nullptr};
 
   /** \brief Temporary pointer to the target dataset. */
-  mutable const PointCloudTarget* tmp_tgt_;
+  mutable const PointCloudTarget* tmp_tgt_{nullptr};
 
   /** \brief Temporary pointer to the source dataset indices. */
-  mutable const pcl::Indices* tmp_idx_src_;
+  mutable const pcl::Indices* tmp_idx_src_{nullptr};
 
   /** \brief Temporary pointer to the target dataset indices. */
-  mutable const pcl::Indices* tmp_idx_tgt_;
+  mutable const pcl::Indices* tmp_idx_tgt_{nullptr};
 
   /** \brief The parameterized function used to warp the source to the target. */
   typename pcl::registration::WarpPointRigid<PointSource, PointTarget, MatScalar>::Ptr
@@ -279,9 +281,11 @@ protected:
     inline OptimizationFunctor&
     operator=(const OptimizationFunctor& src)
     {
+      if (this == &src)
+        return *this;
       Functor<MatScalar>::operator=(src);
       estimator_ = src.estimator_;
-      return (*this);
+      return *this;
     }
 
     /** \brief Destructor. */
@@ -324,9 +328,11 @@ protected:
     inline OptimizationFunctorWithIndices&
     operator=(const OptimizationFunctorWithIndices& src)
     {
+      if (this == &src)
+        return *this;
       Functor<MatScalar>::operator=(src);
       estimator_ = src.estimator_;
-      return (*this);
+      return *this;
     }
 
     /** \brief Destructor. */
@@ -349,3 +355,13 @@ public:
 } // namespace pcl
 
 #include <pcl/registration/impl/transformation_estimation_lm.hpp>
+
+#if !defined(PCL_NO_PRECOMPILE) &&                                                     \
+    !defined(PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_CPP_)
+extern template class pcl::registration::TransformationEstimationLM<pcl::PointXYZ,
+                                                                    pcl::PointXYZ>;
+extern template class pcl::registration::TransformationEstimationLM<pcl::PointXYZI,
+                                                                    pcl::PointXYZI>;
+extern template class pcl::registration::TransformationEstimationLM<pcl::PointXYZRGB,
+                                                                    pcl::PointXYZRGB>;
+#endif // PCL_NO_PRECOMPILE

@@ -4,13 +4,28 @@ if(MSVC)
   set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF CACHE BOOL "CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE")
 endif()
 
-set(CUDA_FIND_QUIETLY TRUE)
-find_package(CUDA 9.0)
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+  enable_language(CUDA)
+
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
+    find_package(CUDAToolkit QUIET)
+    set(CUDA_TOOLKIT_INCLUDE ${CUDAToolkit_INCLUDE_DIRS})
+  else()
+    set(CUDA_FIND_QUIETLY TRUE)
+    find_package(CUDA 9.0)
+  endif()
+
+  set(CUDA_FOUND TRUE)
+  set(CUDA_VERSION_STRING ${CMAKE_CUDA_COMPILER_VERSION})
+else()
+  message(STATUS "No CUDA compiler found")
+endif()
 
 if(CUDA_FOUND)
   message(STATUS "Found CUDA Toolkit v${CUDA_VERSION_STRING}")
   
-  enable_language(CUDA)
   set(HAVE_CUDA TRUE)
 
   if (CMAKE_CUDA_COMPILER_ID STREQUAL "NVIDIA")
@@ -45,19 +60,14 @@ if(CUDA_FOUND)
     cmake_policy(SET CMP0104 NEW)
     set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_BIN})
     message(STATUS "CMAKE_CUDA_ARCHITECTURES: ${CMAKE_CUDA_ARCHITECTURES}")
-    
-    #Add empty project as its not required with newer CMake
-    add_library(pcl_cuda INTERFACE)
   else()
     # Generate SASS
     set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_BIN})
     # Generate PTX for last architecture
     list(GET CUDA_ARCH_BIN -1 ver)
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -gencode arch=compute_${ver},code=compute_${ver}")
-    message(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
-    
-    add_library(pcl_cuda INTERFACE)
-    target_include_directories(pcl_cuda INTERFACE ${CUDA_TOOLKIT_INCLUDE})
-    
+    message(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")   
   endif ()
+else()
+  message(STATUS "CUDA was not found.")
 endif()

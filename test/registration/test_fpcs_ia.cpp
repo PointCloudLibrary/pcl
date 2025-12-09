@@ -73,17 +73,18 @@ TEST (PCL, FPCSInitialAlignment)
   fpcs_ia.setNumberOfThreads (nr_threads);
   fpcs_ia.setApproxOverlap (approx_overlap);
   fpcs_ia.setDelta (delta, true);
+  fpcs_ia.setScoreThreshold (0.025); // if score is below this threshold, fpcs can stop because the solution is very good
   fpcs_ia.setNumberOfSamples (nr_samples);
 
   // align
   fpcs_ia.align (source_aligned);
   EXPECT_EQ (source_aligned.size (), cloud_source.size ());
 
-  // check for correct coarse transformation marix
-  //Eigen::Matrix4f transform_res_from_fpcs = fpcs_ia.getFinalTransformation ();
-  //for (int i = 0; i < 4; ++i)
-  //  for (int j = 0; j < 4; ++j)
-  //    EXPECT_NEAR (transform_res_from_fpcs (i,j), transform_from_fpcs[i][j], 0.5);
+  // check for correct coarse transformation matrix
+  Eigen::Matrix4f transform_res_from_fpcs = fpcs_ia.getFinalTransformation ();
+  for (int i = 0; i < 4; ++i)
+    for (int j = 0; j < 4; ++j)
+      EXPECT_NEAR (transform_res_from_fpcs (i,j), transform_from_fpcs[i][j], 0.25);
 }
 
 

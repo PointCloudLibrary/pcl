@@ -49,9 +49,8 @@ template <typename PointT, typename Dist>
 pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
   : pcl::KdTree<PointT> (sorted)
   , flann_index_ ()
-  , identity_mapping_ (false)
-  , dim_ (0), total_nr_points_ (0)
-  , param_k_ (::flann::SearchParams (-1 , epsilon_))
+  , 
+   param_k_ (::flann::SearchParams (-1 , epsilon_))
   , param_radius_ (::flann::SearchParams (-1, epsilon_, sorted))
 {
   if (!std::is_same<std::size_t, pcl::index_t>::value) {
@@ -71,9 +70,8 @@ template <typename PointT, typename Dist>
 pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (const KdTreeFLANN<PointT, Dist> &k)
   : pcl::KdTree<PointT> (false)
   , flann_index_ ()
-  , identity_mapping_ (false)
-  , dim_ (0), total_nr_points_ (0)
-  , param_k_ (::flann::SearchParams (-1 , epsilon_))
+  , 
+   param_k_ (::flann::SearchParams (-1 , epsilon_))
   , param_radius_ (::flann::SearchParams (-1, epsilon_, false))
 {
   *this = k;
