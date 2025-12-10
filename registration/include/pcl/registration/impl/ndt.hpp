@@ -44,6 +44,28 @@
 namespace pcl {
 
 template <typename PointSource, typename PointTarget, typename Scalar>
+void
+NormalDistributionsTransform<PointSource, PointTarget, Scalar>::setNumberOfThreads(
+    unsigned int nr_threads)
+{
+#ifdef _OPENMP
+  if (nr_threads == 0)
+    threads_ = omp_get_num_procs();
+  else
+    threads_ = nr_threads;
+  PCL_DEBUG("[pcl::NormalDistributionsTransform::setNumberOfThreads] Setting "
+            "number of threads to %u.\n",
+            threads_);
+#else
+  threads_ = 1;
+  if (nr_threads != 1)
+    PCL_WARN("[pcl::NormalDistributionsTransform::setNumberOfThreads] "
+             "Parallelization is requested, but OpenMP is not available! Continuing "
+             "without parallelization.\n");
+#endif // _OPENMP
+}
+
+template <typename PointSource, typename PointTarget, typename Scalar>
 NormalDistributionsTransform<PointSource, PointTarget, Scalar>::
     NormalDistributionsTransform()
 : target_cells_()
@@ -196,25 +218,41 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeDerivativ
   // Precompute Angular Derivatives (eq. 6.19 and 6.21)[Magnusson 2009]
   computeAngleDerivatives(transform);
 
+  std::vector<TargetGridLeafConstPtr> neighborhood;
+  std::vector<float> distances;
+
+#pragma omp parallel for num_threads(threads_) schedule(dynamic, 32)                   \
+    shared(score, score_gradient, hessian) firstprivate(neighborhood, distances)
   // Update gradient and hessian for each point, line 17 in Algorithm 2 [Magnusson 2009]
   for (std::size_t idx = 0; idx < input_->size(); idx++) {
     // Transformed Point
     const auto& x_trans_pt = trans_cloud[idx];
 
-    // Find neighbors (Radius search has been experimentally faster than direct neighbor
-    // checking.
-    std::vector<TargetGridLeafConstPtr> neighborhood;
-    std::vector<float> distances;
-    target_cells_.radiusSearch(x_trans_pt, resolution_, neighborhood, distances);
+    // Find neighbors with different search method
+    switch (search_method_) {
+    case KDTREE:
+      // Radius search has been experimentally faster than direct neighbor checking.
+      target_cells_.radiusSearch(x_trans_pt, resolution_, neighborhood, distances);
+      break;
+    case DIRECT26:
+      target_cells_.getNeighborhoodAtPoint(x_trans_pt, neighborhood);
+      break;
+    case DIRECT7:
+      target_cells_.getFaceNeighborsAtPoint(x_trans_pt, neighborhood);
+      break;
+    case DIRECT1:
+      target_cells_.getVoxelAtPoint(x_trans_pt, neighborhood);
+      break;
+    }
+
+    // Original Point
+    const Eigen::Vector3d x = (*input_)[idx].getVector3fMap().template cast<double>();
+    const Eigen::Vector3d x_trans_position =
+        x_trans_pt.getVector3fMap().template cast<double>();
 
     for (const auto& cell : neighborhood) {
-      // Original Point
-      const auto& x_pt = (*input_)[idx];
-      const Eigen::Vector3d x = x_pt.getVector3fMap().template cast<double>();
-
       // Denorm point, x_k' in Equations 6.12 and 6.13 [Magnusson 2009]
-      const Eigen::Vector3d x_trans =
-          x_trans_pt.getVector3fMap().template cast<double>() - cell->getMean();
+      const Eigen::Vector3d x_trans = x_trans_position - cell->getMean();
       // Inverse Covariance of Occupied Voxel
       // Uses precomputed covariance for speed.
       const Eigen::Matrix3d c_inv = cell->getInverseCov();

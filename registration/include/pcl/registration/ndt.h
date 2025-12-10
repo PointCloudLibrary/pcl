@@ -49,6 +49,14 @@
 #include <unsupported/Eigen/NonLinearOptimization>
 
 namespace pcl {
+
+enum NeighborSearchMethod {
+  KDTREE,   // Original
+  DIRECT26, // VoxelGridCovariance::getNeighborhoodAtPoint
+  DIRECT7,  // VoxelGridCovariance::getFaceNeighborsAtPoint
+  DIRECT1   // VoxelGridCovariance::getVoxelAtPoint
+};
+
 /** \brief A 3D Normal Distribution Transform registration implementation for
  * point cloud data.
  * \note For more information please see <b>Magnusson, M. (2009). The
@@ -169,6 +177,22 @@ public:
   setStepSize(double step_size)
   {
     step_size_ = step_size;
+  }
+
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param[in] nr_threads the number of hardware threads to use (0 sets the value back
+   * to automatic)
+   */
+  inline void
+  setNumberOfThreads(unsigned int nr_threads = 0);
+
+  /** \brief Set neighborhood search method.
+   * \param[in] method neighborhood serach method
+   */
+  inline void
+  setNeighborhoodSearchMethod(const NeighborSearchMethod& method)
+  {
+    search_method_ = method;
   }
 
   /** \brief Get the point cloud outlier ratio.
@@ -629,6 +653,13 @@ protected:
    * w.r.t. the transform vector, \f$ H_E \f$ in Equation 6.20 [Magnusson
    * 2009]. */
   Eigen::Matrix<double, 18, 6> point_hessian_;
+
+private:
+  /** \brief The number of threads the scheduler should use. */
+  unsigned int threads_{1};
+
+  /** \brief The method used for nearest neighbor search. */
+  NeighborSearchMethod search_method_{NeighborSearchMethod::KDTREE};
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW
