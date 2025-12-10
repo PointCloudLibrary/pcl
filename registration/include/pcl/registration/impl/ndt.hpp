@@ -224,7 +224,8 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeDerivativ
 #pragma omp parallel for num_threads(threads_) schedule(dynamic, 32)                   \
     shared(score, score_gradient, hessian) firstprivate(neighborhood, distances)
   // Update gradient and hessian for each point, line 17 in Algorithm 2 [Magnusson 2009]
-  for (std::size_t idx = 0; idx < input_->size(); idx++) {
+  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(input_->size());
+       idx++) {
     // Transformed Point
     const auto& x_trans_pt = trans_cloud[idx];
 
