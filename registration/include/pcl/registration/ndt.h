@@ -50,7 +50,7 @@
 
 namespace pcl {
 
-enum NeighborSearchMethod {
+enum class NeighborSearchMethod {
   KDTREE,   // Original
   DIRECT26, // VoxelGridCovariance::getNeighborhoodAtPoint
   DIRECT7,  // VoxelGridCovariance::getFaceNeighborsAtPoint
@@ -187,7 +187,7 @@ public:
   setNumberOfThreads(unsigned int nr_threads = 0);
 
   /** \brief Set neighborhood search method.
-   * \param[in] method neighborhood serach method
+   * \param[in] method neighborhood search method
    */
   inline void
   setNeighborhoodSearchMethod(const NeighborSearchMethod& method)

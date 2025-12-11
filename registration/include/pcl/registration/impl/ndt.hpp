@@ -230,18 +230,19 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeDerivativ
     const auto& x_trans_pt = trans_cloud[idx];
 
     // Find neighbors with different search method
+    neighborhood.clear();
     switch (search_method_) {
-    case KDTREE:
+    case NeighborSearchMethod::KDTREE:
       // Radius search has been experimentally faster than direct neighbor checking.
       target_cells_.radiusSearch(x_trans_pt, resolution_, neighborhood, distances);
       break;
-    case DIRECT26:
+    case NeighborSearchMethod::DIRECT26:
       target_cells_.getNeighborhoodAtPoint(x_trans_pt, neighborhood);
       break;
-    case DIRECT7:
+    case NeighborSearchMethod::DIRECT7:
       target_cells_.getFaceNeighborsAtPoint(x_trans_pt, neighborhood);
       break;
-    case DIRECT1:
+    case NeighborSearchMethod::DIRECT1:
       target_cells_.getVoxelAtPoint(x_trans_pt, neighborhood);
       break;
     }
