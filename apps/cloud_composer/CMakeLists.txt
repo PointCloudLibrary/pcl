@@ -69,7 +69,7 @@ set(PCL_LIB_TYPE_ORIGIN ${PCL_LIB_TYPE})
 set(PCL_LIB_TYPE STATIC)
 
 PCL_ADD_LIBRARY(pcl_cc_tool_interface COMPONENT ${SUBSUBSYS_NAME} SOURCES ${INTERFACE_HEADERS} ${INTERFACE_SOURCES})
-set_property(TARGET pcl_cc_tool_interface PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(pcl_cc_tool_interface PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 target_link_libraries(pcl_cc_tool_interface pcl_common pcl_features pcl_filters pcl_search pcl_visualization ${QTX}::Widgets)
 
