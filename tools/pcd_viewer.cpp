@@ -406,15 +406,15 @@ main (int argc, char** argv)
 
     // Change the shape rendered color
     if (fcolorparam && fcolor_r.size () > i && fcolor_g.size () > i && fcolor_b.size () > i)
-      p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, fcolor_r[i], fcolor_g[i], fcolor_b[i], cloud_name);
+      p->setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, fcolor_r[i], fcolor_g[i], fcolor_b[i], cloud_name);
 
     // Change the shape rendered point size
     if (!psize.empty ())
-      p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name);
+      p->setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name);
 
     // Change the shape rendered opacity
     if (!opaque.empty ())
-      p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name);
+      p->setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name);
 
     // Change the shape rendered shading
     if (!shadings.empty ())
@@ -422,17 +422,17 @@ main (int argc, char** argv)
       if (shadings[i] == "flat")
       {
         print_highlight (stderr, "Setting shading property for %s to FLAT.\n", argv[vtk_file_indices.at (i)]);
-        p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_FLAT, cloud_name);
+        p->setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_FLAT, cloud_name);
       }
       else if (shadings[i] == "gouraud")
       {
         print_highlight (stderr, "Setting shading property for %s to GOURAUD.\n", argv[vtk_file_indices.at (i)]);
-        p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_GOURAUD, cloud_name);
+        p->setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_GOURAUD, cloud_name);
       }
       else if (shadings[i] == "phong")
       {
         print_highlight (stderr, "Setting shading property for %s to PHONG.\n", argv[vtk_file_indices.at (i)]);
-        p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_PHONG, cloud_name);
+        p->setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_PHONG, cloud_name);
       }
     }
   }
@@ -619,11 +619,11 @@ main (int argc, char** argv)
       std::string cloud_name_normals_pc = std::string(argv[p_file_indices.at (i)]) + "-" + std::to_string(i) + "-normals";
       int factor = (std::min)(normals, pc);
       p->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud_xyz, cloud_normals, factor, normals_scale, cloud_name_normals_pc, viewport);
-      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, cloud_name_normals_pc);
-      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc);
+      p->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, cloud_name_normals_pc);
+      p->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc);
       cloud_name_normals_pc += "-pc";
       p->addPointCloudPrincipalCurvatures<pcl::PointXYZ, pcl::Normal> (cloud_xyz, cloud_normals, cloud_pc, factor, pc_scale, cloud_name_normals_pc, viewport);
-      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc);
+      p->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc);
     }
 
     // Add every dimension as a possible color
@@ -669,15 +669,15 @@ main (int argc, char** argv)
 
     if (use_immediate_rendering)
       // Set immediate mode rendering ON
-      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_IMMEDIATE_RENDERING, 1.0, cloud_name);
+      p->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_IMMEDIATE_RENDERING, 1.0, cloud_name);
 
     // Change the cloud rendered point size
     if (!psize.empty ())
-      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name);
+      p->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, psize.at (i), cloud_name);
 
     // Change the cloud rendered opacity
     if (!opaque.empty ())
-      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name);
+      p->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name);
 
     // Reset camera viewpoint to center of cloud if camera parameters were not passed manually and this is the first loaded cloud
     if (i == 0 && !p->cameraParamsSet () && !p->cameraFileLoaded ())

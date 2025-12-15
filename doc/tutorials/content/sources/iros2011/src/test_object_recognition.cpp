@@ -195,7 +195,7 @@ main (int argc, char ** argv)
 
   pcl::visualization::PointCloudColorHandlerCustom<PointT> red (aligned_model_points, 255, 0, 0);
   vis.addPointCloud (aligned_model_points, red, "model");
-  vis.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "model");
+  vis.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 2, "model");
   vis.resetCamera ();
 
   vis.addPointCloud (query, "query");

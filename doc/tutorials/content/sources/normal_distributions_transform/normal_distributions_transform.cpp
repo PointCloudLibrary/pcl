@@ -87,14 +87,14 @@ main ()
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ>
   target_color (target_cloud, 255, 0, 0);
   viewer_final->addPointCloud<pcl::PointXYZ> (target_cloud, target_color, "target cloud");
-  viewer_final->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
+  viewer_final->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
                                                   1, "target cloud");
 
   // Coloring and visualizing transformed input cloud (green).
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ>
   output_color (output_cloud, 0, 255, 0);
   viewer_final->addPointCloud<pcl::PointXYZ> (output_cloud, output_color, "output cloud");
-  viewer_final->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
+  viewer_final->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
                                                   1, "output cloud");
 
   // Starting visualizer

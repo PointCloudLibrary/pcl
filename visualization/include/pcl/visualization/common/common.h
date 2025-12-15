@@ -98,7 +98,7 @@ namespace pcl
     viewScreenArea (const Eigen::Vector3d &eye, const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const Eigen::Matrix4d &view_projection_matrix, int width, int height);
 
     /** \brief Set of rendering properties. */
-    enum RenderingProperties
+    enum class RenderingProperties
     {
       PCL_VISUALIZER_POINT_SIZE,            /**< integer starting from 1 */
       PCL_VISUALIZER_OPACITY,               /**< Float going from 0.0 (transparent) to 1.0 (opaque) */

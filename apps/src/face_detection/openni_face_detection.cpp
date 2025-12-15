@@ -70,11 +70,17 @@ run(pcl::RFFaceDetectorTrainer& fdrf, bool heat_map = false, bool show_votes = f
           votes_cloud, 255, 0, 0);
       vis.addPointCloud<pcl::PointXYZ>(votes_cloud, handler_votes, "votes_cloud");
       vis.setPointCloudRenderingProperties(
-          pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 14, "votes_cloud");
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
+          14,
+          "votes_cloud");
       vis.setPointCloudRenderingProperties(
-          pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "votes_cloud");
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+          0.5,
+          "votes_cloud");
       vis.setPointCloudRenderingProperties(
-          pcl::visualization::PCL_VISUALIZER_OPACITY, 0.75, "votes_cloud");
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+          0.75,
+          "votes_cloud");
     }
 
     std::vector<Eigen::VectorXf> heads;

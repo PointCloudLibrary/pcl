@@ -30,7 +30,7 @@ The interesting part begins here:
   viewer.setBackgroundColor (1, 1, 1);
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointWithRange> range_image_color_handler (range_image_ptr, 0, 0, 0);
   viewer.addPointCloud (range_image_ptr, range_image_color_handler, "range image");
-  viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "range image");
+  viewer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 1, "range image");
   //viewer.addCoordinateSystem (1.0f);
   //pcl::visualization::PointCloudColorHandlerCustom<PointType> point_cloud_color_handler (point_cloud_ptr, 150, 150, 150);
   //viewer.addPointCloud (point_cloud_ptr, point_cloud_color_handler, "original point cloud");

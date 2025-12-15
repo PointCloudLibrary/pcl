@@ -111,9 +111,9 @@ class Segmentation
         static bool first_time = true;
         if (!first_time)
         {
-          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-          viz.getPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+          viz.getPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+          viz.getPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+          viz.getPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
           if (last_enable_normal_viz)
             viz.removePointCloud ("normalcloud");
           viz.removePointCloud ("cloud");
@@ -136,9 +136,9 @@ class Segmentation
           ColorHandler Color_handler (normal_cloud,"curvature");
           viz.addPointCloud<pcl::PointXYZRGBNormal> (normal_cloud, Color_handler, cloud_name, 0);
         }
-        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-        viz.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+        viz.setPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+        viz.setPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+        viz.setPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
         new_cloud = false;
       }
       last_enable_normal_viz = enable_normal_viz;

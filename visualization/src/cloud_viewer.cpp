@@ -68,9 +68,9 @@ namespace pcl
     pop (const Handler &handler)
     {
       double psize = 1.0, opacity = 1.0, linesize =1.0;
-      viewer->getPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-      viewer->getPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-      viewer->getPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+      viewer->getPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+      viewer->getPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+      viewer->getPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
 
       if (!viewer->updatePointCloud (cloud, handler, cloud_name))
       {
@@ -79,9 +79,9 @@ namespace pcl
       }
 
       // viewer->removePointCloud (cloud_name);
-      viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-      viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-      viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
+      viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
+      viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
+      viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
       popped_ = true;
     }
 

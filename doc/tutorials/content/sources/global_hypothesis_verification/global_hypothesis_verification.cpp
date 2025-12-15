@@ -483,7 +483,7 @@ main (int argc,
     CloudStyle modelStyle = style_white;
     pcl::visualization::PointCloudColorHandlerCustom<PointType> off_scene_model_color_handler (off_scene_model, modelStyle.r, modelStyle.g, modelStyle.b);
     viewer.addPointCloud (off_scene_model, off_scene_model_color_handler, "off_scene_model");
-    viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, modelStyle.size, "off_scene_model");
+    viewer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, modelStyle.size, "off_scene_model");
   }
 
   if (show_keypoints_)
@@ -492,12 +492,12 @@ main (int argc,
     pcl::visualization::PointCloudColorHandlerCustom<PointType> model_good_keypoints_color_handler (off_model_good_kp, goodKeypointStyle.r, goodKeypointStyle.g,
                                                                                                     goodKeypointStyle.b);
     viewer.addPointCloud (off_model_good_kp, model_good_keypoints_color_handler, "model_good_keypoints");
-    viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, goodKeypointStyle.size, "model_good_keypoints");
+    viewer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, goodKeypointStyle.size, "model_good_keypoints");
 
     pcl::visualization::PointCloudColorHandlerCustom<PointType> scene_good_keypoints_color_handler (scene_good_kp, goodKeypointStyle.r, goodKeypointStyle.g,
                                                                                                     goodKeypointStyle.b);
     viewer.addPointCloud (scene_good_kp, scene_good_keypoints_color_handler, "scene_good_keypoints");
-    viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, goodKeypointStyle.size, "scene_good_keypoints");
+    viewer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, goodKeypointStyle.size, "scene_good_keypoints");
   }
 
   for (std::size_t i = 0; i < instances.size (); ++i)
@@ -508,14 +508,14 @@ main (int argc,
     CloudStyle clusterStyle = style_red;
     pcl::visualization::PointCloudColorHandlerCustom<PointType> instance_color_handler (instances[i], clusterStyle.r, clusterStyle.g, clusterStyle.b);
     viewer.addPointCloud (instances[i], instance_color_handler, ss_instance.str ());
-    viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, clusterStyle.size, ss_instance.str ());
+    viewer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, clusterStyle.size, ss_instance.str ());
 
     CloudStyle registeredStyles = hypotheses_mask[i] ? style_green : style_cyan;
     ss_instance << "_registered" << std::endl;
     pcl::visualization::PointCloudColorHandlerCustom<PointType> registered_instance_color_handler (registered_instances[i], registeredStyles.r,
                                                                                                    registeredStyles.g, registeredStyles.b);
     viewer.addPointCloud (registered_instances[i], registered_instance_color_handler, ss_instance.str ());
-    viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, registeredStyles.size, ss_instance.str ());
+    viewer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, registeredStyles.size, ss_instance.str ());
   }
 
   while (!viewer.wasStopped ())

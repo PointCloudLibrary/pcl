@@ -111,7 +111,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
   pcl::visualization::PointCloudColorHandlerCustom<PointT> red (data->clicked_points_3d, 255, 0, 0);
   data->viewerPtr->removePointCloud("clicked_points");
   data->viewerPtr->addPointCloud(data->clicked_points_3d, red, "clicked_points");
-  data->viewerPtr->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 10, "clicked_points");
+  data->viewerPtr->setPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 10, "clicked_points");
   std::cout << current_point.x << " " << current_point.y << " " << current_point.z << std::endl;
 }
 

@@ -492,7 +492,9 @@ public:
           viewer->addPointCloudNormals<PointT, pcl::Normal>(
               prev_ground_image, prev_normal_cloud, 10, 0.15f, "normals");
           viewer->setPointCloudRenderingProperties(
-              pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "normals");
+              pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+              0.5,
+              "normals");
         }
 
         if (prev_cloud->size() > 1000) {

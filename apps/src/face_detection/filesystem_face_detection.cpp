@@ -79,7 +79,9 @@ run(pcl::RFFaceDetectorTrainer& fdrf,
         handler_votes(votes_cloud, "intensity");
     vis.addPointCloud<pcl::PointXYZI>(votes_cloud, handler_votes, "votes_cloud");
     vis.setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 14, "votes_cloud");
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
+        14,
+        "votes_cloud");
   }
 
   vis.addCoordinateSystem(0.1, "global");
