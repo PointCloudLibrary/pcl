@@ -59,7 +59,7 @@ FittingCurve2dSDM::assemble (const FittingCurve2dPDM::Parameter &parameter)
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
 
   double wInt = 1.0;
   if (!m_data->interior_weight.empty ())
@@ -211,7 +211,7 @@ FittingCurve2dSDM::addCageRegularisation (double weight, unsigned &row)
 void
 FittingCurve2dSDM::assembleInterior (double wInt, double rScale, unsigned &row)
 {
-  unsigned nInt = int (m_data->interior.size ());
+  auto nInt = static_cast<unsigned>(m_data->interior.size ());
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();

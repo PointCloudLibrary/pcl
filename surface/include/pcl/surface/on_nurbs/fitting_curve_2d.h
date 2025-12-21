@@ -58,12 +58,9 @@ namespace pcl
         /** \brief Parameters for fitting */
         struct Parameter
         {
-          double smoothness;
-          double rScale;
-          Parameter () :
-            smoothness (0.1), rScale (1.0)
-          {
-          }
+          double smoothness{0.1};
+          double rScale{1.0};
+          Parameter () = default;
         };
 
         struct FitParameter
