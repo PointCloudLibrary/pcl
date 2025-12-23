@@ -35,11 +35,11 @@ displayPlanarRegions(
     pcl::PointXYZ pt2 = pcl::PointXYZ(centroid[0] + (0.5f * model[0]),
                                       centroid[1] + (0.5f * model[1]),
                                       centroid[2] + (0.5f * model[2]));
-    sprintf(name, "normal_%d", unsigned(i));
+    sprintf(name, "normal_%d", static_cast<unsigned>(i));
     viewer->addArrow(pt2, pt1, 1.0, 0, 0, false, name);
 
     contour->points = regions[i].getContour();
-    sprintf(name, "plane_%02d", int(i));
+    sprintf(name, "plane_%02d", static_cast<int>(i));
     pcl::visualization::PointCloudColorHandlerCustom<PointT> color(
         contour, red[i % 6], grn[i % 6], blu[i % 6]);
     if (!viewer->updatePointCloud(contour, color, name))
@@ -59,7 +59,7 @@ displayEuclideanClusters(const pcl::PointCloud<PointT>::CloudVectorType& cluster
   unsigned char blu[6] = {0, 0, 255, 0, 255, 255};
 
   for (std::size_t i = 0; i < clusters.size(); i++) {
-    sprintf(name, "cluster_%d", int(i));
+    sprintf(name, "cluster_%d", static_cast<int>(i));
     pcl::PointCloud<PointT>::ConstPtr cluster_cloud(
         new pcl::PointCloud<PointT>(clusters[i]));
     pcl::visualization::PointCloudColorHandlerCustom<PointT> color0(
@@ -126,15 +126,15 @@ removePreviousDataFromScreen(std::size_t prev_models_size,
 {
   char name[1024];
   for (std::size_t i = 0; i < prev_models_size; i++) {
-    sprintf(name, "normal_%d", unsigned(i));
+    sprintf(name, "normal_%d", static_cast<unsigned>(i));
     viewer->removeShape(name);
 
-    sprintf(name, "plane_%02d", int(i));
+    sprintf(name, "plane_%02d", static_cast<int>(i));
     viewer->removePointCloud(name);
   }
 
   for (std::size_t i = 0; i < prev_clusters_size; i++) {
-    sprintf(name, "cluster_%d", int(i));
+    sprintf(name, "cluster_%d", static_cast<int>(i));
     viewer->removePointCloud(name);
   }
 }
@@ -173,7 +173,7 @@ comparePointToRegion(PointT& pt,
   pt_vec[0] = pt.x;
   pt_vec[1] = pt.y;
   pt_vec[2] = pt.z;
-  Eigen::Vector3f projected(pt_vec - mc * float(ptp_dist));
+  Eigen::Vector3f projected(pt_vec - mc * static_cast<float>(ptp_dist));
   PointT projected_pt;
   projected_pt.x = projected[0];
   projected_pt.y = projected[1];
@@ -370,7 +370,7 @@ OrganizedSegmentationDemo::cloud_cb(const CloudConstPtr& cloud)
     mps.segment(regions);
   }
   double mps_end = pcl::getTime();
-  std::cout << "MPS+Refine took: " << double(mps_end - mps_start) << std::endl;
+  std::cout << "MPS+Refine took: " << (mps_end - mps_start) << std::endl;
 
   // Segment Objects
   pcl::PointCloud<PointT>::CloudVectorType clusters;

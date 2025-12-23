@@ -31,7 +31,7 @@ pcl::cloud_composer::WorkQueue::actionFinished(ActionPair finished_action)
 void
 pcl::cloud_composer::WorkQueue::checkQueue()
 {
-  if (work_queue_.length() > 0) {
+  if (!work_queue_.empty()) {
     ActionPair action_to_execute = work_queue_.dequeue();
     if (action_to_execute.command->runCommand(action_to_execute.tool)) {
       // Success, send the command back to the main thread

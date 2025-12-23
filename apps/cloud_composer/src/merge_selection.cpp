@@ -18,7 +18,7 @@ pcl::cloud_composer::MergeSelection::performAction(ConstItemList input_data,
                                                    PointTypeFlags::PointType type)
 {
   if (type != PointTypeFlags::NONE) {
-    switch ((std::uint8_t)type) {
+    switch (static_cast<std::uint8_t>(type)) {
     case (PointTypeFlags::XYZ):
       return this->performTemplatedAction<pcl::PointXYZ>(input_data);
     case (PointTypeFlags::XYZ | PointTypeFlags::RGB):
@@ -53,7 +53,7 @@ pcl::cloud_composer::MergeSelection::performAction(ConstItemList input_data,
   foreach (const CloudItem* input_cloud_item, selected_item_index_map_.keys()) {
     // If this cloud hasn't been completely selected
     if (!input_data.contains(input_cloud_item)) {
-      pcl::PCLPointCloud2::ConstPtr input_cloud =
+      auto input_cloud =
           input_cloud_item->data(ItemDataRole::CLOUD_BLOB)
               .value<pcl::PCLPointCloud2::ConstPtr>();
       qDebug() << "Extracting "
@@ -78,7 +78,7 @@ pcl::cloud_composer::MergeSelection::performAction(ConstItemList input_data,
                                  .value<Eigen::Quaternionf>();
         pose_found = true;
       }
-      CloudItem* new_cloud_item = new CloudItem(input_cloud_item->text(),
+      auto* new_cloud_item = new CloudItem(input_cloud_item->text(),
                                                 original_minus_indices,
                                                 source_origin,
                                                 source_orientation);
@@ -92,7 +92,7 @@ pcl::cloud_composer::MergeSelection::performAction(ConstItemList input_data,
   }
   // Just concatenate for all fully selected clouds
   foreach (const CloudComposerItem* input_item, input_data) {
-    pcl::PCLPointCloud2::ConstPtr input_cloud =
+    auto input_cloud =
         input_item->data(ItemDataRole::CLOUD_BLOB)
             .value<pcl::PCLPointCloud2::ConstPtr>();
 
@@ -101,7 +101,7 @@ pcl::cloud_composer::MergeSelection::performAction(ConstItemList input_data,
     merged_cloud = temp_cloud;
   }
 
-  CloudItem* cloud_item = new CloudItem(
+  auto* cloud_item = new CloudItem(
       "Cloud from Selection", merged_cloud, source_origin, source_orientation);
 
   output.append(cloud_item);

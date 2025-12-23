@@ -62,7 +62,7 @@ pcl::modeler::ParameterDialog::addParameter(pcl::modeler::Parameter* parameter)
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::ParameterDialog::ParameterDialog(const std::string& title,
                                                QWidget* parent)
-: QDialog(parent), parameter_model_(nullptr)
+: QDialog(parent), 
 {
   setModal(false);
   setWindowTitle(QString(title.c_str()) + " Parameters");
@@ -72,7 +72,7 @@ pcl::modeler::ParameterDialog::ParameterDialog(const std::string& title,
 int
 pcl::modeler::ParameterDialog::exec()
 {
-  pcl::modeler::ParameterModel parameterModel(int(name_parameter_map_.size()), 2, this);
+  pcl::modeler::ParameterModel parameterModel(static_cast<int>(name_parameter_map_.size()), 2, this);
   parameter_model_ = &parameterModel;
 
   QStringList headerLabels;
@@ -85,10 +85,10 @@ pcl::modeler::ParameterDialog::exec()
 
   std::size_t currentRow = 0;
   for (const auto& name_parameter : name_parameter_map_) {
-    QModelIndex name = parameterModel.index(int(currentRow), 0, QModelIndex());
+    QModelIndex name = parameterModel.index(static_cast<int>(currentRow), 0, QModelIndex());
     parameterModel.setData(name, QVariant(name_parameter.first.c_str()));
 
-    QModelIndex value = parameterModel.index(int(currentRow), 1, QModelIndex());
+    QModelIndex value = parameterModel.index(static_cast<int>(currentRow), 1, QModelIndex());
     std::pair<QVariant, int> model_data = name_parameter.second->toModelData();
     parameterModel.setData(value, model_data.first, model_data.second);
 
@@ -109,9 +109,9 @@ pcl::modeler::ParameterDialog::exec()
       tableView.columnWidth(0) + tableView.columnWidth(1) + frameSize().width();
   setMinimumWidth(totlen);
 
-  QPushButton* pushButtonReset = new QPushButton("Reset", this);
-  QPushButton* pushButtonApply = new QPushButton("Apply", this);
-  QPushButton* pushButtonCancel = new QPushButton("Cancel", this);
+  auto* pushButtonReset = new QPushButton("Reset", this);
+  auto* pushButtonApply = new QPushButton("Apply", this);
+  auto* pushButtonCancel = new QPushButton("Cancel", this);
 
   connect(pushButtonReset, SIGNAL(clicked()), this, SLOT(reset()));
   connect(pushButtonApply, SIGNAL(clicked()), this, SLOT(accept()));
@@ -137,7 +137,7 @@ pcl::modeler::ParameterDialog::reset()
   for (auto& name_parameter : name_parameter_map_) {
     name_parameter.second->reset();
 
-    QModelIndex value = parameter_model_->index(int(currentRow), 1, QModelIndex());
+    QModelIndex value = parameter_model_->index(static_cast<int>(currentRow), 1, QModelIndex());
     std::pair<QVariant, int> model_data = name_parameter.second->toModelData();
     parameter_model_->setData(value, model_data.first, model_data.second);
 
@@ -149,10 +149,10 @@ pcl::modeler::ParameterDialog::reset()
 pcl::modeler::Parameter*
 pcl::modeler::ParameterDelegate::getCurrentParameter(const QModelIndex& index) const
 {
-  std::map<std::string, Parameter*>::iterator currentParameter = parameter_map_.begin();
+  auto currentParameter = parameter_map_.begin();
 
   std::size_t currentRow = 0;
-  while (currentRow < (std::size_t)index.row() &&
+  while (currentRow < static_cast<std::size_t>(index.row()) &&
          currentParameter != parameter_map_.end()) {
     ++currentParameter;
     ++currentRow;

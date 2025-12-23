@@ -114,7 +114,7 @@ main(int argc, char** argv)
     ppf_estimator.compute(*cloud_model_ppf);
 
     PPFHashMapSearch::Ptr hashmap_search(
-        new PPFHashMapSearch(12.0f / 180.0f * float(M_PI), 0.05f));
+        new PPFHashMapSearch(12.0f / 180.0f * static_cast<float>(M_PI), 0.05f));
     hashmap_search->setInputFeatureCloud(cloud_model_ppf);
     hashmap_search_vector.push_back(hashmap_search);
   }
@@ -130,7 +130,7 @@ main(int argc, char** argv)
     // set parameters for the PPF registration procedure
     ppf_registration.setSceneReferencePointSamplingRate(10);
     ppf_registration.setPositionClusteringThreshold(0.2f);
-    ppf_registration.setRotationClusteringThreshold(30.0f / 180.0f * float(M_PI));
+    ppf_registration.setRotationClusteringThreshold(30.0f / 180.0f * static_cast<float>(M_PI));
     ppf_registration.setSearchMethod(hashmap_search_vector[model_i]);
     ppf_registration.setInputSource(cloud_models_with_normals[model_i]);
     ppf_registration.setInputTarget(cloud_scene_input);

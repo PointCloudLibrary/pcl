@@ -54,7 +54,7 @@
     double now = pcl::getTime();                                                       \
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
+      std::cout << "Average framerate(" << (_WHAT_) << "): "                             \
                 << double(count) / double(now - last) << " Hz" << std::endl;           \
       count = 0;                                                                       \
       last = now;                                                                      \

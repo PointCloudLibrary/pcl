@@ -30,14 +30,14 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction(ConstItemList input_
   input_item = input_data.value(0);
 
   if (input_item->type() == CloudComposerItem::CLOUD_ITEM) {
-    const CloudItem* cloud_item = dynamic_cast<const CloudItem*>(input_item);
+    const auto* cloud_item = dynamic_cast<const CloudItem*>(input_item);
     if (cloud_item->isSanitized()) {
       double cluster_tolerance =
           parameter_model_->getProperty("Cluster Tolerance").toDouble();
       int min_cluster_size = parameter_model_->getProperty("Min Cluster Size").toInt();
       int max_cluster_size = parameter_model_->getProperty("Max Cluster Size").toInt();
 
-      pcl::PCLPointCloud2::ConstPtr input_cloud =
+      auto input_cloud =
           input_item->data(ItemDataRole::CLOUD_BLOB)
               .value<pcl::PCLPointCloud2::ConstPtr>();
       // Get the cloud in template form
@@ -60,9 +60,9 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction(ConstItemList input_
       ec.extract(cluster_indices);
       //////////////////////////////////////////////////////////////////
       // Get copies of the original origin and orientation
-      Eigen::Vector4f source_origin =
+      auto source_origin =
           input_item->data(ItemDataRole::ORIGIN).value<Eigen::Vector4f>();
-      Eigen::Quaternionf source_orientation =
+      auto source_orientation =
           input_item->data(ItemDataRole::ORIENTATION).value<Eigen::Quaternionf>();
       // Vector to accumulate the extracted indices
       pcl::IndicesPtr extracted_indices(new pcl::Indices());
@@ -85,7 +85,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction(ConstItemList input_
         filter.filter(*cloud_filtered);
 
         qDebug() << "Cluster has " << cloud_filtered->width << " data points.";
-        CloudItem* cloud_item =
+        auto* cloud_item =
             new CloudItem(input_item->text() + tr("-Clstr %1").arg(cluster_count),
                           cloud_filtered,
                           source_origin,
@@ -104,7 +104,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction(ConstItemList input_
       }
       qDebug() << "Cloud has " << remainder_cloud->width
                << " data points after clusters removed.";
-      CloudItem* cloud_item = new CloudItem(input_item->text() + " unclustered",
+      auto* cloud_item = new CloudItem(input_item->text() + " unclustered",
                                             remainder_cloud,
                                             source_origin,
                                             source_orientation);
@@ -125,7 +125,7 @@ pcl::cloud_composer::PropertiesModel*
 pcl::cloud_composer::EuclideanClusteringToolFactory::createToolParameterModel(
     QObject* parent)
 {
-  PropertiesModel* parameter_model = new PropertiesModel(parent);
+  auto* parameter_model = new PropertiesModel(parent);
 
   parameter_model->addProperty(
       "Cluster Tolerance", 0.02, Qt::ItemIsEditable | Qt::ItemIsEnabled);

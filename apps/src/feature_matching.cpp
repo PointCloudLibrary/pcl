@@ -140,9 +140,9 @@ private:
   pcl::CorrespondencesPtr correspondences_;
   Eigen::Matrix4f initial_transformation_matrix_;
   Eigen::Matrix4f transformation_matrix_;
-  bool show_source2target_;
-  bool show_target2source_;
-  bool show_correspondences;
+  bool show_source2target_{false};
+  bool show_target2source_{false};
+  bool show_correspondences{false};
 };
 
 template <typename FeatureType>
@@ -166,9 +166,8 @@ ICCVTutorial<FeatureType>::ICCVTutorial(
 , source_features_(new pcl::PointCloud<FeatureType>)
 , target_features_(new pcl::PointCloud<FeatureType>)
 , correspondences_(new pcl::Correspondences)
-, show_source2target_(false)
-, show_target2source_(false)
-, show_correspondences(false)
+, 
+ 
 {
   visualizer_.registerKeyboardCallback(
       &ICCVTutorial::keyboard_callback, *this, nullptr);
@@ -342,7 +341,7 @@ ICCVTutorial<FeatureType>::filterCorrespondences()
   std::vector<std::pair<unsigned, unsigned>> correspondences;
   for (std::size_t cIdx = 0; cIdx < source2target_.size(); ++cIdx)
     if (target2source_[source2target_[cIdx]] == static_cast<int>(cIdx))
-      correspondences.push_back(std::make_pair(cIdx, source2target_[cIdx]));
+      correspondences.emplace_back(cIdx, source2target_[cIdx]);
 
   correspondences_->resize(correspondences.size());
   for (std::size_t cIdx = 0; cIdx < correspondences.size(); ++cIdx) {
@@ -593,14 +592,14 @@ main(int argc, char** argv)
   pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI>::Ptr keypoint_detector;
 
   if (keypoint_type == 1) {
-    pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>* sift3D =
+    auto* sift3D =
         new pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>;
     sift3D->setScales(0.01f, 3, 2);
     sift3D->setMinimumContrast(0.0);
     keypoint_detector.reset(sift3D);
   }
   else {
-    pcl::HarrisKeypoint3D<pcl::PointXYZRGB, pcl::PointXYZI>* harris3D =
+    auto* harris3D =
         new pcl::HarrisKeypoint3D<pcl::PointXYZRGB, pcl::PointXYZI>(
             pcl::HarrisKeypoint3D<pcl::PointXYZRGB, pcl::PointXYZI>::HARRIS);
     harris3D->setNonMaxSupression(true);
@@ -644,7 +643,7 @@ main(int argc, char** argv)
   pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstruction;
 
   if (surface_type == 1) {
-    pcl::GreedyProjectionTriangulation<pcl::PointXYZRGBNormal>* gp3 =
+    auto* gp3 =
         new pcl::GreedyProjectionTriangulation<pcl::PointXYZRGBNormal>;
 
     // Set the maximum distance between connected points (maximum edge length)
@@ -687,7 +686,7 @@ main(int argc, char** argv)
   } break;
 
   case 2: {
-    pcl::SHOTColorEstimationOMP<pcl::PointXYZRGB, pcl::Normal, pcl::SHOT1344>* shot =
+    auto* shot =
         new pcl::SHOTColorEstimationOMP<pcl::PointXYZRGB, pcl::Normal, pcl::SHOT1344>;
     shot->setRadiusSearch(0.04);
     pcl::Feature<pcl::PointXYZRGB, pcl::SHOT1344>::Ptr feature_extractor(shot);

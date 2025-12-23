@@ -80,7 +80,7 @@ pcl::modeler::SurfaceActorItem::initImpl()
   actor->SetMapper(mapper);
 
   actor->SetNumberOfCloudPoints(
-      int(std::max<vtkIdType>(1, poly_data_->GetNumberOfPoints() / 10)));
+      static_cast<int>(std::max<vtkIdType>(1, poly_data_->GetNumberOfPoints() / 10)));
   actor->GetProperty()->SetInterpolationToFlat();
 
   actor->GetProperty()->SetRepresentationToSurface();

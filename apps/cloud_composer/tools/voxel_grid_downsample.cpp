@@ -31,7 +31,7 @@ pcl::cloud_composer::VoxelGridDownsampleTool::performAction(ConstItemList input_
     double leaf_y = parameter_model_->getProperty("Leaf Size y").toDouble();
     double leaf_z = parameter_model_->getProperty("Leaf Size z").toDouble();
 
-    pcl::PCLPointCloud2::ConstPtr input_cloud =
+    auto input_cloud =
         input_item->data(ItemDataRole::CLOUD_BLOB)
             .value<pcl::PCLPointCloud2::ConstPtr>();
 
@@ -39,7 +39,7 @@ pcl::cloud_composer::VoxelGridDownsampleTool::performAction(ConstItemList input_
     // Create the filtering object
     pcl::VoxelGrid<pcl::PCLPointCloud2> vox_grid;
     vox_grid.setInputCloud(input_cloud);
-    vox_grid.setLeafSize(float(leaf_x), float(leaf_y), float(leaf_z));
+    vox_grid.setLeafSize(static_cast<float>(leaf_x), static_cast<float>(leaf_y), static_cast<float>(leaf_z));
 
     // Create output cloud
     pcl::PCLPointCloud2::Ptr cloud_filtered(new pcl::PCLPointCloud2);
@@ -48,12 +48,12 @@ pcl::cloud_composer::VoxelGridDownsampleTool::performAction(ConstItemList input_
 
     //////////////////////////////////////////////////////////////////
     // Get copies of the original origin and orientation
-    Eigen::Vector4f source_origin =
+    auto source_origin =
         input_item->data(ItemDataRole::ORIGIN).value<Eigen::Vector4f>();
-    Eigen::Quaternionf source_orientation =
+    auto source_orientation =
         input_item->data(ItemDataRole::ORIENTATION).value<Eigen::Quaternionf>();
     // Put the modified cloud into an item, stick in output
-    CloudItem* cloud_item = new CloudItem(input_item->text() + tr(" vox ds"),
+    auto* cloud_item = new CloudItem(input_item->text() + tr(" vox ds"),
                                           cloud_filtered,
                                           source_origin,
                                           source_orientation);
@@ -72,7 +72,7 @@ pcl::cloud_composer::PropertiesModel*
 pcl::cloud_composer::VoxelGridDownsampleToolFactory::createToolParameterModel(
     QObject* parent)
 {
-  PropertiesModel* parameter_model = new PropertiesModel(parent);
+  auto* parameter_model = new PropertiesModel(parent);
 
   parameter_model->addProperty(
       "Leaf Size x", 0.01, Qt::ItemIsEditable | Qt::ItemIsEnabled);

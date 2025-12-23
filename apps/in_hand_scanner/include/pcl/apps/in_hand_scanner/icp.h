@@ -224,16 +224,16 @@ private:
   KdTreePtr kd_tree_;
 
   // Convergence
-  float epsilon_; // in cm^2
+  float epsilon_{10e-6f}; // in cm^2
 
   // Registration failure
-  unsigned int max_iterations_;
-  float min_overlap_; // [0 1]
-  float max_fitness_; // in cm^2
+  unsigned int max_iterations_{50};
+  float min_overlap_{.75f}; // [0 1]
+  float max_fitness_{.1f}; // in cm^2
 
   // Correspondence rejection
-  float factor_;
-  float max_angle_; // in degrees
+  float factor_{9.f};
+  float max_angle_{45.f}; // in degrees
 };
 } // End namespace ihs
 } // End namespace pcl
