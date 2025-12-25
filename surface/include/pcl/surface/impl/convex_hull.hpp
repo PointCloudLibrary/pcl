@@ -85,9 +85,13 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   PointInT p0 = (*input_)[(*indices_)[0]];
   PointInT p1 = (*input_)[(*indices_)[indices_->size () - 1]];
   PointInT p2 = (*input_)[(*indices_)[indices_->size () / 2]];
+  int retries = num_initial_convex_selection_retry_;
   while (!pcl::isXYZFinite(p0) || !pcl::isXYZFinite(p1) || !pcl::isXYZFinite(p2) || 
   (p1.getVector3fMap() - p0.getVector3fMap()).cross(p2.getVector3fMap() - p0.getVector3fMap()).stableNorm() < Eigen::NumTraits<float>::dummy_precision ())
   {
+    if (retries-- <= 0) {
+      break;
+    }
     p0 = (*input_)[(*indices_)[rand () % indices_->size ()]];
     p1 = (*input_)[(*indices_)[rand () % indices_->size ()]];
     p2 = (*input_)[(*indices_)[rand () % indices_->size ()]];

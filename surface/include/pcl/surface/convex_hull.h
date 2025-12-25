@@ -162,6 +162,23 @@ namespace pcl
         return (dimension_);
       }
 
+      /** \brief Sets the number of the initial convex selection retry.
+       * \param[in] num_initial_convex_selection_retry The number of the initial convex
+       * selection retry, defalut is 10000
+       */
+      void
+      setNumInitialConvexSelectionRetry(int num_initial_convex_selection_retry)
+      {
+        num_initial_convex_selection_retry_ = num_initial_convex_selection_retry;
+      }
+
+      /** \brief Returns the number of the initial convex selection retry. */
+      inline int
+      getNumInitialConvexSelectionRetry() const
+      {
+        return (num_initial_convex_selection_retry_);
+      }
+
       /** \brief Retrieve the indices of the input point cloud that for the convex hull.
         *
         * \note Should only be called after reconstruction was performed.
@@ -243,6 +260,9 @@ namespace pcl
       
       /** \brief The dimensionality of the concave hull (2D or 3D). */
       int dimension_{0};
+
+      /** \brief The number of the initial convex selection retry. */
+      int num_initial_convex_selection_retry_{10000};
 
       /** \brief How close can a 2D plane's normal be to an axis to make projection problematic. */
       double projection_angle_thresh_{std::cos (0.174532925)};
