@@ -497,7 +497,7 @@ TEST (PCL, ConvexHull_insufficient_points)
   // Use EXPECT_EXIT to run the convex hull calculation in a sub-process to
   // safely check the timeout.
   const auto check_no_timeout = [](pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud) {
-    std::atomic_bool finished = false;
+    std::atomic_bool finished(false);
     std::thread thread([&]() {
       using namespace std::chrono_literals;
       std::this_thread::sleep_for(1s);
