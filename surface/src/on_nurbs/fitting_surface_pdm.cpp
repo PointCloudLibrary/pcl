@@ -485,8 +485,8 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
     v_min = v_min.cwiseMin (p);
   }
 
-  if (v_max(0) - v_min(0) < std::numeric_limits<double>::epsilon() ||
-      v_max(1) - v_min(1) < std::numeric_limits<double>::epsilon())
+  if ((v_max(0) - v_min(0)) < std::numeric_limits<double>::epsilon() ||
+      (v_max(1) - v_min(1)) < std::numeric_limits<double>::epsilon())
     throw std::runtime_error(
         "[NurbsTools::initNurbsPCABoundingBox] Error: v_max <= v_min");
 
