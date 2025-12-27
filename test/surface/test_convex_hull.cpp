@@ -39,7 +39,11 @@
 
 #include <pcl/test/gtest.h>
 
+#include <atomic>
+#include <chrono>
+#include <cstdlib>
 #include <random>
+#include <thread>
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
@@ -482,6 +486,77 @@ TEST (PCL, ConvexHull_4points)
   EXPECT_NEAR (mesh_cloud[3].z, 0.f, 1e-6);
 
   EXPECT_NEAR (convex_hull.getTotalArea (), 1.0f, 1e-6);
+}
+
+TEST (PCL, ConvexHull_insufficient_points)
+{
+  // ConvexHull must not enter an infinite busy loop
+  // even if insufficient points are passed
+
+  // PCL 1.15.0 and 1.15.1 enter infinite busy loop if insufficient points are passed.
+  // Use EXPECT_EXIT to run the convex hull calculation in a sub-process to
+  // safely check the timeout.
+  const auto check_no_timeout = [](pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud) {
+    std::atomic_bool finished(false);
+    std::thread thread([&]() {
+      using namespace std::chrono_literals;
+      std::this_thread::sleep_for(1s);
+      if (!finished) {
+        abort(); // Abort if deadline exceeded
+      }
+    });
+
+    ConvexHull<PointXYZ> convex_hull;
+    convex_hull.setComputeAreaVolume(true);
+    convex_hull.setInputCloud(cloud);
+
+    PolygonMesh mesh;
+    convex_hull.reconstruct(mesh);
+    finished = true;
+    EXPECT_EQ(mesh.polygons.size(), 0);
+    thread.join();
+    exit(0); // Exit if process returned
+  };
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZ>());
+  pcl::PointXYZ p;
+  p.x = p.y = p.z = 0.f;
+  input_cloud->push_back(p);
+
+  EXPECT_EXIT(
+      {
+        SCOPED_TRACE("1 point");
+        check_no_timeout(input_cloud);
+      },
+      ::testing::ExitedWithCode(0),
+      ".*")
+      << "Did not return against 1 point input";
+
+  p.x = 0.1f;
+  p.y = p.z = 0.f;
+  input_cloud->push_back(p);
+
+  EXPECT_EXIT(
+      {
+        SCOPED_TRACE("2 points");
+        check_no_timeout(input_cloud);
+      },
+      ::testing::ExitedWithCode(0),
+      ".*")
+      << "Did not return against 2 point input";
+
+  p.x = 0.2f;
+  p.y = p.z = 0.f;
+  input_cloud->push_back(p);
+
+  EXPECT_EXIT(
+      {
+        SCOPED_TRACE("3 points on a line");
+        check_no_timeout(input_cloud);
+      },
+      ::testing::ExitedWithCode(0),
+      ".*")
+      << "Did not return against 3 point input on a line";
 }
 
 /* ---[ */

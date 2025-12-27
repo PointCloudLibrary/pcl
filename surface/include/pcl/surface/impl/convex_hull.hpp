@@ -81,28 +81,34 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   bool yz_proj_safe = true;
   bool xz_proj_safe = true;
 
+  Eigen::Vector4d normal_calc_centroid;
+  Eigen::Matrix3d normal_calc_covariance;
+
   // Check the input's normal to see which projection to use
   PointInT p0 = (*input_)[(*indices_)[0]];
   PointInT p1 = (*input_)[(*indices_)[indices_->size () - 1]];
   PointInT p2 = (*input_)[(*indices_)[indices_->size () / 2]];
-  while (!pcl::isXYZFinite(p0) || !pcl::isXYZFinite(p1) || !pcl::isXYZFinite(p2) || 
-  (p1.getVector3fMap() - p0.getVector3fMap()).cross(p2.getVector3fMap() - p0.getVector3fMap()).stableNorm() < Eigen::NumTraits<float>::dummy_precision ())
-  {
-    p0 = (*input_)[(*indices_)[rand () % indices_->size ()]];
-    p1 = (*input_)[(*indices_)[rand () % indices_->size ()]];
-    p2 = (*input_)[(*indices_)[rand () % indices_->size ()]];
+  if (pcl::isXYZFinite(p0) && pcl::isXYZFinite(p1) && pcl::isXYZFinite(p2) &&
+      (p1.getVector3fMap() - p0.getVector3fMap())
+              .cross(p2.getVector3fMap() - p0.getVector3fMap())
+              .stableNorm() > Eigen::NumTraits<float>::dummy_precision()) {
+    pcl::PointCloud<PointInT> normal_calc_cloud;
+    normal_calc_cloud.resize(3);
+    normal_calc_cloud[0] = p0;
+    normal_calc_cloud[1] = p1;
+    normal_calc_cloud[2] = p2;
+
+    pcl::compute3DCentroid(normal_calc_cloud, normal_calc_centroid);
+    pcl::computeCovarianceMatrixNormalized(
+        normal_calc_cloud, normal_calc_centroid, normal_calc_covariance);
   }
-    
-  pcl::PointCloud<PointInT> normal_calc_cloud;
-  normal_calc_cloud.resize (3);
-  normal_calc_cloud[0] = p0;
-  normal_calc_cloud[1] = p1;
-  normal_calc_cloud[2] = p2;
-    
-  Eigen::Vector4d normal_calc_centroid;
-  Eigen::Matrix3d normal_calc_covariance;
-  pcl::compute3DCentroid (normal_calc_cloud, normal_calc_centroid);
-  pcl::computeCovarianceMatrixNormalized (normal_calc_cloud, normal_calc_centroid, normal_calc_covariance);
+  else {
+    // Three points do not form a valid triangle, fallback to use all points to
+    // calculate the covariance matrix
+    pcl::compute3DCentroid(*input_, *indices_, normal_calc_centroid);
+    pcl::computeCovarianceMatrixNormalized(
+        *input_, *indices_, normal_calc_centroid, normal_calc_covariance);
+  }
 
   // Need to set -1 here. See eigen33 for explanations.
   Eigen::Vector3d::Scalar eigen_value;
