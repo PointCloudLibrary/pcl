@@ -481,33 +481,19 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
     Eigen::Vector3d p (eigenvectors_inv * (m_data->interior[i] - mean));
     m_data->interior_param.emplace_back (p (0), p (1));
 
-    if (p (0) > v_max (0))
-      v_max (0) = p (0);
-    if (p (1) > v_max (1))
-      v_max (1) = p (1);
-    if (p (2) > v_max (2))
-      v_max (2) = p (2);
-
-    if (p (0) < v_min (0))
-      v_min (0) = p (0);
-    if (p (1) < v_min (1))
-      v_min (1) = p (1);
-    if (p (2) < v_min (2))
-      v_min (2) = p (2);
+    v_max = v_max.cwiseMax (p);
+    v_min = v_min.cwiseMin (p);
   }
 
-  for (unsigned i = 0; i < s; i++)
+  if ((v_max(0) - v_min(0)) < std::numeric_limits<double>::epsilon() ||
+      (v_max(1) - v_min(1)) < std::numeric_limits<double>::epsilon())
+    throw std::runtime_error(
+        "[NurbsTools::initNurbsPCABoundingBox] Error: v_max <= v_min");
+
+  for (auto &p : m_data->interior_param)
   {
-    if (v_max (0) > v_min (0) && v_max (0) > v_min (0))
-    {
-      Eigen::Vector2d &p = m_data->interior_param[i];
-      p (0) = (p (0) - v_min (0)) / (v_max (0) - v_min (0));
-      p (1) = (p (1) - v_min (1)) / (v_max (1) - v_min (1));
-    }
-    else
-    {
-      throw std::runtime_error ("[NurbsTools::initNurbsPCABoundingBox] Error: v_max <= v_min");
-    }
+    p (0) = (p (0) - v_min (0)) / (v_max (0) - v_min (0));
+    p (1) = (p (1) - v_min (1)) / (v_max (1) - v_min (1));
   }
 
   ON_NurbsSurface nurbs (3, false, order, order, order, order);
