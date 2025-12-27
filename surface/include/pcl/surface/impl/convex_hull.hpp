@@ -105,9 +105,9 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   else {
     // Three points do not form a valid triangle, fallback to use all points to
     // calculate the covariance matrix
-    pcl::compute3DCentroid(*input_, normal_calc_centroid);
+    pcl::compute3DCentroid(*input_, *indices_, normal_calc_centroid);
     pcl::computeCovarianceMatrixNormalized(
-        *input_, normal_calc_centroid, normal_calc_covariance);
+        *input_, *indices_, normal_calc_centroid, normal_calc_covariance);
   }
 
   // Need to set -1 here. See eigen33 for explanations.
