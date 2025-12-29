@@ -112,7 +112,7 @@ public:
   using CloudConstPtr = typename Cloud::ConstPtr;
 
   OpenNIViewer(pcl::Grabber& grabber)
-  : grabber_(grabber),  
+  : grabber_(grabber)
   {}
 
   void

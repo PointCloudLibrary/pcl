@@ -195,7 +195,7 @@ class PCL_EXPORTS LocalRecognitionPipeline {
   }
 
 public:
-  LocalRecognitionPipeline() : 
+  LocalRecognitionPipeline()
   {
     use_cache_ = false;
     threshold_accept_model_hypothesis_ = 0.2f;

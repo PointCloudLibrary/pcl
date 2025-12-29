@@ -224,7 +224,7 @@ PCDVideoPlayer::selectFilesButtonPressed()
     return;
   }
 
-  for (const auto & qt_pcd_file : qt_pcd_files) {
+  for (const auto& qt_pcd_file : qt_pcd_files) {
     pcd_files_.push_back(qt_pcd_file.toStdString());
   }
 

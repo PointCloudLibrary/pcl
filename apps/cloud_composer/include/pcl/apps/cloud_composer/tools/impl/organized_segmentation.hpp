@@ -66,8 +66,7 @@ pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction(
                     "item! (input list)";
       return output;
     }
-    auto input_cloud =
-        variant.value<typename PointCloud<PointT>::Ptr>();
+    auto input_cloud = variant.value<typename PointCloud<PointT>::Ptr>();
     if (!input_cloud->isOrganized()) {
       qCritical() << "Organized Segmentation requires an organized cloud!";
       return output;
@@ -89,14 +88,12 @@ pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction(
         input_item->getChildren(CloudComposerItem::NORMALS_ITEM);
     // Get the normals cloud, we just use the first normals that were found if there are
     // more than one
-    auto input_normals =
-        normals_list.value(0)
-            ->data(ItemDataRole::CLOUD_TEMPLATED)
-            .value<pcl::PointCloud<pcl::Normal>::ConstPtr>();
+    auto input_normals = normals_list.value(0)
+                   ->data(ItemDataRole::CLOUD_TEMPLATED)
+                   .value<pcl::PointCloud<pcl::Normal>::ConstPtr>();
 
     QVariant variant = input_item->data(ItemDataRole::CLOUD_TEMPLATED);
-    auto input_cloud =
-        variant.value<typename PointCloud<PointT>::Ptr>();
+    auto input_cloud = variant.value<typename PointCloud<PointT>::Ptr>();
 
     pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;
     mps.setMinInliers(min_inliers);
@@ -143,7 +140,8 @@ pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction(
 
     pcl::IndicesPtr extracted_indices(new pcl::Indices());
     for (std::size_t i = 0; i < euclidean_label_indices.size(); i++) {
-      if (euclidean_label_indices[i].indices.size() >= static_cast<std::size_t>(min_cluster_size)) {
+      if (euclidean_label_indices[i].indices.size() >=
+          static_cast<std::size_t>(min_cluster_size)) {
         typename PointCloud<PointT>::Ptr cluster(new PointCloud<PointT>);
         pcl::copyPointCloud(*input_cloud, euclidean_label_indices[i].indices, *cluster);
         qDebug() << "Found cluster with size " << cluster->width;

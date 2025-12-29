@@ -37,9 +37,8 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction(ConstItemList input_
       int min_cluster_size = parameter_model_->getProperty("Min Cluster Size").toInt();
       int max_cluster_size = parameter_model_->getProperty("Max Cluster Size").toInt();
 
-      auto input_cloud =
-          input_item->data(ItemDataRole::CLOUD_BLOB)
-              .value<pcl::PCLPointCloud2::ConstPtr>();
+      auto input_cloud = input_item->data(ItemDataRole::CLOUD_BLOB)
+                             .value<pcl::PCLPointCloud2::ConstPtr>();
       // Get the cloud in template form
       pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
       pcl::fromPCLPointCloud2(*input_cloud, *cloud);
@@ -105,9 +104,9 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction(ConstItemList input_
       qDebug() << "Cloud has " << remainder_cloud->width
                << " data points after clusters removed.";
       auto* cloud_item = new CloudItem(input_item->text() + " unclustered",
-                                            remainder_cloud,
-                                            source_origin,
-                                            source_orientation);
+                                       remainder_cloud,
+                                       source_origin,
+                                       source_orientation);
       output.push_front(cloud_item);
     }
     else

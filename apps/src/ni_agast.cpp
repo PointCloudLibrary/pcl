@@ -67,8 +67,6 @@ public:
   : cloud_viewer_("AGAST 2D Keypoints -- PointCloud")
   , grabber_(grabber)
   , image_viewer_("AGAST 2D Keypoints -- Image")
-  , 
-   
   {}
 
   /////////////////////////////////////////////////////////////////////////

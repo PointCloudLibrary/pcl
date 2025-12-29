@@ -80,7 +80,6 @@ public:
   : cloud_viewer_("PointCloud")
   , grabber_(grabber)
   , image_viewer_("Image")
-  , 
   {
     added = false;
 

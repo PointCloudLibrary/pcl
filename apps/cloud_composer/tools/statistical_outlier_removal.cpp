@@ -32,9 +32,8 @@ pcl::cloud_composer::StatisticalOutlierRemovalTool::performAction(
   }
 
   if (input_item->type() == CloudComposerItem::CLOUD_ITEM) {
-    auto input_cloud =
-        input_item->data(ItemDataRole::CLOUD_BLOB)
-            .value<pcl::PCLPointCloud2::ConstPtr>();
+    auto input_cloud = input_item->data(ItemDataRole::CLOUD_BLOB)
+                           .value<pcl::PCLPointCloud2::ConstPtr>();
 
     int mean_k = parameter_model_->getProperty("Mean K").toInt();
     double std_dev_thresh = parameter_model_->getProperty("Std Dev Thresh").toDouble();
@@ -59,9 +58,9 @@ pcl::cloud_composer::StatisticalOutlierRemovalTool::performAction(
         input_item->data(ItemDataRole::ORIENTATION).value<Eigen::Quaternionf>();
     // Put the modified cloud into an item, stick in output
     auto* cloud_item = new CloudItem(input_item->text() + tr(" sor filtered"),
-                                          cloud_filtered,
-                                          source_origin,
-                                          source_orientation);
+                                     cloud_filtered,
+                                     source_origin,
+                                     source_orientation);
 
     output.append(cloud_item);
   }

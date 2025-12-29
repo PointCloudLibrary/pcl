@@ -31,15 +31,16 @@ pcl::cloud_composer::VoxelGridDownsampleTool::performAction(ConstItemList input_
     double leaf_y = parameter_model_->getProperty("Leaf Size y").toDouble();
     double leaf_z = parameter_model_->getProperty("Leaf Size z").toDouble();
 
-    auto input_cloud =
-        input_item->data(ItemDataRole::CLOUD_BLOB)
-            .value<pcl::PCLPointCloud2::ConstPtr>();
+    auto input_cloud = input_item->data(ItemDataRole::CLOUD_BLOB)
+                           .value<pcl::PCLPointCloud2::ConstPtr>();
 
     //////////////// THE WORK - FILTERING OUTLIERS ///////////////////
     // Create the filtering object
     pcl::VoxelGrid<pcl::PCLPointCloud2> vox_grid;
     vox_grid.setInputCloud(input_cloud);
-    vox_grid.setLeafSize(static_cast<float>(leaf_x), static_cast<float>(leaf_y), static_cast<float>(leaf_z));
+    vox_grid.setLeafSize(static_cast<float>(leaf_x),
+                         static_cast<float>(leaf_y),
+                         static_cast<float>(leaf_z));
 
     // Create output cloud
     pcl::PCLPointCloud2::Ptr cloud_filtered(new pcl::PCLPointCloud2);
@@ -54,9 +55,9 @@ pcl::cloud_composer::VoxelGridDownsampleTool::performAction(ConstItemList input_
         input_item->data(ItemDataRole::ORIENTATION).value<Eigen::Quaternionf>();
     // Put the modified cloud into an item, stick in output
     auto* cloud_item = new CloudItem(input_item->text() + tr(" vox ds"),
-                                          cloud_filtered,
-                                          source_origin,
-                                          source_orientation);
+                                     cloud_filtered,
+                                     source_origin,
+                                     source_orientation);
 
     output.append(cloud_item);
   }

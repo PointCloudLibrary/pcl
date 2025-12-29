@@ -70,8 +70,7 @@ using namespace std::chrono_literals;
 template <typename PointT>
 class ObjectSelection {
 public:
-  ObjectSelection()
-  : plane_comparator_(new EdgeAwarePlaneComparator<PointT, Normal>), 
+  ObjectSelection() : plane_comparator_(new EdgeAwarePlaneComparator<PointT, Normal>)
   {
     // Set the parameters for planar segmentation
     plane_comparator_->setDistanceThreshold(0.01f, false);

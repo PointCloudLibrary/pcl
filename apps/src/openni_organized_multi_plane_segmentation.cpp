@@ -154,8 +154,7 @@ public:
         double plane_extract_end = pcl::getTime();
         std::cout << "Plane extraction took "
                   << (plane_extract_end - plane_extract_start) << std::endl;
-        std::cout << "Frame took " << (plane_extract_end - normal_start)
-                  << std::endl;
+        std::cout << "Frame took " << (plane_extract_end - normal_start) << std::endl;
 
         pcl::PointCloud<PointT>::Ptr cluster(new pcl::PointCloud<PointT>);
 

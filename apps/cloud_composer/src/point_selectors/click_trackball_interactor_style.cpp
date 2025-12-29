@@ -54,9 +54,7 @@ pcl::cloud_composer::ClickTrackballStyleInteractor::OnLeftButtonUp()
     // Find the id of the actor we manipulated
     auto end = actors_->end();
     QString manipulated_id;
-    for (auto itr = actors_->begin();
-         itr != end;
-         ++itr) {
+    for (auto itr = actors_->begin(); itr != end; ++itr) {
       // qDebug () << "Id = "<<QString::fromStdString (itr->first);
       if ((itr->second).actor == selected_actor) {
         manipulated_id = (QString::fromStdString(itr->first));
@@ -87,9 +85,7 @@ pcl::cloud_composer::ClickTrackballStyleInteractor::OnRightButtonUp()
     // Find the id of the actor we manipulated
     auto end = actors_->end();
     QString manipulated_id;
-    for (auto itr = actors_->begin();
-         itr != end;
-         ++itr) {
+    for (auto itr = actors_->begin(); itr != end; ++itr) {
       // qDebug () << "Id = "<<QString::fromStdString (itr->first);
       if ((itr->second).actor == selected_actor) {
         manipulated_id = (QString::fromStdString(itr->first));

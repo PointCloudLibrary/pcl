@@ -121,9 +121,7 @@ public:
                         bool use_fixed)
   : viewer_("PCL OpenNI Tracking Viewer")
   , device_id_(device_id)
-  , 
    ne_(thread_nr)
-  , 
    use_convex_hull_(use_convex_hull)
   , visualize_non_downsample_(visualize_non_downsample)
   , visualize_particles_(visualize_particles)
@@ -549,7 +547,8 @@ public:
           double segment_distance = c[0] * c[0] + c[1] * c[1];
           for (std::size_t i = 1; i < cluster_indices.size(); i++) {
             temp_cloud.reset(new Cloud);
-            extractSegmentCluster(target_cloud, cluster_indices, static_cast<int>(i), *temp_cloud);
+            extractSegmentCluster(
+                target_cloud, cluster_indices, static_cast<int>(i), *temp_cloud);
             pcl::compute3DCentroid<RefPointType>(*temp_cloud, c);
             double distance = c[0] * c[0] + c[1] * c[1];
             if (distance < segment_distance) {

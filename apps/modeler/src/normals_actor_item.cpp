@@ -51,8 +51,6 @@ pcl::modeler::NormalsActorItem::NormalsActorItem(
     const vtkSmartPointer<vtkRenderWindow>& render_window)
 : ChannelActorItem(
       parent, cloud_mesh, render_window, vtkSmartPointer<vtkLODActor>::New(), "Normals")
-, 
- 
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////

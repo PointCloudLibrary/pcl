@@ -62,14 +62,12 @@
 
 pcl::ihs::InHandScanner::InHandScanner(Base* parent)
 : Base(parent)
-, 
- input_data_processing_(new InputDataProcessing())
+, input_data_processing_(new InputDataProcessing())
 , icp_(new ICP())
 , transformation_(Eigen::Matrix4f::Identity())
 , integration_(new Integration())
 , mesh_processing_(new MeshProcessing())
 , mesh_model_(new Mesh())
-, 
 {
   // http://doc.qt.digia.com/qt/qmetatype.html#qRegisterMetaType
   qRegisterMetaType<pcl::ihs::InHandScanner::RunningMode>("RunningMode");

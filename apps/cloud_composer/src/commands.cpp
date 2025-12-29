@@ -7,8 +7,6 @@ pcl::cloud_composer::CloudCommand::CloudCommand(
     QList<const CloudComposerItem*> input_data, QUndoCommand* parent)
 : QUndoCommand(parent)
 , original_data_(std::move(input_data))
-, 
- 
 {}
 
 pcl::cloud_composer::CloudCommand::~CloudCommand()

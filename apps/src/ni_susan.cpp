@@ -145,7 +145,8 @@ public:
           image_viewer_.removeLayer(getStrBool(keypts));
           for (std::size_t i = 0; i < keypoints->size(); ++i) {
             int u = static_cast<int>((*keypoints)[i].label % cloud->width);
-            int v = cloud->height - static_cast<int>((*keypoints)[i].label / cloud->width);
+            int v =
+                cloud->height - static_cast<int>((*keypoints)[i].label / cloud->width);
             image_viewer_.markPoint(u,
                                     v,
                                     visualization::red_color,

@@ -46,8 +46,6 @@
 
 pcl::ihs::InputDataProcessing::InputDataProcessing()
 : normal_estimation_(new NormalEstimation())
-, 
- 
 {
   // Normal estimation
   normal_estimation_->setNormalEstimationMethod(NormalEstimation::AVERAGE_3D_GRADIENT);
