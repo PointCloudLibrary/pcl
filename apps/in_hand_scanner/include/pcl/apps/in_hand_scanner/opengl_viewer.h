@@ -302,7 +302,7 @@ protected:
   /** \brief Please have a look at the documentation of calcFPS. */
   class FPS {
   public:
-    FPS() : {}
+    FPS() = default;
 
     inline double&
     value()
