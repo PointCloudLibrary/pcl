@@ -67,7 +67,7 @@ protected:
 
   /// @brief Equal Operator
   Statistics&
-  operator=(const Statistics&);
+  operator=(const Statistics&) = default;
 
   /// @brief Returns the statistics in string.
   virtual std::string
