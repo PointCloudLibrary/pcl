@@ -120,9 +120,7 @@ public:
                         bool visualize_particles,
                         bool use_fixed)
   : viewer_("PCL OpenNI Tracking Viewer")
-  , device_id_(device_id)
-   ne_(thread_nr)
-   use_convex_hull_(use_convex_hull)
+  , device_id_(device_id) ne_(thread_nr) use_convex_hull_(use_convex_hull)
   , visualize_non_downsample_(visualize_non_downsample)
   , visualize_particles_(visualize_particles)
   , downsampling_grid_size_(downsampling_grid_size)
@@ -337,7 +335,9 @@ public:
     FPS_CALC_BEGIN;
     double start = pcl::getTime();
     pcl::VoxelGrid<PointType> grid;
-    grid.setLeafSize(static_cast<float>(leaf_size), static_cast<float>(leaf_size), static_cast<float>(leaf_size));
+    grid.setLeafSize(static_cast<float>(leaf_size),
+                     static_cast<float>(leaf_size),
+                     static_cast<float>(leaf_size));
     grid.setInputCloud(cloud);
     grid.filter(result);
     double end = pcl::getTime();

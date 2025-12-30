@@ -266,13 +266,10 @@ public:
       if (region_index.indices.size() > 1000) {
 
         for (int index : region_index.indices) {
-          pcl::PointXYZ ground_pt(
-            (*cloud)[index].x,
-            (*cloud)[index].y,
-            (*cloud)[index].z);
+          pcl::PointXYZ ground_pt((*cloud)[index].x, (*cloud)[index].y, (*cloud)[index].z);
           ground_cloud->points.push_back(ground_pt);
           (*ground_image)[index].g =
-               static_cast<std::uint8_t>(((*cloud)[index].g + 255) / 2);
+              static_cast<std::uint8_t>(((*cloud)[index].g + 255) / 2);
           (*label_image)[index].r = 0;
           (*label_image)[index].g = 255;
           (*label_image)[index].b = 0;

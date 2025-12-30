@@ -24,8 +24,8 @@ pcl::cloud_composer::SanitizeCloudTool::performAction(ConstItemList input_data,
   input_item = input_data.value(0);
 
   if (input_item->type() == CloudComposerItem::CLOUD_ITEM) {
-    auto input_cloud =  input_item->data(ItemDataRole::CLOUD_BLOB)
-                            .value<pcl::PCLPointCloud2::ConstPtr>();
+    auto input_cloud = input_item->data(ItemDataRole::CLOUD_BLOB)
+                           .value<pcl::PCLPointCloud2::ConstPtr>();
 
     bool keep_organized = parameter_model_->getProperty("Keep Organized").toBool();
 

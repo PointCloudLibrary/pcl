@@ -77,9 +77,7 @@ public:
   bool added;
 
   NILinemod(Grabber& grabber)
-  : cloud_viewer_("PointCloud")
-  , grabber_(grabber)
-  , image_viewer_("Image")
+  : cloud_viewer_("PointCloud"), grabber_(grabber), image_viewer_("Image")
   {
     added = false;
 

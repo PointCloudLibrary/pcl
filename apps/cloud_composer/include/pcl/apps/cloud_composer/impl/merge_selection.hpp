@@ -75,7 +75,7 @@ pcl::cloud_composer::MergeSelection::performTemplatedAction(
     // If this cloud hasn't been completely selected
     if (!input_data.contains(input_cloud_item)) {
       auto input_cloud = input_cloud_item->data(ItemDataRole::CLOUD_TEMPLATED)
-              .value<typename PointCloud<PointT>::Ptr>();
+                             .value<typename PointCloud<PointT>::Ptr>();
       qDebug() << "Extracting "
                << selected_item_index_map_.value(input_cloud_item)->indices.size()
                << " points out of " << input_cloud->width;

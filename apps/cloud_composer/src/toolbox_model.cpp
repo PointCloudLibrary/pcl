@@ -10,9 +10,7 @@
 pcl::cloud_composer::ToolBoxModel::ToolBoxModel(QTreeView* tool_view,
                                                 QTreeView* parameter_view_,
                                                 QObject* parent)
-: QStandardItemModel(parent)
-, tool_view_(tool_view)
-, parameter_view_(parameter_view_)
+: QStandardItemModel(parent), tool_view_(tool_view), parameter_view_(parameter_view_)
 {}
 
 pcl::cloud_composer::ToolBoxModel::ToolBoxModel(const ToolBoxModel&)

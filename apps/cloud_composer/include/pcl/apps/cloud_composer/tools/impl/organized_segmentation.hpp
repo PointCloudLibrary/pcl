@@ -89,8 +89,8 @@ pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction(
     // Get the normals cloud, we just use the first normals that were found if there are
     // more than one
     auto input_normals = normals_list.value(0)
-                   ->data(ItemDataRole::CLOUD_TEMPLATED)
-                   .value<pcl::PointCloud<pcl::Normal>::ConstPtr>();
+                             ->data(ItemDataRole::CLOUD_TEMPLATED)
+                             .value<pcl::PointCloud<pcl::Normal>::ConstPtr>();
 
     QVariant variant = input_item->data(ItemDataRole::CLOUD_TEMPLATED);
     auto input_cloud = variant.value<typename PointCloud<PointT>::Ptr>();
