@@ -232,12 +232,12 @@ GrabCutHelper::display(int display_type)
 {
   switch (display_type) {
   case 0:
-    glDrawPixels(image_->width, image_->height, GL_RGB, GL_FLOAT, *image_.data());
+    glDrawPixels(image_->width, image_->height, GL_RGB, GL_FLOAT, &((*image_)[0]));
     break;
 
   case 1:
     glDrawPixels(
-        gmm_image_->width, gmm_image_->height, GL_RGB, GL_FLOAT, *gmm_image_.data());
+        gmm_image_->width, gmm_image_->height, GL_RGB, GL_FLOAT, &((*gmm_image_)[0]));
     break;
 
   case 2:
@@ -245,7 +245,7 @@ GrabCutHelper::display(int display_type)
                  n_links_image_->height,
                  GL_LUMINANCE,
                  GL_FLOAT,
-                 *n_links_image_.data());
+                 &((*n_links_image_)[0]));
     break;
 
   case 3:
@@ -253,7 +253,7 @@ GrabCutHelper::display(int display_type)
                  t_links_image_->height,
                  GL_RGB,
                  GL_FLOAT,
-                 *t_links_image_.data());
+                 &((*t_links_image_)[0]));
     break;
 
   default:
@@ -270,7 +270,7 @@ GrabCutHelper::overlayAlpha()
                alpha_image_->height,
                GL_ALPHA,
                GL_FLOAT,
-               *alpha_image_.data());
+               &((*alpha_image_)[0]));
 }
 
 /* GUI interface */
@@ -297,7 +297,7 @@ display()
                  display_image->height,
                  GL_RGB,
                  GL_FLOAT,
-                 *display_image.data());
+                 &((*display_image)[0]));
   else
     grabcut.display(display_type);
 
