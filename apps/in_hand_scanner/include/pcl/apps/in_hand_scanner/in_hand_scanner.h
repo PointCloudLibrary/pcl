@@ -272,16 +272,16 @@ private:
   VisualizationFPS visualization_fps_;
 
   /** \brief Switch between different branches of the scanning pipeline. */
-  RunningMode running_mode_;
+  RunningMode running_mode_{RM_UNPROCESSED};
 
   /** \brief The iteration of the scanning pipeline (grab - register - integrate). */
-  unsigned int iteration_;
+  unsigned int iteration_{0};
 
   /** \brief Used to get new data from the sensor. */
   GrabberPtr grabber_;
 
   /** \brief This variable is true if the grabber is starting. */
-  bool starting_grabber_;
+  bool starting_grabber_{false};
 
   /** \brief Connection of the grabber signal with the data processing thread. */
   boost::signals2::connection new_data_connection_;
@@ -305,7 +305,7 @@ private:
   MeshPtr mesh_model_;
 
   /** \brief Prevent the application to crash while closing. */
-  bool destructor_called_;
+  bool destructor_called_{false};
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW

@@ -92,7 +92,7 @@ char usage[] = "\n"
     double now = pcl::getTime();                                                       \
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
+      std::cout << "Average framerate(" << (_WHAT_) << "): "                             \
                 << double(count) / double(now - last) << " Hz" << std::endl;           \
       count = 0;                                                                       \
       last = now;                                                                      \
@@ -226,14 +226,14 @@ struct EventHelper {
     depth_image->fillDepthImageRaw(
         width,
         height,
-        &disparity_data[0],
+        disparity_data.data(),
         static_cast<unsigned int>(width * sizeof(std::uint16_t)));
 
     if (image->getEncoding() != openni_wrapper::Image::RGB) {
       rgb_data.resize(width * height * 3);
       image->fillRGB(width,
                      height,
-                     &rgb_data[0],
+                     rgb_data.data(),
                      static_cast<unsigned int>(width * sizeof(std::uint8_t) * 3));
     }
 

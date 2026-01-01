@@ -300,7 +300,7 @@ Cloud::draw (bool disable_highlight) const
 
           // draw the selected points
           glDrawElements(GL_POINTS, selection_ptr->size(), GL_UNSIGNED_INT,
-                         &(partitioned_indices_[0]));
+                         partitioned_indices_.data());
         }
       }
       glPopMatrix();

@@ -59,7 +59,7 @@ pcl::modeler::RenderWindowItem::~RenderWindowItem() { render_window_->deleteLate
 bool
 pcl::modeler::RenderWindowItem::openPointCloud(const QString& filename)
 {
-  CloudMeshItem* cloud_mesh_item = new CloudMeshItem(this, filename.toStdString());
+  auto* cloud_mesh_item = new CloudMeshItem(this, filename.toStdString());
   addChild(cloud_mesh_item);
 
   if (!cloud_mesh_item->open()) {
@@ -77,7 +77,7 @@ pcl::modeler::RenderWindowItem::openPointCloud(const QString& filename)
 pcl::modeler::CloudMeshItem*
 pcl::modeler::RenderWindowItem::addPointCloud(CloudMesh::PointCloudPtr cloud)
 {
-  CloudMeshItem* cloud_mesh_item = new CloudMeshItem(this, std::move(cloud));
+  auto* cloud_mesh_item = new CloudMeshItem(this, std::move(cloud));
   addChild(cloud_mesh_item);
 
   treeWidget()->setCurrentItem(cloud_mesh_item);

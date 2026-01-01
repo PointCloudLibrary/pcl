@@ -66,7 +66,7 @@ class ProjectModel : public QStandardItemModel {
 public:
   ProjectModel(QObject* parent = nullptr);
   ProjectModel(const ProjectModel& to_copy);
-  ~ProjectModel();
+  ~ProjectModel() override;
 
   ProjectModel(QString project_name, QObject* parent = nullptr);
 

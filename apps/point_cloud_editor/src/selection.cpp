@@ -95,7 +95,7 @@ Selection::isSelected (unsigned int index) const
 {
   if (index >= cloud_ptr_->size())
     return (false);
-  iterator it = selected_indices_.find(index);
+  auto it = selected_indices_.find(index);
   if (it != selected_indices_.end())
       return (true);
   return (false);

@@ -64,15 +64,13 @@ pcl::cloud_composer::SupervoxelsTool::performTemplatedAction(
                     "item! (input list)";
       return output;
     }
-    typename PointCloud<PointT>::Ptr input_cloud =
-        variant.value<typename PointCloud<PointT>::Ptr>();
+    auto input_cloud = variant.value<typename PointCloud<PointT>::Ptr>();
     // TODO: Check if Voxelized
   }
 
   foreach (const CloudComposerItem* input_item, input_data) {
     QVariant variant = input_item->data(ItemDataRole::CLOUD_TEMPLATED);
-    typename PointCloud<PointT>::Ptr input_cloud =
-        variant.value<typename PointCloud<PointT>::Ptr>();
+    auto input_cloud = variant.value<typename PointCloud<PointT>::Ptr>();
 
     float resolution = parameter_model_->getProperty("Resolution").toFloat();
     qDebug() << "Octree resolution = " << resolution;

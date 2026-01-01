@@ -60,7 +60,7 @@ protected:
   /// @brief The default constructor.
   /// @details Derived commands are assumed to have undo by default.  Each
   /// is free to override this.
-  Command() : has_undo_(true) {}
+  Command() = default;
 
   /// @brief Returns true if the command has an undo function.
   inline bool
@@ -78,7 +78,7 @@ protected:
   undo() = 0;
 
   /// @brief a flag indicates whether the command has an undo function.
-  bool has_undo_;
+  bool has_undo_{true};
 
 private:
   /// @brief Copy Constructor - object is non-copyable
