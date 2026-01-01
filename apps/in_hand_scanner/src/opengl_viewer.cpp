@@ -651,7 +651,7 @@ pcl::ihs::OpenGLViewer::setVisibilityConfidenceNormalization(const float vis_con
 QSize
 pcl::ihs::OpenGLViewer::minimumSizeHint() const
 {
-  return ({160, 120});
+  return {160, 120};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -659,7 +659,7 @@ pcl::ihs::OpenGLViewer::minimumSizeHint() const
 QSize
 pcl::ihs::OpenGLViewer::sizeHint() const
 {
-  return ({640, 480});
+  return {640, 480};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
