@@ -210,13 +210,12 @@ namespace pcl
 
 #define PCL_ADD_UNION_POINT4D \
   union EIGEN_ALIGN16 { \
-    float data[4]; \
+      /* ensure last homogeneous component is 1 for affine transformations */ \
+    float data[4] {0, 0, 0, 1}; \
     struct { \
       float x; \
       float y; \
       float z; \
-      /* ensure last homogeneous component is 1 for affine transformations */ \
-      float _w  = 1; \
     }; \
   };
 
