@@ -50,7 +50,6 @@
 #include <algorithm>                    // for copy_n, fill_n
 #include <cstdint>                      // for uint8_t, uint32_t
 #include <ostream>                      // for ostream, operator<<
-#include <type_traits>                  // for enable_if_t
 
 // Define all PCL point types
 #define PCL_POINT_TYPES         \

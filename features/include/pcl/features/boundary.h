@@ -41,7 +41,8 @@
 #pragma once
 
 #include <pcl/features/feature.h>
-#include <pcl/point_types.h>       // for pcl::Vector4fMapConst
+
+#include <Eigen/Core>
 
 namespace pcl
 {
@@ -160,7 +161,8 @@ namespace pcl
       getCoordinateSystemOnPlane (const PointNT &p_coeff, 
                                   Eigen::Vector4f &u, Eigen::Vector4f &v)
       {
-        pcl::Vector4fMapConst p_coeff_v = p_coeff.getNormalVector4fMap ();
+        const Eigen::Map<const Eigen::Vector4f, Eigen::Aligned> p_coeff_v =
+            p_coeff.getNormalVector4fMap ();
         v = p_coeff_v.unitOrthogonal ();
         u = p_coeff_v.cross3 (v);
       }
