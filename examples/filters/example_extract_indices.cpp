@@ -40,6 +40,7 @@
 #include <iostream>
 
 #include <pcl/filters/extract_indices.h>
+#include <pcl/point_types.h>
 
 int
 main (int, char**)

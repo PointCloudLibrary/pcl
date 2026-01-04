@@ -43,6 +43,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <pcl/point_types.h>
 
 using namespace pcl;
 using namespace pcl::io;
