@@ -138,7 +138,7 @@ namespace pcl
 	    thrust::counting_iterator<int> cbeg(0);
 		thrust::counting_iterator<int> cend = cbeg + thrust::distance(beg, end);
 
-	    thrust::tuple<float, int> t = transform_reduce(
+	    thrust::tuple<float, int> t = thrust::transform_reduce(
 		  make_zip_iterator(thrust::make_tuple(beg, cbeg)),
 		  make_zip_iterator(thrust::make_tuple(end, cend)),
 		  unop, init, binary);
@@ -194,11 +194,11 @@ void pcl::device::PointStream::computeInitalSimplex()
   simplex.x1 = tr(p1);  simplex.x2 = tr(p2);  simplex.x3 = tr(p3);  simplex.x4 = tr(p4);
   simplex.i1 = minx;    simplex.i2 = maxx;    simplex.i3 = maxl;    simplex.i4 = maxp;
 
-  float maxy = transform_reduce(beg, end, Y(), std::numeric_limits<float>::min(), thrust::maximum<float>());
-  float miny = transform_reduce(beg, end, Y(), std::numeric_limits<float>::max(), thrust::minimum<float>());
+  float maxy = thrust::transform_reduce(beg, end, Y(), std::numeric_limits<float>::min(), thrust::maximum<float>());
+  float miny = thrust::transform_reduce(beg, end, Y(), std::numeric_limits<float>::max(), thrust::minimum<float>());
 
-  float maxz = transform_reduce(beg, end, Z(), std::numeric_limits<float>::min(), thrust::maximum<float>());
-  float minz = transform_reduce(beg, end, Z(), std::numeric_limits<float>::max(), thrust::minimum<float>());
+  float maxz = thrust::transform_reduce(beg, end, Z(), std::numeric_limits<float>::min(), thrust::maximum<float>());
+  float minz = thrust::transform_reduce(beg, end, Z(), std::numeric_limits<float>::max(), thrust::minimum<float>());
 
   float dx = (p2.x - p1.x);
   float dy = (maxy - miny);
