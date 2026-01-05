@@ -93,7 +93,7 @@ isOnly2DImage (const pcl::PCLPointField &field)
     return (true);
   return (false);
 }
-  
+
 void
 printHelp (int, char **argv)
 {
@@ -219,7 +219,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
     event.getPoint (pos.x, pos.y, pos.z);
     p->addText3D<pcl::PointXYZ> (idx_string, pos, 0.0005, 1.0, 1.0, 1.0, idx_string);
   }
-  
+
 }
 
 /* ---[ */
@@ -286,7 +286,7 @@ main (int argc, char** argv)
 
   bool use_vbos = false;
   pcl::console::parse_argument (argc, argv, "-vbo_rendering", use_vbos);
-  if (use_vbos) 
+  if (use_vbos)
     print_highlight ("Vertex Buffer Object (VBO) visualization enabled.\n");
 
   bool useEDLRendering = false;
@@ -295,7 +295,7 @@ main (int argc, char** argv)
     print_highlight("EDL visualization enabled.\n");
 
   bool use_pp   = pcl::console::find_switch (argc, argv, "-use_point_picking");
-  if (use_pp) 
+  if (use_pp)
     print_highlight ("Point picking enabled.\n");
 
   bool use_ap = pcl::console::find_switch(argc, argv, "-use_area_picking");
@@ -311,7 +311,7 @@ main (int argc, char** argv)
   if (!use_vbos)
   {
     pcl::console::parse_argument (argc, argv, "-immediate_rendering", use_immediate_rendering);
-    if (use_immediate_rendering) 
+    if (use_immediate_rendering)
       print_highlight ("Using immediate mode rendering.\n");
   }
 
@@ -486,7 +486,7 @@ main (int argc, char** argv)
     {
       print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%u", cloud->width * cloud->height); print_info (" points]\n");
       print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
-      
+
       std::string name = "PCD Viewer :: " + std::string(argv[p_file_indices.at (i)]);
       pcl::visualization::ImageViewer::Ptr img (new pcl::visualization::ImageViewer (name));
       pcl::PointCloud<pcl::RGB> rgb_cloud;
@@ -719,7 +719,7 @@ main (int argc, char** argv)
     float ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
     pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z);
     // Draw XYZ axes if command-line enabled
-    p->addCoordinateSystem (axes, ax_x, ax_y, ax_z, "global");
+    p->addCoordinateSystem (axes, ax_x, ax_y, ax_z, "global", 0, false);
   }
 
   // Clean up the memory used by the binary blob
@@ -747,7 +747,7 @@ main (int argc, char** argv)
         }
         img->spinOnce ();
       }
-        
+
       if (p)
       {
         if (p->wasStopped ())
