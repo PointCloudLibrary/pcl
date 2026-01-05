@@ -43,6 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/segmentation/extract_clusters.h>
+#include <pcl/point_types.h>
 
 int 
 main (int argc, char **argv)

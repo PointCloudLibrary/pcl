@@ -187,7 +187,9 @@ if(CMAKE_COMPILER_IS_MSVC)
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
     # Disable some warnings
-    string(APPEND CMAKE_CXX_FLAGS " /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355")
+    # 4244 : conversion from 'type1' to 'type2', possible loss of data
+    # 4661 : no suitable definition provided for explicit template instantiation request
+    string(APPEND CMAKE_CXX_FLAGS " /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 /wd4244 /wd4267 /wd4661")
 
     # Enable warnings, which are disabled by default (see https://learn.microsoft.com/de-de/cpp/preprocessor/compiler-warnings-that-are-off-by-default)
     string(APPEND CMAKE_CXX_FLAGS " /w34265")
