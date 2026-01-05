@@ -139,8 +139,8 @@ namespace pcl
 		thrust::counting_iterator<int> cend = cbeg + thrust::distance(beg, end);
 
 	    thrust::tuple<float, int> t = thrust::transform_reduce(
-		  make_zip_iterator(thrust::make_tuple(beg, cbeg)),
-		  make_zip_iterator(thrust::make_tuple(end, cend)),
+		  thrust::make_zip_iterator(thrust::make_tuple(beg, cbeg)),
+		  thrust::make_zip_iterator(thrust::make_tuple(end, cend)),
 		  unop, init, binary);
 
 		return thrust::get<1>(t);
