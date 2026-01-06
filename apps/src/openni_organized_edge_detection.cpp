@@ -222,7 +222,7 @@ public:
           ne.setInputCloud(cloud_.makeShared());
           ne.compute(*normal_cloud);
           double normal_end = pcl::getTime();
-          std::cout << "Normal Estimation took " << double(normal_end - normal_start)
+          std::cout << "Normal Estimation took " << (normal_end - normal_start)
                     << std::endl;
 
           oed.setInputNormals(normal_cloud);
@@ -234,12 +234,12 @@ public:
         oed.compute(labels, label_indices);
 
         double oed_end = pcl::getTime();
-        std::cout << "Edge Detection took " << double(oed_end - oed_start) << std::endl;
-        std::cout << "Frame took " << double(oed_end - normal_start) << std::endl;
+        std::cout << "Edge Detection took " << (oed_end - oed_start) << std::endl;
+        std::cout << "Frame took " << (oed_end - normal_start) << std::endl;
 
         // Make gray point cloud
         for (auto& point : cloud_.points) {
-          std::uint8_t gray = std::uint8_t((point.r + point.g + point.b) / 3);
+          auto gray = static_cast<std::uint8_t>((point.r + point.g + point.b) / 3);
           point.r = point.g = point.b = gray;
         }
 
@@ -325,7 +325,7 @@ main(int argc, char** argv)
     return 1;
   }
 
-  std::string device_id = "";
+  std::string device_id;
   if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];

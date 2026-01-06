@@ -59,7 +59,7 @@ public:
                    const vtkSmartPointer<vtkRenderWindow>& render_window,
                    const vtkSmartPointer<vtkActor>& actor,
                    const std::string& channel_name);
-  ~ChannelActorItem();
+  ~ChannelActorItem() override;
 
   void
   init();

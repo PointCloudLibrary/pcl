@@ -10,10 +10,7 @@
 pcl::cloud_composer::ToolBoxModel::ToolBoxModel(QTreeView* tool_view,
                                                 QTreeView* parameter_view_,
                                                 QObject* parent)
-: QStandardItemModel(parent)
-, tool_view_(tool_view)
-, parameter_view_(parameter_view_)
-, project_model_(nullptr)
+: QStandardItemModel(parent), tool_view_(tool_view), parameter_view_(parameter_view_)
 {}
 
 pcl::cloud_composer::ToolBoxModel::ToolBoxModel(const ToolBoxModel&)
@@ -25,8 +22,7 @@ pcl::cloud_composer::ToolBoxModel::addTool(ToolFactory* tool_factory)
 {
   // qDebug () << "Icon name:"<< tool_factory->getIconName ();
   QIcon new_tool_icon = QIcon(tool_factory->getIconName());
-  QStandardItem* new_tool_item =
-      new QStandardItem(new_tool_icon, tool_factory->getPluginName());
+  auto* new_tool_item = new QStandardItem(new_tool_icon, tool_factory->getPluginName());
   new_tool_item->setEditable(false);
 
   new_tool_item->setData(QVariant::fromValue(tool_factory), FACTORY);
@@ -53,7 +49,7 @@ pcl::cloud_composer::ToolBoxModel::addToolGroup(const QString& tool_group_name)
 {
   QList<QStandardItem*> matches_name = findItems(tool_group_name);
   if (matches_name.empty()) {
-    QStandardItem* new_group_item = new QStandardItem(tool_group_name);
+    auto* new_group_item = new QStandardItem(tool_group_name);
     appendRow(new_group_item);
     new_group_item->setSelectable(false);
     new_group_item->setEditable(false);
@@ -117,8 +113,8 @@ pcl::cloud_composer::ToolBoxModel::toolAction()
                          "Cannot execute action, no tool selected!");
     return;
   }
-  ToolFactory* tool_factory = (current_index.data(FACTORY)).value<ToolFactory*>();
-  PropertiesModel* parameter_model =
+  auto* tool_factory = (current_index.data(FACTORY)).value<ToolFactory*>();
+  auto* parameter_model =
       (current_index.data(PARAMETER_MODEL)).value<PropertiesModel*>();
   //
   AbstractTool* tool = tool_factory->createTool(parameter_model);
@@ -166,7 +162,7 @@ pcl::cloud_composer::ToolBoxModel::updateEnabledTools(
   // Go through tools, removing from enabled list if they fail to pass tests
   while (enabled_itr.hasNext()) {
     QStandardItem* tool_item = enabled_itr.next();
-    ToolFactory* tool_factory = (tool_item->data(FACTORY)).value<ToolFactory*>();
+    auto* tool_factory = (tool_item->data(FACTORY)).value<ToolFactory*>();
     CloudComposerItem::ItemType input_type = tool_factory->getInputItemType();
     QList<CloudComposerItem::ItemType> required_children_types =
         tool_factory->getRequiredInputChildrenTypes();

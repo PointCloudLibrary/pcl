@@ -17,5 +17,5 @@ pcl::cloud_composer::AbstractTool::performAction(QList<const CloudComposerItem*>
                                                  PointTypeFlags::PointType)
 {
   qDebug() << "AbstractTool::performTemplatedAction";
-  return QList<CloudComposerItem*>();
+  return {};
 }

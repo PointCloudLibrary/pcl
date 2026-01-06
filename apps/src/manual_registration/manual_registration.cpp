@@ -297,7 +297,7 @@ ManualRegistration::orthoChanged(int state)
 void
 ManualRegistration::applyTransformPressed()
 {
-  PCLViewerDialog* diag = new PCLViewerDialog(this);
+  auto* diag = new PCLViewerDialog(this);
   diag->setModal(true);
   diag->setGeometry(this->x(), this->y(), this->width(), this->height());
   diag->setPointClouds(cloud_src_, cloud_dst_, Eigen::Affine3f(transform_));

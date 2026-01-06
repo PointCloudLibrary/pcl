@@ -149,15 +149,15 @@ private:
   Eigen::Vector4f origin_;
   Eigen::Quaternionf orientation_;
 
-  bool template_cloud_set_;
+  bool template_cloud_set_{false};
 
   // Internal Storage of the templated type of this cloud
-  int point_type_;
+  int point_type_{PointTypeFlags::NONE};
 
   bool
   checkIfFinite();
 
-  bool is_sanitized_;
+  bool is_sanitized_{false};
 
   // Helper functions which set the point_type_ based on the current point type
   template <typename PointT>

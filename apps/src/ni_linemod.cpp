@@ -77,10 +77,7 @@ public:
   bool added;
 
   NILinemod(Grabber& grabber)
-  : cloud_viewer_("PointCloud")
-  , grabber_(grabber)
-  , image_viewer_("Image")
-  , first_frame_(true)
+  : cloud_viewer_("PointCloud"), grabber_(grabber), image_viewer_("Image")
   {
     added = false;
 
@@ -566,7 +563,7 @@ public:
 
 private:
   boost::signals2::connection cloud_connection, image_connection;
-  bool first_frame_;
+  bool first_frame_{true};
 
   // Segmentation
   pcl::Indices indices_fullset_;

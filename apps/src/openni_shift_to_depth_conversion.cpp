@@ -81,13 +81,13 @@ public:
     depth_image->fillDepthImageRaw(
         width,
         height,
-        &raw_shift_data[0],
+        raw_shift_data.data(),
         static_cast<unsigned int>(width * sizeof(std::uint16_t)));
 
     // convert raw shift data to raw depth data
     raw_depth_data.resize(width * height);
     grabber_.convertShiftToDepth(
-        &raw_shift_data[0], &raw_depth_data[0], raw_shift_data.size());
+        raw_shift_data.data(), raw_depth_data.data(), raw_shift_data.size());
 
     // check for color data
     if (image->getEncoding() != openni_wrapper::Image::RGB) {
@@ -95,7 +95,7 @@ public:
       rgb_data.resize(width * height * 3);
       image->fillRGB(width,
                      height,
-                     &rgb_data[0],
+                     rgb_data.data(),
                      static_cast<unsigned int>(width * sizeof(std::uint8_t) * 3));
     }
 
