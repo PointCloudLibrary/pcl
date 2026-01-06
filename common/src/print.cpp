@@ -300,6 +300,9 @@ pcl::console::Logger::print(const LogRecord& logEntry)
 void
 pcl::console::Logger::print_highlight(FILE* stream, const LogRecord& logEntry)
 {
+  if (!pcl::console::isVerbosityLevelEnabled(logEntry.level))
+    return;
+
   if (logcallback)
     logcallback(logEntry);
   else {
@@ -320,6 +323,9 @@ pcl::console::Logger::print_highlight(const LogRecord& logEntry)
 void
 pcl::console::Logger::print_value(FILE* stream, const LogRecord& logEntry)
 {
+  if (!pcl::console::isVerbosityLevelEnabled(logEntry.level))
+    return;
+
   if (logcallback)
     logcallback(logEntry);
   else {
@@ -341,6 +347,9 @@ void
 pcl::console::Logger::print_color(
     FILE* stream, int attr, int fg, const LogRecord& logEntry)
 {
+  if (!pcl::console::isVerbosityLevelEnabled(logEntry.level))
+    return;
+
   if (logcallback)
     logcallback(logEntry);
   else {

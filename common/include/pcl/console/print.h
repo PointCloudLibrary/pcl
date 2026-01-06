@@ -54,11 +54,12 @@
 // PCL_ERROR_STREAM("Error: an Eigen vector: " << std::endl << Eigen::Vector3f(1.0, 2.0, 3.0) << std::endl);
 // NOLINTBEGIN(bugprone-macro-parentheses)
 #define PCL_LOG_STREAM(LEVEL, ARGS) \
-  if(pcl::console::isVerbosityLevelEnabled(pcl::console::LEVEL)) \
+  if (pcl::console::isVerbosityLevelEnabled(pcl::console::LEVEL)) \
   { \
-    pcl::console::LogRecord entry{pcl::console::LEVEL, ""}; \
-    pcl::console::LogRecorder rec(entry.message); \
-    rec << ARGS; \
+    auto& strstream = pcl::console::Logger::getInstance().getStringStream(); \
+    strstream.clear(); \
+    strstream << ARGS; \
+    pcl::console::LogRecord entry{pcl::console::LEVEL, strstream.str()}; \
     pcl::console::Logger::getInstance().print(entry); \
   }
 // NOLINTEND(bugprone-macro-parentheses)
@@ -132,40 +133,26 @@ namespace pcl
       L_VERBOSE
     };
 
+    /** \brief Structure to hold a log record
+     * Used by the Logger class
+    */
     struct LogRecord {
+      LogRecord() = default;
+
+      LogRecord(VERBOSITY_LEVEL lvl, const std::string& str)
+      : level(lvl), message(str) {};
+
+      LogRecord(VERBOSITY_LEVEL lvl, std::string&& str)
+      : level(lvl), message(std::move(str))
+      {};
+
+      LogRecord(const LogRecord& other) = default;
+
+      ~LogRecord() = default;
+
       VERBOSITY_LEVEL level;
       std::string message;
     };
-
-    class LogRecorder {
-    public:
-      LogRecorder(std::string& string) : strstream(string) { }
-
-      template <class T>
-      LogRecorder&
-      operator<<(const T& x)
-      {
-        strstream << x;
-
-        return *this;
-      }
-
-      LogRecorder&
-      operator<<(std::ostream& (std::ostream&))
-      {
-        strstream << std::endl;
-        return *this;
-      }
-
-      std::string
-      to_string() const
-      {
-        return strstream.str();
-      }
-
-      std::stringstream strstream;
-    };
-
 
     /** set the verbosity level */
     PCL_EXPORTS void 
@@ -217,11 +204,20 @@ namespace pcl
     PCL_EXPORTS void 
     reset_text_color (FILE *stream);
 
-    
+    /**
+     * @brief Logger used to log messages with different verbosity levels
+     * Can be used to redirect log messages to custom outputs by setting a callback
+     */
     class PCL_EXPORTS Logger {
     public:
       static Logger&
       getInstance();
+
+      std::stringstream&
+      getStringStream()
+      {
+        return strstream;
+      }
 
       template <typename Functor>
       void
@@ -249,13 +245,10 @@ namespace pcl
       print_value(const LogRecord& logEntry);
 
       void
-      print_color(FILE* stream,
-                  int attr,
-                  int fg,
-                  const LogRecord& logEntry);
-
+      print_color(FILE* stream, int attr, int fg, const LogRecord& logEntry);
 
     private:
+      std::stringstream strstream;
       std::function<void(const LogRecord&)> logcallback;
     };
 
@@ -288,7 +281,7 @@ namespace pcl
       while (true) {
         formatted.reset(new char[n]); /* Wrap the plain char array into the unique_ptr */
         va_start(ap, fmt_str);
-        final_n = vsnprintf(&formatted[0], n, fmt_str.c_str(), ap);
+        final_n = vsnprintf(formatted.get(), n, fmt_str.c_str(), ap);
         va_end(ap);
         if (final_n < 0 || final_n >= n)
           n += abs(final_n - n + 1);
@@ -429,8 +422,10 @@ namespace pcl
     PCL_EXPORTS void
     print(VERBOSITY_LEVEL level, FILE* stream, const std::string format, Args&&...args)
     {
-      const auto str = to_string(format, std::forward<Args>(args)...);
+      if (!pcl::console::isVerbosityLevelEnabled(level))
+        return;
 
+      const auto str = to_string(format, std::forward<Args>(args)...);
       LogRecord logEntry{level, str};
       Logger::getInstance().print(stream, logEntry);
     }
@@ -445,8 +440,10 @@ namespace pcl
     void
     print(VERBOSITY_LEVEL level, const std::string format, Args&&... args)
     {
-      const auto str = to_string(format, std::forward<Args>(args)...);
+      if (!pcl::console::isVerbosityLevelEnabled(level))
+        return;
 
+      const auto str = to_string(format, std::forward<Args>(args)...);
       LogRecord logEntry{level, str};
       Logger::getInstance().print(logEntry);
     }
