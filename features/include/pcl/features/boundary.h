@@ -164,7 +164,20 @@ namespace pcl
         u = p_coeff_v.cross3 (v);
       }
 
+      /** \brief Initialize the scheduler and set the number of threads to use.
+       * \param nr_threads the number of hardware threads to use (0 sets the value back
+       * to automatic)
+       */
+      void
+      setNumberOfThreads(unsigned int nr_threads = 0);
+
     protected:
+      /** \brief The number of threads the scheduler should use. */
+      unsigned int threads_{1};
+
+      /** \brief Chunk size for (dynamic) scheduling. */
+      int chunk_size_{256};
+
       /** \brief Estimate whether a set of points is lying on surface boundaries using an angle criterion for all points
         * given in <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
         * setSearchMethod ()
