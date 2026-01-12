@@ -45,6 +45,9 @@
 
 #include <cfloat>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 template <typename PointInT, typename PointNT, typename PointOutT>
 void
