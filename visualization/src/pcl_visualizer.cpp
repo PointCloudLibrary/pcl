@@ -658,7 +658,7 @@ pcl::visualization::PCLVisualizer::removeOrientationMarkerWidgetAxes ()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std::string &id, int viewport, bool pickable)
+pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std::string &id, int viewport)
 {
   if (scale <= 0.0)
     scale = 1.0;
@@ -691,20 +691,17 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std:
   vtkSmartPointer<vtkLODActor> axes_actor = vtkSmartPointer<vtkLODActor>::New ();
   axes_actor->SetMapper (axes_mapper);
 
-  if (!pickable)
-  {
-    axes_actor->SetPickable(false);
-  }
-
   // Save the ID and actor pair to the global actor map
   (*coordinate_actor_map_) [id] = axes_actor;
 
   addActorToRenderer (axes_actor, viewport);
+
+  axes_actor->SetPickable (false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, float y, float z, const std::string& id, int viewport, bool pickable)
+pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, float y, float z, const std::string& id, int viewport)
 {
   if (scale <= 0.0)
     scale = 1.0;
@@ -738,10 +735,7 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, f
   axes_actor->SetMapper (axes_mapper);
   axes_actor->SetPosition (x, y, z);
 
-  if (!pickable)
-  {
-    axes_actor->SetPickable(false);
-  }
+  axes_actor->SetPickable(false);
 
   // Save the ID and actor pair to the global actor map
   (*coordinate_actor_map_) [id] = axes_actor;
@@ -831,6 +825,8 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eige
   // Save the ID and actor pair to the global actor map
   (*coordinate_actor_map_) [id] = axes_actor;
   addActorToRenderer (axes_actor, viewport);
+
+  axes_actor->SetPickable(false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

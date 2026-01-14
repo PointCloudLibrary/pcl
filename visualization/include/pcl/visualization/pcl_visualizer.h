@@ -308,10 +308,9 @@ namespace pcl
           * \param[in] scale the scale of the axes (default: 1)
           * \param[in] id the coordinate system object id (default: reference)
           * \param[in] viewport the view port where the 3D axes should be added (default: all)
-          * \param[in] pickable Whether the resulting vtk actors are pickable, i.e. they may attract the view when using 'f' for fly-to-point
           */
         void
-        addCoordinateSystem (double scale = 1.0, const std::string& id = "reference", int viewport = 0, bool pickable = true);
+        addCoordinateSystem (double scale = 1.0, const std::string& id = "reference", int viewport = 0);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z
           * \param[in] scale the scale of the axes (default: 1)
@@ -320,10 +319,9 @@ namespace pcl
           * \param[in] z the Z position of the axes
           * \param[in] id the coordinate system object id (default: reference)
           * \param[in] viewport the view port where the 3D axes should be added (default: all)
-          * \param[in] pickable Whether the resulting vtk actors are pickable, i.e. they may attract the view when using 'f' for fly-to-point
           */
         void
-        addCoordinateSystem (double scale, float x, float y, float z, const std::string &id = "reference", int viewport = 0, bool pickable = true);
+        addCoordinateSystem (double scale, float x, float y, float z, const std::string &id = "reference", int viewport = 0);
 
          /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
            *

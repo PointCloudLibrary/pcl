@@ -719,7 +719,8 @@ main (int argc, char** argv)
     float ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
     pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z);
     // Draw XYZ axes if command-line enabled
-    p->addCoordinateSystem (axes, ax_x, ax_y, ax_z, "global", 0, false);
+    p->addCoordinateSystem (axes, ax_x, ax_y, ax_z, "global", 0);
+    p->getCoordinateActorMap()->at("global")->SetPickable(false);
   }
 
   // Clean up the memory used by the binary blob
