@@ -695,8 +695,6 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std:
   (*coordinate_actor_map_) [id] = axes_actor;
 
   addActorToRenderer (axes_actor, viewport);
-
-  axes_actor->SetPickable (false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -734,8 +732,6 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, f
   vtkSmartPointer<vtkLODActor> axes_actor = vtkSmartPointer<vtkLODActor>::New ();
   axes_actor->SetMapper (axes_mapper);
   axes_actor->SetPosition (x, y, z);
-
-  axes_actor->SetPickable(false);
 
   // Save the ID and actor pair to the global actor map
   (*coordinate_actor_map_) [id] = axes_actor;
@@ -825,8 +821,6 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eige
   // Save the ID and actor pair to the global actor map
   (*coordinate_actor_map_) [id] = axes_actor;
   addActorToRenderer (axes_actor, viewport);
-
-  axes_actor->SetPickable(false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
