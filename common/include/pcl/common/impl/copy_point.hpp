@@ -37,12 +37,13 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
+#include <pcl/field_traits.h>
 #include <pcl/type_traits.h>
 #include <pcl/for_each_type.h>
 #include <pcl/common/concatenate.h>
 #include <pcl/common/copy_point.h>
 
+#include <cstring>  // for memcpy
 
 namespace pcl
 {

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/common.h>
+#include <pcl/point_types.h>
 
 int 
 main (int, char**)

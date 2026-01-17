@@ -14,6 +14,7 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/point_types.h>
 
 #include <pcl/features/don.h>
 

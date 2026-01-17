@@ -38,6 +38,7 @@
 
 #include <pcl/test/gtest.h>
 
+#include <pcl/point_types.h>
 #include <pcl/sample_consensus/msac.h>
 #include <pcl/sample_consensus/lmeds.h>
 #include <pcl/sample_consensus/rmsac.h>

@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <boost/lexical_cast.hpp> // for lexical_cast
 

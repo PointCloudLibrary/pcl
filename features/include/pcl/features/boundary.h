@@ -42,6 +42,8 @@
 
 #include <pcl/features/feature.h>
 
+#include <Eigen/Core>
+
 namespace pcl
 {
   /** \brief BoundaryEstimation estimates whether a set of points is lying on surface boundaries using an angle
@@ -159,7 +161,8 @@ namespace pcl
       getCoordinateSystemOnPlane (const PointNT &p_coeff, 
                                   Eigen::Vector4f &u, Eigen::Vector4f &v) const
       {
-        pcl::Vector4fMapConst p_coeff_v = p_coeff.getNormalVector4fMap ();
+        const Eigen::Map<const Eigen::Vector4f, Eigen::Aligned> p_coeff_v =
+            p_coeff.getNormalVector4fMap ();
         v = p_coeff_v.unitOrthogonal ();
         u = p_coeff_v.cross3 (v);
       }

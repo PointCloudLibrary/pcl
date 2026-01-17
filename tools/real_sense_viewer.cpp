@@ -43,6 +43,7 @@
 #include <pcl/io/io_exception.h>
 #include <pcl/io/real_sense_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/field_traits.h>
 
 #include <boost/format.hpp>
 

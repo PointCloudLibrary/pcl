@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/field_traits.h>
 #include <pcl/point_types.h>
 
 #ifdef _MSC_VER

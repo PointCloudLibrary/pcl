@@ -46,9 +46,9 @@
 #include <boost/fusion/include/as_vector.hpp>
 #include <boost/fusion/include/filter_if.hpp>
 
+#include <pcl/field_traits.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/point_types.h>
 
 namespace pcl
 {

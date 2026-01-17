@@ -36,6 +36,7 @@
 #pragma once
 
 #include <pcl/keypoints/keypoint.h>
+#include <pcl/point_types.h>         // for PointNormal, PointXYZRGB, PointXYZRGBA
 
 namespace pcl
 {
