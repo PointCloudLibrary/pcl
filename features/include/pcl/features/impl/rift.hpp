@@ -42,7 +42,8 @@
 #define PCL_FEATURES_IMPL_RIFT_H_
 
 #include <pcl/features/rift.h>
-#include <pcl/point_types.h>    // for pcl::Vector3fMapConst
+
+#include <Eigen/Core>           // for Eigen::Map<const Eigen::Vector3f>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename GradientT, typename PointOutT> void
@@ -62,14 +63,14 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
   int nr_gradient_bins = static_cast<int> (rift_descriptor.cols ());
 
   // Get the center point
-  pcl::Vector3fMapConst p0 = cloud[p_idx].getVector3fMap ();
+  const Eigen::Map<const Eigen::Vector3f> p0 = cloud[p_idx].getVector3fMap ();
 
   // Compute the RIFT descriptor
   rift_descriptor.setZero ();
   for (std::size_t idx = 0; idx < indices.size (); ++idx)
   {
     // Compute the gradient magnitude and orientation (relative to the center point)
-    pcl::Vector3fMapConst point = cloud[indices[idx]].getVector3fMap ();
+    const Eigen::Map<const Eigen::Vector3f> point = cloud[indices[idx]].getVector3fMap ();
     Eigen::Map<const Eigen::Vector3f> gradient_vector (& (gradient[indices[idx]].gradient[0]));
 
     float gradient_magnitude = gradient_vector.norm ();
