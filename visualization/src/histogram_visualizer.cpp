@@ -170,7 +170,7 @@ void
 pcl::visualization::PCLHistogramVisualizer::reCreateActor (
     const vtkSmartPointer<vtkDoubleArray> &xy_array, RenWinInteract* renwinupd, const int hsize)
 {
-  renwinupd->ren_->RemoveActor2D (renwinupd->xy_plot_);
+  renwinupd->ren_->RemoveViewProp (renwinupd->xy_plot_);
   renwinupd->xy_plot_->RemoveAllDataSetInputConnections ();
   
   double min_max[2];
