@@ -77,7 +77,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
       const pcl::PointCloud<PointInT> &cloud, int q_idx, 
       const pcl::Indices &indices, 
       const Eigen::Vector4f &u, const Eigen::Vector4f &v, 
-      const float angle_threshold)
+      const float angle_threshold) const
 {
   return (isBoundaryPoint (cloud, cloud[q_idx], indices, u, v, angle_threshold));
 }
@@ -88,7 +88,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
       const pcl::PointCloud<PointInT> &cloud, const PointInT &q_point, 
       const pcl::Indices &indices, 
       const Eigen::Vector4f &u, const Eigen::Vector4f &v, 
-      const float angle_threshold)
+      const float angle_threshold) const
 {
   if (indices.size () < 3)
     return (false);
