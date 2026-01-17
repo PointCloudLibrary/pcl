@@ -45,6 +45,31 @@
 
 #include <cfloat>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
+template <typename PointInT, typename PointNT, typename PointOutT>
+void
+pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::setNumberOfThreads(
+    unsigned int nr_threads)
+{
+#ifdef _OPENMP
+  if (nr_threads == 0)
+    threads_ = omp_get_num_procs();
+  else
+    threads_ = nr_threads;
+  PCL_DEBUG("[pcl::BoundaryEstimation::setNumberOfThreads] Setting number of threads "
+            "to %u.\n",
+            threads_);
+#else
+  threads_ = 1;
+  if (nr_threads != 1)
+    PCL_WARN(
+        "[pcl::BoundaryEstimation::setNumberOfThreads] Parallelization is requested, "
+        "but OpenMP is not available! Continuing without parallelization.\n");
+#endif // _OPENMP
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
@@ -52,7 +77,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
       const pcl::PointCloud<PointInT> &cloud, int q_idx, 
       const pcl::Indices &indices, 
       const Eigen::Vector4f &u, const Eigen::Vector4f &v, 
-      const float angle_threshold)
+      const float angle_threshold) const
 {
   return (isBoundaryPoint (cloud, cloud[q_idx], indices, u, v, angle_threshold));
 }
@@ -63,7 +88,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
       const pcl::PointCloud<PointInT> &cloud, const PointInT &q_point, 
       const pcl::Indices &indices, 
       const Eigen::Vector4f &u, const Eigen::Vector4f &v, 
-      const float angle_threshold)
+      const float angle_threshold) const
 {
   if (indices.size () < 3)
     return (false);
@@ -126,8 +151,15 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
   // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
   if (input_->is_dense)
   {
+    #pragma omp parallel for \
+    default(none) \
+    shared(output) \
+    firstprivate(nn_indices, nn_dists, u, v) \
+    num_threads(threads_) \
+    schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
-    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(indices_->size());
+         ++idx)
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
@@ -147,8 +179,15 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
   }
   else
   {
+    #pragma omp parallel for \
+    default(none) \
+    shared(output) \
+    firstprivate(nn_indices, nn_dists, u, v) \
+    num_threads(threads_) \
+    schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
-    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(indices_->size());
+         ++idx)
     {
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)

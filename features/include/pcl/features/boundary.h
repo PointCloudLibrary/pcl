@@ -116,7 +116,7 @@ namespace pcl
       bool 
       isBoundaryPoint (const pcl::PointCloud<PointInT> &cloud, 
                        int q_idx, const pcl::Indices &indices, 
-                       const Eigen::Vector4f &u, const Eigen::Vector4f &v, const float angle_threshold);
+                       const Eigen::Vector4f &u, const Eigen::Vector4f &v, const float angle_threshold) const;
 
       /** \brief Check whether a point is a boundary point in a planar patch of projected points given by indices.
         * \note A coordinate system u-v-n must be computed a-priori using \a getCoordinateSystemOnPlane
@@ -131,7 +131,7 @@ namespace pcl
       isBoundaryPoint (const pcl::PointCloud<PointInT> &cloud, 
                        const PointInT &q_point, 
                        const pcl::Indices &indices, 
-                       const Eigen::Vector4f &u, const Eigen::Vector4f &v, const float angle_threshold);
+                       const Eigen::Vector4f &u, const Eigen::Vector4f &v, const float angle_threshold) const;
 
       /** \brief Set the decision boundary (angle threshold) that marks points as boundary or regular. 
         * (default \f$\pi / 2.0\f$) 
@@ -145,7 +145,7 @@ namespace pcl
 
       /** \brief Get the decision boundary (angle threshold) as set by the user. */
       inline float
-      getAngleThreshold ()
+      getAngleThreshold () const
       {
         return (angle_threshold_);
       }
@@ -157,14 +157,27 @@ namespace pcl
         */
       inline void 
       getCoordinateSystemOnPlane (const PointNT &p_coeff, 
-                                  Eigen::Vector4f &u, Eigen::Vector4f &v)
+                                  Eigen::Vector4f &u, Eigen::Vector4f &v) const
       {
         pcl::Vector4fMapConst p_coeff_v = p_coeff.getNormalVector4fMap ();
         v = p_coeff_v.unitOrthogonal ();
         u = p_coeff_v.cross3 (v);
       }
 
+      /** \brief Initialize the scheduler and set the number of threads to use.
+       * \param nr_threads the number of hardware threads to use (0 sets the value back
+       * to automatic)
+       */
+      void
+      setNumberOfThreads(unsigned int nr_threads = 0);
+
     protected:
+      /** \brief The number of threads the scheduler should use. */
+      unsigned int threads_{1};
+
+      /** \brief Chunk size for (dynamic) scheduling. */
+      int chunk_size_{256};
+
       /** \brief Estimate whether a set of points is lying on surface boundaries using an angle criterion for all points
         * given in <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
         * setSearchMethod ()
