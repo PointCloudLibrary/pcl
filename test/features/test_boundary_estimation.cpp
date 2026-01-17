@@ -50,8 +50,37 @@ using namespace pcl::io;
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
 PointCloud<PointXYZ> cloud;
-pcl::Indices indices;
+PointCloud<Normal>::Ptr normals(new PointCloud<Normal>());
+pcl::IndicesPtr indicesptr(new pcl::Indices());
 KdTreePtr tree;
+
+TEST(PCL, BoundaryEstimationOMP)
+{
+  BoundaryEstimation<PointXYZ, Normal, Boundary> b;
+  b.setNumberOfThreads(0);
+  b.setInputNormals (normals);
+  // Object
+  PointCloud<Boundary>::Ptr bps (new PointCloud<Boundary> ());
+  // set parameters
+  b.setInputCloud (cloud.makeShared ());
+  b.setIndices (indicesptr);
+  b.setSearchMethod (tree);
+  b.setKSearch(static_cast<int>(indicesptr->size()));
+  // estimate
+  b.compute (*bps);
+  EXPECT_EQ(bps->size(), indicesptr->size());
+
+  bool pt = false;
+
+  pt = (*bps)[0].boundary_point;
+  EXPECT_FALSE(pt);
+  pt = (*bps)[indicesptr->size() / 3].boundary_point;
+  EXPECT_FALSE(pt);
+  pt = (*bps)[indicesptr->size() / 2].boundary_point;
+  EXPECT_FALSE(pt);
+  pt = (*bps)[indicesptr->size() - 1].boundary_point;
+  EXPECT_TRUE(pt);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, BoundaryEstimation)
@@ -59,24 +88,12 @@ TEST (PCL, BoundaryEstimation)
   Eigen::Vector4f u = Eigen::Vector4f::Zero ();
   Eigen::Vector4f v = Eigen::Vector4f::Zero ();
 
-  // Estimate normals first
-  NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  // set parameters
-  n.setInputCloud (cloud.makeShared ());
-  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
-  n.setIndices (indicesptr);
-  n.setSearchMethod (tree);
-  n.setKSearch (static_cast<int> (indices.size ()));
-  // estimate
-  n.compute (*normals);
-
   BoundaryEstimation<PointXYZ, Normal, Boundary> b;
   b.setInputNormals (normals);
   EXPECT_EQ (b.getInputNormals (), normals);
 
   // getCoordinateSystemOnPlane
-  for (const auto &point : normals->points)
+  for (const auto &point : *normals)
   {
     b.getCoordinateSystemOnPlane (point, u, v);
     Vector4fMapConst n4uv = point.getNormalVector4fMap ();
@@ -87,23 +104,23 @@ TEST (PCL, BoundaryEstimation)
 
   // isBoundaryPoint (indices)
   bool pt = false;
-  pt = b.isBoundaryPoint (cloud, 0, indices, u, v, static_cast<float>(M_PI) / 2.0);
+  pt = b.isBoundaryPoint(cloud, 0, *indicesptr, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) / 3, indices, u, v, static_cast<float>(M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, static_cast<int> (indicesptr->size()) / 3, *indicesptr, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) / 2, indices, u, v, static_cast<float>(M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, static_cast<int> (indicesptr->size()) / 2, *indicesptr, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) - 1, indices, u, v, static_cast<float>(M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, static_cast<int> (indicesptr->size()) - 1, *indicesptr, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_TRUE (pt);
 
   // isBoundaryPoint (points)
-  pt = b.isBoundaryPoint (cloud, cloud[0], indices, u, v, static_cast<float>(M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[0], *indicesptr, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 3], indices, u, v, static_cast<float>(M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indicesptr->size() / 3], *indicesptr, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 2], indices, u, v, static_cast<float>(M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indicesptr->size() / 2], *indicesptr, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_FALSE (pt);
-  pt = b.isBoundaryPoint (cloud, cloud[indices.size () - 1], indices, u, v, static_cast<float>(M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indicesptr->size() - 1], *indicesptr, u, v, static_cast<float>(M_PI) / 2.0);
   EXPECT_TRUE (pt);
 
   // Object
@@ -113,19 +130,19 @@ TEST (PCL, BoundaryEstimation)
   b.setInputCloud (cloud.makeShared ());
   b.setIndices (indicesptr);
   b.setSearchMethod (tree);
-  b.setKSearch (static_cast<int> (indices.size ()));
+  b.setKSearch (static_cast<int> (indicesptr->size()));
 
   // estimate
   b.compute (*bps);
-  EXPECT_EQ (bps->size (), indices.size ());
+  EXPECT_EQ (bps->size (), indicesptr->size());
 
   pt = (*bps)[0].boundary_point;
   EXPECT_FALSE (pt);
-  pt = (*bps)[indices.size () / 3].boundary_point;
+  pt = (*bps)[indicesptr->size() / 3].boundary_point;
   EXPECT_FALSE (pt);
-  pt = (*bps)[indices.size () / 2].boundary_point;
+  pt = (*bps)[indicesptr->size() / 2].boundary_point;
   EXPECT_FALSE (pt);
-  pt = (*bps)[indices.size () - 1].boundary_point;
+  pt = (*bps)[indicesptr->size() - 1].boundary_point;
   EXPECT_TRUE (pt);
 }
 
@@ -145,12 +162,23 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.size ());
-  for (std::size_t i = 0; i < indices.size (); ++i)
-    indices[i] = static_cast<int> (i);
+  indicesptr->resize(cloud.size());
+  for (std::size_t i = 0; i < indicesptr->size (); ++i)
+    (*indicesptr)[i] = static_cast<int> (i);
 
   tree.reset (new search::KdTree<PointXYZ> (false));
   tree->setInputCloud (cloud.makeShared ());
+
+  // Estimate normals first
+  NormalEstimation<PointXYZ, Normal> n;
+  // set parameters
+  n.setInputCloud (cloud.makeShared ());
+  n.setIndices (indicesptr);
+  n.setSearchMethod (tree);
+  n.setKSearch (static_cast<int> (indicesptr->size ()));
+  // estimate
+  n.compute (*normals);
+
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
