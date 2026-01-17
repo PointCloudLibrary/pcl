@@ -32,3 +32,4 @@ tracking
 registration
 gpu/containers
 gpu/segmentation
+test/features/test_boundary_estimation.cpp
