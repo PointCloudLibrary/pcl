@@ -38,6 +38,13 @@
 #pragma once
 
 #include <cstdio>
+#include <cstring> // For std::strcpy
+#include <functional>
+#include <string>
+#include <sstream>
+#include <stdarg.h>  // For va_start, etc.
+#include <iostream>
+#include <memory> // For std::unique_ptr
 
 #include <pcl/pcl_exports.h>
 #include <pcl/pcl_config.h>
@@ -46,14 +53,22 @@
 // PCL_INFO_STREAM("Info: this is a point: " << pcl::PointXYZ(1.0, 2.0, 3.0) << std::endl);
 // PCL_ERROR_STREAM("Error: an Eigen vector: " << std::endl << Eigen::Vector3f(1.0, 2.0, 3.0) << std::endl);
 // NOLINTBEGIN(bugprone-macro-parentheses)
-#define PCL_LOG_STREAM(LEVEL, STREAM, CSTR, ATTR, FG, ARGS) if(pcl::console::isVerbosityLevelEnabled(pcl::console::LEVEL)) { fflush(stdout); pcl::console::change_text_color(CSTR, pcl::console::ATTR, pcl::console::FG); STREAM << ARGS; pcl::console::reset_text_color(CSTR); }
+#define PCL_LOG_STREAM(LEVEL, ARGS) \
+  if (pcl::console::isVerbosityLevelEnabled(pcl::console::LEVEL)) \
+  { \
+    auto& strstream = pcl::console::Logger::getInstance().getStringStream(); \
+    strstream.clear(); \
+    strstream << ARGS; \
+    pcl::console::LogRecord entry{pcl::console::LEVEL, strstream.str()}; \
+    pcl::console::Logger::getInstance().print(entry); \
+  }
 // NOLINTEND(bugprone-macro-parentheses)
-#define PCL_ALWAYS_STREAM(ARGS)  PCL_LOG_STREAM(L_ALWAYS,  std::cout, stdout, TT_RESET,  TT_WHITE,  ARGS)
-#define PCL_ERROR_STREAM(ARGS)   PCL_LOG_STREAM(L_ERROR,   std::cerr, stderr, TT_BRIGHT, TT_RED,    ARGS)
-#define PCL_WARN_STREAM(ARGS)    PCL_LOG_STREAM(L_WARN,    std::cerr, stderr, TT_BRIGHT, TT_YELLOW, ARGS)
-#define PCL_INFO_STREAM(ARGS)    PCL_LOG_STREAM(L_INFO,    std::cout, stdout, TT_RESET,  TT_WHITE,  ARGS)
-#define PCL_DEBUG_STREAM(ARGS)   PCL_LOG_STREAM(L_DEBUG,   std::cout, stdout, TT_RESET,  TT_GREEN,  ARGS)
-#define PCL_VERBOSE_STREAM(ARGS) PCL_LOG_STREAM(L_VERBOSE, std::cout, stdout, TT_RESET,  TT_WHITE,  ARGS)
+#define PCL_ALWAYS_STREAM(ARGS)  PCL_LOG_STREAM(L_ALWAYS,  ARGS)
+#define PCL_ERROR_STREAM(ARGS)   PCL_LOG_STREAM(L_ERROR,   ARGS)
+#define PCL_WARN_STREAM(ARGS)    PCL_LOG_STREAM(L_WARN,    ARGS)
+#define PCL_INFO_STREAM(ARGS)    PCL_LOG_STREAM(L_INFO,    ARGS)
+#define PCL_DEBUG_STREAM(ARGS)   PCL_LOG_STREAM(L_DEBUG,   ARGS)
+#define PCL_VERBOSE_STREAM(ARGS) PCL_LOG_STREAM(L_VERBOSE, ARGS)
 
 
 #define PCL_ALWAYS(...)  pcl::console::print (pcl::console::L_ALWAYS, __VA_ARGS__)
@@ -118,6 +133,27 @@ namespace pcl
       L_VERBOSE
     };
 
+    /** \brief Structure to hold a log record
+     * Used by the Logger class
+    */
+    struct LogRecord {
+      LogRecord() = default;
+
+      LogRecord(VERBOSITY_LEVEL lvl, const std::string& str)
+      : level(lvl), message(str) {};
+
+      LogRecord(VERBOSITY_LEVEL lvl, std::string&& str)
+      : level(lvl), message(std::move(str))
+      {};
+
+      LogRecord(const LogRecord& other) = default;
+
+      ~LogRecord() = default;
+
+      VERBOSITY_LEVEL level;
+      std::string message;
+    };
+
     /** set the verbosity level */
     PCL_EXPORTS void 
     setVerbosityLevel (VERBOSITY_LEVEL level);
@@ -168,107 +204,272 @@ namespace pcl
     PCL_EXPORTS void 
     reset_text_color (FILE *stream);
 
+    /**
+     * @brief Logger used to log messages with different verbosity levels
+     * Can be used to redirect log messages to custom outputs by setting a callback
+     */
+    class PCL_EXPORTS Logger {
+    public:
+      static Logger&
+      getInstance();
+
+      std::stringstream&
+      getStringStream()
+      {
+        return strstream;
+      }
+
+      template <typename Functor>
+      void
+      setCallback(Functor&& callback)
+      {
+        logcallback = std::move(callback);
+      }
+
+      void
+      print(FILE* stream, const LogRecord& logEntry);
+
+      void
+      print(const LogRecord& logEntry);
+
+      void
+      print_highlight(FILE* stream, const LogRecord& logEntry);
+
+      void
+      print_highlight(const LogRecord& logEntry);
+
+      void
+      print_value(FILE* stream, const LogRecord& logEntry);
+
+      void
+      print_value(const LogRecord& logEntry);
+
+      void
+      print_color(FILE* stream, int attr, int fg, const LogRecord& logEntry);
+
+    private:
+      std::stringstream strstream;
+      std::function<void(const LogRecord&)> logcallback;
+    };
+
+    /**
+     * @brief Sets a callable in the Logger instance, which is called whenever a printout has occured
+     * @tparam Functor matching the definition: std::function<void(const LogRecord&)>
+     * @param callback the std::function or lambda to be called
+     * @note Its possible to reset the logging to console by setting the callback to a nullptr
+     */
+    template <typename Functor>
+    void
+    setCallback(Functor&& callback)
+    {
+      Logger::getInstance().setCallback(std::move(callback));
+    }
+
+    /**
+     * @brief insert values into a formatted string
+     * @param fmt_str string containing the format
+     * @param  values to be inserted
+     * @return formatted string of type std::string 
+     */
+    template <typename... Args>
+    std::string
+    to_string(const std::string fmt_str, ...)
+    {
+      int final_n, n = (static_cast<int>(fmt_str.size())) * 2; /* Reserve two times as much as the length of the fmt_str */
+      std::unique_ptr<char[]> formatted;
+      va_list ap;
+      while (true) {
+        formatted.reset(new char[n]); /* Wrap the plain char array into the unique_ptr */
+        va_start(ap, fmt_str);
+        final_n = vsnprintf(formatted.get(), n, fmt_str.c_str(), ap);
+        va_end(ap);
+        if (final_n < 0 || final_n >= n)
+          n += abs(final_n - n + 1);
+        else
+          break;
+      }
+      return {formatted.get()};
+    }
+
+    /** \brief Print an info message on stream with colors
+      * \param stream the output stream (stdout, stderr, etc)
+      * \param format the message
+      */
+    template <typename... Args>
+    PCL_EXPORTS void 
+    print_info(FILE* stream, const std::string format, Args&&... args)
+    {
+      print(L_INFO, stream, format, std::forward<Args>(args)...);
+    }
+
+    /** \brief Print an info message on stream with colors
+     * \param format the message
+     */
+    template <typename... Args>
+    PCL_EXPORTS void
+    print_info(const std::string format, Args&&... args)
+    {
+      print_info(stdout, format, std::forward<Args>(args)...);
+    }
+
+    /** \brief Print an error message on stream with colors
+      * \param stream the output stream (stdout, stderr, etc)
+      * \param format the message
+      */
+    template <typename... Args>
+    PCL_EXPORTS void 
+    print_error(FILE* stream, const std::string format, Args&&... args)
+    {
+      print(L_ERROR, stream, format, std::forward<Args>(args)...);
+    }
+
+    /** \brief Print an error message on stream with colors
+     * \param format the message
+     */
+    template <typename... Args>
+    PCL_EXPORTS void
+    print_error(std::string format, Args&&... args)
+    {
+      print_error(stderr, format, std::forward<Args>(args)...);
+    }
+
+     /** \brief Print a warning message on stream with colors
+     * \param stream the output stream (stdout, stderr, etc)
+     * \param format the message
+     */
+    template <typename... Args>
+    PCL_EXPORTS void
+    print_warn(FILE* stream, const std::string format, Args&&... args)
+    {
+      print(L_WARN, stream, format, std::forward<Args>(args)...);
+    }
+
+    /** \brief Print a warning message on stream with colors
+      * \param format the message
+      */
+    template <typename... Args>
+    PCL_EXPORTS void
+    print_warn(std::string format, Args&&... args)
+    {
+      print_warn(stderr, format, std::forward<Args>(args)...);
+    }
+
+    /** \brief Print a debug message on stream with colors
+      * \param stream the output stream (stdout, stderr, etc)
+      * \param format the message
+      */
+    template <typename... Args>
+    PCL_EXPORTS void 
+    print_debug(FILE* stream, const std::string format, Args&&... args)
+    {
+      print(L_DEBUG, stream, format, std::forward<Args>(args)...);
+    }
+
+    /** \brief Print a debug message on stream with colors
+     * \param format the message
+     */
+    template <typename... Args>
+    PCL_EXPORTS void
+    print_debug(const std::string format, Args&&... args)
+    {
+      print_debug(stdout, format, std::forward<Args>(args)...);
+    }
+
     /** \brief Print a message on stream with colors
-      * \param stream the output stream (stdout, stderr, etc)
-      * \param attr the text attribute
-      * \param fg the foreground color
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_color (FILE *stream, int attr, int fg, const char *format, ...);
+     * \param stream the output stream (stdout, stderr, etc)
+     * \param attr the text attribute
+     * \param fg the foreground color
+     * \param format the message
+     */
+    template <typename... Args>
+    PCL_EXPORTS void
+    print_color(FILE* stream, int attr, int fg, const std::string format, Args&&... args)
+    {
+      const auto str = to_string(format, std::forward<Args>(args)...);
+      LogRecord logEntry{L_ALWAYS, str};
+      Logger::getInstance().print_color(stream, attr, fg, logEntry);
+    }
 
-    /** \brief Print an info message on stream with colors
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_info  (const char *format, ...);
-
-    /** \brief Print an info message on stream with colors
-      * \param stream the output stream (stdout, stderr, etc)
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_info  (FILE *stream, const char *format, ...);
-
-    /** \brief Print a highlighted info message on stream with colors
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_highlight  (const char *format, ...);
-
-    /** \brief Print a highlighted info message on stream with colors
-      * \param stream the output stream (stdout, stderr, etc)
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_highlight  (FILE *stream, const char *format, ...);
-
-    /** \brief Print an error message on stream with colors
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_error (const char *format, ...);
-
-    /** \brief Print an error message on stream with colors
-      * \param stream the output stream (stdout, stderr, etc)
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_error (FILE *stream, const char *format, ...);
-
-    /** \brief Print a warning message on stream with colors
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_warn (const char *format, ...);
-
-    /** \brief Print a warning message on stream with colors
-      * \param stream the output stream (stdout, stderr, etc)
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_warn (FILE *stream, const char *format, ...);
-
-    /** \brief Print a debug message on stream with colors
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_debug (const char *format, ...);
-
-    /** \brief Print a debug message on stream with colors
-      * \param stream the output stream (stdout, stderr, etc)
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_debug (FILE *stream, const char *format, ...);
-
+    /** \brief Print a value message on stream with colors
+     * \param stream the output stream (stdout, stderr, etc)
+     * \param format the message
+     */
+    template <typename... Args>
+    PCL_EXPORTS void
+    print_value(FILE* stream, const std::string format, Args&&... args)
+    {
+      const auto str = to_string(format, std::forward<Args>(args)...);
+      LogRecord logEntry{L_ALWAYS, str};
+      Logger::getInstance().print_value(stream, logEntry);
+    }
 
     /** \brief Print a value message on stream with colors
       * \param format the message
       */
-    PCL_EXPORTS void 
-    print_value (const char *format, ...);
-
-    /** \brief Print a value message on stream with colors
-      * \param stream the output stream (stdout, stderr, etc)
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print_value (FILE *stream, const char *format, ...);
+    template <typename... Args>
+    PCL_EXPORTS void
+    print_value(const std::string format, Args&&... args)
+    {
+      print_value(stdout, format, std::forward<Args>(args)...);
+    }
 
     /** \brief Print a message on stream
-      * \param level the verbosity level
-      * \param stream the output stream (stdout, stderr, etc)
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print (VERBOSITY_LEVEL level, FILE *stream, const char *format, ...);
+     * \param level the verbosity level
+     * \param stream the output stream (stdout, stderr, etc)
+     * \param format the message
+     */
+    template <typename... Args>
+    PCL_EXPORTS void
+    print(VERBOSITY_LEVEL level, FILE* stream, const std::string format, Args&&...args)
+    {
+      if (!pcl::console::isVerbosityLevelEnabled(level))
+        return;
 
-    /** \brief Print a message
-      * \param level the verbosity level
-      * \param format the message
-      */
-    PCL_EXPORTS void 
-    print (VERBOSITY_LEVEL level, const char *format, ...);
+      const auto str = to_string(format, std::forward<Args>(args)...);
+      LogRecord logEntry{level, str};
+      Logger::getInstance().print(stream, logEntry);
+    }
+
+    /**
+     * @brief Print a message
+     * @param level Verbosity level
+     * @param fmt_str the string containing the formatting
+     * @param ...args values to be inserted into the fmt_str
+     */
+    template <typename... Args>
+    void
+    print(VERBOSITY_LEVEL level, const std::string format, Args&&... args)
+    {
+      if (!pcl::console::isVerbosityLevelEnabled(level))
+        return;
+
+      const auto str = to_string(format, std::forward<Args>(args)...);
+      LogRecord logEntry{level, str};
+      Logger::getInstance().print(logEntry);
+    }
+
+    /** \brief Print a highlighted info message on stream with colors
+     * \param stream the output stream (stdout, stderr, etc)
+     * \param format the message
+     */
+    template <typename... Args>
+    PCL_EXPORTS void
+    print_highlight(FILE* stream, const std::string format, Args... args)
+    {
+      const auto str = to_string(format, std::forward<Args>(args)...);
+      LogRecord logEntry{L_INFO, str};
+      Logger::getInstance().print_highlight(stream,logEntry);
+    }
+
+
+    /** \brief Print a highlighted info message on stream with colors
+     * \param format the message
+     */
+    template <typename... Args>
+    PCL_EXPORTS void
+    print_highlight(const std::string format, Args&&...args)
+    {
+      print_highlight(stdout, format, std::forward<Args>(args)...);
+    }
   }
 } 
