@@ -129,6 +129,8 @@ public:
     max_iterations_ = 5000;
     transformation_estimation_.reset(
         new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
+
+    num_threads_ = 1;
   };
 
   /** \brief Destructor */
@@ -243,6 +245,23 @@ public:
     return inliers_;
   }
 
+  /** \brief Set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
+   */
+  void
+  setNumberOfThreads(unsigned int nr_threads = 0)
+  {
+#ifdef _OPENMP
+    num_threads_ = nr_threads ? nr_threads : omp_get_num_procs();
+#else
+    if (num_threads_ != 1) {
+      PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1");
+    }
+    num_threads_ = 1;
+#endif
+  }
+
 protected:
   /** \brief Choose a random index between 0 and n-1
    * \param n the number of possible indices to choose from
@@ -261,7 +280,7 @@ protected:
   void
   selectSamples(const PointCloudSource& cloud,
                 int nr_samples,
-                pcl::Indices& sample_indices);
+                pcl::Indices& sample_indices) const;
 
   /** \brief For each of the sample points, find a list of points in the target cloud
    * whose features are similar to the sample points' features. From these, select one
@@ -274,7 +293,7 @@ protected:
   void
   findSimilarFeatures(const pcl::Indices& sample_indices,
                       std::vector<pcl::Indices>& similar_features,
-                      pcl::Indices& corresponding_indices);
+                      pcl::Indices& corresponding_indices) const;
 
   /** \brief Rigid transformation computation method.
    * \param output the transformed input point cloud dataset using the rigid
@@ -290,10 +309,26 @@ protected:
    *   - Inliers: the number of transformed points which are closer than threshold to NN
    *   - Error score: the MSE of the inliers
    * \param inliers indices of source point cloud inliers
-   * \param fitness_score output fitness score as RMSE
+   * \param fitness_score output fitness_score output fitness score as the MSE of the
+   * inliers
    */
+  PCL_DEPRECATED(1,
+                 15,
+                 "Please use `getFitness(final_transformation_, inliers)` instead")
   void
-  getFitness(pcl::Indices& inliers, float& fitness_score);
+  getFitness(pcl::Indices& inliers, float& fitness_score) const;
+
+  /** \brief Obtain the fitness of a transformation
+   * The following metrics are calculated, based on
+   * \b transformation and \b corr_dist_threshold_:
+   *   - Inliers: the number of transformed points which are closer than threshold to NN
+   *   - Error score: the MSE of the inliers
+   * \param transformation transformation to be evaluated
+   * \param inliers indices of source point cloud inliers
+   * \return fitness_score fitness_score output fitness score as the MSE of the inliers
+   */
+  float
+  getFitness(const Eigen::Matrix4f& transformation, pcl::Indices& inliers) const;
 
   /** \brief The source point cloud's feature descriptors. */
   FeatureCloudConstPtr input_features_;
@@ -320,6 +355,9 @@ protected:
 
   /** \brief Inlier points of final transformation as indices into source */
   pcl::Indices inliers_;
+
+  /** \brief The number of threads the scheduler should use. */
+  unsigned int num_threads_;
 };
 } // namespace pcl
 
