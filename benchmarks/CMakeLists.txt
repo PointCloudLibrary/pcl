@@ -1,6 +1,6 @@
 set(SUBSYS_NAME benchmarks)
 set(SUBSYS_DESC "Point cloud library benchmarks")
-set(SUBSYS_DEPS common filters features search kdtree io sample_consensus)
+set(SUBSYS_DEPS common filters features search kdtree io sample_consensus surface)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
@@ -34,4 +34,8 @@ PCL_ADD_BENCHMARK(sample_consensus_sac_model_cylinder FILES sample_consensus/sac
 
 PCL_ADD_BENCHMARK(search_radius_search FILES search/radius_search.cpp
                   LINK_WITH pcl_io pcl_search pcl_filters
+                  ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd")
+
+PCL_ADD_BENCHMARK(gp3 FILES surface/gp3.cpp
+                  LINK_WITH pcl_io pcl_filters pcl_surface
                   ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd")
