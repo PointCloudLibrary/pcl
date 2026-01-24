@@ -15,6 +15,7 @@
  *     notice, this list of conditions and the following disclaimer.
  *   * Redistributions in binary form must reproduce the above
  *     copyright notice, this list of conditions and the following
+
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
  *   * Neither the name of the copyright holder(s) nor the names of its
@@ -35,7 +36,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/features/3dsc.h>
@@ -46,11 +46,12 @@
 #include <pcl/common/utils.h>
 
 #include <cmath>
-#include <numeric> // for partial_sum
+#include <numeric> // partial_sum
+#include <limits>  // numeric_limits
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointOutT> bool
-pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::initCompute ()
+template <typename PointInT, typename PointNT, typename PointOutT>
+bool pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::initCompute ()
 {
   if (!FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ())
   {
@@ -58,69 +59,58 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::initCompute ()
     return (false);
   }
 
-  if (search_radius_< min_radius_)
+  if (search_radius_ < min_radius_)
   {
     PCL_ERROR ("[pcl::%s::initCompute] search_radius_ must be GREATER than min_radius_.\n", getClassName ().c_str ());
     return (false);
   }
 
-  // Update descriptor length
+  // descriptor length: elevation * azimuth * radius
   descriptor_length_ = elevation_bins_ * azimuth_bins_ * radius_bins_;
 
-  // Compute radial, elevation and azimuth divisions
+  // angular divisions in degrees
   float azimuth_interval = 360.0f / static_cast<float> (azimuth_bins_);
   float elevation_interval = 180.0f / static_cast<float> (elevation_bins_);
 
-  // Reallocate divisions and volume lut
+  // clear & reserve lookup tables
   radii_interval_.clear ();
   phi_divisions_.clear ();
   theta_divisions_.clear ();
   volume_lut_.clear ();
 
-  // Fills radii interval based on formula (1) in section 2.1 of Frome's paper
+  // radii intervals: exponential binning per Frome paper
   radii_interval_.resize (radius_bins_ + 1);
   for (std::size_t j = 0; j < radius_bins_ + 1; j++)
-    radii_interval_[j] = static_cast<float> (std::exp (std::log (min_radius_) + ((static_cast<float> (j) / static_cast<float> (radius_bins_)) * std::log (search_radius_ / min_radius_))));
+    radii_interval_[j] = static_cast<float> (std::exp (
+        std::log (min_radius_) +
+        ((static_cast<float> (j) / static_cast<float> (radius_bins_)) * std::log (search_radius_ / min_radius_))));
 
-  // Fill theta divisions of elevation
+  // elevation (theta) divisions cumulative
   theta_divisions_.resize (elevation_bins_ + 1, elevation_interval);
   theta_divisions_[0] = 0.f;
   std::partial_sum(theta_divisions_.begin (), theta_divisions_.end (), theta_divisions_.begin ());
 
-  // Fill phi didvisions of elevation
+  // azimuth (phi) divisions cumulative
   phi_divisions_.resize (azimuth_bins_ + 1, azimuth_interval);
   phi_divisions_[0] = 0.f;
   std::partial_sum(phi_divisions_.begin (), phi_divisions_.end (), phi_divisions_.begin ());
 
-  // LookUp Table that contains the volume of all the bins
-  // "phi" term of the volume integral
-  // "integr_phi" has always the same value so we compute it only one time
+  // precompute bin volumes (used to normalize by bin volume and local density)
   float integr_phi  = pcl::deg2rad (phi_divisions_[1]) - pcl::deg2rad (phi_divisions_[0]);
-  // exponential to compute the cube root using pow
-  float e = 1.0f / 3.0f;
-  // Resize volume look up table
+  float e = 1.0f / 3.0f; // cube root exponent
   volume_lut_.resize (radius_bins_ * elevation_bins_ * azimuth_bins_);
-  // Fill volumes look up table
   for (std::size_t j = 0; j < radius_bins_; j++)
   {
-    // "r" term of the volume integral
-    float integr_r = (radii_interval_[j+1] * radii_interval_[j+1] * radii_interval_[j+1] / 3.0f) - (radii_interval_[j] * radii_interval_[j] * radii_interval_[j] / 3.0f);
+    float integr_r = (radii_interval_[j+1] * radii_interval_[j+1] * radii_interval_[j+1] / 3.0f)
+                   - (radii_interval_[j]   * radii_interval_[j]   * radii_interval_[j]   / 3.0f);
 
     for (std::size_t k = 0; k < elevation_bins_; k++)
     {
-      // "theta" term of the volume integral
       float integr_theta = std::cos (pcl::deg2rad (theta_divisions_[k])) - std::cos (pcl::deg2rad (theta_divisions_[k+1]));
-      // Volume
       float V = integr_phi * integr_theta * integr_r;
-      // Compute cube root of the computed volume commented for performance but left
-      // here for clarity
-      // float cbrt = pow(V, e);
-      // cbrt = 1 / cbrt;
-
       for (std::size_t l = 0; l < azimuth_bins_; l++)
       {
-        // Store in lut 1/cbrt
-        //volume_lut_[ (l*elevation_bins_*radius_bins_) + k*radius_bins_ + j ] = cbrt;
+        // store 1 / cbrt(V) to normalize later
         volume_lut_[(l*elevation_bins_*radius_bins_) + k*radius_bins_ + j] = 1.0f / powf (V, e);
       }
     }
@@ -129,16 +119,16 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::initCompute ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointOutT> bool
-pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
+template <typename PointInT, typename PointNT, typename PointOutT>
+bool pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     std::size_t index, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc)
 {
-  // The RF is formed as this x_axis | y_axis | normal
+  // rf layout: [x_axis(3) | y_axis(3) | normal(3)]
   Eigen::Map<Eigen::Vector3f> x_axis (rf);
   Eigen::Map<Eigen::Vector3f> y_axis (rf + 3);
   Eigen::Map<Eigen::Vector3f> normal (rf + 6);
 
-  // Find every point within specified search_radius_
+  // find neighbors within search_radius_
   pcl::Indices nn_indices;
   std::vector<float> nn_dists;
   const std::size_t neighb_cnt = searchForNeighbors ((*indices_)[index], search_radius_, nn_indices, nn_dists);
@@ -152,10 +142,8 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   const auto minDistanceIt = std::min_element(nn_dists.begin (), nn_dists.end ());
   const auto minIndex = nn_indices[std::distance (nn_dists.begin (), minDistanceIt)];
 
-  // Get origin point
+  // origin & normal (use nearest neighbor's normal)
   Vector3fMapConst origin = (*input_)[(*indices_)[index]].getVector3fMap ();
-  // Get origin normal
-  // Use pre-computed normals
   if (!pcl::isNormalFinite(normals[minIndex]))
   {
     std::fill (desc.begin (), desc.end (), std::numeric_limits<float>::quiet_NaN ());
@@ -164,7 +152,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   }
   normal = normals[minIndex].getNormalVector3fMap ();
 
-  // Compute and store the RF direction
+  // build a random X axis orthogonal to normal (this is how 3DSC defines RF)
   x_axis[0] = rnd ();
   x_axis[1] = rnd ();
   x_axis[2] = rnd ();
@@ -176,108 +164,145 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     x_axis[0] = - (normal[1]*x_axis[1] + normal[2]*x_axis[2]) / normal[0];
 
   x_axis.normalize ();
-
-  // Check if the computed x axis is orthogonal to the normal
-  assert (pcl::utils::equal (x_axis[0]*normal[0] + x_axis[1]*normal[1] + x_axis[2]*normal[2], 0.0f, 1E-6f));
-
-  // Store the 3rd frame vector
+  assert (pcl::utils::equal (x_axis.dot(normal), 0.0f, 1E-6f));
   y_axis.matrix () = normal.cross (x_axis);
 
-  // For each point within radius
+  // accumulate contribution of each neighbor into desc histogram
   for (std::size_t ne = 0; ne < neighb_cnt; ne++)
   {
     if (pcl::utils::equal (nn_dists[ne], 0.0f))
-		  continue;
-    // Get neighbours coordinates
+      continue;
+
     Eigen::Vector3f neighbour = (*surface_)[nn_indices[ne]].getVector3fMap ();
 
-    /// ----- Compute current neighbour polar coordinates -----
-    /// Get distance between the neighbour and the origin
+    // radial distance
     float r = std::sqrt (nn_dists[ne]);
 
-    /// Project point into the tangent plane
+    // projection into tangent plane and normalized
     Eigen::Vector3f proj;
     pcl::geometry::project (neighbour, origin, normal, proj);
     proj -= origin;
-
-    /// Normalize to compute the dot product
     proj.normalize ();
 
-    /// Compute the angle between the projection and the x axis in the interval [0,360]
+    // azimuth angle phi in [0,360]
     Eigen::Vector3f cross = x_axis.cross (proj);
     float phi = pcl::rad2deg (std::atan2 (cross.norm (), x_axis.dot (proj)));
     phi = cross.dot (normal) < 0.f ? (360.0f - phi) : phi;
-    /// Compute the angle between the neighbour and the z axis (normal) in the interval [0, 180]
+
+    // elevation theta in [0,180]
     Eigen::Vector3f no = neighbour - origin;
     no.normalize ();
     float theta = normal.dot (no);
     theta = pcl::rad2deg (std::acos (std::min (1.0f, std::max (-1.0f, theta))));
 
-    // Compute the Bin(j, k, l) coordinates of current neighbour
+    // find bin indices (j=radius, k=elevation, l=azimuth)
     const auto rad_min = std::lower_bound(std::next (radii_interval_.cbegin ()), radii_interval_.cend (), r);
     const auto theta_min = std::lower_bound(std::next (theta_divisions_.cbegin ()), theta_divisions_.cend (), theta);
     const auto phi_min = std::lower_bound(std::next (phi_divisions_.cbegin ()), phi_divisions_.cend (), phi);
-
-    // Bin (j, k, l)
     const auto j = std::distance(radii_interval_.cbegin (), std::prev(rad_min));
     const auto k = std::distance(theta_divisions_.cbegin (), std::prev(theta_min));
     const auto l = std::distance(phi_divisions_.cbegin (), std::prev(phi_min));
 
-    // Local point density = number of points in a sphere of radius "point_density_radius_" around the current neighbour
+    // local point density (used to weight contributions)
     pcl::Indices neighbour_indices;
     std::vector<float> neighbour_distances;
     int point_density = searchForNeighbors (*surface_, nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_distances);
-    // point_density is NOT always bigger than 0 (on error, searchForNeighbors returns 0), so we must check for that
     if (point_density == 0)
       continue;
 
     float w = (1.0f / static_cast<float> (point_density)) *
-              volume_lut_[(l*elevation_bins_*radius_bins_) +  (k*radius_bins_) + j];
+              volume_lut_[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j];
 
-    assert (w >= 0.0);
     if (w == std::numeric_limits<float>::infinity ())
       PCL_ERROR ("Shape Context Error INF!\n");
     if (std::isnan(w))
       PCL_ERROR ("Shape Context Error IND!\n");
-    /// Accumulate w into correspondent Bin(j,k,l)
-    desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] += w;
 
-    assert (desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] >= 0);
+    // accumulate into the flat descriptor: index layout is (azimuth-block * elevation_bins * radius_bins) + (elevation * radius_bins) + radius
+    desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] += w;
   } // end for each neighbour
 
-  // 3DSC does not define a repeatable local RF, we set it to zero to signal it to the user
+  // 3DSC does not define a repeatable local RF; set rf to zero as a signal
   std::fill_n (rf, 9, 0);
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointOutT> void
-pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
+template <typename PointInT, typename PointNT, typename PointOutT>
+void pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   assert (descriptor_length_ == 1980);
 
   output.is_dense = true;
-  // Iterate over all points and compute the descriptors
-	for (std::size_t point_index = 0; point_index < indices_->size (); point_index++)
+  // iterate over all requested indices
+  for (std::size_t point_index = 0; point_index < indices_->size (); point_index++)
   {
-    //output[point_index].descriptor.resize (descriptor_length_);
-
-    // If the point is not finite, set the descriptor to NaN and continue
+    // if input point is invalid, fill descriptor with NaNs
     if (!isFinite ((*input_)[(*indices_)[point_index]]))
     {
-      std::fill_n (output[point_index].descriptor, descriptor_length_,
-                   std::numeric_limits<float>::quiet_NaN ());
+      std::fill_n (output[point_index].descriptor, descriptor_length_, std::numeric_limits<float>::quiet_NaN ());
       std::fill_n (output[point_index].rf, 9, 0);
       output.is_dense = false;
       continue;
     }
 
+    // compute raw descriptor for this point
     std::vector<float> descriptor (descriptor_length_);
     if (!computePoint (point_index, *normals_, output[point_index].rf, descriptor))
       output.is_dense = false;
+
+    // ---------------------------
+    // IMPORTANT: normalize azimuth orientation deterministically so that
+    // descriptors do not depend on the random local X axis selection.
+    // This shifts azimuth blocks so the dominant azimuth block becomes first.
+    // ---------------------------
+    shiftAlongAzimuth(descriptor);
+
+    // copy into output fixed-size array
     std::copy (descriptor.cbegin (), descriptor.cend (), output[point_index].descriptor);
   }
 }
 
-#define PCL_INSTANTIATE_ShapeContext3DEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::ShapeContext3DEstimation<T,NT,OutT>;
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointNT, typename PointOutT>
+void pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::shiftAlongAzimuth (
+    std::vector<float>& desc) const
+{
+  // Number of scalar bins inside one azimuth block (elevation_bins * radius_bins)
+  const std::size_t bins_per_azimuth = elevation_bins_ * radius_bins_;
 
+  // Find which azimuth block (0..azimuth_bins_-1) has the largest accumulated energy
+  std::size_t best_azimuth = 0;
+  float max_energy = -std::numeric_limits<float>::max();
+
+  for (std::size_t a = 0; a < azimuth_bins_; ++a)
+  {
+    float energy = 0.0f;
+    const std::size_t offset = a * bins_per_azimuth;
+    for (std::size_t i = 0; i < bins_per_azimuth; ++i)
+      energy += desc[offset + i];
+
+    if (energy > max_energy)
+    {
+      max_energy = energy;
+      best_azimuth = a;
+    }
+  }
+
+  // If the dominant block is already at index 0, nothing to do
+  if (best_azimuth == 0)
+    return;
+
+  // Circularly rotate the entire descriptor by shift = best_azimuth * bins_per_azimuth
+  std::vector<float> rotated(desc.size());
+  const std::size_t shift = best_azimuth * bins_per_azimuth;
+
+  // rotated[i] = desc[(i + shift) % desc.size()]
+  for (std::size_t i = 0; i < desc.size(); ++i)
+    rotated[i] = desc[(i + shift) % desc.size()];
+
+  desc.swap(rotated);
+  // After swap, desc holds the rotated, orientation-normalized histogram.
+}
+
+#define PCL_INSTANTIATE_ShapeContext3DEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::ShapeContext3DEstimation<T,NT,OutT>;
