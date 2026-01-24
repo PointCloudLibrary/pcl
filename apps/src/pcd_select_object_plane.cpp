@@ -649,7 +649,7 @@ private:
   // Segmentation
   typename EdgeAwarePlaneComparator<PointT, Normal>::Ptr plane_comparator_;
   PointIndices::Ptr plane_indices_;
-  unsigned char* rgb_data_{};
+  unsigned char* rgb_data_{nullptr};
   std::vector<float> distance_map_;
 
   // Results

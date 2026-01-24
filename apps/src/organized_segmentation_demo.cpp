@@ -35,7 +35,7 @@ displayPlanarRegions(
     pcl::PointXYZ pt2 = pcl::PointXYZ(centroid[0] + (0.5f * model[0]),
                                       centroid[1] + (0.5f * model[1]),
                                       centroid[2] + (0.5f * model[2]));
-    sprintf(name, "normal_%d", static_cast<unsigned>(i));
+    sprintf(name, "normal_%d", static_cast<unsigned int>(i));
     viewer->addArrow(pt2, pt1, 1.0, 0, 0, false, name);
 
     contour->points = regions[i].getContour();
@@ -126,7 +126,7 @@ removePreviousDataFromScreen(std::size_t prev_models_size,
 {
   char name[1024];
   for (std::size_t i = 0; i < prev_models_size; i++) {
-    sprintf(name, "normal_%d", static_cast<unsigned>(i));
+    sprintf(name, "normal_%d", static_cast<unsigned int>(i));
     viewer->removeShape(name);
 
     sprintf(name, "plane_%02d", static_cast<int>(i));
