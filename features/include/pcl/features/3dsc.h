@@ -47,27 +47,19 @@
 
 namespace pcl
 {
-  /** \brief ShapeContext3DEstimation implements the 3D shape context descriptor as
-    * described in:
-    *   - Andrea Frome, Daniel Huber, Ravi Kolluri and Thomas Bülow, Jitendra Malik
-    *     Recognizing Objects in Range Data Using Regional Point Descriptors,
-    *     In proceedings of the 8th European Conference on Computer Vision (ECCV),
-    *     Prague, May 11-14, 2004
-    *
-    * The suggested PointOutT is pcl::ShapeContext1980
-    *
-    * \attention
-    * The convention for a 3D shape context descriptor is:
-    *   - if a query point's nearest neighbors cannot be estimated, the feature descriptor will be set to NaN (not a number), and the RF to 0
-    *   - it is impossible to estimate a 3D shape context descriptor for a
-    *     point that doesn't have finite 3D coordinates. Therefore, any point
-    *     that contains NaN data on x, y, or z, will have its boundary feature
-    *     property set to NaN.
-    *
-    * \author Alessandro Franchi, Samuele Salti, Federico Tombari (original code)
-    * \author Nizar Sallem (port to PCL)
-    * \ingroup features
-    */
+  /**
+   * \brief ShapeContext3DEstimation implements the 3D shape context descriptor
+   *        based on Frome et al. (ECCV 2004).
+   *
+   * Notes:
+   * - The suggested PointOutT is pcl::ShapeContext1980 (fixed-length descriptor).
+   * - PCL requires one descriptor per input point and descriptors to be a fixed length.
+   * - The original paper suggests multiple azimuth rotations (L rotations). That approach
+   *   would expand descriptor length to descriptor_length_ * azimuth_bins_, which breaks
+   *   PCL assumptions (fixed size and one-to-one mapping). Therefore the implementation
+   *   below uses a deterministic azimuth normalization (shift) that keeps the descriptor
+   *   length unchanged while removing the randomness introduced by the random local X axis.
+   */
   template <typename PointInT, typename PointNT, typename PointOutT = pcl::ShapeContext1980>
   class ShapeContext3DEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
@@ -90,20 +82,19 @@ namespace pcl
 
       /** \brief Constructor.
         * \param[in] random If true the random seed is set to current time, else it is
-        * set to 12345 prior to computing the descriptor (used to select X axis)
+        * set to 12345 prior to computing the descriptor (used to select X axis).
         */
       ShapeContext3DEstimation (bool random = false) :
         radii_interval_(0),
         theta_divisions_(0),
         phi_divisions_(0),
         volume_lut_(0),
-        
         rng_dist_ (0.0f, 1.0f)
       {
         feature_name_ = "ShapeContext3DEstimation";
         search_radius_ = 2.5;
 
-        // Create a random number generator object
+        // Initialize RNG: deterministic by default (helps reproducible testing)
         if (random)
         {
           std::random_device rd;
@@ -115,120 +106,75 @@ namespace pcl
 
       ~ShapeContext3DEstimation() override = default;
 
-      //inline void
-      //setAzimuthBins (std::size_t bins) { azimuth_bins_ = bins; }
-
       /** \return the number of bins along the azimuth */
-      inline std::size_t
-      getAzimuthBins () { return (azimuth_bins_); }
-
-      //inline void
-      //setElevationBins (std::size_t bins) { elevation_bins_ = bins; }
+      inline std::size_t getAzimuthBins () { return (azimuth_bins_); }
 
       /** \return The number of bins along the elevation */
-      inline std::size_t
-      getElevationBins () { return (elevation_bins_); }
-
-      //inline void
-      //setRadiusBins (std::size_t bins) { radius_bins_ = bins; }
+      inline std::size_t getElevationBins () { return (elevation_bins_); }
 
       /** \return The number of bins along the radii direction */
-      inline std::size_t
-      getRadiusBins () { return (radius_bins_); }
+      inline std::size_t getRadiusBins () { return (radius_bins_); }
 
-      /** \brief The minimal radius value for the search sphere (rmin) in the original paper
-        * \param[in] radius the desired minimal radius
-        */
-      inline void
-      setMinimalRadius (double radius) { min_radius_ = radius; }
+      inline void setMinimalRadius (double radius) { min_radius_ = radius; }
+      inline double getMinimalRadius () { return (min_radius_); }
 
-      /** \return The minimal sphere radius */
-      inline double
-      getMinimalRadius () { return (min_radius_); }
-
-      /** \brief This radius is used to compute local point density
-        * density = number of points within this radius
-        * \param[in] radius value of the point density search radius
-        */
-      inline void
-      setPointDensityRadius (double radius) { point_density_radius_ = radius; }
-
-      /** \return The point density search radius */
-      inline double
-      getPointDensityRadius () { return (point_density_radius_); }
+      inline void setPointDensityRadius (double radius) { point_density_radius_ = radius; }
+      inline double getPointDensityRadius () { return (point_density_radius_); }
 
     protected:
-      /** \brief Initialize computation by allocating all the intervals and the volume lookup table. */
-      bool
-      initCompute () override;
+      /** Initialize internal tables (radii intervals, angular divisions, volume LUT). */
+      bool initCompute () override;
 
-      /** \brief Estimate a descriptor for a given point.
-        * \param[in] index the index of the point to estimate a descriptor for
-        * \param[in] normals a pointer to the set of normals
-        * \param[out] rf the reference frame
-        * \param[out] desc the resultant estimated descriptor
-        * \return true if the descriptor was computed successfully, false if there was an error
-        * (e.g. the nearest neighbor didn't return any neighbors)
-        */
-      bool
-      computePoint (std::size_t index, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc);
+      /**
+       * Estimate a descriptor for a given point.
+       * - index: point index to estimate descriptor for
+       * - normals: normals used (precomputed)
+       * - rf: output reference frame (3x3 stored in rf[9]); 3DSC does not define repeatable RF so we set rf=0
+       * - desc: output descriptor (must be descriptor_length_)
+       */
+      bool computePoint (std::size_t index, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc);
 
-      /** \brief Estimate the actual feature.
-        * \param[out] output the resultant feature
-        */
-      void
-      computeFeature (PointCloudOut &output) override;
+      /** Compute feature for all indices (fills output cloud). */
+      void computeFeature (PointCloudOut &output) override;
 
-      /** \brief Values of the radii interval */
+      /* Lookup / intermediate data */
       std::vector<float> radii_interval_;
-
-      /** \brief Theta divisions interval */
       std::vector<float> theta_divisions_;
-
-      /** \brief Phi divisions interval */
       std::vector<float> phi_divisions_;
-
-      /** \brief Volumes look up table */
       std::vector<float> volume_lut_;
 
-      /** \brief Bins along the azimuth dimension */
+      /* Histogram bin configuration (defaults chosen to match ShapeContext1980) */
       std::size_t azimuth_bins_{12};
-
-      /** \brief Bins along the elevation dimension */
       std::size_t elevation_bins_{11};
-
-      /** \brief Bins along the radius dimension */
       std::size_t radius_bins_{15};
 
-      /** \brief Minimal radius value */
+      /* Parameters */
       double min_radius_{0.1};
-
-      /** \brief Point density radius */
       double point_density_radius_{0.2};
-
-      /** \brief Descriptor length */
       std::size_t descriptor_length_{};
 
-      /** \brief Random number generator algorithm. */
+      /* RNG for random local x-axis selection */
       std::mt19937 rng_;
-
-      /** \brief Random number generator distribution. */
       std::uniform_real_distribution<float> rng_dist_;
 
-     /*  \brief Shift computed descriptor "L" times along the azimuthal direction
-       * \param[in] block_size the size of each azimuthal block
-       * \param[in] desc at input desc == original descriptor and on output it contains
-       *  shifted descriptor resized descriptor_length_ * azimuth_bins_
+      /* Old (commented) API for L-rotation approach left in file for history; we DO NOT use it.
+       * //void shiftAlongAzimuth (std::size_t block_size, std::vector<float>& desc);
        */
-      //void
-      //shiftAlongAzimuth (std::size_t block_size, std::vector<float>& desc);
 
-      /** \brief Boost-based random number generator. */
-      inline float
-      rnd ()
-      {
-        return (rng_dist_ (rng_));
-      }
+      /**
+       * Our deterministic azimuth normalization:
+       * Rotate azimuth bins so that the azimuth block with the largest accumulated
+       * energy becomes the first block (index 0). This removes randomness introduced
+       * by the local random X axis selection while preserving a fixed descriptor length.
+       *
+       * - Input: desc (size == descriptor_length_)
+       * - Output: desc is circularly shifted in-place so that the dominant azimuth block
+       *   is aligned to the start of the descriptor array.
+       */
+      void shiftAlongAzimuth (std::vector<float>& desc) const;
+
+      /** Return a random float in [0,1) using the internal RNG. */
+      inline float rnd () { return (rng_dist_ (rng_)); }
   };
 }
 
