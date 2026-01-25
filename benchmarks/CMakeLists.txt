@@ -18,6 +18,10 @@ PCL_ADD_BENCHMARK(features_normal_3d FILES features/normal_3d.cpp
                   ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd"
                             "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
 
+PCL_ADD_BENCHMARK(features_shot FILES features/shot.cpp
+                  LINK_WITH pcl_io pcl_search pcl_features
+                  ARGUMENTS "${PCL_SOURCE_DIR}/test/milk.pcd")
+
 PCL_ADD_BENCHMARK(filters_voxel_grid FILES filters/voxel_grid.cpp
                   LINK_WITH pcl_io pcl_filters
                   ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd"
