@@ -265,7 +265,6 @@ FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale,
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
-  m_data->interior_normals.clear ();
 
   unsigned updateTNR (false);
   if (m_data->interior_ncps_prev != m_nurbs.CVCount ())
