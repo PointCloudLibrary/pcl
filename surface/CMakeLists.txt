@@ -67,15 +67,9 @@ if(BUILD_surface_on_nurbs)
   include(src/3rdparty/opennurbs/openNURBS.cmake)
   include(src/on_nurbs/on_nurbs.cmake)
   
-  if(WITH_SYSTEM_ZLIB)
-    find_package(ZLIB REQUIRED)
-    list(APPEND ON_NURBS_LIBRARIES ${ZLIB_LIBRARIES})
-    list(APPEND SUBSYS_EXT_DEPS zlib)
-  else()
-    include(src/3rdparty/opennurbs/zlib.cmake)
-    list(APPEND OPENNURBS_INCLUDES ${ZLIB_INCLUDES})
-    list(APPEND OPENNURBS_SOURCES ${ZLIB_SOURCES})
-  endif()
+  find_package(ZLIB REQUIRED)
+  list(APPEND SUBSYS_EXT_DEPS zlib)
+  list(APPEND ON_NURBS_LIBRARIES ZLIB::ZLIB)
 endif()
 
 set(POISSON_INCLUDES
