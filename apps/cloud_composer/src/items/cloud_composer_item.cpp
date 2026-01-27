@@ -39,7 +39,10 @@ pcl::cloud_composer::CloudComposerItem::getChildren(
   QList<CloudComposerItem*> items;
   for (int i = 0; i < this->rowCount(); ++i) {
     if (this->child(i)->type() == type) {
-      items.append(dynamic_cast<CloudComposerItem*>(this->child(i)));
+      auto* item = dynamic_cast<CloudComposerItem*>(this->child(i));
+      if (item) {
+        items.append(item);
+      }
     }
   }
 

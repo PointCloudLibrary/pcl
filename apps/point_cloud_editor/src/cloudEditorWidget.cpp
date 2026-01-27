@@ -325,8 +325,11 @@ CloudEditorWidget::undo ()
 void
 CloudEditorWidget::increasePointSize ()
 {
-  (dynamic_cast<MainWindow*>( parentWidget())) -> increaseSpinBoxValue();
-  point_size_ = (dynamic_cast<MainWindow*>( parentWidget())) -> getSpinBoxValue();
+  auto* main_window = dynamic_cast<MainWindow*>(parentWidget());
+  if (!main_window)
+    return;
+  main_window->increaseSpinBoxValue();
+  point_size_ = main_window->getSpinBoxValue();
   if (!cloud_ptr_)
     return;
   cloud_ptr_->setPointSize(point_size_);
@@ -336,8 +339,11 @@ CloudEditorWidget::increasePointSize ()
 void
 CloudEditorWidget::decreasePointSize ()
 {
-  (dynamic_cast<MainWindow*>( parentWidget())) -> decreaseSpinBoxValue();
-  point_size_ = (dynamic_cast<MainWindow*>( parentWidget())) -> getSpinBoxValue();
+  auto* main_window = dynamic_cast<MainWindow*>(parentWidget());
+  if (!main_window)
+    return;
+  main_window->decreaseSpinBoxValue();
+  point_size_ = main_window->getSpinBoxValue();
   if (!cloud_ptr_)
     return;
   cloud_ptr_->setPointSize(point_size_);
@@ -347,9 +353,11 @@ CloudEditorWidget::decreasePointSize ()
 void
 CloudEditorWidget::increaseSelectedPointSize ()
 {
-  (dynamic_cast<MainWindow*>( parentWidget())) -> increaseSelectedSpinBoxValue();
-  selected_point_size_ =
-    (dynamic_cast<MainWindow*>( parentWidget())) -> getSelectedSpinBoxValue();
+  auto* main_window = dynamic_cast<MainWindow*>(parentWidget());
+  if (!main_window)
+    return;
+  main_window->increaseSelectedSpinBoxValue();
+  selected_point_size_ = main_window->getSelectedSpinBoxValue();
   if (!cloud_ptr_)
     return;
   cloud_ptr_->setHighlightPointSize(selected_point_size_);
@@ -359,9 +367,11 @@ CloudEditorWidget::increaseSelectedPointSize ()
 void
 CloudEditorWidget::decreaseSelectedPointSize ()
 {
-  (dynamic_cast<MainWindow*>( parentWidget())) -> decreaseSelectedSpinBoxValue();
-  selected_point_size_ =
-    (dynamic_cast<MainWindow*>( parentWidget())) -> getSelectedSpinBoxValue();
+  auto* main_window = dynamic_cast<MainWindow*>(parentWidget());
+  if (!main_window)
+    return;
+  main_window->decreaseSelectedSpinBoxValue();
+  selected_point_size_ = main_window->getSelectedSpinBoxValue();
   if (!cloud_ptr_)
     return;
   cloud_ptr_->setHighlightPointSize(selected_point_size_);

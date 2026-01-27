@@ -31,7 +31,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction(ConstItemList input_
 
   if (input_item->type() == CloudComposerItem::CLOUD_ITEM) {
     const auto* cloud_item = dynamic_cast<const CloudItem*>(input_item);
-    if (cloud_item->isSanitized()) {
+    if (cloud_item && cloud_item->isSanitized()) {
       double cluster_tolerance =
           parameter_model_->getProperty("Cluster Tolerance").toDouble();
       int min_cluster_size = parameter_model_->getProperty("Min Cluster Size").toInt();

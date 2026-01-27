@@ -400,8 +400,9 @@ pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
   foreach (QModelIndex index, selected_indexes)
   {
     QStandardItem* item = this->itemFromIndex (index);
-    if ( dynamic_cast <CloudComposerItem*> (item))
-      input_data.append (dynamic_cast <CloudComposerItem*> (item));
+    auto* cloud_composer_item = dynamic_cast <CloudComposerItem*> (item);
+    if (cloud_composer_item)
+      input_data.append (cloud_composer_item);
   }
   qDebug () << "Input for tool is "<<input_data.size () << " element(s)";
  
@@ -466,8 +467,9 @@ pcl::cloud_composer::ProjectModel::deleteSelectedItems ()
   {
     QStandardItem* item = this->itemFromIndex (index);
     //qDebug () << item->text () << " selected!";
-    if ( dynamic_cast <CloudComposerItem*> (item))
-      input_data.append (dynamic_cast <CloudComposerItem*> (item));
+    auto* cloud_composer_item = dynamic_cast <CloudComposerItem*> (item);
+    if (cloud_composer_item)
+      input_data.append (cloud_composer_item);
   }
  // qDebug () << "Input for command is "<<input_data.size () << " element(s)";
   auto* delete_command = new DeleteItemCommand (ConstItemList ());
@@ -518,10 +520,11 @@ pcl::cloud_composer::ProjectModel::createNewCloudFromSelection ()
   {
     QStandardItem* item = this->itemFromIndex (index);
     //qDebug () << item->text () << " selected!";
-    if ( dynamic_cast <CloudComposerItem*> (item))
-      input_data.append (dynamic_cast <CloudComposerItem*> (item));
+    auto* cloud_composer_item = dynamic_cast <CloudComposerItem*> (item);
+    if (cloud_composer_item)
+      input_data.append (cloud_composer_item);
   }
- 
+
   QMap <const CloudItem*, pcl::PointIndices::ConstPtr> selected_const_map;
   foreach ( CloudItem* item, selected_item_index_map_.keys ())
     selected_const_map.insert (item, selected_item_index_map_.value (item));

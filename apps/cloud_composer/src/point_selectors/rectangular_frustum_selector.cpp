@@ -38,8 +38,11 @@ pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp()
 
   vtkInteractorStyleRubberBandPick::OnLeftButtonUp();
 
-  vtkPlanes* frustum =
-      dynamic_cast<vtkAreaPicker*>(this->GetInteractor()->GetPicker())->GetFrustum();
+  auto* area_picker = dynamic_cast<vtkAreaPicker*>(this->GetInteractor()->GetPicker());
+  if (!area_picker) {
+    return;
+  }
+  vtkPlanes* frustum = area_picker->GetFrustum();
 
 #if VTK_MAJOR_VERSION > 9 || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 4)
   vtkSmartPointer<vtkGenerateIds> id_filter = vtkSmartPointer<vtkGenerateIds>::New();
