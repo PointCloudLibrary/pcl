@@ -68,8 +68,8 @@ if(BUILD_surface_on_nurbs)
   include(src/on_nurbs/on_nurbs.cmake)
   
   find_package(ZLIB REQUIRED)
-  list(APPEND ON_NURBS_LIBRARIES ${ZLIB_LIBRARIES})
   list(APPEND SUBSYS_EXT_DEPS zlib)
+  list(APPEND ON_NURBS_LIBRARIES ZLIB::ZLIB)
 endif()
 
 set(POISSON_INCLUDES

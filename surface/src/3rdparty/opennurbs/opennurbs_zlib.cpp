@@ -14,6 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
+#include <pcl/pcl_config.h> // for HAVE_ZLIB
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 bool ON_BinaryArchive::WriteCompressedBuffer(

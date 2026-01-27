@@ -63,6 +63,8 @@
 
 #cmakedefine HAVE_PNG
 
+#cmakedefine HAVE_ZLIB
+
 #cmakedefine HAVE_CJSON
 
 #cmakedefine PCL_PREFER_BOOST_FILESYSTEM
