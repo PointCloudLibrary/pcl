@@ -69,6 +69,8 @@ pcl::modeler::NormalsActorItem::createNormalLines()
     points->SetData(vtkSmartPointer<vtkFloatArray>::New());
 
   auto* data = dynamic_cast<vtkFloatArray*>(points->GetData());
+  if (!data)
+    return;
   data->SetNumberOfComponents(3);
 
   if (cloud->is_dense) {

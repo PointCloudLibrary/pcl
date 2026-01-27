@@ -80,6 +80,8 @@ void
 pcl::modeler::IntParameter::setEditorData(QWidget* editor)
 {
   auto* spinBox = dynamic_cast<QSpinBox*>(editor);
+  if (!spinBox)
+    return;
   spinBox->setAlignment(Qt::AlignHCenter);
 
   int value = int(*this);
@@ -91,6 +93,8 @@ void
 pcl::modeler::IntParameter::getEditorData(QWidget* editor)
 {
   auto* spinBox = dynamic_cast<QSpinBox*>(editor);
+  if (!spinBox)
+    return;
   int value = spinBox->text().toInt();
   current_value_ = value;
 }
@@ -126,6 +130,8 @@ void
 pcl::modeler::BoolParameter::setEditorData(QWidget* editor)
 {
   auto* checkBox = dynamic_cast<QCheckBox*>(editor);
+  if (!checkBox)
+    return;
 
   bool value = bool(*this);
   checkBox->setCheckState(value ? (Qt::Checked) : (Qt::Unchecked));
@@ -136,6 +142,8 @@ void
 pcl::modeler::BoolParameter::getEditorData(QWidget* editor)
 {
   auto* checkBox = dynamic_cast<QCheckBox*>(editor);
+  if (!checkBox)
+    return;
   bool value = (checkBox->checkState() == Qt::Checked);
   current_value_ = value;
 }
@@ -175,6 +183,8 @@ void
 pcl::modeler::DoubleParameter::setEditorData(QWidget* editor)
 {
   auto* spinBox = dynamic_cast<QDoubleSpinBox*>(editor);
+  if (!spinBox)
+    return;
   spinBox->setAlignment(Qt::AlignHCenter);
 
   double value = double(*this);
@@ -186,6 +196,8 @@ void
 pcl::modeler::DoubleParameter::getEditorData(QWidget* editor)
 {
   auto* spinBox = dynamic_cast<QDoubleSpinBox*>(editor);
+  if (!spinBox)
+    return;
   double value = spinBox->text().toDouble();
   current_value_ = value;
 }
@@ -221,6 +233,8 @@ void
 pcl::modeler::ColorParameter::setEditorData(QWidget* editor)
 {
   auto* color_dialog = dynamic_cast<QColorDialog*>(editor);
+  if (!color_dialog)
+    return;
 
   QColor value = QColor(*this);
   color_dialog->setCurrentColor(value);
@@ -231,6 +245,8 @@ void
 pcl::modeler::ColorParameter::getEditorData(QWidget* editor)
 {
   auto* color_dialog = dynamic_cast<QColorDialog*>(editor);
+  if (!color_dialog)
+    return;
 
   QColor value = color_dialog->currentColor();
   current_value_ = value;

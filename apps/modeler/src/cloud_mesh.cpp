@@ -156,6 +156,8 @@ pcl::modeler::CloudMesh::updateVtkPoints()
     vtk_points_->SetData(vtkSmartPointer<vtkFloatArray>::New());
 
   auto* data = dynamic_cast<vtkFloatArray*>(vtk_points_->GetData());
+  if (!data)
+    return;
   data->SetNumberOfComponents(3);
 
   // If the dataset has no invalid values, just copy all of them
