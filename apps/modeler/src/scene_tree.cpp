@@ -90,9 +90,11 @@ QList<pcl::modeler::RenderWindowItem*>
 pcl::modeler::SceneTree::selectedRenderWindowItems() const
 {
   QList<RenderWindowItem*> selected_render_window_items;
-  if (topLevelItemCount() == 1)
-    selected_render_window_items.push_back(
-        dynamic_cast<RenderWindowItem*>(topLevelItem(0)));
+  if (topLevelItemCount() == 1) {
+    auto* render_window_item = dynamic_cast<RenderWindowItem*>(topLevelItem(0));
+    if (render_window_item)
+      selected_render_window_items.push_back(render_window_item);
+  }
   else
     selected_render_window_items = selectedTypeItems<RenderWindowItem>();
 
@@ -104,6 +106,8 @@ void
 pcl::modeler::SceneTree::contextMenuEvent(QContextMenuEvent* event)
 {
   auto* item = dynamic_cast<AbstractItem*>(currentItem());
+  if (!item)
+    return;
   item->showContextMenu(&(event->globalPos()));
 }
 
@@ -112,6 +116,8 @@ void
 pcl::modeler::SceneTree::slotOnItemDoubleClicked(QTreeWidgetItem* item)
 {
   auto* abstract_item = dynamic_cast<AbstractItem*>(item);
+  if (!abstract_item)
+    return;
   abstract_item->showPropertyEditor();
 }
 
@@ -166,9 +172,11 @@ pcl::modeler::SceneTree::slotOpenPointCloud()
 
   for (const auto& render_window_item : selected_render_window_items) {
     QList<CloudMeshItem*> cloud_mesh_items;
-    for (int i = 0, i_end = render_window_item->childCount(); i < i_end; ++i)
-      cloud_mesh_items.push_back(
-          dynamic_cast<CloudMeshItem*>(render_window_item->child(i)));
+    for (int i = 0, i_end = render_window_item->childCount(); i < i_end; ++i) {
+      auto* cloud_mesh_item = dynamic_cast<CloudMeshItem*>(render_window_item->child(i));
+      if (cloud_mesh_item)
+        cloud_mesh_items.push_back(cloud_mesh_item);
+    }
 
     closePointCloud(cloud_mesh_items);
   }
@@ -491,6 +499,9 @@ pcl::modeler::SceneTree::dropMimeData(QTreeWidgetItem* parent,
   RenderWindowItem* render_window_item =
       (parent == nullptr) ? (MainWindow::getInstance().createRenderWindow())
                           : (dynamic_cast<RenderWindowItem*>(parent));
+
+  if (!render_window_item)
+    return;
 
   for (auto& selected_cloud_mesh : selected_cloud_meshes) {
     CloudMeshItem* cloud_mesh_item_copy =

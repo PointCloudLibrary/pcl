@@ -153,6 +153,8 @@ void
 pcl::modeler::CloudMeshItem::createChannels()
 {
   auto* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  if (!render_window_item)
+    return;
   vtkRenderWindow* win =
       getRenderWindowCompat(*(render_window_item->getRenderWindow()));
 
@@ -162,7 +164,8 @@ pcl::modeler::CloudMeshItem::createChannels()
 
   for (int i = 0, i_end = childCount(); i < i_end; ++i) {
     auto* child_item = dynamic_cast<ChannelActorItem*>(child(i));
-    child_item->init();
+    if (child_item)
+      child_item->init();
   }
 
   render_window_item->getRenderWindow()->updateAxes();
@@ -178,11 +181,13 @@ pcl::modeler::CloudMeshItem::updateChannels()
 
   for (int i = 0, i_end = childCount(); i < i_end; ++i) {
     auto* child_item = dynamic_cast<ChannelActorItem*>(child(i));
-    child_item->update();
+    if (child_item)
+      child_item->update();
   }
 
   auto* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
-  render_window_item->getRenderWindow()->updateAxes();
+  if (render_window_item)
+    render_window_item->getRenderWindow()->updateAxes();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -237,10 +242,13 @@ void
 pcl::modeler::CloudMeshItem::updateRenderWindow()
 {
   auto* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  if (!render_window_item)
+    return;
   for (int i = 0, i_end = childCount(); i < i_end; ++i) {
     auto* child_item = dynamic_cast<ChannelActorItem*>(child(i));
-    child_item->switchRenderWindow(
-        getRenderWindowCompat(*render_window_item->getRenderWindow()));
+    if (child_item)
+      child_item->switchRenderWindow(
+          getRenderWindowCompat(*render_window_item->getRenderWindow()));
   }
 
   render_window_item->getRenderWindow()->updateAxes();

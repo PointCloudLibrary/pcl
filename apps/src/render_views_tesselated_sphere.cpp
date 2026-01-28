@@ -388,6 +388,8 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
 
         vtkCell* cell = polydata->GetCell(id_mesh);
         auto* triangle = dynamic_cast<vtkTriangle*>(cell);
+        if (!triangle)
+          continue;
         double p0[3];
         double p1[3];
         double p2[3];

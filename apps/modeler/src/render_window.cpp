@@ -102,8 +102,9 @@ pcl::modeler::RenderWindow::initRenderer()
 void
 pcl::modeler::RenderWindow::focusInEvent(QFocusEvent* event)
 {
-  dynamic_cast<SceneTree*>(render_window_item_->treeWidget())
-      ->selectRenderWindowItem(render_window_item_);
+  auto* scene_tree = dynamic_cast<SceneTree*>(render_window_item_->treeWidget());
+  if (scene_tree)
+    scene_tree->selectRenderWindowItem(render_window_item_);
 
   PCLQVTKWidget::focusInEvent(event);
 }

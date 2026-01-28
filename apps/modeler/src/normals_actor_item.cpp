@@ -140,8 +140,10 @@ pcl::modeler::NormalsActorItem::initImpl()
   mapper->SetColorModeToMapScalars();
   mapper->SetScalarModeToUsePointData();
 
-  vtkSmartPointer<vtkLODActor> actor =
-      vtkSmartPointer<vtkLODActor>(dynamic_cast<vtkLODActor*>(actor_.GetPointer()));
+  auto* actor_ptr = dynamic_cast<vtkLODActor*>(actor_.GetPointer());
+  if (!actor_ptr)
+    return;
+  vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>(actor_ptr);
   actor->SetMapper(mapper);
 }
 
