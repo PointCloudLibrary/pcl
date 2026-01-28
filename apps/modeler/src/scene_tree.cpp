@@ -502,7 +502,7 @@ pcl::modeler::SceneTree::dropMimeData(QTreeWidgetItem* parent,
                           : (dynamic_cast<RenderWindowItem*>(parent));
 
   if (!render_window_item)
-    return;
+    return false;
 
   for (auto& selected_cloud_mesh : selected_cloud_meshes) {
     CloudMeshItem* cloud_mesh_item_copy =
