@@ -345,7 +345,7 @@ public:
     pcl::PointCloud<PointT> extended_ground_cloud;
     for (const auto& region_index : region_indices) {
       if (region_index.indices.size() > 1000) {
-        for (int index : region_index.indices) {
+        for (const auto& index : region_index.indices) {
           // Check to see if it has already been labeled
           if ((*ground_image)[index].g == (*ground_image)[index].b) {
             pcl::PointXYZ ground_pt(
@@ -422,7 +422,7 @@ public:
 
             if ((ptp_dist > 0.5) && (ptp_dist < 3.0)) {
 
-              for (int index : euclidean_label_index.indices) {
+              for (const auto& index : euclidean_label_index.indices)  {
                 (*ground_image)[index].r = 255;
                 (*label_image)[index].r = 255;
                 (*label_image)[index].g = 0;
