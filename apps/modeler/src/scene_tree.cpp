@@ -173,7 +173,8 @@ pcl::modeler::SceneTree::slotOpenPointCloud()
   for (const auto& render_window_item : selected_render_window_items) {
     QList<CloudMeshItem*> cloud_mesh_items;
     for (int i = 0, i_end = render_window_item->childCount(); i < i_end; ++i) {
-      auto* cloud_mesh_item = dynamic_cast<CloudMeshItem*>(render_window_item->child(i));
+      auto* cloud_mesh_item =
+          dynamic_cast<CloudMeshItem*>(render_window_item->child(i));
       if (cloud_mesh_item)
         cloud_mesh_items.push_back(cloud_mesh_item);
     }

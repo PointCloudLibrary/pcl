@@ -422,7 +422,7 @@ public:
 
             if ((ptp_dist > 0.5) && (ptp_dist < 3.0)) {
 
-              for (const auto& index : euclidean_label_index.indices)  {
+              for (const auto& index : euclidean_label_index.indices) {
                 (*ground_image)[index].r = 255;
                 (*label_image)[index].r = 255;
                 (*label_image)[index].g = 0;
