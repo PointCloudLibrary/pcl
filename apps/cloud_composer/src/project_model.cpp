@@ -107,7 +107,7 @@ pcl::cloud_composer::ProjectModel::setPointSelection (const std::shared_ptr<Sele
   QList <CloudItem*> project_clouds;
   for (int i = 0; i < this->rowCount (); ++i)
   {
-    CloudItem* cloud_item = dynamic_cast <CloudItem*> (this->item (i));
+    auto* cloud_item = dynamic_cast <CloudItem*> (this->item (i));
     if ( cloud_item )
       project_clouds.append ( cloud_item );
   }
@@ -137,7 +137,7 @@ pcl::cloud_composer::ProjectModel::manipulateClouds (const std::shared_ptr<Manip
   QList <CloudItem*> project_clouds;
   for (int i = 0; i < this->rowCount (); ++i)
   {
-    CloudItem* cloud_item = dynamic_cast <CloudItem*> (this->item (i));
+    auto* cloud_item = dynamic_cast <CloudItem*> (this->item (i));
     if ( cloud_item )
       project_clouds.append ( cloud_item );
   }
@@ -146,7 +146,7 @@ pcl::cloud_composer::ProjectModel::manipulateClouds (const std::shared_ptr<Manip
   QList <QString> ids = transform_map.keys ();
   ConstItemList input_data;
   
-  TransformClouds* transform_tool = new TransformClouds (transform_map);
+  auto* transform_tool = new TransformClouds (transform_map);
   foreach (CloudItem* cloud_item, project_clouds)
   {
     if (ids.contains (cloud_item->getId ()))
@@ -208,7 +208,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
     }
     short_filename += tr ("-%1").arg (k);
   }
-  CloudItem* new_item = new CloudItem (short_filename, cloud_blob, origin, orientation, true);
+  auto* new_item = new CloudItem (short_filename, cloud_blob, origin, orientation, true);
    
   insertNewCloudComposerItem (new_item, invisibleRootItem());
   
@@ -301,7 +301,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
     {
       PointXYZRGB new_point;
       //  std::uint8_t* p_i = &(cloud_blob->data[y * cloud_blob->row_step + x * cloud_blob->point_step]);
-      float depth = (float)(*depth_pixel) * scale;
+      float depth = static_cast<float>(*depth_pixel) * scale;
     //  qDebug () << "Depth = "<<depth;
       if (depth == 0.0f)
       {
@@ -309,8 +309,8 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
       }
       else
       {
-        new_point.x = ((float)(x - centerX)) * depth * fl_const;
-        new_point.y = ((float)(centerY - y)) * depth * fl_const; // vtk seems to start at the bottom left image corner
+        new_point.x = (static_cast<float>(x - centerX)) * depth * fl_const;
+        new_point.y = (static_cast<float>(centerY - y)) * depth * fl_const; // vtk seems to start at the bottom left image corner
         new_point.z = depth;
       }
 
@@ -362,7 +362,7 @@ pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
   }
   
   QStandardItem* item = this->itemFromIndex (selected_indexes.value (0));
-  CloudItem* cloud_to_save = dynamic_cast <CloudItem*> (item); 
+  auto* cloud_to_save = dynamic_cast <CloudItem*> (item); 
   if (!cloud_to_save )
   {
     QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "Not a Cloud!", "Selected item is not a cloud, not saving!");
@@ -400,8 +400,9 @@ pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
   foreach (QModelIndex index, selected_indexes)
   {
     QStandardItem* item = this->itemFromIndex (index);
-    if ( dynamic_cast <CloudComposerItem*> (item))
-      input_data.append (dynamic_cast <CloudComposerItem*> (item));
+    auto* cloud_composer_item = dynamic_cast <CloudComposerItem*> (item);
+    if (cloud_composer_item)
+      input_data.append (cloud_composer_item);
   }
   qDebug () << "Input for tool is "<<input_data.size () << " element(s)";
  
@@ -466,11 +467,12 @@ pcl::cloud_composer::ProjectModel::deleteSelectedItems ()
   {
     QStandardItem* item = this->itemFromIndex (index);
     //qDebug () << item->text () << " selected!";
-    if ( dynamic_cast <CloudComposerItem*> (item))
-      input_data.append (dynamic_cast <CloudComposerItem*> (item));
+    auto* cloud_composer_item = dynamic_cast <CloudComposerItem*> (item);
+    if (cloud_composer_item)
+      input_data.append (cloud_composer_item);
   }
  // qDebug () << "Input for command is "<<input_data.size () << " element(s)";
-  DeleteItemCommand* delete_command = new DeleteItemCommand (ConstItemList ());
+  auto* delete_command = new DeleteItemCommand (ConstItemList ());
   delete_command->setInputData (input_data);
   if (delete_command->runCommand (nullptr))
     commandCompleted(delete_command);
@@ -518,14 +520,15 @@ pcl::cloud_composer::ProjectModel::createNewCloudFromSelection ()
   {
     QStandardItem* item = this->itemFromIndex (index);
     //qDebug () << item->text () << " selected!";
-    if ( dynamic_cast <CloudComposerItem*> (item))
-      input_data.append (dynamic_cast <CloudComposerItem*> (item));
+    auto* cloud_composer_item = dynamic_cast <CloudComposerItem*> (item);
+    if (cloud_composer_item)
+      input_data.append (cloud_composer_item);
   }
- 
+
   QMap <const CloudItem*, pcl::PointIndices::ConstPtr> selected_const_map;
   foreach ( CloudItem* item, selected_item_index_map_.keys ())
     selected_const_map.insert (item, selected_item_index_map_.value (item));
-  MergeSelection* merge_tool = new MergeSelection (selected_const_map);
+  auto* merge_tool = new MergeSelection (selected_const_map);
   
   //We don't call the enqueueToolAction function since that would abort if we only have a green selection
   //Move the tool object to the work queue thread

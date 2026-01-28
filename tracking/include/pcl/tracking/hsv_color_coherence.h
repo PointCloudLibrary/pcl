@@ -20,13 +20,7 @@ public:
   /** \brief initialize the weights of the computation. weight_, h_weight_, s_weight_
    * default to 1.0 and v_weight_ defaults to 0.0.
    */
-  HSVColorCoherence()
-  : PointCoherence<PointInT>()
-  , weight_(1.0)
-  , h_weight_(1.0)
-  , s_weight_(1.0)
-  , v_weight_(0.0)
-  {}
+  HSVColorCoherence() : PointCoherence<PointInT>() {}
 
   /** \brief set the weight of coherence
    * \param[in] weight the weight of coherence.
@@ -101,16 +95,16 @@ protected:
   computeCoherence(PointInT& source, PointInT& target) override;
 
   /** \brief the weight of coherence (w) */
-  double weight_;
+  double weight_{1.0};
 
   /** \brief the hue weight (w_h) */
-  double h_weight_;
+  double h_weight_{1.0};
 
   /** \brief the saturation weight (w_s) */
-  double s_weight_;
+  double s_weight_{1.0};
 
   /** \brief the value weight (w_v) */
-  double v_weight_;
+  double v_weight_{0.0};
 };
 } // namespace tracking
 } // namespace pcl

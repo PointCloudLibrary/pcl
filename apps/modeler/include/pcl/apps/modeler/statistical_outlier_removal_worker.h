@@ -48,7 +48,7 @@ class StatisticalOutlierRemovalWorker : public AbstractWorker {
 public:
   StatisticalOutlierRemovalWorker(const QList<CloudMeshItem*>& cloud_mesh_items,
                                   QWidget* parent = nullptr);
-  ~StatisticalOutlierRemovalWorker();
+  ~StatisticalOutlierRemovalWorker() override;
 
 protected:
   std::string
@@ -67,8 +67,8 @@ protected:
   processImpl(CloudMeshItem* cloud_mesh_item) override;
 
 private:
-  IntParameter* mean_k_;
-  DoubleParameter* stddev_mul_thresh_;
+  IntParameter* mean_k_{nullptr};
+  DoubleParameter* stddev_mul_thresh_{nullptr};
 };
 
 } // namespace modeler

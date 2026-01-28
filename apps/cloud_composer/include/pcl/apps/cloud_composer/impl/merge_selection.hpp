@@ -74,9 +74,8 @@ pcl::cloud_composer::MergeSelection::performTemplatedAction(
     input_cloud_item->printNumPoints<PointT>();
     // If this cloud hasn't been completely selected
     if (!input_data.contains(input_cloud_item)) {
-      typename PointCloud<PointT>::Ptr input_cloud =
-          input_cloud_item->data(ItemDataRole::CLOUD_TEMPLATED)
-              .value<typename PointCloud<PointT>::Ptr>();
+      auto input_cloud = input_cloud_item->data(ItemDataRole::CLOUD_TEMPLATED)
+                             .value<typename PointCloud<PointT>::Ptr>();
       qDebug() << "Extracting "
                << selected_item_index_map_.value(input_cloud_item)->indices.size()
                << " points out of " << input_cloud->width;
@@ -102,9 +101,8 @@ pcl::cloud_composer::MergeSelection::performTemplatedAction(
   }
   // Just concatenate for all fully selected clouds
   foreach (const CloudComposerItem* input_item, input_data) {
-    typename PointCloud<PointT>::Ptr input_cloud =
-        input_item->data(ItemDataRole::CLOUD_TEMPLATED)
-            .value<typename PointCloud<PointT>::Ptr>();
+    auto input_cloud = input_item->data(ItemDataRole::CLOUD_TEMPLATED)
+                           .value<typename PointCloud<PointT>::Ptr>();
     *merged_cloud += *input_cloud;
   }
   CloudItem* cloud_item = CloudItem::createCloudItemFromTemplate<PointT>(

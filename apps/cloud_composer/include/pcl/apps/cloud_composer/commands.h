@@ -54,7 +54,7 @@ class CloudCommand : public QUndoCommand {
 public:
   CloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
 
-  ~CloudCommand();
+  ~CloudCommand() override;
 
   virtual bool
   runCommand(AbstractTool* tool) = 0;
@@ -112,8 +112,8 @@ protected:
   bool
   canUseTemplates(ConstItemList& input_data);
 
-  bool can_use_templates_;
-  int template_type_;
+  bool can_use_templates_{false};
+  int template_type_{-1};
 };
 
 class ModifyItemCommand : public CloudCommand {

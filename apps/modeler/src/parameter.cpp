@@ -67,7 +67,7 @@ pcl::modeler::IntParameter::valueTip()
 QWidget*
 pcl::modeler::IntParameter::createEditor(QWidget* parent)
 {
-  QSpinBox* editor = new QSpinBox(parent);
+  auto* editor = new QSpinBox(parent);
   editor->setMinimum(low_);
   editor->setMaximum(high_);
   editor->setSingleStep(step_);
@@ -79,7 +79,9 @@ pcl::modeler::IntParameter::createEditor(QWidget* parent)
 void
 pcl::modeler::IntParameter::setEditorData(QWidget* editor)
 {
-  QSpinBox* spinBox = static_cast<QSpinBox*>(editor);
+  auto* spinBox = dynamic_cast<QSpinBox*>(editor);
+  if (!spinBox)
+    return;
   spinBox->setAlignment(Qt::AlignHCenter);
 
   int value = int(*this);
@@ -90,7 +92,9 @@ pcl::modeler::IntParameter::setEditorData(QWidget* editor)
 void
 pcl::modeler::IntParameter::getEditorData(QWidget* editor)
 {
-  QSpinBox* spinBox = static_cast<QSpinBox*>(editor);
+  auto* spinBox = dynamic_cast<QSpinBox*>(editor);
+  if (!spinBox)
+    return;
   int value = spinBox->text().toInt();
   current_value_ = value;
 }
@@ -116,7 +120,7 @@ pcl::modeler::BoolParameter::valueTip()
 QWidget*
 pcl::modeler::BoolParameter::createEditor(QWidget* parent)
 {
-  QCheckBox* editor = new QCheckBox(parent);
+  auto* editor = new QCheckBox(parent);
 
   return editor;
 }
@@ -125,7 +129,9 @@ pcl::modeler::BoolParameter::createEditor(QWidget* parent)
 void
 pcl::modeler::BoolParameter::setEditorData(QWidget* editor)
 {
-  QCheckBox* checkBox = static_cast<QCheckBox*>(editor);
+  auto* checkBox = dynamic_cast<QCheckBox*>(editor);
+  if (!checkBox)
+    return;
 
   bool value = bool(*this);
   checkBox->setCheckState(value ? (Qt::Checked) : (Qt::Unchecked));
@@ -135,7 +141,9 @@ pcl::modeler::BoolParameter::setEditorData(QWidget* editor)
 void
 pcl::modeler::BoolParameter::getEditorData(QWidget* editor)
 {
-  QCheckBox* checkBox = static_cast<QCheckBox*>(editor);
+  auto* checkBox = dynamic_cast<QCheckBox*>(editor);
+  if (!checkBox)
+    return;
   bool value = (checkBox->checkState() == Qt::Checked);
   current_value_ = value;
 }
@@ -161,7 +169,7 @@ pcl::modeler::DoubleParameter::valueTip()
 QWidget*
 pcl::modeler::DoubleParameter::createEditor(QWidget* parent)
 {
-  QDoubleSpinBox* editor = new QDoubleSpinBox(parent);
+  auto* editor = new QDoubleSpinBox(parent);
   editor->setMinimum(low_);
   editor->setMaximum(high_);
   editor->setSingleStep(step_);
@@ -174,7 +182,9 @@ pcl::modeler::DoubleParameter::createEditor(QWidget* parent)
 void
 pcl::modeler::DoubleParameter::setEditorData(QWidget* editor)
 {
-  QDoubleSpinBox* spinBox = static_cast<QDoubleSpinBox*>(editor);
+  auto* spinBox = dynamic_cast<QDoubleSpinBox*>(editor);
+  if (!spinBox)
+    return;
   spinBox->setAlignment(Qt::AlignHCenter);
 
   double value = double(*this);
@@ -185,7 +195,9 @@ pcl::modeler::DoubleParameter::setEditorData(QWidget* editor)
 void
 pcl::modeler::DoubleParameter::getEditorData(QWidget* editor)
 {
-  QDoubleSpinBox* spinBox = static_cast<QDoubleSpinBox*>(editor);
+  auto* spinBox = dynamic_cast<QDoubleSpinBox*>(editor);
+  if (!spinBox)
+    return;
   double value = spinBox->text().toDouble();
   current_value_ = value;
 }
@@ -211,7 +223,7 @@ pcl::modeler::ColorParameter::valueTip()
 QWidget*
 pcl::modeler::ColorParameter::createEditor(QWidget* parent)
 {
-  QColorDialog* editor = new QColorDialog(parent);
+  auto* editor = new QColorDialog(parent);
 
   return editor;
 }
@@ -220,7 +232,9 @@ pcl::modeler::ColorParameter::createEditor(QWidget* parent)
 void
 pcl::modeler::ColorParameter::setEditorData(QWidget* editor)
 {
-  QColorDialog* color_dialog = static_cast<QColorDialog*>(editor);
+  auto* color_dialog = dynamic_cast<QColorDialog*>(editor);
+  if (!color_dialog)
+    return;
 
   QColor value = QColor(*this);
   color_dialog->setCurrentColor(value);
@@ -230,7 +244,9 @@ pcl::modeler::ColorParameter::setEditorData(QWidget* editor)
 void
 pcl::modeler::ColorParameter::getEditorData(QWidget* editor)
 {
-  QColorDialog* color_dialog = static_cast<QColorDialog*>(editor);
+  auto* color_dialog = dynamic_cast<QColorDialog*>(editor);
+  if (!color_dialog)
+    return;
 
   QColor value = color_dialog->currentColor();
   current_value_ = value;

@@ -54,7 +54,7 @@ writeMatrixToFile(const std::string& file, Eigen::Matrix4f& matrix)
   for (std::size_t i = 0; i < 4; i++) {
     for (std::size_t j = 0; j < 4; j++) {
       out << matrix(i, j);
-      if (!(i == 3 && j == 3))
+      if (i != 3 || j != 3)
         out << " ";
     }
   }
