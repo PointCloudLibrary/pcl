@@ -1,10 +1,15 @@
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/features/shot_omp.h>
+#include <pcl/filters/uniform_sampling.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 #include <benchmark/benchmark.h>
+
+constexpr float lrf_radius = 0.04f;
+constexpr float shot_search_radius = 0.04f;
+constexpr float uniform_sampling_radius = 0.03f;
 
 static void
 BM_SHOT352(benchmark::State& state, const std::string& file)
@@ -19,10 +24,18 @@ BM_SHOT352(benchmark::State& state, const std::string& file)
   pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
   ne.compute(*normals);
 
+  pcl::UniformSampling<pcl::PointXYZ> uniform_sampling;
+  uniform_sampling.setInputCloud(cloud);
+  uniform_sampling.setRadiusSearch(uniform_sampling_radius);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints(new pcl::PointCloud<pcl::PointXYZ>);
+  uniform_sampling.filter(*keypoints);
+
   pcl::SHOTEstimation<pcl::PointXYZ, pcl::Normal, pcl::SHOT352> shot;
-  shot.setInputCloud(cloud);
+  shot.setInputCloud(keypoints);
   shot.setInputNormals(normals);
-  shot.setRadiusSearch(0.04);
+  shot.setSearchSurface(cloud);
+  shot.setRadiusSearch(shot_search_radius);
+  shot.setLRFRadius(lrf_radius);
 
   pcl::PointCloud<pcl::SHOT352>::Ptr output(new pcl::PointCloud<pcl::SHOT352>);
   for (auto _ : state) {
@@ -43,12 +56,20 @@ BM_SHOT352_OMP(benchmark::State& state, const std::string& file)
   pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
   ne.compute(*normals);
 
+  pcl::UniformSampling<pcl::PointXYZ> uniform_sampling;
+  uniform_sampling.setInputCloud(cloud);
+  uniform_sampling.setRadiusSearch(uniform_sampling_radius);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints(new pcl::PointCloud<pcl::PointXYZ>);
+  uniform_sampling.filter(*keypoints);
+
   pcl::SHOTEstimationOMP<pcl::PointXYZ, pcl::Normal, pcl::SHOT352> shot(
       0, state.range(0) //
   );
-  shot.setInputCloud(cloud);
+  shot.setInputCloud(keypoints);
   shot.setInputNormals(normals);
-  shot.setRadiusSearch(0.04);
+  shot.setSearchSurface(cloud);
+  shot.setRadiusSearch(shot_search_radius);
+  shot.setLRFRadius(lrf_radius);
 
   pcl::PointCloud<pcl::SHOT352>::Ptr output(new pcl::PointCloud<pcl::SHOT352>);
   for (auto _ : state) {
@@ -59,34 +80,31 @@ BM_SHOT352_OMP(benchmark::State& state, const std::string& file)
 static void
 BM_SHOT1344(benchmark::State& state, const std::string& file)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_rgba(
+      new pcl::PointCloud<pcl::PointXYZRGBA>);
   pcl::PCDReader reader;
-  reader.read(file, *cloud_xyz);
+  reader.read(file, *cloud_rgba);
 
-  pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> ne;
-  ne.setInputCloud(cloud_xyz);
+  pcl::NormalEstimationOMP<pcl::PointXYZRGBA, pcl::Normal> ne;
+  ne.setInputCloud(cloud_rgba);
   ne.setKSearch(10);
   pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
   ne.compute(*normals);
 
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_rgba(
+  pcl::UniformSampling<pcl::PointXYZRGBA> uniform_sampling;
+  uniform_sampling.setInputCloud(cloud_rgba);
+  uniform_sampling.setRadiusSearch(uniform_sampling_radius);
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr keypoints(
       new pcl::PointCloud<pcl::PointXYZRGBA>);
-
-  for (int i = 0; i < static_cast<int>(cloud_xyz->size()); ++i) {
-    pcl::PointXYZRGBA p;
-    p.x = (*cloud_xyz)[i].x;
-    p.y = (*cloud_xyz)[i].y;
-    p.z = (*cloud_xyz)[i].z;
-
-    p.rgba = ((i % 255) << 16) + (((255 - i) % 255) << 8) + ((i * 37) % 255);
-    cloud_rgba->push_back(p);
-  }
+  uniform_sampling.filter(*keypoints);
 
   pcl::SHOTColorEstimation<pcl::PointXYZRGBA, pcl::Normal, pcl::SHOT1344> shot(true,
                                                                                true);
-  shot.setInputCloud(cloud_rgba);
+  shot.setInputCloud(keypoints);
   shot.setInputNormals(normals);
-  shot.setRadiusSearch(0.04);
+  shot.setSearchSurface(cloud_rgba);
+  shot.setRadiusSearch(shot_search_radius);
+  shot.setLRFRadius(lrf_radius);
 
   pcl::PointCloud<pcl::SHOT1344>::Ptr output(new pcl::PointCloud<pcl::SHOT1344>);
   for (auto _ : state) {
@@ -97,34 +115,31 @@ BM_SHOT1344(benchmark::State& state, const std::string& file)
 static void
 BM_SHOT1344_OMP(benchmark::State& state, const std::string& file)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_rgba(
+      new pcl::PointCloud<pcl::PointXYZRGBA>);
   pcl::PCDReader reader;
-  reader.read(file, *cloud_xyz);
+  reader.read(file, *cloud_rgba);
 
-  pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> ne;
-  ne.setInputCloud(cloud_xyz);
+  pcl::NormalEstimationOMP<pcl::PointXYZRGBA, pcl::Normal> ne;
+  ne.setInputCloud(cloud_rgba);
   ne.setKSearch(10);
   pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
   ne.compute(*normals);
 
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_rgba(
+  pcl::UniformSampling<pcl::PointXYZRGBA> uniform_sampling;
+  uniform_sampling.setInputCloud(cloud_rgba);
+  uniform_sampling.setRadiusSearch(uniform_sampling_radius);
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr keypoints(
       new pcl::PointCloud<pcl::PointXYZRGBA>);
-
-  for (int i = 0; i < static_cast<int>(cloud_xyz->size()); ++i) {
-    pcl::PointXYZRGBA p;
-    p.x = (*cloud_xyz)[i].x;
-    p.y = (*cloud_xyz)[i].y;
-    p.z = (*cloud_xyz)[i].z;
-
-    p.rgba = ((i % 255) << 16) + (((255 - i) % 255) << 8) + ((i * 37) % 255);
-    cloud_rgba->push_back(p);
-  }
+  uniform_sampling.filter(*keypoints);
 
   pcl::SHOTColorEstimationOMP<pcl::PointXYZRGBA, pcl::Normal, pcl::SHOT1344> shot(
       true, true, 0, state.range(0));
-  shot.setInputCloud(cloud_rgba);
+  shot.setInputCloud(keypoints);
   shot.setInputNormals(normals);
-  shot.setRadiusSearch(0.04);
+  shot.setSearchSurface(cloud_rgba);
+  shot.setRadiusSearch(shot_search_radius);
+  shot.setLRFRadius(lrf_radius);
 
   pcl::PointCloud<pcl::SHOT1344>::Ptr output(new pcl::PointCloud<pcl::SHOT1344>);
   for (auto _ : state) {
