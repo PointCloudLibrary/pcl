@@ -51,13 +51,13 @@ stages:
               CC: gcc
               CXX: g++
               BUILD_GPU: ON
-              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON -DCMAKE_CXX_STANDARD=14 -DCMAKE_CUDA_STANDARD=14'
+              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
             24.04 GCC:  # latest Ubuntu
               CONTAINER: env2404
               CC: gcc
               CXX: g++
               BUILD_GPU: ON
-              CMAKE_ARGS: '-DCMAKE_CXX_STANDARD=17 -DCMAKE_CUDA_STANDARD=17'
+              CMAKE_ARGS: ''
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
