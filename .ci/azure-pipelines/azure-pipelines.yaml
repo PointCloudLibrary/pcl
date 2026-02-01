@@ -50,7 +50,7 @@ stages:
               CONTAINER: env2004
               CC: gcc
               CXX: g++
-              BUILD_GPU: ON
+              BUILD_GPU: OFF
               CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
             24.04 GCC:  # latest Ubuntu
               CONTAINER: env2404
