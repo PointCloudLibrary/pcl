@@ -151,8 +151,8 @@ int
 main(int argc, char** argv)
 {
   if (argc < 2) {
-    std::cerr << "No test files given. Please provide a PCD file paths for SHOT352 "
-                 "and SHOT1344 benchmarks."
+    std::cerr << "No test files given. Please provide a PCD file path to use for "
+                 "both SHOT352 and SHOT1344 benchmarks."
               << std::endl;
     return (-1);
   }
