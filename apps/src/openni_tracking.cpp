@@ -113,12 +113,12 @@ public:
   using KdTree = pcl::search::KdTree<PointType>;
   using KdTreePtr = typename KdTree::Ptr;
   OpenNISegmentTracking(const std::string& device_id,
-                        [[maybe_unused]] int thread_nr,
-                        [[maybe_unused]] double downsampling_grid_size,
-                        [[maybe_unused]] bool use_convex_hull,
-                        [[maybe_unused]] bool visualize_non_downsample,
-                        [[maybe_unused]] bool visualize_particles,
-                        [[maybe_unused]] bool use_fixed)
+                        int thread_nr,
+                        double downsampling_grid_size,
+                        bool use_convex_hull,
+                        bool visualize_non_downsample,
+                        bool visualize_particles,
+                        bool use_fixed)
   : viewer_("PCL OpenNI Tracking Viewer")
   , device_id_(device_id)
   , ne_(thread_nr)

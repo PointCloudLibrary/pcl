@@ -265,7 +265,7 @@ public:
     for (const auto& region_index : region_indices) {
       if (region_index.indices.size() > 1000) {
 
-        for (int index : region_index.indices) {
+        for (const auto& index : region_index.indices) {
           pcl::PointXYZ ground_pt(
               (*cloud)[index].x, (*cloud)[index].y, (*cloud)[index].z);
           ground_cloud->points.push_back(ground_pt);
