@@ -1,0 +1,52 @@
+name: Black Formatting
+
+on: [push]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  Black:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Setup python version
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      # Install pip and packages
+      - name: Install pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install black
+        run: pip install black
+
+      # Format with black
+      - name: Format with black
+        run: |
+          cd bindings/python
+          black .
+
+      # Diff check
+      - name: Check git diff
+        # Output the diff in ${GITHUB_WORKSPACE}
+        run: git diff > black_formatting_diff.patch
+
+      # Exit if diff
+      - name: Set job exit status
+        run: "[ ! -s black_formatting_diff.patch ]"
+
+      # Artifacts
+      - name: Upload formatting diff
+        uses: actions/upload-artifact@v2
+        with:
+          # We are in ${GITHUB_WORKSPACE}
+          # ${GITHUB_SHA} won't work: use ${{ github.sha }}
+          name: black_formatting_diff-${{ github.sha }}
+          path: black_formatting_diff.patch
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}
