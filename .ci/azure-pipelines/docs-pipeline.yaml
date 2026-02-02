@@ -18,8 +18,8 @@ resources:
   containers:
     - container: doc # for documentation.yaml
       image: pointcloudlibrary/doc
-    - container: env2204 # for tutorials.yaml
-      image: pointcloudlibrary/env:22.04
+    - container: env2404 # for tutorials.yaml
+      image: pointcloudlibrary/env:24.04
 
 stages:
   - stage: formatting
