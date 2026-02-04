@@ -45,6 +45,7 @@
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/print.h>
 
+#include <cassert>
 #include <fstream>
 #include <memory>
 
