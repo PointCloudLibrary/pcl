@@ -8,10 +8,10 @@
 #pragma once
 
 #include <pcl/apps/3d_rec_framework/utils/persistence_utils.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/filters/voxel_grid.h>
 
 #include <boost/algorithm/string.hpp>
-#include <pcl/common/pcl_filesystem.h>
 
 namespace pcl {
 namespace rec_3d_framework {
