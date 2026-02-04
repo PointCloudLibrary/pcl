@@ -59,7 +59,8 @@ public:
   }
 
   void
-  getViewsFilenames(pcl_fs::path& path_with_views, std::vector<std::string>& view_filenames)
+  getViewsFilenames(pcl_fs::path& path_with_views,
+                    std::vector<std::string>& view_filenames)
   {
     int number_of_views = 0;
     for (const auto& dir_entry : pcl_fs::directory_iterator(path_with_views)) {
