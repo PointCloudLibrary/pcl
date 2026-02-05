@@ -423,6 +423,15 @@ if(WITH_VTK)
   endif()
 endif()
 
+# If VTK has found a Qt version, default to the same version
+if(VTK_QT_VERSION STREQUAL "5")
+  message(STATUS "VTK has found Qt5 - defaulting to same version.")
+  set(WITH_QT "QT5" CACHE STRING "Build QT Front-End (AUTO|YES|QT6|QT5|NO)")
+elseif(VTK_QT_VERSION STREQUAL "6")
+  message(STATUS "VTK has found Qt6 - defaulting to same version.")
+  set(WITH_QT "QT6" CACHE STRING "Build QT Front-End (AUTO|YES|QT6|QT5|NO)")
+endif()
+
 # VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND/Qt6_FOUND if the version we require is not found.
 set(WITH_QT "AUTO" CACHE STRING "Build QT Front-End (AUTO|YES|QT6|QT5|NO)")
 set_property(CACHE WITH_QT PROPERTY STRINGS "AUTO" "YES" "QT6" "QT5" "NO")
