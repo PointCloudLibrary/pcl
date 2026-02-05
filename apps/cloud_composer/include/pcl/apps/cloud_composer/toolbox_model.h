@@ -114,7 +114,7 @@ private:
   QItemSelectionModel* selection_model_;
   QSet<QStandardItem*> tool_items;
 
-  ProjectModel* project_model_;
+  ProjectModel* project_model_{nullptr};
 };
 } // namespace cloud_composer
 } // namespace pcl

@@ -85,8 +85,6 @@ public:
   , nb_levels_(nb_levels)
   , track_width_(tracking_window_width)
   , track_height_(tracking_window_height)
-  , threads_(0)
-  , initialized_(false)
   {
     tracker_name_ = "PyramidalKLTTracker";
     accuracy_ = 0.1;
@@ -418,11 +416,11 @@ protected:
   float epsilon_;
   float max_residue_;
   /** \brief number of hardware threads */
-  unsigned int threads_;
+  unsigned int threads_{0};
   /** \brief intensity accessor */
   IntensityT intensity_;
   /** \brief is the tracker initialized ? */
-  bool initialized_;
+  bool initialized_{false};
   /** \brief compute transformation from successfully tracked points */
   pcl::TransformationFromCorrespondences transformation_computer_;
   /** \brief computed transformation between tracked points */

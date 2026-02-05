@@ -4,8 +4,7 @@
 
 namespace OpenNIFrameSource {
 
-OpenNIFrameSource::OpenNIFrameSource(const std::string& device_id)
-: grabber_(device_id), frame_counter_(0), active_(true)
+OpenNIFrameSource::OpenNIFrameSource(const std::string& device_id) : grabber_(device_id)
 {
   std::function<void(const PointCloudConstPtr&)> frame_cb =
       [this](const PointCloudConstPtr& cloud) { onNewFrame(cloud); };

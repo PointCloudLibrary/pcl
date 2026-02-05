@@ -238,7 +238,7 @@ main(int argc, char** argv)
     return 1;
   }
 
-  std::string device_id = "";
+  std::string device_id;
   int port = 11111;
   float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;
 

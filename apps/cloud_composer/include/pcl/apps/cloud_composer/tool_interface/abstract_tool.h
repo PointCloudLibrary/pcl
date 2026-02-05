@@ -51,7 +51,7 @@ class AbstractTool : public QObject {
 public:
   AbstractTool(PropertiesModel* parameter_model, QObject* parent);
 
-  ~AbstractTool() { qDebug() << "Tool Destructed"; }
+  ~AbstractTool() override { qDebug() << "Tool Destructed"; }
 
   /**  \brief Function called which does work in plugin
    *  \param data input_data from the model - const for good reason

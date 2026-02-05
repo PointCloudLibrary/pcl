@@ -152,7 +152,9 @@ pcl::modeler::CloudMeshItem::prepareContextMenu(QMenu* menu) const
 void
 pcl::modeler::CloudMeshItem::createChannels()
 {
-  RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  auto* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  if (!render_window_item)
+    return;
   vtkRenderWindow* win =
       getRenderWindowCompat(*(render_window_item->getRenderWindow()));
 
@@ -161,8 +163,9 @@ pcl::modeler::CloudMeshItem::createChannels()
   addChild(new SurfaceActorItem(this, cloud_mesh_, win));
 
   for (int i = 0, i_end = childCount(); i < i_end; ++i) {
-    ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
-    child_item->init();
+    auto* child_item = dynamic_cast<ChannelActorItem*>(child(i));
+    if (child_item)
+      child_item->init();
   }
 
   render_window_item->getRenderWindow()->updateAxes();
@@ -177,12 +180,14 @@ pcl::modeler::CloudMeshItem::updateChannels()
   cloud_mesh_->updateVtkPolygons();
 
   for (int i = 0, i_end = childCount(); i < i_end; ++i) {
-    ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
-    child_item->update();
+    auto* child_item = dynamic_cast<ChannelActorItem*>(child(i));
+    if (child_item)
+      child_item->update();
   }
 
-  RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
-  render_window_item->getRenderWindow()->updateAxes();
+  auto* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  if (render_window_item)
+    render_window_item->getRenderWindow()->updateAxes();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -236,11 +241,14 @@ pcl::modeler::CloudMeshItem::setProperties()
 void
 pcl::modeler::CloudMeshItem::updateRenderWindow()
 {
-  RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  auto* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  if (!render_window_item)
+    return;
   for (int i = 0, i_end = childCount(); i < i_end; ++i) {
-    ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
-    child_item->switchRenderWindow(
-        getRenderWindowCompat(*render_window_item->getRenderWindow()));
+    auto* child_item = dynamic_cast<ChannelActorItem*>(child(i));
+    if (child_item)
+      child_item->switchRenderWindow(
+          getRenderWindowCompat(*render_window_item->getRenderWindow()));
   }
 
   render_window_item->getRenderWindow()->updateAxes();

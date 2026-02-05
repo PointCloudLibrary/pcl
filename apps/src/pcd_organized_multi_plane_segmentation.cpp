@@ -50,19 +50,14 @@ private:
   pcl::visualization::PCLVisualizer viewer;
   typename pcl::PointCloud<PointT>::ConstPtr cloud;
   bool refine_;
-  float threshold_;
-  bool depth_dependent_;
-  bool polygon_refinement_;
+  float threshold_{0.02f};
+  bool depth_dependent_{true};
+  bool polygon_refinement_{false};
 
 public:
   PCDOrganizedMultiPlaneSegmentation(typename pcl::PointCloud<PointT>::ConstPtr cloud_,
                                      bool refine)
-  : viewer("Viewer")
-  , cloud(cloud_)
-  , refine_(refine)
-  , threshold_(0.02f)
-  , depth_dependent_(true)
-  , polygon_refinement_(false)
+  : viewer("Viewer"), cloud(cloud_), refine_(refine)
   {
     viewer.setBackgroundColor(0, 0, 0);
     viewer.addCoordinateSystem(1.0, "global");
@@ -143,8 +138,7 @@ public:
     ne.setInputCloud(cloud);
     ne.compute(*normal_cloud);
     double normal_end = pcl::getTime();
-    std::cout << "Normal Estimation took " << double(normal_end - normal_start)
-              << std::endl;
+    std::cout << "Normal Estimation took " << (normal_end - normal_start) << std::endl;
 
     double plane_extract_start = pcl::getTime();
     mps.setInputNormals(normal_cloud);
@@ -154,10 +148,9 @@ public:
     else
       mps.segment(regions);
     double plane_extract_end = pcl::getTime();
-    std::cout << "Plane extraction took "
-              << double(plane_extract_end - plane_extract_start)
+    std::cout << "Plane extraction took " << (plane_extract_end - plane_extract_start)
               << " with planar regions found: " << regions.size() << std::endl;
-    std::cout << "Frame took " << double(plane_extract_end - normal_start) << std::endl;
+    std::cout << "Frame took " << (plane_extract_end - normal_start) << std::endl;
 
     typename pcl::PointCloud<PointT>::Ptr cluster(new pcl::PointCloud<PointT>);
 

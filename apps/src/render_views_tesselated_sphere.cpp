@@ -122,8 +122,9 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
       sphere->GetPoint(ptIds_com[1], p2_com);
       sphere->GetPoint(ptIds_com[2], p3_com);
       vtkTriangle::TriangleCenter(p1_com, p2_com, p3_com, center);
-      cam_positions[i] =
-          Eigen::Vector3f(float(center[0]), float(center[1]), float(center[2]));
+      cam_positions[i] = Eigen::Vector3f(static_cast<float>(center[0]),
+                                         static_cast<float>(center[1]),
+                                         static_cast<float>(center[2]));
       i++;
     }
   }
@@ -132,8 +133,9 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
     for (vtkIdType i = 0; i < sphere->GetNumberOfPoints(); i++) {
       double cam_pos[3];
       sphere->GetPoint(i, cam_pos);
-      cam_positions[i] =
-          Eigen::Vector3f(float(cam_pos[0]), float(cam_pos[1]), float(cam_pos[2]));
+      cam_positions[i] = Eigen::Vector3f(static_cast<float>(cam_pos[0]),
+                                         static_cast<float>(cam_pos[1]),
+                                         static_cast<float>(cam_pos[2]));
     }
   }
 
@@ -275,7 +277,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
     for (int x = 0; x < 4; x++)
       for (int y = 0; y < 4; y++)
         backToRealScale_eigen(x, y) =
-            float(backToRealScale->GetMatrix()->GetElement(x, y));
+            static_cast<float>(backToRealScale->GetMatrix()->GetElement(x, y));
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
     cloud->points.resize(resolution_ * resolution_);
@@ -380,12 +382,14 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
       ids = vtkIdTypeArray::SafeDownCast(hdw_selection->GetNode(0)->GetSelectionList());
       double visible_area = 0;
       for (vtkIdType sel_id = 0; sel_id < (ids->GetNumberOfTuples()); sel_id++) {
-        int id_mesh = int(ids->GetValue(sel_id));
+        int id_mesh = static_cast<int>(ids->GetValue(sel_id));
         if (id_mesh >= polydata->GetNumberOfPolys())
           continue;
 
         vtkCell* cell = polydata->GetCell(id_mesh);
-        vtkTriangle* triangle = dynamic_cast<vtkTriangle*>(cell);
+        auto* triangle = dynamic_cast<vtkTriangle*>(cell);
+        if (!triangle)
+          continue;
         double p0[3];
         double p1[3];
         double p2[3];
@@ -396,7 +400,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
         visible_area += area;
       }
 
-      entropies_.push_back(float(visible_area / totalArea));
+      entropies_.push_back(static_cast<float>(visible_area / totalArea));
     }
 
     // transform cloud to give camera coordinates instead of world coordinates!
@@ -406,7 +410,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
 
     for (int x = 0; x < 4; x++)
       for (int y = 0; y < 4; y++)
-        trans_view(x, y) = float(view_transform->GetElement(x, y));
+        trans_view(x, y) = static_cast<float>(view_transform->GetElement(x, y));
 
     // NOTE: vtk view coordinate system is different than the standard camera
     // coordinates (z forward, y down, x right) thus, the flipping in y and z
@@ -445,7 +449,8 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
 
     for (int x = 0; x < 4; x++)
       for (int y = 0; y < 4; y++)
-        pose_view(x, y) = float(transOCtoCC->GetMatrix()->GetElement(x, y));
+        pose_view(x, y) =
+            static_cast<float>(transOCtoCC->GetMatrix()->GetElement(x, y));
 
     poses_.push_back(pose_view);
   }

@@ -66,12 +66,8 @@ protected:
   Statistics(const Statistics&) { assert(false); }
 
   /// @brief Equal Operator
-  virtual Statistics&
-  operator=(const Statistics&)
-  {
-    assert(false);
-    return *this;
-  }
+  Statistics&
+  operator=(const Statistics&) = default;
 
   /// @brief Returns the statistics in string.
   virtual std::string

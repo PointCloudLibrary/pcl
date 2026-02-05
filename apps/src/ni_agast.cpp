@@ -67,9 +67,6 @@ public:
   : cloud_viewer_("AGAST 2D Keypoints -- PointCloud")
   , grabber_(grabber)
   , image_viewer_("AGAST 2D Keypoints -- Image")
-  , bmax_(255)
-  , threshold_(30)
-  , detector_type_(0)
   {}
 
   /////////////////////////////////////////////////////////////////////////
@@ -129,7 +126,7 @@ public:
   void
   keyboard_callback(const pcl::visualization::KeyboardEvent& event, void* cookie)
   {
-    AGASTDemo* obj = static_cast<AGASTDemo*>(cookie);
+    auto* obj = static_cast<AGASTDemo*>(cookie);
 
     if (event.getKeyCode()) {
       std::stringstream ss;
@@ -289,8 +286,8 @@ public:
         if (keypoints && !keypoints->empty()) {
           image_viewer_.removeLayer(getStrBool(keypts));
           for (std::size_t i = 0; i < keypoints->size(); ++i) {
-            int u = int((*keypoints)[i].u);
-            int v = int((*keypoints)[i].v);
+            int u = static_cast<int>((*keypoints)[i].u);
+            int v = static_cast<int>((*keypoints)[i].v);
             image_viewer_.markPoint(u,
                                     v,
                                     visualization::red_color,
@@ -330,9 +327,9 @@ public:
 
   PointCloud<KeyPointT>::Ptr keypoints_;
 
-  double bmax_;
-  double threshold_;
-  int detector_type_;
+  double bmax_{255};
+  double threshold_{30};
+  int detector_type_{0};
 
 private:
   boost::signals2::connection cloud_connection;

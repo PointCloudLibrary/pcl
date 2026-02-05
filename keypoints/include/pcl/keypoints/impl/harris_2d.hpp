@@ -43,6 +43,8 @@
 
 #include <pcl/common/point_tests.h>
 
+#include <cmath>
+
 namespace pcl
 {
 
@@ -472,7 +474,7 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointCloudOut
     {
       computeSecondMomentMatrix (index, covar);
       // min egenvalue
-      out_point.intensity = ((covar[0] + covar[2] - sqrt((covar[0] - covar[2])*(covar[0] - covar[2]) + 4 * covar[1] * covar[1])) /2.0f);
+      out_point.intensity = ((covar[0] + covar[2] - std::sqrt((covar[0] - covar[2])*(covar[0] - covar[2]) + 4 * covar[1] * covar[1])) /2.0f);
     }
   }
 

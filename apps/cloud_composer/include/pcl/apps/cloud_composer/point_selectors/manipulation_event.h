@@ -45,7 +45,7 @@ namespace cloud_composer {
 class ManipulationEvent {
 
 public:
-  ManipulationEvent() {}
+  ManipulationEvent() = default;
 
   void
   addManipulation(const QString& id,

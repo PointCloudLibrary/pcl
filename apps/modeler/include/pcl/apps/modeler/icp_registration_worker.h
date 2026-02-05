@@ -74,10 +74,10 @@ private:
   double y_min_, y_max_;
   double z_min_, z_max_;
 
-  DoubleParameter* max_correspondence_distance_;
-  IntParameter* max_iterations_;
-  DoubleParameter* transformation_epsilon_;
-  DoubleParameter* euclidean_fitness_epsilon_;
+  DoubleParameter* max_correspondence_distance_{nullptr};
+  IntParameter* max_iterations_{nullptr};
+  DoubleParameter* transformation_epsilon_{nullptr};
+  DoubleParameter* euclidean_fitness_epsilon_{nullptr};
 };
 
 } // namespace modeler

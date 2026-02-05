@@ -24,7 +24,7 @@ pcl::cloud_composer::CloudComposerItem::~CloudComposerItem()
 pcl::cloud_composer::CloudComposerItem*
 pcl::cloud_composer::CloudComposerItem::clone() const
 {
-  CloudComposerItem* new_item = new CloudComposerItem(this->text());
+  auto* new_item = new CloudComposerItem(this->text());
 
   PropertiesModel* new_item_properties = new_item->getPropertiesModel();
   new_item_properties->copyProperties(properties_);
@@ -39,7 +39,10 @@ pcl::cloud_composer::CloudComposerItem::getChildren(
   QList<CloudComposerItem*> items;
   for (int i = 0; i < this->rowCount(); ++i) {
     if (this->child(i)->type() == type) {
-      items.append(dynamic_cast<CloudComposerItem*>(this->child(i)));
+      auto* item = dynamic_cast<CloudComposerItem*>(this->child(i));
+      if (item) {
+        items.append(item);
+      }
     }
   }
 
@@ -69,7 +72,7 @@ pcl::cloud_composer::CloudComposerItem::removeFromView(
 QMap<QString, QWidget*>
 pcl::cloud_composer::CloudComposerItem::getInspectorTabs()
 {
-  return QMap<QString, QWidget*>();
+  return {};
 }
 
 /*

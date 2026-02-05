@@ -58,11 +58,11 @@ pcl::cloud_composer::PropertiesModel::addProperty(const QString& prop_name,
   }
 
   QList<QStandardItem*> new_row;
-  QStandardItem* new_property = new QStandardItem(prop_name);
+  auto* new_property = new QStandardItem(prop_name);
   new_property->setFlags(Qt::ItemIsSelectable);
   new_row.append(new_property);
 
-  QStandardItem* new_value = new QStandardItem();
+  auto* new_value = new QStandardItem();
   new_value->setFlags(flags);
   new_value->setData(value, Qt::EditRole);
   new_row.append(new_value);
@@ -73,7 +73,7 @@ pcl::cloud_composer::PropertiesModel::addProperty(const QString& prop_name,
 void
 pcl::cloud_composer::PropertiesModel::addCategory(const QString& category_name)
 {
-  QStandardItem* new_category = new QStandardItem(category_name);
+  auto* new_category = new QStandardItem(category_name);
   appendRow(new_category);
 }
 
@@ -86,7 +86,7 @@ pcl::cloud_composer::PropertiesModel::getProperty(const QString& prop_name) cons
   if (items.empty()) {
     qWarning() << "No property named " << prop_name << " found in "
                << parent_item_->text();
-    return QVariant();
+    return {};
   }
   if (items.size() > 1) {
     qWarning() << "Multiple properties found with name " << prop_name << " in "

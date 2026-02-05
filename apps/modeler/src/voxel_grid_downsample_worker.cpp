@@ -52,9 +52,6 @@ pcl::modeler::VoxelGridDownampleWorker::VoxelGridDownampleWorker(
 , y_max_(std::numeric_limits<double>::min())
 , z_min_(std::numeric_limits<double>::max())
 , z_max_(std::numeric_limits<double>::min())
-, leaf_size_x_(nullptr)
-, leaf_size_y_(nullptr)
-, leaf_size_z_(nullptr)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,14 +69,14 @@ pcl::modeler::VoxelGridDownampleWorker::initParameters(CloudMeshItem* cloud_mesh
   Eigen::Vector4f min_pt, max_pt;
   pcl::getMinMax3D(*(cloud_mesh_item->getCloudMesh()->getCloud()), min_pt, max_pt);
 
-  x_min_ = std::min(double(min_pt.x()), x_min_);
-  x_max_ = std::max(double(max_pt.x()), x_max_);
+  x_min_ = std::min(static_cast<double>(min_pt.x()), x_min_);
+  x_max_ = std::max(static_cast<double>(max_pt.x()), x_max_);
 
-  y_min_ = std::min(double(min_pt.y()), y_min_);
-  y_max_ = std::max(double(max_pt.y()), y_max_);
+  y_min_ = std::min(static_cast<double>(min_pt.y()), y_min_);
+  y_max_ = std::max(static_cast<double>(max_pt.y()), y_max_);
 
-  z_min_ = std::min(double(min_pt.z()), z_min_);
-  z_max_ = std::max(double(max_pt.z()), z_max_);
+  z_min_ = std::min(static_cast<double>(min_pt.z()), z_min_);
+  z_max_ = std::max(static_cast<double>(max_pt.z()), z_max_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
