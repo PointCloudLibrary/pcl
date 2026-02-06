@@ -13,17 +13,10 @@ else()
   endif()
 endif()
 
-if(CMAKE_CXX_STANDARD MATCHES "14")
-  # Optional boost modules
-  set(BOOST_OPTIONAL_MODULES serialization mpi)
-  # Required boost modules
-  set(BOOST_REQUIRED_MODULES filesystem iostreams)
-else()
-  # Optional boost modules
-  set(BOOST_OPTIONAL_MODULES filesystem serialization mpi)
-  # Required boost modules
-  set(BOOST_REQUIRED_MODULES iostreams)
-endif()
+# Optional boost modules (filesystem no longer needed - using std::filesystem with C++17)
+set(BOOST_OPTIONAL_MODULES serialization mpi)
+# Required boost modules
+set(BOOST_REQUIRED_MODULES iostreams)
 
 find_package(Boost 1.71.0 QUIET COMPONENTS ${BOOST_OPTIONAL_MODULES} CONFIG)
 find_package(Boost 1.71.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES} CONFIG)
