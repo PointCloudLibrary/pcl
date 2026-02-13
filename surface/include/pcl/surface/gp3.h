@@ -309,7 +309,12 @@ namespace pcl
       /** \brief Temporary variable to store a triangle (as a set of point indices) **/
       pcl::Vertices triangle_{};
       /** \brief Temporary variable to store point coordinates **/
-      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > coords_{};
+      std::vector<Eigen::Vector3f> coords_{};
+      // Precomputed per-point data (normal, local basis u,v, and projection of point onto its normal plane)
+      std::vector<Eigen::Vector3f> normals_{};
+      std::vector<Eigen::Vector3f> u_basis_{};
+      std::vector<Eigen::Vector3f> v_basis_{};
+      std::vector<Eigen::Vector3f> proj_qp_list_{};
 
       /** \brief A list of angles to neighbors **/
       std::vector<nnAngle> angles_{};
@@ -369,7 +374,8 @@ namespace pcl
 
       /** \brief Temporary variable to store 3 coordinates **/
       Eigen::Vector3f tmp_;
-
+      /** \brief Reusable buffer for projected boundary edges to avoid repeated allocations **/
+      std::vector<doubleEdge> double_edges_{};
       /** \brief The actual surface reconstruction method.
         * \param[out] output the resultant polygonal mesh
         */
@@ -472,19 +478,6 @@ namespace pcl
         source_[v] = s;
         part_[v] = part_[s];
         fringe_queue_.push_back(v);
-      }
-
-      /** \brief Function for ascending sort of nnAngle, taking visibility into account
-        * (angles to visible neighbors will be first, to the invisible ones after).
-        * \param[in] a1 the first angle
-        * \param[in] a2 the second angle
-        */
-      static inline bool 
-      nnAngleSortAsc (const nnAngle& a1, const nnAngle& a2)
-      {
-        if (a1.visible == a2.visible)
-          return (a1.angle < a2.angle);
-        return a1.visible;
       }
   };
 
