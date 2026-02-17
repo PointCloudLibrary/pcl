@@ -12,8 +12,65 @@
 #include <pcl/filters/filter_indices.h>
 #include <pcl/type_traits.h> // for is_invocable
 
+#include <tuple>
+
 namespace pcl {
 namespace experimental {
+// putting this detail inside experimental because it is used only inside here
+namespace detail {
+template <class T, typename = void>
+struct func_traits;
+template <typename R, typename... Args>
+struct func_traits<R(Args...), void> {
+  using type = R(Args...);
+  using result_type = R;
+  using argument_type = std::tuple<Args...>;
+  static constexpr bool is_pointer = false;
+
+  template <std::size_t N>
+  using arg_type = typename std::tuple_element<N, argument_type>::type;
+};
+template <typename R, typename... Args>
+struct func_traits<R (*)(Args...), void> {
+  using type = R(Args...);
+  using result_type = R;
+  using argument_type = std::tuple<Args...>;
+  static constexpr bool is_pointer = true;
+
+  template <std::size_t N>
+  using arg_type = typename std::tuple_element<N, argument_type>::type;
+};
+template <typename R, typename T, typename... Args>
+struct func_traits<R (T::*)(Args...), void> {
+  using type = R(Args...);
+  using result_type = R;
+  using argument_type = std::tuple<Args...>;
+  static constexpr bool is_pointer = true;
+
+  template <std::size_t N>
+  using arg_type = typename std::tuple_element<N, argument_type>::type;
+};
+template <typename R, typename T, typename... Args>
+struct func_traits<R (T::*)(Args...) const, void> {
+  using type = R(Args...);
+  using result_type = R;
+  using argument_type = std::tuple<Args...>;
+  static constexpr bool is_pointer = true;
+
+  template <std::size_t N>
+  using arg_type = typename std::tuple_element<N, argument_type>::type;
+};
+
+template <class T>
+struct func_traits<T, void> : func_traits<decltype(&T::operator())> {};
+template <class FunctionObject>
+using first_arg_type =
+    remove_cvref_t<typename func_traits<FunctionObject>::template arg_type<0>>;
+
+template <class PointCloud>
+using point_type = typename PointCloud::value_type;
+} // namespace detail
+
 /**
  * \brief Checks if the function object meets the usage in `FunctorFilter` class
  * \details `Function` needs to be callable with a const reference to a PointCloud
@@ -129,12 +186,44 @@ protected:
     functionObject_ = std::move(function_object);
   }
 };
+
+#define FUNCTION_FILTER(FUNCTION_OBJECT)                                               \
+  FunctorFilter<typename detail::point_type<detail::first_arg_type<FUNCTION_OBJECT>>,  \
+                FUNCTION_OBJECT>
+#ifdef __cpp_deduction_guides
+template <typename FunctionObject>
+FunctorFilter(FunctionObject f)->FUNCTION_FILTER(FunctionObject);
+
+template <typename FunctionObject>
+FunctorFilter(FunctionObject f, bool enable_removed_indices)
+    ->FUNCTION_FILTER(FunctionObject);
+#endif
+template <typename FunctionObjectT>
+auto
+make_functor_filter(FunctionObjectT object)
+{
+  // use the macro to reduce retyping the long template
+  return FUNCTION_FILTER(FunctionObjectT)(std::move(object));
+}
+template <typename PointT, typename FunctionObjectT>
+auto
+make_functor_filter(FunctionObjectT object)
+{
+  return FunctorFilter<PointT, FunctionObjectT>(std::move(object));
+}
+#undef FUNCTION_FILTER
 } // namespace advanced
 
 template <class PointT>
 using FilterFunction = std::function<bool(const PointCloud<PointT>&, index_t)>;
 
 template <class PointT>
-using FunctionFilter = advanced::FunctorFilter<PointT, FilterFunction<PointT>>;
+struct FunctionFilter : advanced::FunctorFilter<PointT, FilterFunction<PointT>> {
+  using advanced::FunctorFilter<PointT, FilterFunction<PointT>>::FunctorFilter;
+};
+#ifdef __cpp_deduction_guides
+template <typename PointT>
+FunctionFilter(FilterFunction<PointT> f) -> FunctionFilter<PointT>;
+#endif
 } // namespace experimental
 } // namespace pcl
