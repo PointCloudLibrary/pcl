@@ -44,6 +44,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/ndt.h"
   "include/pcl/${SUBSYS_NAME}/ndt_2d.h"
   "include/pcl/${SUBSYS_NAME}/ppf_registration.h"
+  "include/pcl/${SUBSYS_NAME}/anderson_acceleration.h"
 
   "include/pcl/${SUBSYS_NAME}/impl/pairwise_graph_registration.hpp"
 
@@ -60,10 +61,12 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_lls.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_lls_weighted.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_symmetric_point_to_plane_lls.h"
+  "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_point_robust.h"
   "include/pcl/${SUBSYS_NAME}/transformation_validation.h"
   "include/pcl/${SUBSYS_NAME}/transformation_validation_euclidean.h"
   "include/pcl/${SUBSYS_NAME}/gicp.h"
   "include/pcl/${SUBSYS_NAME}/gicp6d.h"
+  "include/pcl/${SUBSYS_NAME}/fricp.h"
   "include/pcl/${SUBSYS_NAME}/bfgs.h"
   "include/pcl/${SUBSYS_NAME}/warp_point_rigid.h"
   "include/pcl/${SUBSYS_NAME}/warp_point_rigid_6d.h"
@@ -110,8 +113,10 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_lls_weighted.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_weighted.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_symmetric_point_to_plane_lls.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_point_robust.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_validation_euclidean.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/gicp.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/fricp.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/sample_consensus_prerejective.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/ia_fpcs.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/ia_kfpcs.hpp"
@@ -141,6 +146,7 @@ set(srcs
   #src/pairwise_graph_registration.cpp
   src/ia_ransac.cpp
   src/icp.cpp
+  src/fricp.cpp
   src/joint_icp.cpp
   src/gicp.cpp
   src/gicp6d.cpp
@@ -157,6 +163,7 @@ set(srcs
   src/transformation_estimation_point_to_plane_weighted.cpp
   src/transformation_estimation_point_to_plane_lls.cpp
   src/transformation_estimation_point_to_plane_lls_weighted.cpp
+  src/transformation_estimation_point_to_point_robust.cpp
   src/transformation_validation_euclidean.cpp
   src/sample_consensus_prerejective.cpp
 )
