@@ -284,7 +284,19 @@ pcl::console::Logger::print(FILE* stream, const LogRecord& logEntry)
 
     fputs(logEntry.message.c_str(), stream);
 
-    reset_text_color(stream);
+    switch (logEntry.level) {
+    case L_DEBUG:
+    case L_WARN:
+    case L_ERROR:
+      reset_text_color(stream);
+      break;
+    case L_ALWAYS:
+    case L_INFO:
+    case L_VERBOSE:
+    default:
+      break;
+    }
+    
   }
 }
 
