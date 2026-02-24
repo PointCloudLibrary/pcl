@@ -56,8 +56,7 @@
 #define PCL_LOG_STREAM(LEVEL, ARGS) \
   if (pcl::console::isVerbosityLevelEnabled(pcl::console::LEVEL)) \
   { \
-    auto& strstream = pcl::console::Logger::getInstance().getStringStream(); \
-    strstream.clear(); \
+    std::stringstream strstream; \
     strstream << ARGS; \
     pcl::console::LogRecord entry{pcl::console::LEVEL, strstream.str()}; \
     pcl::console::Logger::getInstance().print(entry); \
@@ -213,12 +212,6 @@ namespace pcl
       static Logger&
       getInstance();
 
-      std::stringstream&
-      getStringStream()
-      {
-        return strstream;
-      }
-
       template <typename Functor>
       void
       setCallback(Functor&& callback)
@@ -248,7 +241,6 @@ namespace pcl
       print_color(FILE* stream, int attr, int fg, const LogRecord& logEntry);
 
     private:
-      std::stringstream strstream;
       std::function<void(const LogRecord&)> logcallback;
     };
 
