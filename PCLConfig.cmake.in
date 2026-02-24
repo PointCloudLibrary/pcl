@@ -632,19 +632,49 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     endforeach()
     if(_is_header_only EQUAL -1)
       add_library(${pcl_component} @PCL_LIB_TYPE@ IMPORTED)
+
+      # find dll paths
+      find_file(PCL_${COMPONENT}_DLL_PATH
+          NAMES
+            ${pcl_component}${PCL_RELEASE_SUFFIX}.dll
+            ${pcl_component}${PCL_RELWITHDEBINFO_SUFFIX}.dll
+            ${pcl_component}${PCL_MINSIZEREL_SUFFIX}.dll
+          HINTS "${PCL_ROOT}/bin"
+          NO_DEFAULT_PATH)
+      find_file(PCL_${COMPONENT}_DLL_PATH_DEBUG
+            NAMES ${pcl_component}${PCL_DEBUG_SUFFIX}.dll
+            HINTS "${PCL_ROOT}/bin"
+            NO_DEFAULT_PATH)
+
+      if ("${component}" STREQUAL "io")
+        find_file(PCL_${COMPONENT}_DLL_PATH
+          NAMES
+            pcl_io_ply$${PCL_RELEASE_SUFFIX}.dll
+            pcl_io_ply$${PCL_RELWITHDEBINFO_SUFFIX}.dll
+            pcl_io_ply$${PCL_MINSIZEREL_SUFFIX}.dll
+          HINTS "${PCL_ROOT}/bin"
+          NO_DEFAULT_PATH)
+
+        find_file(PCL_${COMPONENT}_DLL_PATH_DEBUG
+              NAMES ${pcl_component}${PCL_DEBUG_SUFFIX}.dll
+              HINTS "${PCL_ROOT}/bin"
+              NO_DEFAULT_PATH)
+
+      endif()
+
       if(PCL_${COMPONENT}_LIBRARY_DEBUG)
         set_target_properties(${pcl_component}
           PROPERTIES
             IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
-            IMPORTED_LOCATION_RELEASE "${PCL_${COMPONENT}_LIBRARY}"
-            IMPORTED_LOCATION_DEBUG "${PCL_${COMPONENT}_LIBRARY_DEBUG}"
+            IMPORTED_LOCATION_RELEASE "${PCL_${COMPONENT}_DLL_PATH}"
+            IMPORTED_LOCATION_DEBUG "${PCL_${COMPONENT}_DLL_PATH_DEBUG}"
             IMPORTED_IMPLIB_RELEASE "${PCL_${COMPONENT}_LIBRARY}"
             IMPORTED_IMPLIB_DEBUG "${PCL_${COMPONENT}_LIBRARY_DEBUG}"
         )
       else()
         set_target_properties(${pcl_component}
           PROPERTIES
-            IMPORTED_LOCATION "${PCL_${COMPONENT}_LIBRARY}"
+            IMPORTED_LOCATION "${PCL_${COMPONENT}_DLL_PATH}"
             IMPORTED_IMPLIB "${PCL_${COMPONENT}_LIBRARY}"
         )
       endif()
