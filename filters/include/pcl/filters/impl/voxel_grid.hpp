@@ -220,6 +220,13 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
   }
 
   int distance_idx = pcl::getFieldIndex (*cloud, distance_field_name);
+
+  if (distance_idx < 0)
+  {
+    PCL_ERROR("[pcl::getMinMax3D] The specified distance field name is not found in the cloud!\n");
+    return;
+  }
+
   if (cloud->fields[distance_idx].datatype != pcl::traits::asEnum_v<D>)
   {
     PCL_ERROR ("[pcl::getMinMax3D] min_distance/max_distance are incorrect type!\n");
@@ -348,6 +355,13 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const pcl::Indices &
   }
 
   int distance_idx = pcl::getFieldIndex (*cloud, distance_field_name);
+
+  if (distance_idx < 0)
+  {
+    PCL_ERROR("[pcl::getMinMax3D] The specified distance field name is not found in the cloud!\n");
+    return;
+  }
+
   if (cloud->fields[distance_idx].datatype != pcl::traits::asEnum_v<D>)
   {
     PCL_ERROR ("[pcl::getMinMax3D] min_distance/max_distance are incorrect type!\n");

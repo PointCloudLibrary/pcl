@@ -399,4 +399,17 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 PCL_INSTANTIATE(getMinMax3D, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(VoxelGrid, PCL_XYZ_POINT_TYPES)
 
+// Explicit instantiations for float (to maintain ABI compatibility)
+template PCL_EXPORTS void
+pcl::getMinMax3D<float>(const pcl::PCLPointCloud2ConstPtr&, int, int, int, Eigen::Matrix<float, 4, 1>&, Eigen::Matrix<float, 4, 1>&);
+
+template PCL_EXPORTS void
+pcl::getMinMax3D<float>(const pcl::PCLPointCloud2ConstPtr&, const pcl::Indices&, int, int, int, Eigen::Matrix<float, 4, 1>&, Eigen::Matrix<float, 4, 1>&);
+
+template PCL_EXPORTS void
+pcl::getMinMax3D<float, float>(const pcl::PCLPointCloud2ConstPtr&, int, int, int, const std::string&, float, float, Eigen::Matrix<float, 4, 1>&, Eigen::Matrix<float, 4, 1>&, bool);
+
+template PCL_EXPORTS void
+pcl::getMinMax3D<float, float>(const pcl::PCLPointCloud2ConstPtr&, const pcl::Indices&, int, int, int, const std::string&, float, float, Eigen::Matrix<float, 4, 1>&, Eigen::Matrix<float, 4, 1>&, bool);
+
 #endif    // PCL_NO_PRECOMPILE
