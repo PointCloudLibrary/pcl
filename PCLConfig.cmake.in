@@ -648,22 +648,6 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
               HINTS "${PCL_ROOT}/bin"
               NO_DEFAULT_PATH)
 
-        if ("${component}" STREQUAL "io")
-          find_file(PCL_${COMPONENT}_DLL_PATH
-            NAMES
-              pcl_io_ply${PCL_RELEASE_SUFFIX}.dll
-              pcl_io_ply${PCL_RELWITHDEBINFO_SUFFIX}.dll
-              pcl_io_ply${PCL_MINSIZEREL_SUFFIX}.dll
-            HINTS "${PCL_ROOT}/bin"
-            NO_DEFAULT_PATH)
-
-          find_file(PCL_${COMPONENT}_DLL_PATH_DEBUG
-                NAMES ${pcl_component}${PCL_DEBUG_SUFFIX}.dll
-                HINTS "${PCL_ROOT}/bin"
-                NO_DEFAULT_PATH)
-
-        endif()
-
         if(PCL_${COMPONENT}_LIBRARY_DEBUG)
           set_target_properties(${pcl_component}
             PROPERTIES
