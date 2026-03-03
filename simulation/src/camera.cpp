@@ -6,27 +6,27 @@ using namespace pcl::simulation;
 void
 pcl::simulation::Camera::move(double vx, double vy, double vz)
 {
-  Vector3d v;
-  v << vx, vy, vz;
+  const Vector3d v(vx, vy, vz);
   pose_.pretranslate(pose_.rotation() * v);
-  x_ = pose_.translation().x();
-  y_ = pose_.translation().y();
-  z_ = pose_.translation().z();
+
+  const Vector3d& t = pose_.translation();
+  x_ = t.x();
+  y_ = t.y();
+  z_ = t.z();
 }
 
 void
 pcl::simulation::Camera::updatePose()
 {
-  Matrix3d m;
-  m = AngleAxisd(yaw_, Vector3d::UnitZ()) * AngleAxisd(pitch_, Vector3d::UnitY()) *
-      AngleAxisd(roll_, Vector3d::UnitX());
+  const Matrix3d m =
+      AngleAxisd(yaw_,   Vector3d::UnitZ()) *
+      AngleAxisd(pitch_, Vector3d::UnitY()) *
+      AngleAxisd(roll_,  Vector3d::UnitX());
 
   pose_.setIdentity();
-  pose_ *= m;
+  pose_.linear() = m;
 
-  Vector3d v;
-  v << x_, y_, z_;
-  pose_.translation() = v;
+  pose_.translation() = Vector3d(x_, y_, z_);
 }
 
 void
@@ -48,12 +48,15 @@ pcl::simulation::Camera::setParameters(int width,
   z_near_ = z_near;
   z_far_ = z_far;
 
+  const float inv_width  = 1.0f / static_cast<float>(width_);
+  const float inv_height = 1.0f / static_cast<float>(height_);
+  const float z_nf       = (z_near_ - z_far_);
+
   // clang-format off
-  float z_nf = (z_near_-z_far_);
-  projection_matrix_ <<  2.0f*fx_/width_,  0,                 1.0f-(2.0f*cx_/width_),   0,
-                         0,                2.0f*fy_/height_,  1.0f-(2.0f*cy_/height_),  0,
-                         0,                0,                 (z_far_+z_near_)/z_nf,    2.0f*z_near_*z_far_/z_nf,
-                         0,                0,                 -1.0f,                    0;
+  projection_matrix_ <<  2.0f * fx_ * inv_width,   0,                       1.0f - (2.0f * cx_ * inv_width),   0,
+                         0,                       2.0f * fy_ * inv_height, 1.0f - (2.0f * cy_ * inv_height),  0,
+                         0,                       0,                       (z_far_ + z_near_) / z_nf,         2.0f * z_near_ * z_far_ / z_nf,
+                         0,                       0,                       -1.0f,                             0;
   // clang-format on
 }
 
