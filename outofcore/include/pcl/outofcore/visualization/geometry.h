@@ -2,6 +2,7 @@
 
 // C++
 #include <string>
+#include <iostream>
 
 // PCL
 #include "object.h"
