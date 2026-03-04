@@ -44,70 +44,6 @@
 
 namespace pcl
 {
-  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
-      * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
-      * \param[in] x_idx the index of the X channel
-      * \param[in] y_idx the index of the Y channel
-      * \param[in] z_idx the index of the Z channel
-      * \param[out] min_pt the minimum data point
-      * \param[out] max_pt the maximum data point
-   */
-  PCL_EXPORTS void
-  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
-              Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
-
-  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
-    * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
-    * \param[in] indices the point cloud indices that need to be considered
-    * \param[in] x_idx the index of the X channel
-    * \param[in] y_idx the index of the Y channel
-    * \param[in] z_idx the index of the Z channel
-    * \param[out] min_pt the minimum data point
-    * \param[out] max_pt the maximum data point
-   */
-  PCL_EXPORTS void
-  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const Indices &indices, int x_idx, int y_idx, int z_idx,
-              Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
-
-  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
-    * \note Performs internal data filtering as well.
-    * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
-    * \param[in] x_idx the index of the X channel
-    * \param[in] y_idx the index of the Y channel
-    * \param[in] z_idx the index of the Z channel
-    * \param[in] distance_field_name the name of the dimension to filter data along to
-    * \param[in] min_distance the minimum acceptable value in \a distance_field_name data
-    * \param[in] max_distance the maximum acceptable value in \a distance_field_name data
-    * \param[out] min_pt the minimum data point
-    * \param[out] max_pt the maximum data point
-    * \param[in] limit_negative \b false if data \b inside of the [min_distance; max_distance] interval should be
-    * considered, \b true otherwise.
-   */
-  PCL_EXPORTS void
-  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
-              const std::string &distance_field_name, float min_distance, float max_distance,
-              Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
-
-  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
-    * \note Performs internal data filtering as well.
-    * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
-    * \param[in] indices the point cloud indices that need to be considered
-    * \param[in] x_idx the index of the X channel
-    * \param[in] y_idx the index of the Y channel
-    * \param[in] z_idx the index of the Z channel
-    * \param[in] distance_field_name the name of the dimension to filter data along to
-    * \param[in] min_distance the minimum acceptable value in \a distance_field_name data
-    * \param[in] max_distance the maximum acceptable value in \a distance_field_name data
-    * \param[out] min_pt the minimum data point
-    * \param[out] max_pt the maximum data point
-    * \param[in] limit_negative \b false if data \b inside of the [min_distance; max_distance] interval should be
-    * considered, \b true otherwise.
-   */
-  PCL_EXPORTS void
-  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const Indices &indices, int x_idx, int y_idx, int z_idx,
-               const std::string &distance_field_name, float min_distance, float max_distance,
-               Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
-
   /** \brief Get the relative cell indices of the "upper half" 13 neighbors.
     * \note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGrid
     * \ingroup filters
@@ -158,6 +94,82 @@ namespace pcl
     relative_coordinates_all.block<3, 13> (0, 13) = -relative_coordinates;
     return (relative_coordinates_all);
   }
+
+  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
+    * \tparam T the coordinate type
+    * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
+    * \param[in] x_idx the index of the X channel
+    * \param[in] y_idx the index of the Y channel
+    * \param[in] z_idx the index of the Z channel
+    * \param[out] min_pt the minimum data point
+    * \param[out] max_pt the maximum data point
+    * \ingroup filters
+   */
+  template <typename T> void
+  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
+                     Eigen::Matrix<T, 4, 1> &min_pt, Eigen::Matrix<T, 4, 1> &max_pt);
+
+  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
+    * \tparam T the coordinate type
+    * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
+    * \param[in] indices the point cloud indices that need to be considered
+    * \param[in] x_idx the index of the X channel
+    * \param[in] y_idx the index of the Y channel
+    * \param[in] z_idx the index of the Z channel
+    * \param[out] min_pt the minimum data point
+    * \param[out] max_pt the maximum data point
+    * \ingroup filters
+   */
+  template <typename T> void
+  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const pcl::Indices &indices, int x_idx, int y_idx, int z_idx,
+              Eigen::Matrix<T, 4, 1> &min_pt, Eigen::Matrix<T, 4, 1> &max_pt);
+
+
+  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
+    * \note Performs internal data filtering as well.
+    * \tparam T the coordinate type
+    * \tparam D the distance type
+    * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
+    * \param[in] x_idx the index of the X channel
+    * \param[in] y_idx the index of the Y channel
+    * \param[in] z_idx the index of the Z channel
+    * \param[in] distance_field_name the name of the dimension to filter data along to
+    * \param[in] min_distance the minimum acceptable value in \a distance_field_name data
+    * \param[in] max_distance the maximum acceptable value in \a distance_field_name data
+    * \param[out] min_pt the minimum data point
+    * \param[out] max_pt the maximum data point
+    * \param[in] limit_negative \b false if data \b inside of the [min_distance; max_distance] interval should be
+    * considered, \b true otherwise.
+    * \ingroup filters
+   */
+  template <typename T, typename D> void
+  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
+              const std::string &distance_field_name, D min_distance, D max_distance,
+              Eigen::Matrix<T, 4, 1> &min_pt, Eigen::Matrix<T, 4, 1> &max_pt, bool limit_negative = false);
+
+
+  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
+    * \note Performs internal data filtering as well.
+    * \tparam T the coordinate type
+    * \tparam D the distance type
+    * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
+    * \param[in] indices the point cloud indices that need to be considered
+    * \param[in] x_idx the index of the X channel
+    * \param[in] y_idx the index of the Y channel
+    * \param[in] z_idx the index of the Z channel
+    * \param[in] distance_field_name the name of the dimension to filter data along to
+    * \param[in] min_distance the minimum acceptable value in \a distance_field_name data
+    * \param[in] max_distance the maximum acceptable value in \a distance_field_name data
+    * \param[out] min_pt the minimum data point
+    * \param[out] max_pt the maximum data point
+    * \param[in] limit_negative \b false if data \b inside of the [min_distance; max_distance] interval should be
+    * considered, \b true otherwise.
+    * \ingroup filters
+   */
+  template <typename T, typename D> void
+  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const pcl::Indices &indices, int x_idx, int y_idx, int z_idx, const std::string &distance_field_name, D min_distance, D max_distance,
+                Eigen::Matrix<T, 4, 1> &min_pt, Eigen::Matrix<T, 4, 1> &max_pt, bool limit_negative = false);
+
 
   /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions
     * in a given pointcloud, without considering points outside of a distance threshold from the laser origin
