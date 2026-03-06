@@ -67,8 +67,6 @@
 
 #cmakedefine HAVE_CJSON
 
-#cmakedefine PCL_PREFER_BOOST_FILESYSTEM
-
 /* Precompile for a minimal set of point types instead of all. */
 #cmakedefine PCL_ONLY_CORE_POINT_TYPES
 

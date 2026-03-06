@@ -49,7 +49,7 @@
 
 #include <pcl/common/eigen.h>
 
-#include <boost/filesystem.hpp>
+#include <pcl/common/pcl_filesystem.h>
 
 #include <ostream>
 
@@ -122,18 +122,18 @@ namespace pcl
         setBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb);
         
         /** \brief Get the directory path name; this is the parent_path of  */
-        const boost::filesystem::path&
+        const pcl_fs::path&
         getDirectoryPathname () const;
         /** \brief Set the directory path name */
         void 
-        setDirectoryPathname (const boost::filesystem::path& directory_pathname);
+        setDirectoryPathname (const pcl_fs::path& directory_pathname);
 
         /** \brief Get the path to the PCD file */
-        const boost::filesystem::path&
+        const pcl_fs::path&
         getPCDFilename () const;
         /** \brief Set the point filename; extension .pcd */
         void 
-        setPCDFilename (const boost::filesystem::path& point_filename);
+        setPCDFilename (const pcl_fs::path& point_filename);
 
         /** \brief et the outofcore version read from the "version" field of the JSON object */
         int 
@@ -143,11 +143,11 @@ namespace pcl
         setOutofcoreVersion (const int version);
 
         /** \brief Sets the name of the JSON file */
-        const boost::filesystem::path&
+        const pcl_fs::path&
         getMetadataFilename () const;
         /** \brief Gets the name of the JSON file */
         void 
-        setMetadataFilename (const boost::filesystem::path& path_to_metadata);
+        setMetadataFilename (const pcl_fs::path& path_to_metadata);
         
         /** \brief Get the midpoint of this node's bounding box */
         const Eigen::Vector3d&
@@ -162,7 +162,7 @@ namespace pcl
         loadMetadataFromDisk ();
         /** \brief Loads the data from a JSON file located at \ref metadata_filename_ */
         int 
-        loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata);
+        loadMetadataFromDisk (const pcl_fs::path& path_to_metadata);
 
         friend
         std::ostream& operator<<(std::ostream& os, const OutofcoreOctreeNodeMetadata& metadata_arg);
@@ -173,13 +173,13 @@ namespace pcl
         /** \brief The X,Y,Z axes-aligned maximum corner for the bounding box */
         Eigen::Vector3d max_bb_;
         /** \brief Path to PCD file (i.e. "bin"ary point data) */
-        boost::filesystem::path binary_point_filename_;
+        pcl_fs::path binary_point_filename_;
         /** \brief Voxel center; not stored on disk */
         Eigen::Vector3d midpoint_xyz_;
         /** \brief Directory this metadata belongs in */
-        boost::filesystem::path directory_;
+        pcl_fs::path directory_;
         /** \brief Metadata (JSON) file pathname (oct_idx extension JSON file) */
-        boost::filesystem::path metadata_filename_;
+        pcl_fs::path metadata_filename_;
         /** \brief Outofcore library version identifier */
         int outofcore_version_{0};
 
