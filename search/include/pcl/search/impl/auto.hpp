@@ -26,6 +26,7 @@ pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::
       if(searcher->setInputCloud (cloud, indices)) { // may return false if OrganizedNeighbor cannot work with the cloud, then use another search method instead
         return searcher;
       }
+      delete searcher;
     }
   }
 #if PCL_HAS_NANOFLANN
@@ -34,6 +35,7 @@ pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::
   if(searcher->setInputCloud (cloud, indices)) {
     return searcher;
   }
+  delete searcher;
 #else
   pcl::utils::ignore(purpose);
 #endif
@@ -42,13 +44,16 @@ pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::
   if(searcher->setInputCloud (cloud, indices)) {
     return searcher;
   }
+  delete searcher;
 #endif
   // If nothing else works, and the point type has xyz coordinates, use brute force method
   if constexpr (pcl::traits::has_xyz_v<PointT>) {
     searcher = new pcl::search::BruteForce<PointT> (sorted_results);
     searcher->setInputCloud (cloud, indices);
+    return searcher;
   }
-  return searcher;
+  PCL_ERROR("[pcl::search::autoSelectMethod] No suitable method found. Make sure you have nanoflann and/or FLANN installed.\n");
+  return nullptr;
 }
 
 #define PCL_INSTANTIATE_AutoSelectMethod(T) template PCL_EXPORTS pcl::search::Search<T> * pcl::search::autoSelectMethod<T>(const typename pcl::PointCloud<T>::ConstPtr& cloud, const pcl::IndicesConstPtr& indices, bool sorted_results, pcl::search::Purpose purpose);
