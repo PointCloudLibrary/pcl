@@ -15,6 +15,7 @@
 #include <pcl/search/brute_force.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/search/kdtree_nanoflann.h>
+#include <pcl/search/octree.h>
 #include <pcl/search/organized.h>
 
 template<typename PointT>
@@ -29,6 +30,7 @@ pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::
       delete searcher;
     }
   }
+
 #if PCL_HAS_NANOFLANN
   // we get the number of search dimensions as a compile-time-constant via NR_DIMS. NR_DIMS may be -1 if it is not possible to determine the dimensions at compile-time (only at run-time), however then searching may be slower. If NR_DIMS is not -1, it must be the same as the return value of getNumberOfDimensions().
   searcher = new pcl::search::KdTreeNanoflann<PointT, pcl::DefaultPointRepresentation<PointT>::NR_DIMS> (sorted_results, (purpose == pcl::search::Purpose::one_knn_search ? 10 : 20));
@@ -39,6 +41,7 @@ pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::
 #else
   pcl::utils::ignore(purpose);
 #endif
+
 #if PCL_HAS_FLANN
   searcher = new pcl::search::KdTree<PointT> (sorted_results);
   if(searcher->setInputCloud (cloud, indices)) {
@@ -46,6 +49,16 @@ pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::
   }
   delete searcher;
 #endif
+
+  if constexpr (pcl::traits::has_xyz_v<PointT>) {
+    searcher = new pcl::search::Octree<PointT> (0.01); // TODO a better heuristic to choose octree resolution?
+    searcher->setSortedResults (sorted_results);
+    if(searcher->setInputCloud (cloud, indices)) {
+      return searcher;
+    }
+    delete searcher;
+  }
+
   // If nothing else works, and the point type has xyz coordinates, use brute force method
   if constexpr (pcl::traits::has_xyz_v<PointT>) {
     searcher = new pcl::search::BruteForce<PointT> (sorted_results);
