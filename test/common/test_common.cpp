@@ -50,6 +50,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/point_tests.h> // for isFinite
+#include <pcl/point_representation.h>
 
 using namespace pcl;
 
@@ -518,6 +519,15 @@ TEST (PCL, computeMedian)
   std::vector<int> vector5{-1, 1, 2, 9, 15, 16};
   const auto median5 = computeMedian (vector5.begin (), vector5.end (), [](const int& x){ return static_cast<double>(x); });
   EXPECT_EQ(median5, 5.5);
+}
+
+template <typename T> class PointRepresentationTest : public ::testing::Test { };
+using PointRepresentationTestTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_POINT_TYPES)>;
+TYPED_TEST_SUITE(PointRepresentationTest, PointRepresentationTestTypes);
+TYPED_TEST(PointRepresentationTest, GetNormalVectorXfMap)
+{
+  pcl::DefaultPointRepresentation<TypeParam> point_representation;
+  EXPECT_EQ (pcl::DefaultPointRepresentation<TypeParam>::NR_DIMS, point_representation.getNumberOfDimensions());
 }
 
 /* ---[ */

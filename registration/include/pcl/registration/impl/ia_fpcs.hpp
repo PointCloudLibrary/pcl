@@ -671,8 +671,11 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   }
 
   // initialize new kd tree of intermediate points from first point pair correspondences
-  KdTreeReciprocalPtr tree_e(new KdTreeReciprocal);
-  tree_e->setInputCloud(cloud_e);
+  KdTreeReciprocalPtr tree_e(pcl::search::autoSelectMethod<PointSource>(
+      cloud_e,
+      true,
+      pcl::search::Purpose::radius_search)); // maybe check again if results do not have
+                                             // to be sorted
 
   pcl::Indices ids;
   std::vector<float> dists_sqr;
