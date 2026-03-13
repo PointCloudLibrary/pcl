@@ -67,11 +67,11 @@ namespace pcl
 
     /** \brief Non-class function which creates a single child leaf; used with \ref queryBBIntersects_noload to avoid loading the data from disk */
     template<typename ContainerT, typename PointT> OutofcoreOctreeBaseNode<ContainerT, PointT>*
-    makenode_norec (const boost::filesystem::path &path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super);
+    makenode_norec (const pcl_fs::path &path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super);
 
     /** \brief Non-class method which performs a bounding box query without loading any of the point cloud data from disk */
     template<typename ContainerT, typename PointT> void
-    queryBBIntersects_noload (const boost::filesystem::path &root_node, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const std::uint32_t query_depth, std::list<std::string> &bin_name);
+    queryBBIntersects_noload (const pcl_fs::path &root_node, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const std::uint32_t query_depth, std::list<std::string> &bin_name);
 
     /** \brief Non-class method overload */
     template<typename ContainerT, typename PointT> void
@@ -99,10 +99,10 @@ namespace pcl
 
       //these methods can be rewritten with the iterators. 
       friend OutofcoreOctreeBaseNode<ContainerT, PointT>*
-      makenode_norec<ContainerT, PointT> (const boost::filesystem::path &path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super);
+      makenode_norec<ContainerT, PointT> (const pcl_fs::path &path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super);
   
       friend void
-      queryBBIntersects_noload<ContainerT, PointT> (const boost::filesystem::path &rootnode, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const std::uint32_t query_depth, std::list<std::string> &bin_name);
+      queryBBIntersects_noload<ContainerT, PointT> (const pcl_fs::path &rootnode, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const std::uint32_t query_depth, std::list<std::string> &bin_name);
 
       friend void
       queryBBIntersects_noload<ContainerT, PointT> (OutofcoreOctreeBaseNode<ContainerT, PointT>* current, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const std::uint32_t query_depth, std::list<std::string> &bin_name);
@@ -126,7 +126,7 @@ namespace pcl
         OutofcoreOctreeBaseNode ();
 
         /** \brief Create root node and directory */
-        OutofcoreOctreeBaseNode (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &root_name);
+        OutofcoreOctreeBaseNode (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const pcl_fs::path &root_name);
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
         
@@ -144,13 +144,13 @@ namespace pcl
         }
 
 
-        const boost::filesystem::path&
+        const pcl_fs::path&
         getPCDFilename () const
         {
           return node_metadata_->getPCDFilename ();
         }
 
-        const boost::filesystem::path&
+        const pcl_fs::path&
         getMetadataFilename () const
         {
           return node_metadata_->getMetadataFilename ();
@@ -327,7 +327,7 @@ namespace pcl
          * \throws PCLException if directory is missing
          * \throws PCLException if node index is missing
          */
-        OutofcoreOctreeBaseNode (const boost::filesystem::path &directory_path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super, bool load_all);
+        OutofcoreOctreeBaseNode (const pcl_fs::path &directory_path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super, bool load_all);
 
         /** \brief Create root node and directory
          *
@@ -342,7 +342,7 @@ namespace pcl
          * 
          * \throws PCLException if the specified path already exists
          */
-        void init_root_node (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &rootname);
+        void init_root_node (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const pcl_fs::path &rootname);
 
         /** \brief no copy construction right now */
         OutofcoreOctreeBaseNode (const OutofcoreOctreeBaseNode &rval);
@@ -463,7 +463,7 @@ namespace pcl
 
         /** \brief Write JSON metadata for this node to file */
         void
-        saveMetadataToFile (const boost::filesystem::path &path);
+        saveMetadataToFile (const pcl_fs::path &path);
 
         /** \brief Method which recursively free children of this node 
          */
@@ -483,7 +483,7 @@ namespace pcl
         /** \brief Loads the nodes metadata from the JSON file 
          */
         void
-        loadFromFile (const boost::filesystem::path &path, OutofcoreOctreeBaseNode* super);
+        loadFromFile (const pcl_fs::path &path, OutofcoreOctreeBaseNode* super);
 
         /** \brief Recursively converts data files to ascii XZY files */
         void

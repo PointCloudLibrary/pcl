@@ -112,7 +112,7 @@ class OutofcoreCloud : public Object
 
     // Operators
     // -----------------------------------------------------------------------------
-    OutofcoreCloud (std::string name, boost::filesystem::path& tree_root);
+    OutofcoreCloud (std::string name, pcl_fs::path& tree_root);
 
     // Methods
     // -----------------------------------------------------------------------------
