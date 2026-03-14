@@ -51,7 +51,7 @@
 namespace pcl {
 
 enum class NeighborSearchMethod {
-  KDTREE,   // Original
+  RADIUS,   // Original
   DIRECT26, // VoxelGridCovariance::getNeighborhoodAtPoint
   DIRECT7,  // VoxelGridCovariance::getFaceNeighborsAtPoint
   DIRECT1   // VoxelGridCovariance::getVoxelAtPoint
@@ -391,8 +391,34 @@ protected:
    * \param[in] x_trans transformed point minus mean of occupied covariance
    * voxel
    * \param[in] c_inv covariance of occupied covariance voxel
+   * \param[in] point_jacobian The first order derivative of the transformation of a
+   * point w.r.t. the transform vector, \f$ J_E \f$ in Equation 6.18 [Magnusson 2009]
+   * \param[in] point_hessian The second order derivative of the transformation of a
+   * point w.r.t. the transform vector, \f$ H_E \f$ in Equation 6.20 [Magnusson 2009].
+   * If this is a nullptr, the hessian is not calculated (unnecessary for step
+   * calculation)
+   */
+  double
+  updateDerivatives(Eigen::Matrix<double, 6, 1>& score_gradient,
+                    Eigen::Matrix<double, 6, 6>& hessian,
+                    const Eigen::Vector3d& x_trans,
+                    const Eigen::Matrix3d& c_inv,
+                    const Eigen::Matrix<double, 3, 6>& point_jacobian,
+                    const Eigen::Matrix<double, 18, 6>* point_hessian) const;
+
+  /** \brief Compute individual point contributions to derivatives of
+   * likelihood function w.r.t. the transformation vector.
+   * \note Equation 6.10, 6.12 and 6.13 [Magnusson 2009].
+   * \param[in,out] score_gradient the gradient vector of the likelihood
+   * function w.r.t. the transformation vector
+   * \param[in,out] hessian the hessian matrix of the likelihood function
+   * w.r.t. the transformation vector
+   * \param[in] x_trans transformed point minus mean of occupied covariance
+   * voxel
+   * \param[in] c_inv covariance of occupied covariance voxel
    * \param[in] compute_hessian flag to calculate hessian, unnecessary for step
    * calculation.
+   * \warn This overload uses the global variables point_jacobian_, point_hessian_
    */
   double
   updateDerivatives(Eigen::Matrix<double, 6, 1>& score_gradient,
@@ -414,8 +440,25 @@ protected:
   /** \brief Compute point derivatives.
    * \note Equation 6.18-21 [Magnusson 2009].
    * \param[in] x point from the input cloud
+   * \param[out] point_jacobian The first order derivative of the transformation of a
+   * point w.r.t. the transform vector, \f$ J_E \f$ in Equation 6.18 [Magnusson 2009]
+   * \param[out] point_hessian The second order derivative of the transformation of a
+   * point w.r.t. the transform vector, \f$ H_E \f$ in Equation 6.20 [Magnusson 2009].
+   * If this is a nullptr, the hessian is not calculated (unnecessary for step
+   * calculation)
+   */
+  void
+  computePointDerivatives(const Eigen::Vector3d& x,
+                          Eigen::Matrix<double, 3, 6>& point_jacobian,
+                          Eigen::Matrix<double, 18, 6>* point_hessian) const;
+
+  /** \brief Compute point derivatives.
+   * \note Equation 6.18-21 [Magnusson 2009].
+   * \param[in] x point from the input cloud
    * \param[in] compute_hessian flag to calculate hessian, unnecessary for step
    * calculation.
+   * \warn This overload uses the global variables angular_jacobian_, angular_hessian_,
+   * point_jacobian_, point_hessian_
    */
   void
   computePointDerivatives(const Eigen::Vector3d& x, bool compute_hessian = true);
@@ -439,6 +482,27 @@ protected:
    * \param[in] x_trans transformed point minus mean of occupied covariance
    * voxel
    * \param[in] c_inv covariance of occupied covariance voxel
+   * \param[in] point_jacobian The first order derivative of the transformation of a
+   * point w.r.t. the transform vector, \f$ J_E \f$ in Equation 6.18 [Magnusson 2009]
+   * \param[in] point_hessian The second order derivative of the transformation of a
+   * point w.r.t. the transform vector, \f$ H_E \f$ in Equation 6.20 [Magnusson 2009]
+   */
+  void
+  updateHessian(Eigen::Matrix<double, 6, 6>& hessian,
+                const Eigen::Vector3d& x_trans,
+                const Eigen::Matrix3d& c_inv,
+                const Eigen::Matrix<double, 3, 6>& point_jacobian,
+                const Eigen::Matrix<double, 18, 6>& point_hessian) const;
+
+  /** \brief Compute individual point contributions to hessian of likelihood
+   * function w.r.t. the transformation vector.
+   * \note Equation 6.13 [Magnusson 2009].
+   * \param[in,out] hessian the hessian matrix of the likelihood function
+   * w.r.t. the transformation vector
+   * \param[in] x_trans transformed point minus mean of occupied covariance
+   * voxel
+   * \param[in] c_inv covariance of occupied covariance voxel
+   * \warn This overload uses the global variables point_jacobian_ and point_hessian_
    */
   void
   updateHessian(Eigen::Matrix<double, 6, 6>& hessian,
@@ -659,7 +723,7 @@ private:
   unsigned int threads_{1};
 
   /** \brief The method used for nearest neighbor search. */
-  NeighborSearchMethod search_method_{NeighborSearchMethod::KDTREE};
+  NeighborSearchMethod search_method_{NeighborSearchMethod::RADIUS};
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW

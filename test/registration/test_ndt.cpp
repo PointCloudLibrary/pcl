@@ -60,7 +60,7 @@ TEST (PCL, NormalDistributionsTransform)
   PointCloud<PointT> output;
 
   NormalDistributionsTransform<PointT, PointT> reg;
-  reg.setNeighborhoodSearchMethod(NeighborSearchMethod::KDTREE);
+  reg.setNeighborhoodSearchMethod(NeighborSearchMethod::RADIUS);
   reg.setNumberOfThreads(1);
   reg.setStepSize (0.05);
   reg.setResolution (0.025f);
