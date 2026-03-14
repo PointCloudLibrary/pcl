@@ -222,10 +222,10 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeDerivativ
   std::vector<float> distances;
 
   Eigen::Matrix<double, 3, 6> point_jacobian = Eigen::Matrix<double, 3, 6>::Zero();
-  point_jacobian_.block<3, 3>(0, 0).setIdentity();
+  point_jacobian.block<3, 3>(0, 0).setIdentity();
   Eigen::Matrix<double, 18, 6> point_hessian = Eigen::Matrix<double, 18, 6>::Zero();
 
-#pragma omp parallel num_threads(threads_) default(none) shared(score_gradient, hessian, trans_cloud, compute_hessian) firstprivate(neighborhood, distances, point_jacobian, point_hessian), reduction(+: score)
+#pragma omp parallel num_threads(threads_) default(none) shared(score_gradient, hessian, trans_cloud, compute_hessian) firstprivate(neighborhood, distances, point_jacobian, point_hessian) reduction(+: score)
   {
     // workaround for a user-defined reduction on score_gradient and hessian, that still
     // works with OpenMP 2.0

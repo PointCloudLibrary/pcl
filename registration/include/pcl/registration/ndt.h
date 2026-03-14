@@ -418,7 +418,7 @@ protected:
    * \param[in] c_inv covariance of occupied covariance voxel
    * \param[in] compute_hessian flag to calculate hessian, unnecessary for step
    * calculation.
-   * \warn This overload uses the global variables point_jacobian_, point_hessian_
+   * \warning This overload uses the global variables point_jacobian_, point_hessian_
    */
   double
   updateDerivatives(Eigen::Matrix<double, 6, 1>& score_gradient,
@@ -457,7 +457,7 @@ protected:
    * \param[in] x point from the input cloud
    * \param[in] compute_hessian flag to calculate hessian, unnecessary for step
    * calculation.
-   * \warn This overload uses the global variables angular_jacobian_, angular_hessian_,
+   * \warning This overload uses the global variables angular_jacobian_, angular_hessian_,
    * point_jacobian_, point_hessian_
    */
   void
@@ -502,7 +502,7 @@ protected:
    * \param[in] x_trans transformed point minus mean of occupied covariance
    * voxel
    * \param[in] c_inv covariance of occupied covariance voxel
-   * \warn This overload uses the global variables point_jacobian_ and point_hessian_
+   * \warning This overload uses the global variables point_jacobian_ and point_hessian_
    */
   void
   updateHessian(Eigen::Matrix<double, 6, 6>& hessian,
