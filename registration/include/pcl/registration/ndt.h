@@ -457,8 +457,8 @@ protected:
    * \param[in] x point from the input cloud
    * \param[in] compute_hessian flag to calculate hessian, unnecessary for step
    * calculation.
-   * \warning This overload uses the global variables angular_jacobian_, angular_hessian_,
-   * point_jacobian_, point_hessian_
+   * \warning This overload uses the global variables angular_jacobian_,
+   * angular_hessian_, point_jacobian_, point_hessian_
    */
   void
   computePointDerivatives(const Eigen::Vector3d& x, bool compute_hessian = true);
