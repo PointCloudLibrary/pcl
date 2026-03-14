@@ -247,6 +247,9 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeDerivativ
         // Radius search has been experimentally faster than direct neighbor checking.
         target_cells_.radiusSearch(x_trans_pt, resolution_, neighborhood, distances);
         break;
+      case NeighborSearchMethod::DIRECT27:
+        target_cells_.getAllNeighborsAtPoint(x_trans_pt, neighborhood);
+        break;
       case NeighborSearchMethod::DIRECT26:
         target_cells_.getNeighborhoodAtPoint(x_trans_pt, neighborhood);
         break;
@@ -526,6 +529,9 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeHessian(
     case NeighborSearchMethod::RADIUS:
       // Radius search has been experimentally faster than direct neighbor checking.
       target_cells_.radiusSearch(x_trans_pt, resolution_, neighborhood, distances);
+      break;
+    case NeighborSearchMethod::DIRECT27:
+      target_cells_.getAllNeighborsAtPoint(x_trans_pt, neighborhood);
       break;
     case NeighborSearchMethod::DIRECT26:
       target_cells_.getNeighborhoodAtPoint(x_trans_pt, neighborhood);

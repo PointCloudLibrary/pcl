@@ -52,6 +52,7 @@ namespace pcl {
 
 enum class NeighborSearchMethod {
   RADIUS,   // Original
+  DIRECT27, // VoxelGridCovariance::getAllNeighborsAtPoint
   DIRECT26, // VoxelGridCovariance::getNeighborhoodAtPoint
   DIRECT7,  // VoxelGridCovariance::getFaceNeighborsAtPoint
   DIRECT1   // VoxelGridCovariance::getVoxelAtPoint
