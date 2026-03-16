@@ -274,30 +274,19 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
     {
       std::memcpy(&distance_value, data_ptr + distance_off, sizeof(D));
 
-      if (limit_negative)
+      if (limit_negative == (distance_value < max_distance && distance_value > min_distance))
       {
-        if ((distance_value < max_distance) && (distance_value > min_distance))
-        {
-          data_ptr += pt_step;
-          continue;
-        }
-      }
-      else
-      {
-        if ((distance_value > max_distance) || (distance_value < min_distance))
-        {
-          data_ptr += pt_step;
-          continue;
-        }
-      }
-
-        std::memcpy(&x, data_ptr + x_off, sizeof(T));
-        std::memcpy(&y, data_ptr + y_off, sizeof(T));
-        std::memcpy(&z, data_ptr + z_off, sizeof(T));
-
         data_ptr += pt_step;
+        continue;
+      }
 
-        update_min_max(x, y, z);
+      std::memcpy(&x, data_ptr + x_off, sizeof(T));
+      std::memcpy(&y, data_ptr + y_off, sizeof(T));
+      std::memcpy(&z, data_ptr + z_off, sizeof(T));
+
+      data_ptr += pt_step;
+
+      update_min_max(x, y, z);
     }
   }
   else
@@ -306,34 +295,23 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
     {
       std::memcpy(&distance_value, data_ptr + distance_off, sizeof(D));
 
-      if (limit_negative)
+      if (limit_negative == (distance_value < max_distance && distance_value > min_distance))
       {
-        if ((distance_value < max_distance) && (distance_value > min_distance))
-        {
-          data_ptr += pt_step;
-          continue;
-        }
-      }
-      else
-      {
-        if ((distance_value > max_distance) || (distance_value < min_distance))
-        {
-          data_ptr += pt_step;
-          continue;
-        }
-      }
-
-        std::memcpy(&x, data_ptr + x_off, sizeof(T));
-        std::memcpy(&y, data_ptr + y_off, sizeof(T));
-        std::memcpy(&z, data_ptr + z_off, sizeof(T));
-
         data_ptr += pt_step;
+        continue;
+      }
 
-        // Check if the point is invalid
-        if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
-          continue;
+      std::memcpy(&x, data_ptr + x_off, sizeof(T));
+      std::memcpy(&y, data_ptr + y_off, sizeof(T));
+      std::memcpy(&z, data_ptr + z_off, sizeof(T));
 
-        update_min_max(x, y, z);
+      data_ptr += pt_step;
+
+      // Check if the point is invalid
+      if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
+        continue;
+
+      update_min_max(x, y, z);
     }
   }
 
@@ -410,15 +388,9 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const pcl::Indices &
 
       std::memcpy(&distance_value, pt_data + distance_off, sizeof(D));
 
-      if (limit_negative)
+      if (limit_negative == (distance_value < max_distance && distance_value > min_distance))
       {
-        if ((distance_value < max_distance) && (distance_value > min_distance))
-          continue;
-      }
-      else
-      {
-        if ((distance_value > max_distance) || (distance_value < min_distance))
-          continue;
+        continue;
       }
 
       std::memcpy(&x, pt_data + x_off, sizeof(T));
@@ -436,15 +408,9 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const pcl::Indices &
 
       std::memcpy(&distance_value, pt_data + distance_off, sizeof(D));
 
-      if (limit_negative)
+      if (limit_negative == (distance_value < max_distance && distance_value > min_distance))
       {
-        if ((distance_value < max_distance) && (distance_value > min_distance))
-          continue;
-      }
-      else
-      {
-        if ((distance_value > max_distance) || (distance_value < min_distance))
-          continue;
+        continue;
       }
 
       std::memcpy(&x, pt_data + x_off, sizeof(T));
