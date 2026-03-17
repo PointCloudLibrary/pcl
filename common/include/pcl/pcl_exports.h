@@ -44,7 +44,7 @@
     #ifdef PCLAPI_EXPORTS
         #define PCL_EXPORTS __declspec(dllexport)
     #else
-        #define PCL_EXPORTS
+        #define PCL_EXPORTS __declspec(dllimport)
     #endif
 #else
     #ifdef PCL_SYMBOL_VISIBILITY_HIDDEN
