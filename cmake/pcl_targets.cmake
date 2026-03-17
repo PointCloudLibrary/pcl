@@ -232,6 +232,9 @@ function(PCL_ADD_LIBRARY _name)
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     endif()
 
+    target_compile_definitions(
+      ${_name} PUBLIC "$<IF:$<BOOL:${PCL_SHARED_LIBS}>,PCLAPI_EXPORTS,PCL_STATIC_DEFINE>")
+
     set_target_properties(${_name} PROPERTIES
       VERSION ${PCL_VERSION}
       SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR})

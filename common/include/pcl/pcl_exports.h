@@ -40,16 +40,20 @@
 // Header 'pcl_macros' is not suitable since it includes <Eigen/Core>,
 // which can't be eaten by nvcc (it's too weak)
 
-#if defined _WIN32 || defined WINCE || defined __MINGW32__
-    #ifdef PCLAPI_EXPORTS
-        #define PCL_EXPORTS __declspec(dllexport)
-    #else
-        #define PCL_EXPORTS __declspec(dllimport)
-    #endif
+#ifdef PCL_STATIC_DEFINE
+  #define PCL_EXPORTS
 #else
-    #ifdef PCL_SYMBOL_VISIBILITY_HIDDEN
-        #define PCL_EXPORTS __attribute__ ((visibility ("default")))
-    #else
-        #define PCL_EXPORTS
-    #endif
+  #if defined WIN32 || defined _WIN32 || defined WINCE || defined __MINGW32__
+      #ifdef PCLAPI_EXPORTS
+          #define PCL_EXPORTS __declspec(dllexport)
+      #else
+          #define PCL_EXPORTS __declspec(dllimport)
+      #endif
+  #else
+      #ifdef PCL_SYMBOL_VISIBILITY_HIDDEN
+          #define PCL_EXPORTS __attribute__ ((visibility ("default")))
+      #else
+          #define PCL_EXPORTS
+      #endif
+  #endif
 #endif
