@@ -22,8 +22,6 @@
 #if !defined(ON_POINT_INC_)
 #define ON_POINT_INC_
 
-#include <pcl/pcl_exports.h>
-
 class ON_BoundingBox;
 class ON_Xform;
 class ON_Line;
@@ -45,7 +43,7 @@ class ON_Interval;
 //
 //   ON_Interval
 //
-class PCL_EXPORTS ON_CLASS ON_Interval
+class ON_CLASS ON_Interval
 {
 public:
 
@@ -263,7 +261,7 @@ public:
 //
 //   ON_2dPoint
 //
-class PCL_EXPORTS ON_CLASS ON_2dPoint
+class ON_CLASS ON_2dPoint
 {
 public:
   double x, y;
@@ -415,7 +413,7 @@ ON_2dPoint operator*(double, const ON_2dPoint&);
 //
 //   ON_3dPoint
 //
-class PCL_EXPORTS ON_CLASS ON_3dPoint
+class ON_CLASS ON_3dPoint
 {
 public:
   double x, y, z;
@@ -569,7 +567,7 @@ ON_3dPoint operator*(double, const ON_3dPoint&);
 //
 //   ON_4dPoint (homogeneous coordinates)
 //
-class PCL_EXPORTS ON_CLASS ON_4dPoint
+class ON_CLASS ON_4dPoint
 {
 public:
   double x, y, z, w;
@@ -671,7 +669,7 @@ ON_4dPoint operator*(double, const ON_4dPoint&);
 //
 //   ON_2dVector
 //
-class PCL_EXPORTS ON_CLASS ON_2dVector
+class ON_CLASS ON_2dVector
 {
 public:
   double x, y;
@@ -949,7 +947,7 @@ ON_IsRightHandFrame( // true if X, Y are orthonormal and right handed
 //
 //   ON_3dVector
 //
-class PCL_EXPORTS ON_CLASS ON_3dVector
+class ON_CLASS ON_3dVector
 {
 public:
   double x, y, z;
@@ -1174,7 +1172,7 @@ public:
         );
 };
 
-class PCL_EXPORTS ON_CLASS ON_3dRay
+class ON_CLASS ON_3dRay
 {
 public:
   ON_3dRay();
@@ -1189,7 +1187,7 @@ Description:
   Typically the vector portion is a unit vector and
   m_d = -(x*P.x + y*P.y + z*P.z) for a point P on the plane.
 */
-class PCL_EXPORTS ON_CLASS ON_PlaneEquation : public ON_3dVector
+class ON_CLASS ON_PlaneEquation : public ON_3dVector
 {
 public:
   // C++ defaults for construction, destruction, copys, and operator=
@@ -1576,7 +1574,7 @@ extern ON_EXTERN_DECL const ON_3dVector ON_zaxis; // (0.0, 0.0, 1.0)
 //
 //   ON_SurfaceCurvature
 //
-class PCL_EXPORTS ON_CLASS ON_SurfaceCurvature
+class ON_CLASS ON_SurfaceCurvature
 {
 public:
   double k1, k2; // principal curvatures
