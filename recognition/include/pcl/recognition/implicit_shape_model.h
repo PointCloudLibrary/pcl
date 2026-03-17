@@ -67,7 +67,7 @@ namespace pcl
     /** \brief This class is used for storing, analyzing and manipulating votes
       * obtained from ISM algorithm. */
     template <typename PointT>
-    class PCL_EXPORTS ISMVoteList
+    class ISMVoteList
     {
       public:
 
@@ -238,7 +238,7 @@ namespace pcl
       * \ingroup recognition
       */
     template <int FeatureSize, typename PointT, typename NormalT = pcl::Normal>
-    class PCL_EXPORTS ImplicitShapeModelEstimation
+    class ImplicitShapeModelEstimation
     {
       public:
 
@@ -249,7 +249,7 @@ namespace pcl
       protected:
 
         /** \brief This structure stores the information about the keypoint. */
-        struct PCL_EXPORTS LocationInfo
+        struct LocationInfo
         {
           /** \brief Location info constructor.
             * \param[in] model_num number of training model.
@@ -278,7 +278,7 @@ namespace pcl
 
         /** \brief This structure is used for determining the end of the
           * k-means clustering process. */
-        struct PCL_EXPORTS TermCriteria
+        struct TermCriteria
         {
           enum
           {
@@ -312,7 +312,7 @@ namespace pcl
         };
 
         /** \brief Structure for storing the visual word. */
-        struct PCL_EXPORTS VisualWordStat
+        struct VisualWordStat
         {
           /** \brief Empty constructor with member variables initialization. */
           VisualWordStat () :

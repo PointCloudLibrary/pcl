@@ -60,7 +60,7 @@ namespace registration {
  * \ingroup registration
  */
 template <typename SourceT, typename TargetT>
-class PCL_EXPORTS CorrespondenceRejectorPoly : public CorrespondenceRejector {
+class CorrespondenceRejectorPoly : public CorrespondenceRejector {
   using CorrespondenceRejector::getClassName;
   using CorrespondenceRejector::input_correspondences_;
   using CorrespondenceRejector::rejection_name_;

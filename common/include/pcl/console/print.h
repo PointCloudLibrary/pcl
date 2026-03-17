@@ -288,7 +288,7 @@ namespace pcl
       * \param format the message
       */
     template <typename... Args>
-    PCL_EXPORTS void 
+    void 
     print_info(FILE* stream, const std::string format, Args&&... args)
     {
       print(L_INFO, stream, format, std::forward<Args>(args)...);
@@ -298,7 +298,7 @@ namespace pcl
      * \param format the message
      */
     template <typename... Args>
-    PCL_EXPORTS void
+    void
     print_info(const std::string format, Args&&... args)
     {
       print_info(stdout, format, std::forward<Args>(args)...);
@@ -309,7 +309,7 @@ namespace pcl
       * \param format the message
       */
     template <typename... Args>
-    PCL_EXPORTS void 
+    void 
     print_error(FILE* stream, const std::string format, Args&&... args)
     {
       print(L_ERROR, stream, format, std::forward<Args>(args)...);
@@ -319,7 +319,7 @@ namespace pcl
      * \param format the message
      */
     template <typename... Args>
-    PCL_EXPORTS void
+    void
     print_error(std::string format, Args&&... args)
     {
       print_error(stderr, format, std::forward<Args>(args)...);
@@ -330,7 +330,7 @@ namespace pcl
      * \param format the message
      */
     template <typename... Args>
-    PCL_EXPORTS void
+    void
     print_warn(FILE* stream, const std::string format, Args&&... args)
     {
       print(L_WARN, stream, format, std::forward<Args>(args)...);
@@ -340,7 +340,7 @@ namespace pcl
       * \param format the message
       */
     template <typename... Args>
-    PCL_EXPORTS void
+    void
     print_warn(std::string format, Args&&... args)
     {
       print_warn(stderr, format, std::forward<Args>(args)...);
@@ -351,7 +351,7 @@ namespace pcl
       * \param format the message
       */
     template <typename... Args>
-    PCL_EXPORTS void 
+    void 
     print_debug(FILE* stream, const std::string format, Args&&... args)
     {
       print(L_DEBUG, stream, format, std::forward<Args>(args)...);
@@ -361,7 +361,7 @@ namespace pcl
      * \param format the message
      */
     template <typename... Args>
-    PCL_EXPORTS void
+    void
     print_debug(const std::string format, Args&&... args)
     {
       print_debug(stdout, format, std::forward<Args>(args)...);
@@ -374,7 +374,7 @@ namespace pcl
      * \param format the message
      */
     template <typename... Args>
-    PCL_EXPORTS void
+    void
     print_color(FILE* stream, int attr, int fg, const std::string format, Args&&... args)
     {
       const auto str = to_string(format, std::forward<Args>(args)...);
@@ -387,7 +387,7 @@ namespace pcl
      * \param format the message
      */
     template <typename... Args>
-    PCL_EXPORTS void
+    void
     print_value(FILE* stream, const std::string format, Args&&... args)
     {
       const auto str = to_string(format, std::forward<Args>(args)...);
@@ -399,7 +399,7 @@ namespace pcl
       * \param format the message
       */
     template <typename... Args>
-    PCL_EXPORTS void
+    void
     print_value(const std::string format, Args&&... args)
     {
       print_value(stdout, format, std::forward<Args>(args)...);
@@ -411,7 +411,7 @@ namespace pcl
      * \param format the message
      */
     template <typename... Args>
-    PCL_EXPORTS void
+    void
     print(VERBOSITY_LEVEL level, FILE* stream, const std::string format, Args&&...args)
     {
       if (!pcl::console::isVerbosityLevelEnabled(level))
@@ -445,7 +445,7 @@ namespace pcl
      * \param format the message
      */
     template <typename... Args>
-    PCL_EXPORTS void
+    void
     print_highlight(FILE* stream, const std::string format, Args... args)
     {
       const auto str = to_string(format, std::forward<Args>(args)...);
@@ -458,7 +458,7 @@ namespace pcl
      * \param format the message
      */
     template <typename... Args>
-    PCL_EXPORTS void
+    void
     print_highlight(const std::string format, Args&&...args)
     {
       print_highlight(stdout, format, std::forward<Args>(args)...);

@@ -47,7 +47,7 @@ namespace pcl {
 
 /** Class representing a decision forest. */
 template <class NodeType>
-class PCL_EXPORTS DecisionForest : public std::vector<pcl::DecisionTree<NodeType>> {
+class DecisionForest : public std::vector<pcl::DecisionTree<NodeType>> {
 
 public:
   /** Constructor. */

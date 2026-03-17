@@ -55,7 +55,7 @@ namespace pcl
   namespace recognition
   {
     template<typename NodeData, typename NodeDataCreator, typename Scalar = float>
-    class PCL_EXPORTS SimpleOctree
+    class SimpleOctree
     {
       public:
         class Node
