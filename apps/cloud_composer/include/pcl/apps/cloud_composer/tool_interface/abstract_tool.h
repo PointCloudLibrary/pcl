@@ -40,13 +40,14 @@
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/apps/cloud_composer/properties_model.h>
+#include <pcl/pcl_exports.h>
 
 #include <QDebug>
 
 namespace pcl {
 namespace cloud_composer {
 
-class AbstractTool : public QObject {
+class PCL_EXPORTS AbstractTool : public QObject {
   Q_OBJECT
 public:
   AbstractTool(PropertiesModel* parameter_model, QObject* parent);
@@ -87,7 +88,7 @@ private:
   QString action_text_;
 };
 
-class ModifyItemTool : public AbstractTool {
+class PCL_EXPORTS ModifyItemTool : public AbstractTool {
   Q_OBJECT
 public:
   ModifyItemTool(PropertiesModel* parameter_model, QObject* parent)
@@ -111,7 +112,7 @@ public:
   }
 };
 
-class NewItemTool : public AbstractTool {
+class PCL_EXPORTS NewItemTool : public AbstractTool {
   Q_OBJECT
 public:
   NewItemTool(PropertiesModel* parameter_model, QObject* parent)
@@ -135,7 +136,7 @@ public:
   }
 };
 
-class SplitItemTool : public AbstractTool {
+class PCL_EXPORTS SplitItemTool : public AbstractTool {
   Q_OBJECT
 public:
   SplitItemTool(PropertiesModel* parameter_model, QObject* parent)
@@ -159,7 +160,7 @@ public:
   }
 };
 
-class MergeCloudTool : public AbstractTool {
+class PCL_EXPORTS MergeCloudTool : public AbstractTool {
   Q_OBJECT
 public:
   MergeCloudTool(PropertiesModel* parameter_model, QObject* parent)

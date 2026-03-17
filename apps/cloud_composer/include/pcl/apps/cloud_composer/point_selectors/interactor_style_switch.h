@@ -76,7 +76,7 @@ class SelectedTrackballStyleInteractor;
 class ClickTrackballStyleInteractor;
 class ProjectModel;
 
-class InteractorStyleSwitch : public vtkInteractorStyle {
+class PCL_EXPORTS InteractorStyleSwitch : public vtkInteractorStyle {
 public:
   static InteractorStyleSwitch*
   New();

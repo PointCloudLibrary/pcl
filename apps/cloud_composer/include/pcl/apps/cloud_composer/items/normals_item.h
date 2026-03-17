@@ -44,7 +44,7 @@
 namespace pcl {
 namespace cloud_composer {
 
-class NormalsItem : public CloudComposerItem {
+class PCL_EXPORTS NormalsItem : public CloudComposerItem {
 public:
   NormalsItem(QString name,
               const pcl::PointCloud<pcl::Normal>::Ptr& normals_ptr,

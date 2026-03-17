@@ -42,11 +42,12 @@
 #include <pcl/visualization/pcl_plotter.h>
 #include <pcl/visualization/qvtk_compatibility.h>
 #include <pcl/point_types.h>
+#include <pcl/pcl_exports.h>
 
 namespace pcl {
 namespace cloud_composer {
 
-class FPFHItem : public CloudComposerItem {
+class PCL_EXPORTS FPFHItem : public CloudComposerItem {
 public:
   FPFHItem(QString name,
            const pcl::PointCloud<pcl::FPFHSignature33>::Ptr& fpfh_ptr,

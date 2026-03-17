@@ -49,7 +49,7 @@ namespace pcl {
 namespace cloud_composer {
 class RectangularFrustumSelector;
 
-class SelectionEvent {
+class PCL_EXPORTS SelectionEvent {
 
 public:
   SelectionEvent(vtkSmartPointer<vtkPolyData> selected_points,

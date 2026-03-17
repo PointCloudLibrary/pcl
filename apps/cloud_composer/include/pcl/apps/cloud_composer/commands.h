@@ -38,6 +38,7 @@
 #pragma once
 
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
+#include <pcl/pcl_exports.h>
 
 #include <QUndoCommand>
 
@@ -50,7 +51,7 @@ struct OutputPair {
   QList<CloudComposerItem*> output_items_;
 };
 
-class CloudCommand : public QUndoCommand {
+class PCL_EXPORTS CloudCommand : public QUndoCommand {
 public:
   CloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
 
@@ -116,7 +117,7 @@ protected:
   int template_type_{-1};
 };
 
-class ModifyItemCommand : public CloudCommand {
+class PCL_EXPORTS ModifyItemCommand : public CloudCommand {
 public:
   ModifyItemCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
 
@@ -132,7 +133,7 @@ public:
 private:
 };
 
-class NewItemCloudCommand : public CloudCommand {
+class PCL_EXPORTS NewItemCloudCommand : public CloudCommand {
 public:
   NewItemCloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
 
@@ -146,7 +147,7 @@ public:
   redo() override;
 };
 
-class SplitCloudCommand : public CloudCommand {
+class PCL_EXPORTS SplitCloudCommand : public CloudCommand {
 public:
   SplitCloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
 
@@ -162,7 +163,7 @@ public:
 private:
 };
 
-class DeleteItemCommand : public CloudCommand {
+class PCL_EXPORTS DeleteItemCommand : public CloudCommand {
 public:
   DeleteItemCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
 
@@ -178,7 +179,7 @@ public:
 private:
 };
 
-class MergeCloudCommand : public CloudCommand {
+class PCL_EXPORTS MergeCloudCommand : public CloudCommand {
 public:
   /** \brief Construct for a merge command
    *  \param[in] input_data Input list of CloudItem s from the project model which will
