@@ -41,8 +41,8 @@
 #include <pcl/features/fpfh.h>
 #include <pcl/visualization/pcl_plotter.h>
 #include <pcl/visualization/qvtk_compatibility.h>
-#include <pcl/point_types.h>
 #include <pcl/pcl_exports.h>
+#include <pcl/point_types.h>
 
 namespace pcl {
 namespace cloud_composer {

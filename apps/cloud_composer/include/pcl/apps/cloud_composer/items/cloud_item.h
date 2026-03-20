@@ -43,11 +43,11 @@
 #include <pcl/visualization/point_cloud_color_handlers.h>
 #include <pcl/visualization/point_cloud_geometry_handlers.h>
 #include <pcl/memory.h>
+#include <pcl/pcl_exports.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/pcl_exports.h>
 
 #include <QDebug>
 
