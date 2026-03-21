@@ -299,3 +299,7 @@ namespace pcl
   }
 
 }
+
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/compression/impl/octree_pointcloud_compression.hpp>
+#endif

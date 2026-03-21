@@ -35,7 +35,7 @@
  *
  * Author: Julius Kammerl (julius@kammerl.de)
  */
-#define PCL_NO_PRECOMPILE
+#ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 
@@ -59,4 +59,4 @@ template class PCL_EXPORTS pcl::io::OrganizedPointCloudCompression<pcl::PointXYZ
 template class PCL_EXPORTS pcl::io::OrganizedPointCloudCompression<pcl::PointXYZRGBA>;
 #endif //HAVE_OPENNI
 #endif //HAVE_PNG
-
+#endif // PCL_NO_PRECOMPILE
