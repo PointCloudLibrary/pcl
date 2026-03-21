@@ -228,12 +228,12 @@ function(PCL_ADD_LIBRARY _name)
     endif()
 
     if(ARGS_EXPORT_SYMBOLS)
-      set_target_properties(${_name} PROPERTIES
-        DEFINE_SYMBOL "PCLAPI_EXPORTS")
+      if(PCL_SHARED_LIBS)
+        target_compile_definitions(${_name} PRIVATE PCLAPI_EXPORTS)
+      else()
+        target_compile_definitions(${_name} PRIVATE PCL_STATIC_DEFINE)
+      endif()
     endif()
-
-    target_compile_definitions(
-      ${_name} PUBLIC "$<IF:$<BOOL:${PCL_SHARED_LIBS}>,PCLAPI_EXPORTS,PCL_STATIC_DEFINE>")
 
     set_target_properties(${_name} PROPERTIES
       VERSION ${PCL_VERSION}
@@ -260,7 +260,7 @@ endfunction()
 # SOURCES The source files for the library.
 function(PCL_CUDA_ADD_LIBRARY _name)
   set(options)
-  set(oneValueArgs COMPONENT)
+  set(oneValueArgs COMPONENT EXPORT_SYMBOLS)
   set(multiValueArgs SOURCES INCLUDES)
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -304,11 +304,19 @@ function(PCL_CUDA_ADD_LIBRARY _name)
     if(MSVC)
       target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
     endif()
-  
-    set_target_properties(${_name} PROPERTIES
-      VERSION ${PCL_VERSION}
-      SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
-      DEFINE_SYMBOL "PCLAPI_EXPORTS")
+
+    if(NOT DEFINED ARGS_EXPORT_SYMBOLS)
+      set(ARGS_EXPORT_SYMBOLS TRUE)
+    endif()
+
+    if(ARGS_EXPORT_SYMBOLS)
+      if(PCL_SHARED_LIBS)
+        target_compile_definitions(${_name} PRIVATE PCLAPI_EXPORTS)
+      else()
+        target_compile_definitions(${_name} PRIVATE PCL_STATIC_DEFINE)
+      endif()
+    endif()
+
     set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
 
