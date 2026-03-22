@@ -146,7 +146,6 @@ set(srcs
   #src/pairwise_graph_registration.cpp
   src/ia_ransac.cpp
   src/icp.cpp
-  src/fricp.cpp
   src/joint_icp.cpp
   src/gicp.cpp
   src/gicp6d.cpp

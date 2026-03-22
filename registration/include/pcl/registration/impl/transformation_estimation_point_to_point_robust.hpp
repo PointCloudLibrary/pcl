@@ -233,10 +233,11 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
+template <typename PointT>
 inline unsigned int
 TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
-    computeWeighted3DCentroid(ConstCloudIterator<PointSource>& cloud_iterator,
-                              Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& weights,
+    computeWeighted3DCentroid(ConstCloudIterator<PointT>& cloud_iterator,
+                              const Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& weights,
                               Eigen::Matrix<Scalar, 4, 1>& centroid) const
 {
   Eigen::Matrix<Scalar, 4, 1> accumulator{0, 0, 0, 0};

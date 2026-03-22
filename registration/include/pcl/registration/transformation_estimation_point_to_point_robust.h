@@ -126,6 +126,13 @@ public:
                               const pcl::Correspondences& correspondences,
                               Matrix4& transformation_matrix) const override;
 
+  /** \brief Set the Welsch scale parameter used for robust reweighting.
+   *
+   * If set to a positive value, this exact sigma is used. If set to a negative
+   * value (default), sigma is estimated automatically from current correspondences.
+   * Smaller positive values increase outlier suppression, larger values make the
+   * estimator closer to standard least-squares behavior.
+   */
   void
   set_sigma(Scalar sigma)
   {
@@ -171,9 +178,10 @@ protected:
    * vector with 4x4 matrices.
    * \ingroup common
    */
+  template <typename PointT>
   inline unsigned int
-  computeWeighted3DCentroid(ConstCloudIterator<PointSource>& cloud_iterator,
-                            Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& weights,
+  computeWeighted3DCentroid(ConstCloudIterator<PointT>& cloud_iterator,
+                            const Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& weights,
                             Eigen::Matrix<Scalar, 4, 1>& centroid) const;
 
   /** parameter for the Welsch function */

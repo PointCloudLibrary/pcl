@@ -1,43 +1,16 @@
 /*
- * Software License Agreement (BSD License)
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-, Open Perception, Inc.
  *
  *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions of source code must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
  */
 
 #ifndef PCL_REGISTRATION_IMPL_FRICP_HPP_
 #define PCL_REGISTRATION_IMPL_FRICP_HPP_
 
+#include <pcl/common/common.h>
 #include <pcl/common/transforms.h>
 #include <pcl/types.h>
 
@@ -211,7 +184,8 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     (*target_centered)[i].z = static_cast<float>(target_mat(2, i));
   }
 
-  pcl::search::KdTree<pcl::PointXYZ> tree;
+  pcl::search::KdTree<pcl::PointXYZ> tree_data;
+  pcl::search::Search<pcl::PointXYZ>& tree = tree_data;
   tree.setInputCloud(target_centered);
 
   Matrix4d transform_centered = convertGuessToCentered(guess, source_mean, target_mean);
@@ -237,7 +211,11 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   double nu_current = 1.0;
   if (use_welsch) {
     const double neighbor_med = findKNearestMedian(*target_centered, tree, 7);
-    const double residual_med = computeMedian(residuals);
+    std::vector<double> residual_values(static_cast<std::size_t>(residuals.size()));
+    for (int i = 0; i < residuals.size(); ++i)
+      residual_values[static_cast<std::size_t>(i)] = residuals[i];
+    const double residual_med =
+        pcl::computeMedian(residual_values.begin(), residual_values.end());
     nu_limit = std::max(nu_end_ratio_ * neighbor_med, same_threshold_);
     nu_current = std::max(nu_begin_ratio_ * residual_med, nu_limit);
   }
@@ -383,7 +361,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     updateCorrespondences(const Matrix4d& transform,
                           const Matrix3Xd& source,
                           const Matrix3Xd& target,
-                          pcl::search::KdTree<pcl::PointXYZ>& tree,
+                          pcl::search::Search<pcl::PointXYZ>& tree,
                           Matrix3Xd& matched_targets,
                           VectorXd& residuals) const
 {
@@ -493,37 +471,11 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::findKNearestM
     dists.clear();
     for (int j = 1; j < k; ++j)
       dists.push_back(std::sqrt(nn_sqr_dists[j]));
-    local_medians[i] = computeMedian(dists);
+    if (!dists.empty())
+      local_medians[i] = pcl::computeMedian(dists.begin(), dists.end());
   }
 
-  return computeMedian(std::move(local_medians));
-}
-
-template <typename PointSource, typename PointTarget, typename Scalar>
-double
-FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeMedian(
-    const VectorXd& values) const
-{
-  std::vector<double> buffer(static_cast<std::size_t>(values.size()));
-  for (int i = 0; i < values.size(); ++i)
-    buffer[static_cast<std::size_t>(i)] = values[i];
-  return computeMedian(std::move(buffer));
-}
-
-template <typename PointSource, typename PointTarget, typename Scalar>
-double
-FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeMedian(
-    std::vector<double> values) const
-{
-  if (values.empty())
-    return 0.0;
-  auto mid = values.begin() + values.size() / 2;
-  std::nth_element(values.begin(), mid, values.end());
-  if (values.size() % 2 == 1)
-    return *mid;
-  auto mid_prev = values.begin() + values.size() / 2 - 1;
-  std::nth_element(values.begin(), mid_prev, values.end());
-  return (*mid + *mid_prev) * 0.5;
+  return pcl::computeMedian(local_medians.begin(), local_medians.end());
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
