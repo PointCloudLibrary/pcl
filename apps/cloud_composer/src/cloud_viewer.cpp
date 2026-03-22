@@ -13,7 +13,7 @@ pcl::cloud_composer::CloudViewer::CloudViewer(QWidget* parent) : QTabWidget(pare
 void
 pcl::cloud_composer::CloudViewer::addModel(ProjectModel* new_model)
 {
-  CloudView* new_view = new CloudView(new_model);
+  auto* new_view = new CloudView(new_model);
   connect(new_model->getSelectionModel(),
           SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
           new_view,
@@ -35,7 +35,10 @@ pcl::cloud_composer::CloudViewer::getModel() const
 {
   if (this->count() == 0)
     return nullptr;
-  return dynamic_cast<CloudView*>(currentWidget())->getModel();
+  auto* cloud_view = dynamic_cast<CloudView*>(currentWidget());
+  if (!cloud_view)
+    return nullptr;
+  return cloud_view->getModel();
 }
 
 void

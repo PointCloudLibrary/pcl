@@ -75,7 +75,7 @@ int
 FittingCurve2dAPDM::findElement (double xi, const std::vector<double> &elements)
 {
   if (xi >= elements.back ())
-    return (int (elements.size ()) - 2);
+    return (static_cast<int>(elements.size ()) - 2);
 
   for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
@@ -148,8 +148,8 @@ FittingCurve2dAPDM::assemble (const Parameter &parameter)
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
-  int nInt = int (m_data->interior.size ());
-  int nClosestP = int (elements.size ()) * cp_res;
+  int nInt = static_cast<int>(m_data->interior.size ());
+  int nClosestP = static_cast<int>(elements.size ()) * cp_res;
 
   double wInt = 1.0;
   if (!m_data->interior_weight.empty ())
@@ -330,8 +330,8 @@ FittingCurve2dAPDM::removeCPsOnLine (const ON_NurbsCurve &nurbs, double min_curv
   }
 
   int order = nurbs.Order ();
-  ON_NurbsCurve nurbs_opt = ON_NurbsCurve (2, false, order, int (cps.size ()) + 2 * cp_red);
-  nurbs_opt.MakePeriodicUniformKnotVector (1.0 / (double (cps.size ())));
+  ON_NurbsCurve nurbs_opt = ON_NurbsCurve (2, false, order, static_cast<int>(cps.size ()) + 2 * cp_red);
+  nurbs_opt.MakePeriodicUniformKnotVector (1.0 / (static_cast<double>(cps.size ())));
   nurbs_opt.m_knot[cp_red] = 0.0;
   nurbs_opt.m_knot[nurbs_opt.m_knot_capacity - cp_red - 1] = 1.0;
 
@@ -428,7 +428,7 @@ FittingCurve2dAPDM::addCageRegularisation (double weight, unsigned &row, const s
     {
       int i = j % ncp;
 
-      if (i >= int (m_data->closest_points_error.size () - 1))
+      if (i >= static_cast<int>(m_data->closest_points_error.size () - 1))
       {
         printf ("[FittingCurve2dAPDM::addCageRegularisation] Warning, index for closest_points_error out of bounds\n");
         m_solver.f (row, 0, 0.0);
@@ -512,7 +512,7 @@ FittingCurve2dAPDM::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
     return nurbs;
   }
 
-  int ncps = int (cps.size ()) + 2 * cp_red; // +2*cp_red for smoothness and +1 for closing
+  int ncps = static_cast<int>(cps.size ()) + 2 * cp_red; // +2*cp_red for smoothness and +1 for closing
   nurbs = ON_NurbsCurve (2, false, order, ncps);
   nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order + 1));
 
@@ -520,7 +520,7 @@ FittingCurve2dAPDM::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
     nurbs.SetCV (cp_red + j, ON_3dPoint (cps[j] (0), cps[j] (1), 0.0));
 
   // close nurbs
-  nurbs.SetCV (cp_red + int (cps.size ()), ON_3dPoint (cps[0] (0), cps[0] (1), 0.0));
+  nurbs.SetCV (cp_red + static_cast<int>(cps.size ()), ON_3dPoint (cps[0] (0), cps[0] (1), 0.0));
 
   // make smooth at closing point
   for (int j = 0; j < cp_red; j++)
@@ -544,7 +544,7 @@ FittingCurve2dAPDM::initNurbsCurve2D (int order, const vector_vec2d &data, int n
 
   Eigen::Vector2d mean = NurbsTools::computeMean (data);
 
-  unsigned s = unsigned (data.size ());
+  auto s = static_cast<unsigned>(data.size ());
 
   double r (0.0);
   for (unsigned i = 0; i < s; i++)
@@ -641,7 +641,7 @@ FittingCurve2dAPDM::getElementVector (const ON_NurbsCurve &nurbs)
 void
 FittingCurve2dAPDM::assembleInterior (double wInt, double sigma2, double rScale, unsigned &row)
 {
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
   bool wFunction (true);
   double ds = 1.0 / (2.0 * sigma2);
   m_data->interior_error.clear ();
@@ -657,7 +657,7 @@ FittingCurve2dAPDM::assembleInterior (double wInt, double sigma2, double rScale,
     double param;
     Eigen::Vector2d pt, t;
     double error;
-    if (p < int (m_data->interior_param.size ()))
+    if (p < static_cast<int>(m_data->interior_param.size ()))
     {
       param = findClosestElementMidPoint (m_nurbs, pcp, m_data->interior_param[p]);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);
@@ -677,10 +677,10 @@ FittingCurve2dAPDM::assembleInterior (double wInt, double sigma2, double rScale,
     Eigen::Vector3d b (t (0), t (1), 0.0);
     Eigen::Vector3d z = a.cross (b);
 
-    if (p < int (m_data->interior_weight.size ()))
+    if (p < static_cast<int>(m_data->interior_weight.size ()))
       wInt = m_data->interior_weight[p];
 
-    if (p < int (m_data->interior_weight_function.size ()))
+    if (p < static_cast<int>(m_data->interior_weight_function.size ()))
       wFunction = m_data->interior_weight_function[p];
 
     double w (wInt);

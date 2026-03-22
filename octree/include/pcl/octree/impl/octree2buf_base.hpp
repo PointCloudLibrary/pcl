@@ -73,7 +73,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::setMaxVoxelIndex(
 
   // tree depth == amount of bits of maxVoxels
   treeDepth =
-      std::max<uindex_t>(std::min<uindex_t>(OctreeKey::maxDepth,
+      std::max<uindex_t>(std::min<uindex_t>(OctreeKey::getMaxDepth(),
                                             std::ceil(std::log2(max_voxel_index_arg))),
                          0);
 

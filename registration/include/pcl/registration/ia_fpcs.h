@@ -86,7 +86,7 @@ public:
   using ConstPtr =
       shared_ptr<const FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>>;
 
-  using KdTreeReciprocal = pcl::search::KdTree<PointSource>;
+  using KdTreeReciprocal = pcl::search::Search<PointSource>;
   using KdTreeReciprocalPtr = typename KdTreeReciprocal::Ptr;
 
   using PointCloudTarget = pcl::PointCloud<PointTarget>;

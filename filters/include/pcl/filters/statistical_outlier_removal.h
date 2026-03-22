@@ -40,7 +40,8 @@
 #pragma once
 
 #include <pcl/filters/filter_indices.h>
-#include <pcl/search/search.h> // for Search
+#include <pcl/point_types.h>             // for pcl::PointXYZ
+#include <pcl/search/search.h>           // for Search
 
 namespace pcl
 {

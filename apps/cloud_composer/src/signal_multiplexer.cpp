@@ -111,7 +111,7 @@ pcl::cloud_composer::SignalMultiplexer::setCurrentObject(QObject* newObject)
   for (const auto& connection : connections)
     connect(connection);
 
-  ProjectModel* model = dynamic_cast<ProjectModel*>(newObject);
+  auto* model = dynamic_cast<ProjectModel*>(newObject);
   if (model)
     model->emitAllStateSignals();
 

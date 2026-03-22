@@ -52,18 +52,16 @@ pcl::cloud_composer::ClickTrackballStyleInteractor::OnLeftButtonUp()
 
     selected_actor->GetMatrix(end_matrix_);
     // Find the id of the actor we manipulated
-    pcl::visualization::CloudActorMap::const_iterator end = actors_->end();
+    auto end = actors_->end();
     QString manipulated_id;
-    for (pcl::visualization::CloudActorMap::const_iterator itr = actors_->begin();
-         itr != end;
-         ++itr) {
+    for (auto itr = actors_->begin(); itr != end; ++itr) {
       // qDebug () << "Id = "<<QString::fromStdString (itr->first);
       if ((itr->second).actor == selected_actor) {
         manipulated_id = (QString::fromStdString(itr->first));
       }
     }
     if (!manipulated_id.isEmpty()) {
-      ManipulationEvent* manip_event = new ManipulationEvent();
+      auto* manip_event = new ManipulationEvent();
       manip_event->addManipulation(manipulated_id, start_matrix_, end_matrix_);
       this->InvokeEvent(this->manipulation_complete_event_, manip_event);
     }
@@ -85,18 +83,16 @@ pcl::cloud_composer::ClickTrackballStyleInteractor::OnRightButtonUp()
 
     selected_actor->GetMatrix(end_matrix_);
     // Find the id of the actor we manipulated
-    pcl::visualization::CloudActorMap::const_iterator end = actors_->end();
+    auto end = actors_->end();
     QString manipulated_id;
-    for (pcl::visualization::CloudActorMap::const_iterator itr = actors_->begin();
-         itr != end;
-         ++itr) {
+    for (auto itr = actors_->begin(); itr != end; ++itr) {
       // qDebug () << "Id = "<<QString::fromStdString (itr->first);
       if ((itr->second).actor == selected_actor) {
         manipulated_id = (QString::fromStdString(itr->first));
       }
     }
     if (!manipulated_id.isEmpty()) {
-      ManipulationEvent* manip_event = new ManipulationEvent();
+      auto* manip_event = new ManipulationEvent();
       manip_event->addManipulation(manipulated_id, start_matrix_, end_matrix_);
       this->InvokeEvent(this->manipulation_complete_event_, manip_event);
     }

@@ -36,8 +36,9 @@
 #include "vtkRenderingUIModule.h" // For export macro
 #include <X11/Xlib.h>             // Needed for X types in the public interface
 
-namespace pcl {
 class vtkCallbackCommand;
+
+namespace pcl {
 class vtkXRenderWindowInteractorInternals;
 
 class VTKRENDERINGUI_EXPORT vtkXRenderWindowInteractor : public vtkRenderWindowInteractor

@@ -51,19 +51,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::ICP::ICP()
-: kd_tree_(new pcl::KdTreeFLANN<PointNormal>())
-,
-
-epsilon_(10e-6f)
-, max_iterations_(50)
-, min_overlap_(.75f)
-, max_fitness_(.1f)
-,
-
-factor_(9.f)
-, max_angle_(45.f)
-{}
+pcl::ihs::ICP::ICP() : kd_tree_(new pcl::KdTreeFLANN<PointNormal>()) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -232,8 +220,7 @@ pcl::ihs::ICP::findTransformation(const MeshConstPtr& mesh_model,
     cloud_model_corr.clear();
     cloud_data_corr.clear();
     sw.reset();
-    for (CloudNormal::const_iterator it_d = cloud_data_selected->begin();
-         it_d != cloud_data_selected->end();
+    for (auto it_d = cloud_data_selected->begin(); it_d != cloud_data_selected->end();
          ++it_d) {
       // Transform the data point
       pt_d = *it_d;
@@ -248,7 +235,7 @@ pcl::ihs::ICP::findTransformation(const MeshConstPtr& mesh_model,
 
       // Check the distance threshold
       if (squared_distance[0] < squared_distance_threshold) {
-        if ((std::size_t)index[0] >= cloud_model_selected->size()) {
+        if (static_cast<std::size_t>(index[0]) >= cloud_model_selected->size()) {
           std::cerr << "ERROR in icp.cpp: Segfault!\n";
           std::cerr << "  Trying to access index " << index[0]
                     << " >= " << cloud_model_selected->size() << std::endl;
@@ -462,8 +449,8 @@ pcl::ihs::ICP::minimizePointPlane(const CloudNormal& cloud_source,
   xyz_t.reserve(n);
   nor_t.reserve(n);
 
-  CloudNormal::const_iterator it_s = cloud_source.begin();
-  CloudNormal::const_iterator it_t = cloud_target.begin();
+  auto it_s = cloud_source.begin();
+  auto it_t = cloud_target.begin();
 
   float accum = 0.f;
   Eigen::Vector4f pt_s, pt_t;
@@ -474,7 +461,7 @@ pcl::ihs::ICP::minimizePointPlane(const CloudNormal& cloud_source,
 
     xyz_s.push_back(pt_s);
     xyz_t.push_back(pt_t);
-    nor_t.push_back(it_t->getNormalVector4fMap());
+    nor_t.emplace_back(it_t->getNormalVector4fMap());
 
     // Calculate the radius (L2 norm) of the bounding sphere through both shapes and
     // accumulate the average
@@ -502,9 +489,9 @@ pcl::ihs::ICP::minimizePointPlane(const CloudNormal& cloud_source,
   Eigen::Vector4f b_t = Eigen::Vector4f::Zero(); // top
   Eigen::Vector4f b_b = Eigen::Vector4f::Zero(); // bottom
 
-  Vec4Xf::const_iterator it_xyz_s = xyz_s.begin();
-  Vec4Xf::const_iterator it_xyz_t = xyz_t.begin();
-  Vec4Xf::const_iterator it_nor_t = nor_t.begin();
+  auto it_xyz_s = xyz_s.begin();
+  auto it_xyz_t = xyz_t.begin();
+  auto it_nor_t = nor_t.begin();
 
   Eigen::Vector4f cross;
   for (; it_xyz_s != xyz_s.end(); ++it_xyz_s, ++it_xyz_t, ++it_nor_t) {

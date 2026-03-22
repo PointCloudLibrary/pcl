@@ -73,7 +73,7 @@ public:
 
   CloudComposerItem(const QString& name = "default item");
   CloudComposerItem(const CloudComposerItem& to_copy);
-  ~CloudComposerItem();
+  ~CloudComposerItem() override;
 
   inline int
   type() const override

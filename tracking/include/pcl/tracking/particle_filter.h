@@ -5,8 +5,8 @@
 #include <pcl/tracking/coherence.h>
 #include <pcl/tracking/tracker.h>
 #include <pcl/tracking/tracking.h>
+#include <pcl/field_traits.h>
 #include <pcl/memory.h>
-#include <pcl/point_types.h>
 
 namespace pcl {
 namespace tracking {

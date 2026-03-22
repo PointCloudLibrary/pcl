@@ -5,6 +5,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/segmentation/supervoxel_clustering.h>
+#include <pcl/point_types.h>
 
 #include <vtkImageReader2Factory.h>
 #include <vtkImageReader2.h>

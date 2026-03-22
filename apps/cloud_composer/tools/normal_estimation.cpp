@@ -30,9 +30,8 @@ pcl::cloud_composer::NormalEstimationTool::performAction(ConstItemList input_dat
   if (input_item->type() == CloudComposerItem::CLOUD_ITEM) {
     double radius = parameter_model_->getProperty("Radius").toDouble();
     qDebug() << "Received Radius = " << radius;
-    pcl::PCLPointCloud2::ConstPtr input_cloud =
-        input_item->data(ItemDataRole::CLOUD_BLOB)
-            .value<pcl::PCLPointCloud2::ConstPtr>();
+    auto input_cloud = input_item->data(ItemDataRole::CLOUD_BLOB)
+                           .value<pcl::PCLPointCloud2::ConstPtr>();
     qDebug() << "Got cloud size = " << input_cloud->width;
     //////////////// THE WORK - COMPUTING NORMALS ///////////////////
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -57,7 +56,7 @@ pcl::cloud_composer::NormalEstimationTool::performAction(ConstItemList input_dat
     // Compute the features
     ne.compute(*cloud_normals);
     //////////////////////////////////////////////////////////////////
-    NormalsItem* normals_item =
+    auto* normals_item =
         new NormalsItem(tr("Normals r=%1").arg(radius), cloud_normals, radius);
     output.append(normals_item);
     qDebug() << "Calced normals";
@@ -74,7 +73,7 @@ pcl::cloud_composer::PropertiesModel*
 pcl::cloud_composer::NormalEstimationToolFactory::createToolParameterModel(
     QObject* parent)
 {
-  PropertiesModel* parameter_model = new PropertiesModel(parent);
+  auto* parameter_model = new PropertiesModel(parent);
 
   parameter_model->addProperty("Radius", 0.04, Qt::ItemIsEditable | Qt::ItemIsEnabled);
 

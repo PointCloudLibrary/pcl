@@ -39,7 +39,7 @@ pcl::cloud_composer::FPFHItem::getInspectorTabs()
     plot_.reset(new pcl::visualization::PCLPlotter);
     qvtk_ = new PCLQVTKWidget();
     hist_page_ = new QWidget();
-    QGridLayout* mainLayout = new QGridLayout(hist_page_);
+    auto* mainLayout = new QGridLayout(hist_page_);
     mainLayout->addWidget(qvtk_, 0, 0);
   }
 

@@ -196,7 +196,7 @@ SparseMat::nonzeros ()
   it_row = m_mat.begin ();
   while (it_row != m_mat.end ())
   {
-    s += int (it_row->second.size ());
+    s += static_cast<int>(it_row->second.size ());
 
     ++it_row;
   }

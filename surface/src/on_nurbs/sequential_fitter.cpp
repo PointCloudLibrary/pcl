@@ -385,7 +385,7 @@ SequentialFitter::compute_boundary (const ON_NurbsSurface &nurbs)
     return nurbs;
   }
 
-  FittingSurface *fitting = new FittingSurface (&m_data, nurbs);
+  auto *fitting = new FittingSurface (&m_data, nurbs);
 
   this->compute_boundary (fitting);
 
@@ -407,7 +407,7 @@ SequentialFitter::compute_interior (const ON_NurbsSurface &nurbs)
     printf ("[SequentialFitter::compute_interior] Warning, no interior points given: setInterior()\n");
     return nurbs;
   }
-  FittingSurface *fitting = new FittingSurface (&m_data, nurbs);
+  auto *fitting = new FittingSurface (&m_data, nurbs);
 
   this->compute_interior (fitting);
 
@@ -475,12 +475,12 @@ SequentialFitter::getClosestPointOnNurbs (
 ON_NurbsSurface
 SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, unsigned max_length)
 {
-  unsigned num_bnd = unsigned (this->m_data.boundary_param.size ());
+  auto num_bnd = static_cast<unsigned>(this->m_data.boundary_param.size ());
 
   if (num_bnd == 0)
     throw std::runtime_error ("[SequentialFitter::grow] No boundary given.");
 
-  if (unsigned (this->m_data.boundary.size ()) != num_bnd)
+  if (static_cast<unsigned>(this->m_data.boundary.size ()) != num_bnd)
   {
     printf ("[SequentialFitter::grow] %zu %u\n", this->m_data.boundary.size (), num_bnd);
     throw std::runtime_error ("[SequentialFitter::grow] size of boundary and boundary parameters do not match.");
@@ -544,14 +544,14 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
     pcl::PointXYZRGB point = m_cloud->at (this->m_boundary_indices->indices[i]);
     for (unsigned j = min_length; j < max_length; j++)
     {
-      int col = int (ri (0) + bni (0) * j);
-      int row = int (ri (1) + bni (1) * j);
+      int col = static_cast<int>(ri (0) + bni (0) * j);
+      int row = static_cast<int>(ri (1) + bni (1) * j);
 
-      if (row >= int (m_cloud->height) || row < 0)
+      if (row >= static_cast<int>(m_cloud->height) || row < 0)
       {
         break;
       }
-      if (col >= int (m_cloud->width) || col < 0)
+      if (col >= static_cast<int>(m_cloud->width) || col < 0)
       {
         break;
       }
@@ -590,7 +590,7 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
   compute_interior (m_nurbs);
 
   double int_err (0.0);
-  double div_err = 1.0 / double (m_data.interior_error.size ());
+  double div_err = 1.0 / static_cast<double>(m_data.interior_error.size ());
   for (const double &i : m_data.interior_error)
   {
     int_err += (i * div_err);
@@ -615,7 +615,7 @@ SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, con
 
     if (!std::isnan (pt.x) && !std::isnan (pt.y) && !std::isnan (pt.z))
     {
-      on_cloud.push_back (Eigen::Vector3d (pt.x, pt.y, pt.z));
+      on_cloud.emplace_back (pt.x, pt.y, pt.z);
       numPoints++;
     }
 

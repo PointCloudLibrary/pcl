@@ -78,7 +78,7 @@ GlobalOptimization::assemble (Parameter params)
 {
   // determine number of rows of matrix
   m_ncols = 0;
-  unsigned nnurbs = static_cast<unsigned> (m_nurbs.size ());
+  auto nnurbs = static_cast<unsigned> (m_nurbs.size ());
   unsigned nInt (0), nBnd (0), nCageRegInt (0), nCageRegBnd (0), nCommonBnd (0), nCommonPar (0);
   for (unsigned i = 0; i < nnurbs; i++)
   {
@@ -413,7 +413,7 @@ GlobalOptimization::assembleBoundaryPoints (unsigned id, int ncps, double weight
 
   ON_NurbsSurface *nurbs = m_nurbs[id];
   NurbsDataSurface *data = m_data[id];
-  unsigned nBnd = static_cast<unsigned> (m_data[id]->boundary.size ());
+  auto nBnd = static_cast<unsigned> (m_data[id]->boundary.size ());
 
   // interior points should lie on surface
   data->boundary_line_start.clear ();

@@ -39,6 +39,7 @@
 
 #include <pcl/filters/filter_indices.h>
 #include <pcl/ModelCoefficients.h>
+#include <pcl/point_types.h>             // for pcl::Normal
 
 // Sample Consensus models
 #include <pcl/sample_consensus/model_types.h>

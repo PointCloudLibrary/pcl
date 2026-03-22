@@ -49,6 +49,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/search.h> // for Search
+#include <pcl/point_types.h>   // for pcl::Normal
 
 #include <pcl/surface/processing.h>
 

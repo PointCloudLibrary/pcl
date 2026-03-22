@@ -250,7 +250,7 @@ endfunction()
 function(PCL_CUDA_ADD_LIBRARY _name)
   set(options)
   set(oneValueArgs COMPONENT)
-  set(multiValueArgs SOURCES)
+  set(multiValueArgs SOURCES INCLUDES)
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   if(ARGS_UNPARSED_ARGUMENTS)
@@ -263,8 +263,14 @@ function(PCL_CUDA_ADD_LIBRARY _name)
 
   REMOVE_VTK_DEFINITIONS()
   if(NOT ARGS_SOURCES)
-    add_library(${_name} INTERFACE)
-    
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.19)
+      add_library(${_name} INTERFACE ${ARGS_INCLUDES})
+
+      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+    else()
+      add_library(${_name} INTERFACE)
+    endif()
+
     target_include_directories(${_name} INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 

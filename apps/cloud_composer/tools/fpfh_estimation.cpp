@@ -99,7 +99,7 @@ pcl::cloud_composer::PropertiesModel*
 pcl::cloud_composer::FPFHEstimationToolFactory::createToolParameterModel(
     QObject* parent)
 {
-  PropertiesModel* parameter_model = new PropertiesModel(parent);
+  auto* parameter_model = new PropertiesModel(parent);
 
   parameter_model->addProperty("Radius", 0.03, Qt::ItemIsEditable | Qt::ItemIsEnabled);
 

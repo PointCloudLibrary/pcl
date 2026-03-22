@@ -73,7 +73,7 @@ private:
   boost::math::quaternion<float> quat_;
 
   /// the original mouse screen coordinates converted to a 3d point
-  float origin_x_, origin_y_, origin_z_;
+  float origin_x_{0}, origin_y_{0}, origin_z_{0};
 
   /// the radius of the trackball squared
   float radius_sqr_;

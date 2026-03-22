@@ -18,7 +18,7 @@ pcl::cloud_composer::SupervoxelsTool::performAction(ConstItemList input_data,
                                                     PointTypeFlags::PointType type)
 {
   if (type != PointTypeFlags::NONE) {
-    switch ((std::uint8_t)type) {
+    switch (static_cast<std::uint8_t>(type)) {
     case (PointTypeFlags::XYZ | PointTypeFlags::RGB):
       return this->performTemplatedAction<pcl::PointXYZRGB>(input_data);
     case (PointTypeFlags::XYZ | PointTypeFlags::RGBA):
@@ -44,7 +44,7 @@ pcl::cloud_composer::SupervoxelsTool::performTemplatedAction<pcl::PointXYZRGB>(
 pcl::cloud_composer::PropertiesModel*
 pcl::cloud_composer::SupervoxelsToolFactory::createToolParameterModel(QObject* parent)
 {
-  PropertiesModel* parameter_model = new PropertiesModel(parent);
+  auto* parameter_model = new PropertiesModel(parent);
 
   parameter_model->addProperty(
       "Resolution", 0.008, Qt::ItemIsEditable | Qt::ItemIsEnabled);

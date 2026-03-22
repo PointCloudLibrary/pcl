@@ -50,6 +50,7 @@
 #include <pcl/io/openni_camera/openni_image.h>
 #include <pcl/io/openni_camera/openni_image_rgb24.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
+#include <pcl/point_types.h>                          // for pcl::RGB
 #endif
 
 #include <string>

@@ -5,9 +5,9 @@ set(SUBSYS_EXT_DEPS boost eigen3)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-  PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk OpenMP EXT_DEPS ${SUBSYS_EXT_DEPS})
+  PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk OpenMP ZLIB EXT_DEPS ${SUBSYS_EXT_DEPS})
 else()
-  PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb OpenMP EXT_DEPS ${SUBSYS_EXT_DEPS})
+  PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb OpenMP ZLIB EXT_DEPS ${SUBSYS_EXT_DEPS})
 endif()
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -244,7 +244,7 @@ set(srcs
   ${RSSDK2_GRABBER_SOURCES}
 )
 
-if(PNG_FOUND)
+if(PNG_FOUND AND ZLIB_FOUND)
   list(APPEND srcs
     src/libpng_wrapper.cpp
   )
@@ -371,6 +371,10 @@ endif()
 if(PNG_FOUND)
   target_include_directories("${LIB_NAME}" SYSTEM PRIVATE ${PNG_INCLUDE_DIRS})
   target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
+endif()
+
+if(PNG_FOUND AND ZLIB_FOUND)
+  target_link_libraries("${LIB_NAME}" ZLIB::ZLIB)
 endif()
 
 if(LIBUSB_FOUND)

@@ -36,6 +36,7 @@
 #include <pcl/test/gtest.h>
 
 #include <pcl/common/copy_point.h>
+#include <pcl/point_types.h>
 
 TEST (CopyPointTest, SameTypeWithoutColor)
 {

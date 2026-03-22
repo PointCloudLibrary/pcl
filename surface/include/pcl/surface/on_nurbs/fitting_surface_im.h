@@ -59,11 +59,8 @@ namespace pcl
       /** \brief Parameters for fitting */
       struct Parameter
       {
-        double smoothness;
-        Parameter () :
-          smoothness (0.1)
-        {
-        }
+        double smoothness{0.1};
+        Parameter () = default;
       };
 
     protected:

@@ -43,6 +43,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <pcl/point_types.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -106,7 +107,6 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   BoundaryEstimation<pcl::PointNormal, pcl::PointNormal, pcl::Boundary> ne;
   ne.setInputCloud (xyznormals);
   ne.setInputNormals (xyznormals);
-  //ne.setSearchMethod (pcl::KdTreeFLANN<pcl::PointNormal>::Ptr (new pcl::KdTreeFLANN<pcl::PointNormal>));
   ne.setKSearch (k);
   ne.setAngleThreshold (static_cast<float> (angle));
   ne.setRadiusSearch (radius);

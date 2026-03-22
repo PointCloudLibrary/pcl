@@ -42,6 +42,7 @@
 #define IA_RANSAC_HPP_
 
 #include <pcl/common/distances.h>
+#include <pcl/search/auto.h> // for autoSelectMethod
 
 namespace pcl {
 
@@ -71,7 +72,8 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setTargetFe
     return;
   }
   target_features_ = features;
-  feature_tree_->setInputCloud(target_features_);
+  feature_tree_.reset(pcl::search::autoSelectMethod<FeatureT>(
+      target_features_, false, pcl::search::Purpose::many_knn_search));
 }
 
 template <typename PointSource, typename PointTarget, typename FeatureT>

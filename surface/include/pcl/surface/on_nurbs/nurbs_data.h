@@ -51,9 +51,9 @@ namespace pcl
   {
 
     // http://eigen.tuxfamily.org/dox-devel/TopicStlContainers.html
-    typedef std::vector<Eigen::Vector2i, Eigen::aligned_allocator<Eigen::Vector2i> > vector_vec2i;
-    typedef std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > vector_vec2d;
-    typedef std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > vector_vec3d;
+    using vector_vec2i = std::vector<Eigen::Vector2i, Eigen::aligned_allocator<Eigen::Vector2i>>;
+    using vector_vec2d = std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>;
+    using vector_vec3d = std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d>>;
 
     /** \brief Data structure for NURBS surface fitting
      * (FittingSurface, FittingSurfaceTDM, FittingCylinder, GlobalOptimization, GlobalOptimizationTDM) */

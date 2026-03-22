@@ -99,7 +99,7 @@ public:
   inline QList<CloudComposerItem::ItemType>
   getRequiredInputChildrenTypes() const override
   {
-    return QList<CloudComposerItem::ItemType>();
+    return {};
   }
 };
 

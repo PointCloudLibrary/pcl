@@ -94,8 +94,12 @@ namespace pcl
       using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
       using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
-      /** \brief Empty constructor. */
-      SHOTEstimationOMP (unsigned int nr_threads = 0) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> ()
+      /** \brief Empty constructor.
+         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+         * \param chunk_size PCL will use dynamic scheduling with this chunk size. Setting it too low will lead to more parallelization overhead. Setting it too high will lead to a worse balancing between the threads.
+         */
+      SHOTEstimationOMP (unsigned int nr_threads = 0, int chunk_size = 256)
+        : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> (), chunk_size_(chunk_size)
       {
         setNumberOfThreads(nr_threads);
       };
@@ -122,6 +126,9 @@ namespace pcl
 
       /** \brief The number of threads the scheduler should use. */
       unsigned int threads_;
+
+      /** \brief Chunk size for (dynamic) scheduling. */
+      int chunk_size_;
   };
 
   /** \brief SHOTColorEstimationOMP estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
@@ -176,11 +183,16 @@ namespace pcl
       using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
       using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
-      /** \brief Empty constructor. */
+      /** \brief Empty constructor.
+         * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+         * \param chunk_size PCL will use dynamic scheduling with this chunk size. Setting it too low will lead to more parallelization overhead. Setting it too high will lead to a worse balancing between the threads.
+         */
       SHOTColorEstimationOMP (bool describe_shape = true,
                               bool describe_color = true,
-                              unsigned int nr_threads = 0)
-        : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> (describe_shape, describe_color)
+                              unsigned int nr_threads = 0,
+                              int chunk_size = 64)
+        : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> (describe_shape, describe_color),
+          chunk_size_(chunk_size)
       {
         setNumberOfThreads(nr_threads);
       }
@@ -207,6 +219,9 @@ namespace pcl
 
       /** \brief The number of threads the scheduler should use. */
       unsigned int threads_;
+
+      /** \brief Chunk size for (dynamic) scheduling. */
+      int chunk_size_;
   };
 
 }

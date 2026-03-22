@@ -313,8 +313,8 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
   {
 
     int wsize = wsize_;
-    for (int i = 0; i < int(binary_cloud->width); i++) {
-      for (int j = 0; j < int(binary_cloud->height); j++) {
+    for (int i = 0; i < static_cast<int>(binary_cloud->width); i++) {
+      for (int j = 0; j < static_cast<int>(binary_cloud->height); j++) {
         if (binary_cloud->at(i, j).intensity != 0) {
           // check neighboring pixels, first left and then top
           // be aware of margins
@@ -473,8 +473,8 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
   {
     std::map<float, float>::iterator it;
 
-    for (int i = 0; i < int(binary_cloud->width); i++) {
-      for (int j = 0; j < int(binary_cloud->height); j++) {
+    for (int i = 0; i < static_cast<int>(binary_cloud->width); i++) {
+      for (int j = 0; j < static_cast<int>(binary_cloud->height); j++) {
         if (binary_cloud->at(i, j).intensity != 0) {
           // check if this is a root label...
           it = connected_labels.find(binary_cloud->at(i, j).intensity);
@@ -504,7 +504,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
   int k = 0;
   for (const auto& cluster : clusters_map) {
 
-    if (int(cluster.second.indices.size()) >= object_cluster_min_size_) {
+    if (static_cast<int>(cluster.second.indices.size()) >= object_cluster_min_size_) {
 
       clusters[k] = CloudPtr(new Cloud());
       pcl::copyPointCloud(*input_, cluster.second.indices, *clusters[k]);

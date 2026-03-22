@@ -46,6 +46,7 @@
 #include <iostream>
 
 #include <pcl/common/io.h>
+#include <pcl/point_types.h>
 
 static void
 sameType ();

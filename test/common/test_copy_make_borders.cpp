@@ -37,6 +37,7 @@
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <pcl/common/io.h>
 
 using namespace pcl;

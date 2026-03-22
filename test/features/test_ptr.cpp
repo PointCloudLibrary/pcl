@@ -39,6 +39,7 @@
 
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <pcl/features/vfh.h>
 #include <pcl/features/usc.h>
 #include <pcl/features/statistical_multiscale_interest_region_extraction.h>

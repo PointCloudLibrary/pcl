@@ -1714,7 +1714,7 @@ namespace pcl
          * @brief Eye-Dome Lighting makes dark areas to improve depth perception
          * See https://www.kitware.com/eye-dome-lighting-a-non-photorealistic-shading-technique/
          * It is applied to all actors, including texts.
-         * @param viewport 
+         * @param viewport
         */
         void
         enableEDLRendering(int viewport = 0);
@@ -1940,6 +1940,13 @@ namespace pcl
         getShapeActorMap ()
         {
           return (shape_actor_map_);
+        }
+
+        /** \brief Return a pointer to the CoordinateActorMap this visualizer uses. */
+        CoordinateActorMapPtr
+        getCoordinateActorMap ()
+        {
+          return (coordinate_actor_map_);
         }
 
         /** \brief Set the position in screen coordinates.

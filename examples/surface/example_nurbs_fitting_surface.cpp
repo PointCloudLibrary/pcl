@@ -1,5 +1,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/surface/on_nurbs/fitting_surface_tdm.h>
@@ -202,9 +203,9 @@ visualizeCurve (ON_NurbsCurve &curve, ON_NurbsSurface &surface, pcl::visualizati
     double pnt[3];
     surface.Evaluate (p1.x, p1.y, 0, 3, pnt);
     pcl::PointXYZRGB p2;
-    p2.x = float (pnt[0]);
-    p2.y = float (pnt[1]);
-    p2.z = float (pnt[2]);
+    p2.x = static_cast<float>(pnt[0]);
+    p2.y = static_cast<float>(pnt[1]);
+    p2.z = static_cast<float>(pnt[2]);
 
     p2.r = 255;
     p2.g = 0;

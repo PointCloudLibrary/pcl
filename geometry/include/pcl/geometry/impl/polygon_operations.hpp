@@ -218,7 +218,7 @@ pcl::approximatePolygon2D(const typename pcl::PointCloud<PointT>::VectorType& po
 
       covariance.coeffRef(2) = covariance.coeff(1);
 
-      float norm = 1.0f / float(num_points);
+      float norm = 1.0f / static_cast<float>(num_points);
       centroid *= norm;
       covariance *= norm;
       covariance.coeffRef(0) -= centroid[0] * centroid[0];
@@ -235,7 +235,7 @@ pcl::approximatePolygon2D(const typename pcl::PointCloud<PointT>::VectorType& po
       direction[1] = polygon[result[nIdx]].y - polygon[result[rIdx]].y;
       direction.normalize();
 
-      if (std::abs(direction.dot(normal)) > float(M_SQRT1_2)) {
+      if (std::abs(direction.dot(normal)) > static_cast<float>(M_SQRT1_2)) {
         std::swap(normal[0], normal[1]);
         normal[0] = -normal[0];
       }
@@ -289,9 +289,7 @@ pcl::approximatePolygon2D(const typename pcl::PointCloud<PointT>::VectorType& po
   }
   else {
     // we have a new polygon in results, but inverted (clockwise <-> counter-clockwise)
-    for (std::vector<unsigned>::reverse_iterator it = result.rbegin();
-         it != result.rend();
-         ++it)
+    for (auto it = result.rbegin(); it != result.rend(); ++it)
       approx_polygon.push_back(polygon[*it]);
   }
 }

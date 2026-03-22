@@ -74,7 +74,7 @@ int
 FittingCurve::findElement (double xi, const std::vector<double> &elements)
 {
   if (xi >= elements.back ())
-    return (int (elements.size ()) - 2);
+    return (static_cast<int>(elements.size ()) - 2);
 
   for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
@@ -109,7 +109,7 @@ FittingCurve::assemble (const Parameter &parameter)
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
 
   int nrows = nInt + nCageReg;
 
@@ -213,7 +213,7 @@ FittingCurve::initNurbsCurve2D (int order, const vector_vec2d &data)
 
   Eigen::Vector2d mean = NurbsTools::computeMean (data);
 
-  unsigned s = unsigned (data.size ());
+  auto s = static_cast<unsigned>(data.size ());
 
   double r (0.0);
   for (unsigned i = 0; i < s; i++)
@@ -252,7 +252,7 @@ FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps, 
   Eigen::Matrix3d eigenvectors;
   Eigen::Vector3d eigenvalues;
 
-  unsigned s = unsigned (data.size ());
+  auto s = static_cast<unsigned>(data.size ());
 
   NurbsTools::pca (data, mean, eigenvectors, eigenvalues);
 
@@ -312,7 +312,7 @@ FittingCurve::getElementVector (const ON_NurbsCurve &nurbs)
 void
 FittingCurve::assembleInterior (double wInt, unsigned &row)
 {
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
@@ -325,7 +325,7 @@ FittingCurve::assembleInterior (double wInt, unsigned &row)
     double param;
     Eigen::Vector3d pt, t;
     double error;
-    if (p < int (m_data->interior_param.size ()))
+    if (p < static_cast<int>(m_data->interior_param.size ()))
     {
       param = inverseMapping (m_nurbs, pcp, m_data->interior_param[p], error, pt, t, in_max_steps, in_accuracy);
       m_data->interior_param[p] = param;

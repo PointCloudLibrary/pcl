@@ -39,6 +39,13 @@ PCL_ADD_TEST(surface_poisson test_poisson
              LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features
              ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
 
+if(BUILD_surface_on_nurbs)
+  PCL_ADD_TEST(surface_on_nurbs test_on_nurbs
+               FILES test_on_nurbs.cpp
+               LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features pcl_search
+               ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
+endif()
+
 if(QHULL_FOUND)
   PCL_ADD_TEST(surface_convex_hull test_convex_hull
                FILES test_convex_hull.cpp

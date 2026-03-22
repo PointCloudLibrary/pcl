@@ -5,10 +5,7 @@
 
 pcl::cloud_composer::CloudCommand::CloudCommand(
     QList<const CloudComposerItem*> input_data, QUndoCommand* parent)
-: QUndoCommand(parent)
-, original_data_(std::move(input_data))
-, can_use_templates_(false)
-, template_type_(-1)
+: QUndoCommand(parent), original_data_(std::move(input_data))
 {}
 
 pcl::cloud_composer::CloudCommand::~CloudCommand()
@@ -53,7 +50,7 @@ pcl::cloud_composer::CloudCommand::canUseTemplates(ConstItemList& input_data)
   // Make sure all input items are clouds
   QList<const CloudItem*> cloud_items;
   foreach (const CloudComposerItem* item, input_data) {
-    const CloudItem* cloud_item = dynamic_cast<const CloudItem*>(item);
+    const auto* cloud_item = dynamic_cast<const CloudItem*>(item);
     if (cloud_item)
       cloud_items.append(cloud_item);
   }
@@ -501,7 +498,7 @@ pcl::cloud_composer::MergeCloudCommand::runCommand(AbstractTool* tool)
         original_data_, static_cast<PointTypeFlags::PointType>(template_type_));
   else
     output_items = tool->performAction(original_data_);
-  MergeSelection* merge_selection = dynamic_cast<MergeSelection*>(tool);
+  auto* merge_selection = dynamic_cast<MergeSelection*>(tool);
   // If this is a merge selection we need to put the partially selected items into the
   // original data list too! We didn't send them before because merge selection already
   // knows about them (and needs to tree input list differently from selected items)

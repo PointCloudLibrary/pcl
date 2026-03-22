@@ -45,8 +45,6 @@
 pcl::modeler::StatisticalOutlierRemovalWorker::StatisticalOutlierRemovalWorker(
     const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)
 : AbstractWorker(cloud_mesh_items, parent)
-, mean_k_(nullptr)
-, stddev_mul_thresh_(nullptr)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////

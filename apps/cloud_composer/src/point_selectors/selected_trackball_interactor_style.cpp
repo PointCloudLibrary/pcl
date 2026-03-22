@@ -31,7 +31,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::setSelectedActors()
   QModelIndexList selected_indexes = model_->getSelectionModel()->selectedIndexes();
   foreach (QModelIndex index, selected_indexes) {
     QStandardItem* item = model_->itemFromIndex(index);
-    CloudItem* cloud_item = dynamic_cast<CloudItem*>(item);
+    auto* cloud_item = dynamic_cast<CloudItem*>(item);
     if (cloud_item)
       selected_cloud_ids.append(cloud_item->getId());
   }
@@ -71,7 +71,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnLeftButtonUp()
   vtkInteractorStyleTrackballActor::OnLeftButtonUp();
   foreach (QString id, selected_actors_map_.keys()) {
     vtkLODActor* actor = selected_actors_map_.value(id);
-    ManipulationEvent* manip_event = new ManipulationEvent();
+    auto* manip_event = new ManipulationEvent();
     // Fetch the actor we manipulated
     vtkSmartPointer<vtkMatrix4x4> end_matrix = vtkSmartPointer<vtkMatrix4x4>::New();
     actor->GetMatrix(end_matrix);
@@ -86,7 +86,7 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnRightButtonUp()
   vtkInteractorStyleTrackballActor::OnRightButtonUp();
   foreach (QString id, selected_actors_map_.keys()) {
     vtkLODActor* actor = selected_actors_map_.value(id);
-    ManipulationEvent* manip_event = new ManipulationEvent();
+    auto* manip_event = new ManipulationEvent();
     // Fetch the actor we manipulated
     vtkSmartPointer<vtkMatrix4x4> end_matrix = vtkSmartPointer<vtkMatrix4x4>::New();
     actor->GetMatrix(end_matrix);

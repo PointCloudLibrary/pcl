@@ -42,7 +42,7 @@
 #include <pcl/apps/point_cloud_editor/common.h>
 #include <pcl/apps/point_cloud_editor/trackball.h>
 
-TrackBall::TrackBall() : quat_(1.0f), origin_x_(0), origin_y_(0), origin_z_(0)
+TrackBall::TrackBall() : quat_(1.0f)
 {
   radius_sqr_ = (TRACKBALL_RADIUS_SCALE * static_cast<float>(WINDOW_WIDTH)) *
                 (TRACKBALL_RADIUS_SCALE * static_cast<float>(WINDOW_WIDTH));

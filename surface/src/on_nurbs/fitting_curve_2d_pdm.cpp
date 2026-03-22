@@ -74,7 +74,7 @@ int
 FittingCurve2dPDM::findElement (double xi, const std::vector<double> &elements)
 {
   if (xi >= elements.back ())
-    return (int (elements.size ()) - 2);
+    return (static_cast<int>(elements.size ()) - 2);
 
   for (std::size_t i = 0; i < elements.size () - 1; i++)
   {
@@ -121,7 +121,7 @@ FittingCurve2dPDM::assemble (const Parameter &parameter)
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
 
   double wInt = 1.0;
   if (!m_data->interior_weight.empty ())
@@ -296,8 +296,8 @@ FittingCurve2dPDM::removeCPsOnLine (const ON_NurbsCurve &nurbs, double min_curve
   }
 
   int order = nurbs.Order ();
-  ON_NurbsCurve nurbs_opt = ON_NurbsCurve (2, false, order, int (cps.size ()) + 2 * cp_red);
-  nurbs_opt.MakePeriodicUniformKnotVector (1.0 / double (cps.size ()));
+  ON_NurbsCurve nurbs_opt = ON_NurbsCurve (2, false, order, static_cast<int>(cps.size ()) + 2 * cp_red);
+  nurbs_opt.MakePeriodicUniformKnotVector (1.0 / static_cast<double>(cps.size ()));
   nurbs_opt.m_knot[cp_red] = 0.0;
   nurbs_opt.m_knot[nurbs_opt.m_knot_capacity - cp_red - 1] = 1.0;
 
@@ -372,7 +372,7 @@ FittingCurve2dPDM::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
     return nurbs;
   }
 
-  int ncps = int (cps.size ()) + 2 * cp_red; // +2*cp_red for smoothness and +1 for closing
+  int ncps = static_cast<int>(cps.size ()) + 2 * cp_red; // +2*cp_red for smoothness and +1 for closing
   nurbs = ON_NurbsCurve (2, false, order, ncps);
   nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order + 1));
 
@@ -380,7 +380,7 @@ FittingCurve2dPDM::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
     nurbs.SetCV (cp_red + j, ON_3dPoint (cps[j] (0), cps[j] (1), 0.0));
 
   // close nurbs
-  nurbs.SetCV (cp_red + int (cps.size ()), ON_3dPoint (cps[0] (0), cps[0] (1), 0.0));
+  nurbs.SetCV (cp_red + static_cast<int>(cps.size ()), ON_3dPoint (cps[0] (0), cps[0] (1), 0.0));
 
   // make smooth at closing point
   for (int j = 0; j < cp_red; j++)
@@ -404,7 +404,7 @@ FittingCurve2dPDM::initNurbsCurve2D (int order, const vector_vec2d &data, int nc
 
   Eigen::Vector2d mean = NurbsTools::computeMean (data);
 
-  unsigned s = unsigned (data.size ());
+  auto s = static_cast<unsigned>(data.size ());
 
   double r (0.0);
   for (unsigned i = 0; i < s; i++)
@@ -516,7 +516,7 @@ FittingCurve2dPDM::getElementVector (const ON_NurbsCurve &nurbs)
 void
 FittingCurve2dPDM::assembleInterior (double wInt, double rScale, unsigned &row)
 {
-  int nInt = int (m_data->interior.size ());
+  int nInt = static_cast<int>(m_data->interior.size ());
   m_data->interior_error.clear ();
   m_data->interior_normals.clear ();
   m_data->interior_line_start.clear ();
@@ -530,7 +530,7 @@ FittingCurve2dPDM::assembleInterior (double wInt, double rScale, unsigned &row)
     double param;
     Eigen::Vector2d pt, t;
     double error;
-    if (p < int (m_data->interior_param.size ()))
+    if (p < static_cast<int>(m_data->interior_param.size ()))
     {
       param = findClosestElementMidPoint (m_nurbs, pcp, m_data->interior_param[p]);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);
@@ -545,7 +545,7 @@ FittingCurve2dPDM::assembleInterior (double wInt, double rScale, unsigned &row)
 
     m_data->interior_error.push_back (error);
 
-    if (p < int (m_data->interior_weight.size ()))
+    if (p < static_cast<int>(m_data->interior_weight.size ()))
       wInt = m_data->interior_weight[p];
 
     m_data->interior_line_start.push_back (pcp);

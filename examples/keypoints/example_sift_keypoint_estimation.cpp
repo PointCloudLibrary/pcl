@@ -42,6 +42,7 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/sift_keypoint.h>
+#include <pcl/point_types.h>
 
 int
 main(int, char** argv)

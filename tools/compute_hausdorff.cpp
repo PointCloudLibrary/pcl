@@ -43,7 +43,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-#include <pcl/search/kdtree.h>
+#include <pcl/search/auto.h> // for autoSelectMethod
 
 using namespace pcl;
 using namespace pcl::io;
@@ -84,29 +84,27 @@ compute (const Cloud::ConstPtr &cloud_a, const Cloud::ConstPtr &cloud_b)
   print_highlight (stderr, "Computing ");
 
   // compare A to B
-  pcl::search::KdTree<PointType> tree_b;
-  tree_b.setInputCloud (cloud_b);
+  pcl::search::Search<PointType>::Ptr tree_b(pcl::search::autoSelectMethod<PointType>(cloud_b, false, pcl::search::Purpose::one_knn_search));
   float max_dist_a = -std::numeric_limits<float>::max ();
   for (const auto &point : (*cloud_a))
   {
     pcl::Indices indices (1);
     std::vector<float> sqr_distances (1);
 
-    tree_b.nearestKSearch (point, 1, indices, sqr_distances);
+    tree_b->nearestKSearch (point, 1, indices, sqr_distances);
     if (sqr_distances[0] > max_dist_a)
       max_dist_a = sqr_distances[0];
   }
 
   // compare B to A
-  pcl::search::KdTree<PointType> tree_a;
-  tree_a.setInputCloud (cloud_a);
+  pcl::search::Search<PointType>::Ptr tree_a(pcl::search::autoSelectMethod<PointType>(cloud_a, false, pcl::search::Purpose::one_knn_search));
   float max_dist_b = -std::numeric_limits<float>::max ();
   for (const auto &point : (*cloud_b))
   {
     pcl::Indices indices (1);
     std::vector<float> sqr_distances (1);
 
-    tree_a.nearestKSearch (point, 1, indices, sqr_distances);
+    tree_a->nearestKSearch (point, 1, indices, sqr_distances);
     if (sqr_distances[0] > max_dist_b)
       max_dist_b = sqr_distances[0];
   }

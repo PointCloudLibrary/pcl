@@ -41,6 +41,7 @@
 #pragma once
 
 #include <pcl/features/feature.h>
+#include <pcl/point_types.h>       // for pcl::PrincipalCurvatures
 
 namespace pcl
 {

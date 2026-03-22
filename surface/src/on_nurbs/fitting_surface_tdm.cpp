@@ -145,7 +145,7 @@ FittingSurfaceTDM::assembleInterior (double wInt, double wTangent, unsigned &row
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
   m_data->interior_normals.clear ();
-  unsigned nInt = static_cast<unsigned> (m_data->interior.size ());
+  auto nInt = static_cast<unsigned> (m_data->interior.size ());
   for (unsigned p = 0; p < nInt; p++)
   {
     Vector3d &pcp = m_data->interior[p];
@@ -190,7 +190,7 @@ FittingSurfaceTDM::assembleBoundary (double wBnd, double wTangent, unsigned &row
   m_data->boundary_line_end.clear ();
   m_data->boundary_error.clear ();
   m_data->boundary_normals.clear ();
-  unsigned nBnd = static_cast<unsigned> (m_data->boundary.size ());
+  auto nBnd = static_cast<unsigned> (m_data->boundary.size ());
   for (unsigned p = 0; p < nBnd; p++)
   {
     Vector3d &pcp = m_data->boundary[p];

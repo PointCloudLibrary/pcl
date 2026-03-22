@@ -204,6 +204,8 @@ namespace pcl
       using Ptr = shared_ptr<DefaultPointRepresentation<PointDefault> >;
       using ConstPtr = shared_ptr<const DefaultPointRepresentation<PointDefault> >;
 
+      static constexpr const std::int32_t NR_DIMS = std::min<std::int32_t>(sizeof (PointDefault) / sizeof (float), 3);
+    
       DefaultPointRepresentation ()
       {
         // If point type is unknown, assume it's a struct/array of floats, and compute the number of dimensions
@@ -312,6 +314,8 @@ namespace pcl
       using ConstPtr = shared_ptr<const DefaultFeatureRepresentation<PointDefault>>;
       using FieldList = typename pcl::traits::fieldList<PointDefault>::type;
 
+      static constexpr const std::int32_t NR_DIMS = pcl::detail::traits::descriptorSize_v<PointDefault>;
+
       DefaultFeatureRepresentation ()
       {
         nr_dimensions_ = 0; // zero-out the nr_dimensions_ before it gets incremented
@@ -336,9 +340,11 @@ namespace pcl
   class DefaultPointRepresentation <PointXYZ> : public  PointRepresentation <PointXYZ>
   {
     public:
+      static constexpr const std::int32_t NR_DIMS = 3;
+    
       DefaultPointRepresentation ()
       {
-        nr_dimensions_ = 3;
+        nr_dimensions_ = NR_DIMS;
         trivial_ = true;
       }
 
@@ -356,9 +362,11 @@ namespace pcl
   class DefaultPointRepresentation <PointXYZI> : public  PointRepresentation <PointXYZI>
   {
     public:
+      static constexpr const std::int32_t NR_DIMS = 3;
+    
       DefaultPointRepresentation ()
       {
-        nr_dimensions_ = 3;
+        nr_dimensions_ = NR_DIMS;
         trivial_ = true;
       }
 
@@ -377,9 +385,11 @@ namespace pcl
   class DefaultPointRepresentation <PointNormal> : public  PointRepresentation <PointNormal>
   {
     public:
+      static constexpr const std::int32_t NR_DIMS = 3;
+    
       DefaultPointRepresentation ()
       {
-        nr_dimensions_ = 3;
+        nr_dimensions_ = NR_DIMS;
         trivial_ = true;
       }
 
@@ -404,12 +414,14 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
-  class DefaultPointRepresentation <PPFSignature> : public DefaultFeatureRepresentation <PPFSignature>
+  class DefaultPointRepresentation <PPFSignature> : public PointRepresentation <PPFSignature>
   {
     public:
+      static constexpr const std::int32_t NR_DIMS = 4;
+    
       DefaultPointRepresentation ()
       {
-        nr_dimensions_ = 4;
+        nr_dimensions_ = NR_DIMS;
         trivial_ = true;
       }
 
@@ -453,9 +465,11 @@ namespace pcl
   class DefaultPointRepresentation <Narf36> : public PointRepresentation <Narf36>
   {
     public:
+      static constexpr const std::int32_t NR_DIMS = 36;
+    
       DefaultPointRepresentation ()
       {
-        nr_dimensions_ = 36;
+        nr_dimensions_ = NR_DIMS;
         trivial_=false;
       }
 
@@ -476,9 +490,11 @@ namespace pcl
   class DefaultPointRepresentation<ShapeContext1980> : public PointRepresentation<ShapeContext1980>
   {
     public:
+      static constexpr const std::int32_t NR_DIMS = 1980;
+    
       DefaultPointRepresentation ()
       {
-        nr_dimensions_ = 1980;
+        nr_dimensions_ = NR_DIMS;
       }
 
       void
@@ -494,9 +510,11 @@ namespace pcl
   class DefaultPointRepresentation<UniqueShapeContext1960> : public PointRepresentation<UniqueShapeContext1960>
   {
     public:
+      static constexpr const std::int32_t NR_DIMS = 1960;
+    
       DefaultPointRepresentation ()
       {
-        nr_dimensions_ = 1960;
+        nr_dimensions_ = NR_DIMS;
       }
 
       void
@@ -512,9 +530,11 @@ namespace pcl
   class DefaultPointRepresentation<SHOT352> : public PointRepresentation<SHOT352>
   {
     public:
+      static constexpr const std::int32_t NR_DIMS = 352;
+    
       DefaultPointRepresentation ()
       {
-        nr_dimensions_ = 352;
+        nr_dimensions_ = NR_DIMS;
       }
 
       void
@@ -530,9 +550,11 @@ namespace pcl
   class DefaultPointRepresentation<SHOT1344> : public PointRepresentation<SHOT1344>
   {
     public:
+      static constexpr const std::int32_t NR_DIMS = 1344;
+    
       DefaultPointRepresentation ()
       {
-        nr_dimensions_ = 1344;
+        nr_dimensions_ = NR_DIMS;
       }
 
       void

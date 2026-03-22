@@ -14,68 +14,8 @@
 ////////////////////////////////////////////////////////////////
 */
 
+#include <pcl/pcl_config.h> // for HAVE_ZLIB
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
-
-#if !defined(HAVE_ZLIB)
-
-#if defined(ON_DLL_EXPORTS)
-// When compiling a Windows DLL opennurbs, we
-// statically link ./zlib/.../zlib....lib into
-// the opennurbs DLL.
-
-
-#define OPENNURBS_ZLIB_FILE_NAME "zlib.lib"
-
-//////////////////////////////////////////////////////////////
-//
-// OPENNURBS_ZLIB_OUTPUT_DIR is the directory containing zlib
-// relative to the "opennurbs" directory.  
-//
-// OPENNURBS_ZLIB_OUTPUT_DIR must not have a trailing slash
-//
-#define OPENNURBS_ZLIB_OUTPUT_ROOT_DIR "."
-
-
-#if defined(WIN64) && defined(_M_X64)
-
-// 64 bit Windows zlib linking instructions
-
-#if defined(NDEBUG)
-
-// release x64 libs
-#define OPENNURBS_CONFIGURATION_DIR "x64/Release"
-
-#else // _DEBUG
-
-// debug  x64 libs
-#define OPENNURBS_CONFIGURATION_DIR "x64/Debug"
-
-#endif // if NDEBUG else _DEBUG
-
-#elif defined(WIN32) && defined(_M_IX86)
-
-// 32 bit Windows zlib linking instructions
-
-#if defined(NDEBUG)
-
-// release 32 bit WIndows libs
-#define OPENNURBS_CONFIGURATION_DIR "Release"
-
-#else // _DEBUG
-
-// debug 32 bit WIndows libs
-#define OPENNURBS_CONFIGURATION_DIR "Debug"
-
-#endif // if NDEBUG else _DEBUG
-
-#endif // if WIN64 else WIN32
-
-#pragma comment(lib, "\"" OPENNURBS_ZLIB_OUTPUT_ROOT_DIR "/" OPENNURBS_CONFIGURATION_DIR "/" OPENNURBS_ZLIB_FILE_NAME "\"")
-
-#endif // ON_DLL_EXPORTS
-
-#endif // !HAVE_ZLIB
-
 
 bool ON_BinaryArchive::WriteCompressedBuffer(
         std::size_t sizeof__inbuffer,  // sizeof uncompressed input data

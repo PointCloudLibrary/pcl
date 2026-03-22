@@ -39,6 +39,7 @@
 
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <pcl/features/rift.h>
 #include <pcl/search/kdtree.h> // for KdTree
 

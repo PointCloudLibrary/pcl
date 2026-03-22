@@ -170,7 +170,7 @@ namespace pcl
           translation2 (2, 3) = centroid_input_[2] - centr[2];
 
           Eigen::Matrix4f resultHom (translation2 * rollHomMatrix);
-          transforms_.push_back(resultHom.inverse());
+          transforms_.emplace_back(resultHom.inverse());
         }
 
       }
@@ -194,7 +194,7 @@ namespace pcl
         int peak_distance = 5;
         int cutoff = nbins_ - 1;
 
-        kiss_fft_cpx * multAB = new kiss_fft_cpx[nr_bins_after_padding];
+        auto * multAB = new kiss_fft_cpx[nr_bins_after_padding];
         for (int i = 0; i < nr_bins_after_padding; i++)
           multAB[i].r = multAB[i].i = 0.f;
 
@@ -221,7 +221,7 @@ namespace pcl
         multAB[nbins_ - 1].r = input_ftt_negate[0].histogram[nbins_ - 1] * target_ftt[0].histogram[nbins_ - 1];
 
         kiss_fft_cfg mycfg = kiss_fft_alloc (nr_bins_after_padding, 1, nullptr, nullptr);
-        kiss_fft_cpx * invAB = new kiss_fft_cpx[nr_bins_after_padding];
+        auto * invAB = new kiss_fft_cpx[nr_bins_after_padding];
         kiss_fft (mycfg, multAB, invAB);
 
         std::vector < std::pair<float, int> > scored_peaks (nr_bins_after_padding);

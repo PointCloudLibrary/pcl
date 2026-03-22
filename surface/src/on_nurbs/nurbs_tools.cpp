@@ -57,12 +57,12 @@ NurbsTools::downsample_random (const vector_vec3d &data1, vector_vec3d &data2, u
     return;
   }
 
-  unsigned s = unsigned (data1.size ());
+  auto s = static_cast<unsigned>(data1.size ());
   data2.clear ();
 
   for (unsigned i = 0; i < size; i++)
   {
-    unsigned rnd = unsigned (s * (double (rand ()) / RAND_MAX));
+    auto rnd = static_cast<unsigned>(s * (static_cast<double>(rand ()) / RAND_MAX));
     data2.push_back (data1[rnd]);
   }
 }
@@ -73,13 +73,13 @@ NurbsTools::downsample_random (vector_vec3d &data, unsigned size)
   if (data.size () <= size && size > 0)
     return;
 
-  unsigned s = unsigned (data.size ());
+  auto s = static_cast<unsigned>(data.size ());
 
   vector_vec3d data_tmp;
 
   for (unsigned i = 0; i < size; i++)
   {
-    unsigned rnd = unsigned ((s - 1) * (double (rand ()) / RAND_MAX));
+    auto rnd = static_cast<unsigned>((s - 1) * (static_cast<double>(rand ()) / RAND_MAX));
     data_tmp.push_back (data[rnd]);
   }
 
@@ -168,7 +168,7 @@ NurbsTools::computeMean (const vector_vec3d &data)
 {
   Eigen::Vector3d u (0.0, 0.0, 0.0);
 
-  unsigned s = unsigned (data.size ());
+  auto s = static_cast<unsigned>(data.size ());
   double ds = 1.0 / s;
 
   for (unsigned i = 0; i < s; i++)
@@ -183,7 +183,7 @@ NurbsTools::computeMean (const vector_vec2d &data)
   Eigen::Vector2d u (0.0, 0.0);
 
   std::size_t s = data.size ();
-  double ds = 1.0 / double (s);
+  double ds = 1.0 / static_cast<double>(s);
 
   for (std::size_t i = 0; i < s; i++)
     u += (data[i] * ds);
@@ -197,7 +197,7 @@ NurbsTools::computeVariance (const Eigen::Vector3d &mean, const vector_vec3d &da
   Eigen::Vector3d var (0.0, 0.0, 0.0);
 
   std::size_t s = data.size ();
-  double ds = 1.0 / double (s);
+  double ds = 1.0 / static_cast<double>(s);
 
   for (std::size_t i = 0; i < s; i++)
   {
@@ -214,7 +214,7 @@ NurbsTools::computeVariance (const Eigen::Vector2d &mean, const vector_vec2d &da
   Eigen::Vector2d var (0.0, 0.0);
 
   std::size_t s = data.size ();
-  double ds = 1.0 / double (s);
+  double ds = 1.0 / static_cast<double>(s);
 
   for (std::size_t i = 0; i < s; i++)
   {
@@ -306,7 +306,7 @@ NurbsTools::pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3
 
   mean = computeMean (data);
 
-  unsigned s = unsigned (data.size ());
+  auto s = static_cast<unsigned>(data.size ());
 
   Eigen::MatrixXd Q (3, s);
 
@@ -344,7 +344,7 @@ NurbsTools::pca (const vector_vec2d &data, Eigen::Vector2d &mean, Eigen::Matrix2
 
   mean = computeMean (data);
 
-  unsigned s = unsigned (data.size ());
+  auto s = static_cast<unsigned>(data.size ());
 
   Eigen::MatrixXd Q (2, s);
 

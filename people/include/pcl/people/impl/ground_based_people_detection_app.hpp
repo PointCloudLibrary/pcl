@@ -375,13 +375,10 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
 
   // Euclidean Clustering:
   std::vector<pcl::PointIndices> cluster_indices;
-  typename pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
-  tree->setInputCloud(no_ground_cloud_);
   pcl::EuclideanClusterExtraction<PointT> ec;
   ec.setClusterTolerance(2 * voxel_size_);
   ec.setMinClusterSize(min_points_);
   ec.setMaxClusterSize(max_points_);
-  ec.setSearchMethod(tree);
   ec.setInputCloud(no_ground_cloud_);
   ec.extract(cluster_indices);
 

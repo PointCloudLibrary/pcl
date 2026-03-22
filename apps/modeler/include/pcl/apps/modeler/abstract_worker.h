@@ -50,7 +50,7 @@ class AbstractWorker : public QObject {
 public:
   AbstractWorker(const QList<CloudMeshItem*>& cloud_mesh_items,
                  QWidget* parent = nullptr);
-  ~AbstractWorker();
+  ~AbstractWorker() override;
 
   int
   exec();

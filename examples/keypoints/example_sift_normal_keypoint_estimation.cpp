@@ -43,6 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/sift_keypoint.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/point_types.h>
 
 /* This example shows how to estimate the SIFT points based on the
  * Normal gradients i.e. curvature than using the Intensity gradient

@@ -53,10 +53,7 @@ namespace pcl
     {
     public:
       /** \brief Empty constructor */
-      NurbsSolve () :
-        m_quiet (true)
-      {
-      }
+      NurbsSolve () = default;
 
       /** \brief Assign size and dimension (2D, 3D) of system of equations. */
       void
@@ -122,7 +119,7 @@ namespace pcl
       }
 
     private:
-      bool m_quiet;
+      bool m_quiet{true};
       SparseMat m_Ksparse;
       Eigen::MatrixXd m_Keig;
       Eigen::MatrixXd m_xeig;

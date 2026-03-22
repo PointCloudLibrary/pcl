@@ -2,22 +2,18 @@
 cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 
 # Set target C++ standard and required compiler features
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "The target C++ standard. PCL requires C++14 or higher.")
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "The target C++ standard. PCL requires C++17 or higher.")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 if("${CMAKE_CXX_STANDARD}" GREATER_EQUAL 17)
   set(PCL_CXX_COMPILE_FEATURES cxx_std_17)
   set(PCL__cplusplus 201703L)
   set(PCL_REQUIRES_MSC_VER 1912)
-elseif("${CMAKE_CXX_STANDARD}" EQUAL 14)
-  set(PCL_CXX_COMPILE_FEATURES cxx_std_14)
-  set(PCL__cplusplus 201402L)
-  set(PCL_REQUIRES_MSC_VER 1900)
 else()
-  message(FATAL_ERROR "Unknown or unsupported C++ standard specified")
+  message(FATAL_ERROR "Unknown or unsupported C++ standard specified. PCL requires C++17 or higher")
 endif()
 
-set(CMAKE_CUDA_STANDARD 17 CACHE STRING "The target CUDA/C++ standard. PCL requires CUDA/C++ 14 or higher.")
+set(CMAKE_CUDA_STANDARD 17 CACHE STRING "The target CUDA/C++ standard. PCL requires CUDA/C++ 17 or higher.")
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
@@ -187,7 +183,9 @@ if(CMAKE_COMPILER_IS_MSVC)
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
     # Disable some warnings
-    string(APPEND CMAKE_CXX_FLAGS " /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355")
+    # 4244 : conversion from 'type1' to 'type2', possible loss of data
+    # 4661 : no suitable definition provided for explicit template instantiation request
+    string(APPEND CMAKE_CXX_FLAGS " /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 /wd4244 /wd4267 /wd4661")
 
     # Enable warnings, which are disabled by default (see https://learn.microsoft.com/de-de/cpp/preprocessor/compiler-warnings-that-are-off-by-default)
     string(APPEND CMAKE_CXX_FLAGS " /w34265")
@@ -425,9 +423,19 @@ if(WITH_VTK)
   endif()
 endif()
 
-# VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND/Qt6_FOUND if the version we require is not found.
-set(WITH_QT "AUTO" CACHE STRING "Build QT Front-End (AUTO|YES|QT6|QT5|NO)")
+# If VTK has found a Qt version, default to the same version
+if(VTK_QT_VERSION STREQUAL "5")
+  message(STATUS "VTK has found Qt5 - defaulting to same version.")
+  set(WITH_QT "QT5" CACHE STRING "Build QT Front-End (AUTO|YES|QT6|QT5|NO)")
+elseif(VTK_QT_VERSION STREQUAL "6")
+  message(STATUS "VTK has found Qt6 - defaulting to same version.")
+  set(WITH_QT "QT6" CACHE STRING "Build QT Front-End (AUTO|YES|QT6|QT5|NO)")
+else()
+  # VTK can depend on Qt and search for its required version, so search after so we can overwrite Qt5_FOUND/Qt6_FOUND if the version we require is not found.
+  set(WITH_QT "AUTO" CACHE STRING "Build QT Front-End (AUTO|YES|QT6|QT5|NO)")
+endif()
 set_property(CACHE WITH_QT PROPERTY STRINGS "AUTO" "YES" "QT6" "QT5" "NO")
+
 if(WITH_QT)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_qt.cmake")
 endif()
@@ -447,15 +455,10 @@ endif()
 # Boost (required)
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
 
-# System zlib (for nurbs on surface)
-option(WITH_SYSTEM_ZLIB "Use system zlib" TRUE)
-if(WITH_SYSTEM_ZLIB)
-  find_package(ZLIB)
-  if(ZLIB_FOUND)
-    set(HAVE_ZLIB ON)
-  endif()
-else()
-  message(WARNING "CMake will use a ZLIB version bundled with the PCL source code. However, that is an older version which may pose a risk and may be removed in a future PCL release. It is recommended to install an up-to-date version of ZLIB on your system and set WITH_SYSTEM_ZLIB=TRUE.")
+# System zlib (for io-png and nurbs on surface)
+find_package(ZLIB)
+if(ZLIB_FOUND)
+  set(HAVE_ZLIB ON)
 endif()
 
 option(WITH_SYSTEM_CJSON "Use system cJSON" TRUE)

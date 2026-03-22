@@ -155,7 +155,9 @@ pcl::modeler::CloudMesh::updateVtkPoints()
   if (vtk_points_->GetData() == nullptr)
     vtk_points_->SetData(vtkSmartPointer<vtkFloatArray>::New());
 
-  vtkFloatArray* data = dynamic_cast<vtkFloatArray*>(vtk_points_->GetData());
+  auto* data = dynamic_cast<vtkFloatArray*>(vtk_points_->GetData());
+  if (!data)
+    return;
   data->SetNumberOfComponents(3);
 
   // If the dataset has no invalid values, just copy all of them
@@ -225,8 +227,12 @@ pcl::modeler::CloudMesh::transform(
   rx *= M_PI / 180;
   ry *= M_PI / 180;
   rz *= M_PI / 180;
-  Eigen::Affine3f affine_transform = pcl::getTransformation(
-      float(tx), float(ty), float(tz), float(rx), float(ry), float(rz));
+  Eigen::Affine3f affine_transform = pcl::getTransformation(static_cast<float>(tx),
+                                                            static_cast<float>(ty),
+                                                            static_cast<float>(tz),
+                                                            static_cast<float>(rx),
+                                                            static_cast<float>(ry),
+                                                            static_cast<float>(rz));
   CloudMesh::PointCloud transform_cloud = mean_cloud;
   pcl::transformPointCloudWithNormals(
       mean_cloud, transform_cloud, affine_transform.matrix());

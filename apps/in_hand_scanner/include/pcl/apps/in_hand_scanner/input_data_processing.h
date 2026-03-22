@@ -350,25 +350,25 @@ private:
 
   NormalEstimationPtr normal_estimation_;
 
-  float x_min_;
-  float x_max_;
-  float y_min_;
-  float y_max_;
-  float z_min_;
-  float z_max_;
+  float x_min_{-15.f};
+  float x_max_{15.f};
+  float y_min_{-15.f};
+  float y_max_{15.f};
+  float z_min_{48.f};
+  float z_max_{70.f};
 
-  float h_min_;
-  float h_max_;
-  float s_min_;
-  float s_max_;
-  float v_min_;
-  float v_max_;
+  float h_min_{210.f};
+  float h_max_{270.f};
+  float s_min_{0.2f};
+  float s_max_{1.f};
+  float v_min_{0.2f};
+  float v_max_{1.f};
 
-  bool hsv_inverted_;
-  bool hsv_enabled_;
+  bool hsv_inverted_{false};
+  bool hsv_enabled_{true};
 
-  unsigned int size_dilate_;
-  unsigned int size_erode_;
+  unsigned int size_dilate_{3};
+  unsigned int size_erode_{3};
 };
 } // End namespace ihs
 } // End namespace pcl

@@ -39,6 +39,11 @@
 
 #pragma once
 
+// For backward-compatibility field traits should be imported in this header
+#ifndef PCL_OPTIMIZE_IMPORTS_FIELD_TRAITS
+#include <pcl/field_traits.h>
+#endif
+
 #include <bitset>
 
 
@@ -50,6 +55,7 @@
 
 // Allow nameless structs/unions
 #if defined _MSC_VER
+  #pragma warning(push)
   #pragma warning(disable: 4201)
 #endif
 
@@ -352,3 +358,7 @@ namespace pcl
 /** @} */
 
 #include <pcl/impl/point_types.hpp>
+
+#if defined _MSC_VER
+  #pragma warning(pop)
+#endif

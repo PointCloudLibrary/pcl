@@ -43,7 +43,7 @@
 #include <QThread>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ThreadController::ThreadController() {}
+pcl::modeler::ThreadController::ThreadController() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::ThreadController::~ThreadController()
@@ -62,7 +62,7 @@ pcl::modeler::ThreadController::runWorker(AbstractWorker* worker)
     return false;
   }
 
-  QThread* thread = new QThread;
+  auto* thread = new QThread;
 
   connect(this, SIGNAL(prepared()), worker, SLOT(process()));
 

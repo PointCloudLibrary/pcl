@@ -13,7 +13,7 @@ pcl::cloud_composer::TransformClouds::performAction(ConstItemList input_data,
                                                     PointTypeFlags::PointType type)
 {
   if (type != PointTypeFlags::NONE) {
-    switch ((std::uint8_t)type) {
+    switch (static_cast<std::uint8_t>(type)) {
     case (PointTypeFlags::XYZ):
       return this->performTemplatedAction<pcl::PointXYZ>(input_data);
     case (PointTypeFlags::XYZ | PointTypeFlags::RGB):

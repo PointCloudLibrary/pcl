@@ -125,7 +125,7 @@ private:
   TrackBall trackball_;
 
   /// last recorded mouse positions
-  int x_, y_;
+  int x_{0}, y_{0};
 
   /// scaling factor used to control the speed which the display scales the
   /// point cloud

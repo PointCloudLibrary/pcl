@@ -268,10 +268,10 @@ private:
   CloudPtr cloud_ptr_;
 
   /// The display size, in pixels, of the cloud points
-  unsigned int point_size_;
+  unsigned int point_size_{2u};
 
   /// The display size, in pixels, of the selected cloud points
-  unsigned int selected_point_size_;
+  unsigned int selected_point_size_{4u};
 
   /// The transformation tool being used. Either a cloud transform tool or
   /// a selection transform tool is activated at a time.
@@ -287,26 +287,26 @@ private:
   CommandQueuePtr command_queue_ptr_;
 
   /// The camera field of view
-  double cam_fov_;
+  double cam_fov_{60.0};
 
   /// The camera aspect ratio
-  double cam_aspect_;
+  double cam_aspect_{1.0};
 
   /// The camera near clipping plane
-  double cam_near_;
+  double cam_near_{0.0001};
 
   /// The camera far clipping plane
-  double cam_far_;
+  double cam_far_{100.0};
 
   /// @brief Initialize the texture used for rendering the cloud
   void
   initTexture();
 
   /// The current scheme used for coloring the whole cloud
-  ColorScheme color_scheme_;
+  ColorScheme color_scheme_{COLOR_BY_PURE};
 
   /// A flag indicates whether the cloud is initially colored or not.
-  bool is_colored_;
+  bool is_colored_{false};
 
   using KeyMapFunc = std::function<void(CloudEditorWidget*)>;
 

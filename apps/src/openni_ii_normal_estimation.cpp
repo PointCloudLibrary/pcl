@@ -55,7 +55,7 @@ using namespace std::chrono_literals;
     double now = pcl::getTime();                                                       \
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
+      std::cout << "Average framerate(" << (_WHAT_) << "): "                             \
                 << double(count) / double(now - last) << " Hz" << std::endl;           \
       count = 0;                                                                       \
       last = now;                                                                      \
@@ -229,7 +229,7 @@ main(int argc, char** argv)
     return 1;
   }
 
-  std::string device_id = "";
+  std::string device_id;
   if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];

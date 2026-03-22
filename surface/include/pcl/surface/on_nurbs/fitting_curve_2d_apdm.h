@@ -58,18 +58,14 @@ namespace pcl
         /** \brief Parameters for fitting */
         struct Parameter
         {
-          double interior_sigma2;
-          double smoothness;
-          double closest_point_weight;
-          double closest_point_sigma2;
-          unsigned closest_point_resolution;
-          double smooth_concavity;
-          double rScale;
-          Parameter () :
-            interior_sigma2 (0.1), smoothness (0.1), closest_point_weight (0.1), closest_point_sigma2 (0.1),
-                closest_point_resolution (0), smooth_concavity (1.0), rScale (1.0)
-          {
-          }
+          double interior_sigma2{0.1};
+          double smoothness{0.1};
+          double closest_point_weight{0.1};
+          double closest_point_sigma2{0.1};
+          unsigned closest_point_resolution{0};
+          double smooth_concavity{1.0};
+          double rScale{1.0};
+          Parameter () = default;
         };
 
         struct FitParameter

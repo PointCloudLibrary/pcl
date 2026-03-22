@@ -213,7 +213,7 @@ private:
   IntegrationPtr integration_;
 
   /** \brief Prevent the application to crash while closing. */
-  bool destructor_called_;
+  bool destructor_called_{false};
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW
