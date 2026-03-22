@@ -210,7 +210,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   double nu_limit = 1.0;
   double nu_current = 1.0;
   if (use_welsch) {
-    const double neighbor_med = findKNearestMedian(*target_centered, tree, 7);
+    const double neighbor_med = findKNearestMedian(*target_centered, tree_data, 7);
     std::vector<double> residual_values(static_cast<std::size_t>(residuals.size()));
     for (int i = 0; i < residuals.size(); ++i)
       residual_values[static_cast<std::size_t>(i)] = residuals[i];
