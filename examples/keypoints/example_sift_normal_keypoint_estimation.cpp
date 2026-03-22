@@ -72,10 +72,8 @@ main(int, char** argv)
   // Estimate the normals of the cloud_xyz
   pcl::NormalEstimation<pcl::PointXYZ, pcl::PointNormal> ne;
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals (new pcl::PointCloud<pcl::PointNormal>);
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree_n(new pcl::search::KdTree<pcl::PointXYZ>());
 
   ne.setInputCloud(cloud_xyz);
-  ne.setSearchMethod(tree_n);
   ne.setRadiusSearch(0.2);
   ne.compute(*cloud_normals);
 
@@ -90,8 +88,6 @@ main(int, char** argv)
   // Estimate the sift interest points using normals values from xyz as the Intensity variants
   pcl::SIFTKeypoint<pcl::PointNormal, pcl::PointWithScale> sift;
   pcl::PointCloud<pcl::PointWithScale> result;
-  pcl::search::KdTree<pcl::PointNormal>::Ptr tree(new pcl::search::KdTree<pcl::PointNormal> ());
-  sift.setSearchMethod(tree);
   sift.setScales(min_scale, n_octaves, n_scales_per_octave);
   sift.setMinimumContrast(min_contrast);
   sift.setInputCloud(cloud_normals);

@@ -43,6 +43,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/segmentation/extract_clusters.h>
+#define PCL_NO_PRECOMPILE // ConditionalEuclideanClustering is not always instantiated with PointNormal
+#include <pcl/segmentation/conditional_euclidean_clustering.h>
 #include <pcl/point_types.h>
 
 int 
@@ -68,8 +70,6 @@ main (int argc, char **argv)
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
   ne.setInputCloud (cloud_ptr);
 
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree_n (new pcl::search::KdTree<pcl::PointXYZ>());
-  ne.setSearchMethod (tree_n);
   ne.setRadiusSearch (0.03);
   ne.compute (*cloud_normals);
   std::cout << "Estimated the normals" << std::endl;
@@ -106,6 +106,40 @@ main (int argc, char **argv)
     writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); 
     ++j;
   }
+  
+  // Alternative: using ConditionalEuclideanClustering instead of extractEuclideanClusters
+  auto cloud_with_normals = pcl::make_shared<pcl::PointCloud<pcl::PointNormal>>();
+  pcl::concatenateFields(*cloud_ptr, *cloud_normals, *cloud_with_normals);
+  pcl::ConditionalEuclideanClustering<pcl::PointNormal> cec;
+  const double cos_eps_angle = std::cos(eps_angle);
+  std::function<bool (const pcl::PointNormal&, const pcl::PointNormal&, float)> condition_function =
+    [cos_eps_angle](const pcl::PointNormal& a, const pcl::PointNormal& b, float /*dist*/)
+      { return std::abs(a.getNormalVector3fMap().dot(b.getNormalVector3fMap())) > cos_eps_angle; };
+  cec.setConditionFunction(condition_function);
+  cec.setClusterTolerance(tolerance);
+  cec.setMinClusterSize(min_cluster_size);
+  cec.setInputCloud(cloud_with_normals);
+  std::vector<pcl::PointIndices> cluster_indices2;
+  cec.segment(cluster_indices2);
 
+  std::cout << "No of clusters formed are " << cluster_indices2.size () << std::endl;
+  // Saving the clusters in separate pcd files
+  j = 0;
+  for (const auto& cluster : cluster_indices2)
+  {
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+    for (const auto &index : cluster.indices) {
+      cloud_cluster->push_back((*cloud_ptr)[index]);
+    }
+    cloud_cluster->width = cloud_cluster->size ();
+    cloud_cluster->height = 1;
+    cloud_cluster->is_dense = true;
+
+    std::cout << "PointCloud representing the Cluster using xyzn: " << cloud_cluster->size () << " data " << std::endl;
+    std::stringstream ss;
+    ss << "./cloud_cluster2_" << j << ".pcd";
+    writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); 
+    ++j;
+  }
   return (0);
 }

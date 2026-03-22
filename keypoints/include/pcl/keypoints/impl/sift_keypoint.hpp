@@ -41,7 +41,6 @@
 #include <pcl/keypoints/sift_keypoint.h>
 #include <pcl/common/io.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/search/kdtree.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void 
@@ -90,7 +89,6 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::initCompute ()
   }
   
   this->setKSearch (1);
-  tree_.reset (new pcl::search::KdTree<PointInT> (true));
   return (true);
 }
 
@@ -134,7 +132,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
       break;
 
     // Update the KdTree with the downsampled points
-    tree_->setInputCloud (cloud);
+    tree_.reset (pcl::search::autoSelectMethod<PointInT>(cloud, true));
 
     // Detect keypoints for the current scale
     detectKeypointsForOctave (*cloud, *tree_, scale, nr_scales_per_octave_, output);

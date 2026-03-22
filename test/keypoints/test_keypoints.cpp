@@ -40,7 +40,7 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/approximate_voxel_grid.h>
-
+#include <pcl/search/kdtree.h>
 #include <pcl/keypoints/sift_keypoint.h>
 
 #include <set>

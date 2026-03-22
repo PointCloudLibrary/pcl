@@ -222,9 +222,7 @@ pcl::features::ISMVoteList<PointT>::validateTree ()
 {
   if (!tree_is_valid_)
   {
-    if (tree_ == nullptr)
-      tree_.reset (new pcl::KdTreeFLANN<pcl::InterestPoint>);
-    tree_->setInputCloud (votes_);
+    tree_.reset (pcl::search::autoSelectMethod<pcl::InterestPoint>(votes_, false, pcl::search::Purpose::radius_search));
     k_ind_.resize ( votes_->size (), -1 );
     k_sqr_dist_.resize ( votes_->size (), 0.0f );
     tree_is_valid_ = true;
@@ -1206,12 +1204,8 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::estimateFe
   typename pcl::PointCloud<NormalT>::Ptr normal_cloud,
   typename pcl::PointCloud<pcl::Histogram<FeatureSize> >::Ptr feature_cloud)
 {
-  typename pcl::search::Search<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
-//  tree->setInputCloud (point_cloud);
-
   feature_estimator_->setInputCloud (sampled_point_cloud->makeShared ());
 //  feature_estimator_->setSearchSurface (point_cloud->makeShared ());
-  feature_estimator_->setSearchMethod (tree);
 
 //  typename pcl::SpinImageEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<FeatureSize> >::Ptr feat_est_norm =
 //    dynamic_pointer_cast<pcl::SpinImageEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<FeatureSize> > > (feature_estimator_);

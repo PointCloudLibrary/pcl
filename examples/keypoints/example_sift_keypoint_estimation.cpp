@@ -67,8 +67,6 @@ main(int, char** argv)
   // Estimate the sift interest points using Intensity values from RGB values
   pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointWithScale> sift;
   pcl::PointCloud<pcl::PointWithScale> result;
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB> ());
-  sift.setSearchMethod(tree);
   sift.setScales(min_scale, n_octaves, n_scales_per_octave);
   sift.setMinimumContrast(min_contrast);
   sift.setInputCloud(cloud);

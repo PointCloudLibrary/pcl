@@ -9,7 +9,6 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/segmentation/extract_labeled_clusters.h>
 #include <pcl/segmentation/seeded_hue_segmentation.h>

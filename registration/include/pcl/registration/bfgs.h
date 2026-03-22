@@ -7,6 +7,8 @@
 
 #include <unsupported/Eigen/Polynomials> // for PolynomialSolver, PolynomialSolverBase
 
+#include <cassert> // for assert
+
 namespace Eigen {
 template <typename _Scalar>
 class PolynomialSolver<_Scalar, 2> : public PolynomialSolverBase<_Scalar, 2> {

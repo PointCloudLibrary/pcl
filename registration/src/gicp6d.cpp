@@ -37,6 +37,7 @@
  */
 
 #include <pcl/registration/gicp6d.h>
+#include <pcl/search/kdtree_nanoflann.h>
 #include <pcl/memory.h>                 // for pcl::make_shared
 #include <pcl/point_types_conversion.h> // for PointXYZRGBtoXYZLAB
 
@@ -80,9 +81,24 @@ GeneralizedIterativeClosestPoint6D::setInputTarget(
   }
 
   // ...and build 6d-tree
-  target_tree_lab_.setInputCloud(target_lab_);
-  target_tree_lab_.setPointRepresentation(
+#if PCL_HAS_NANOFLANN
+  // 6 search dimensions for MyPointRepresentation; max. 10 points per leaf is a good
+  // choice for one-nearest-neighbor search
+  target_tree_lab_.reset(
+      new pcl::search::KdTreeNanoflann<pcl::PointXYZLAB, 6>(false, 10));
+  target_tree_lab_->setPointRepresentation(
       pcl::make_shared<MyPointRepresentation>(point_rep_));
+  target_tree_lab_->setInputCloud(target_lab_);
+#else
+#if PCL_HAS_FLANN
+  target_tree_lab_.reset(new pcl::search::KdTree<pcl::PointXYZLAB>(false));
+  target_tree_lab_->setPointRepresentation(
+      pcl::make_shared<MyPointRepresentation>(point_rep_));
+  target_tree_lab_->setInputCloud(target_lab_);
+#else
+#error "GeneralizedIterativeClosestPoint6D needs nanoflann or FLANN!"
+#endif
+#endif
 }
 
 bool
@@ -90,7 +106,7 @@ GeneralizedIterativeClosestPoint6D::searchForNeighbors(const PointXYZLAB& query,
                                                        pcl::Indices& index,
                                                        std::vector<float>& distance)
 {
-  int k = target_tree_lab_.nearestKSearch(query, 1, index, distance);
+  int k = target_tree_lab_->nearestKSearch(query, 1, index, distance);
 
   // check if neighbor was found
   return (k != 0);

@@ -44,7 +44,6 @@
 #include <pcl/features/cvfh.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/common/centroid.h>
-#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void
@@ -234,18 +233,12 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   if(normals_filtered_cloud->size() >= min_points_)
   {
     //recompute normals and use them for clustering
-    KdTreePtr normals_tree_filtered (new pcl::search::KdTree<pcl::PointNormal> (false));
-    normals_tree_filtered->setInputCloud (normals_filtered_cloud);
-
-
     pcl::NormalEstimation<PointNormal, PointNormal> n3d;
     n3d.setRadiusSearch (radius_normals_);
-    n3d.setSearchMethod (normals_tree_filtered);
     n3d.setInputCloud (normals_filtered_cloud);
     n3d.compute (*normals_filtered_cloud);
 
-    KdTreePtr normals_tree (new pcl::search::KdTree<pcl::PointNormal> (false));
-    normals_tree->setInputCloud (normals_filtered_cloud);
+    KdTreePtr normals_tree (pcl::search::autoSelectMethod<pcl::PointNormal>(normals_filtered_cloud, false, pcl::search::Purpose::radius_search));
 
     extractEuclideanClustersSmooth (*normals_filtered_cloud,
                                     *normals_filtered_cloud,

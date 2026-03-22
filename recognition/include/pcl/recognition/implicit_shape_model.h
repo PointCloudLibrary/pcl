@@ -43,7 +43,6 @@
 #include <pcl/point_types.h>
 #include <pcl/point_representation.h>
 #include <pcl/features/feature.h>
-#include <pcl/kdtree/kdtree_flann.h> // for KdTreeFLANN
 
 namespace pcl
 {
@@ -140,7 +139,7 @@ namespace pcl
         std::vector<int> votes_class_{};
 
         /** \brief Stores the search tree. */
-        pcl::KdTreeFLANN<pcl::InterestPoint>::Ptr tree_{nullptr};
+        pcl::search::Search<pcl::InterestPoint>::Ptr tree_{nullptr};
 
         /** \brief Stores neighbours indices. */
         pcl::Indices k_ind_{};

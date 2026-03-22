@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/kdtree/kdtree.h>
 #include <pcl/registration/transformation_validation.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/memory.h>

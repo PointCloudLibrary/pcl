@@ -76,10 +76,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   // Check if a space search locator was given for sampled_surface_
   if (!sampled_tree_)
   {
-    if (sampled_surface_->isOrganized () && surface_->isOrganized () && input_->isOrganized ())
-      sampled_tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-    else
-      sampled_tree_.reset (new pcl::search::KdTree<PointInT> (false));
+    sampled_tree_.reset (pcl::search::autoSelectMethod<PointInT>(sampled_surface_, false, pcl::search::Purpose::radius_search));
   }
 
   if (sampled_tree_->getInputCloud () != sampled_surface_) // Make sure the tree searches the sampled surface

@@ -100,16 +100,11 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, std::vector<pcl::PCLPointCl
 
   print_highlight (stderr, "Computing ");
 
-  // Creating the KdTree object for the search method of the extraction
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-  tree->setInputCloud (xyz);
-
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
   ec.setClusterTolerance (tolerance);
   ec.setMinClusterSize (min);
   ec.setMaxClusterSize (max);
-  ec.setSearchMethod (tree);
   ec.setInputCloud (xyz);
   ec.extract (cluster_indices);
 

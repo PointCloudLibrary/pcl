@@ -38,8 +38,8 @@
 
 #pragma once
 
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/registration/gicp.h>
+#include <pcl/search/kdtree.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_exports.h> // for PCL_EXPORTS
 #include <pcl/point_cloud.h>
@@ -118,7 +118,7 @@ protected:
   pcl::PointCloud<PointXYZLAB>::Ptr target_lab_;
 
   /** \brief 6d-tree to search in model cloud. */
-  KdTreeFLANN<PointXYZLAB> target_tree_lab_;
+  pcl::search::KdTree<PointXYZLAB>::Ptr target_tree_lab_;
 
   /** \brief The color weight. */
   float lab_weight_;
