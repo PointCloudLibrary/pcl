@@ -33,7 +33,8 @@ namespace pcl {
  * pcl::FastRobustIterativeClosestPoint<PointT, PointT> reg;
  * reg.setInputSource (src); // src and tgt are clouds that must be created before
  * reg.setInputTarget (tgt);
- * reg.setMaximumIterations (60); // parameters may have to be tuned, depending on the point clouds
+ * // parameters may have to be tuned, depending on the point clouds
+ * reg.setMaximumIterations (60);
  * reg.setTransformationEpsilon (1e-8);
  * pcl::PointCloud<PointT> output;
  * reg.align (output);
