@@ -449,7 +449,7 @@ template <typename PointSource, typename PointTarget, typename Scalar>
 double
 FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::findKNearestMedian(
     const pcl::PointCloud<pcl::PointXYZ>& cloud,
-    pcl::search::KdTree<pcl::PointXYZ>& tree,
+    pcl::search::Search<pcl::PointXYZ>& tree,
     int neighbors) const
 {
   if (cloud.empty() || neighbors < 2)

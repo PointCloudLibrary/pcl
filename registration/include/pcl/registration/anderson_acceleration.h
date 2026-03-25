@@ -139,10 +139,11 @@ public:
       }
       else {
         // update Gram matrix row/column corresponding to the newest column
-        const Eigen::VectorXd new_inner_prod = prev_dF_.col(column_index_).transpose() *
-                                               prev_dF_.block(0, 0, dimension_, m_k);
-        normal_eq_matrix_.block(column_index_, 0, 1, m_k) = new_inner_prod.transpose();
-        normal_eq_matrix_.block(0, column_index_, m_k, 1) = new_inner_prod;
+        const Eigen::RowVectorXd new_inner_prod =
+            prev_dF_.col(column_index_).transpose() *
+            prev_dF_.block(0, 0, dimension_, m_k);
+        normal_eq_matrix_.block(column_index_, 0, 1, m_k) = new_inner_prod;
+        normal_eq_matrix_.block(0, column_index_, m_k, 1) = new_inner_prod.transpose();
 
         cod_.compute(normal_eq_matrix_.block(0, 0, m_k, m_k));
         theta_.head(m_k) =

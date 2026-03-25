@@ -1,47 +1,19 @@
 /*
- * Software License Agreement (BSD License)
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
  */
 
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_POINT_ROBUST_HPP_
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_POINT_ROBUST_HPP_
 
 #include <pcl/common/eigen.h>
+
+#include <limits>
 
 namespace pcl {
 
@@ -58,7 +30,7 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
   if (cloud_tgt.size() != nr_points) {
     PCL_ERROR("[pcl::TransformationEstimationPointToPointRobust::"
               "estimateRigidTransformation] Number "
-              "or points in source (%zu) differs than target (%zu)!\n",
+              "of points in source (%zu) differs than target (%zu)!\n",
               static_cast<std::size_t>(nr_points),
               static_cast<std::size_t>(cloud_tgt.size()));
     return;
@@ -78,7 +50,8 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
                                 Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != cloud_tgt.size()) {
-    PCL_ERROR("[pcl::TransformationSVD::estimateRigidTransformation] Number or points "
+    PCL_ERROR("[pcl::TransformationEstimationPointToPointRobust::"
+              "estimateRigidTransformation] Number of points "
               "in source (%zu) differs than target (%zu)!\n",
               indices_src.size(),
               static_cast<std::size_t>(cloud_tgt.size()));
@@ -100,8 +73,9 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
                                 Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != indices_tgt.size()) {
-    PCL_ERROR("[pcl::TransformationEstimationSVD::estimateRigidTransformation] Number "
-              "or points in source (%zu) differs than target (%zu)!\n",
+    PCL_ERROR("[pcl::TransformationEstimationPointToPointRobust::"
+              "estimateRigidTransformation] Number of points "
+              "in source (%zu) differs than target (%zu)!\n",
               indices_src.size(),
               indices_tgt.size());
     return;
@@ -134,6 +108,11 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
 {
   // Convert to Eigen format
   const int npts = static_cast<int>(source_it.size());
+  if (npts == 0) {
+    PCL_ERROR("[pcl::TransformationEstimationPointToPointRobust::"
+              "estimateRigidTransformation] Empty correspondence set.\n");
+    return;
+  }
   source_it.reset();
   target_it.reset();
   Eigen::Matrix<Scalar, Eigen::Dynamic, 1> weights(npts);
@@ -149,16 +128,21 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
     target_it++;
   }
 
+  const Scalar epsilon = std::numeric_limits<Scalar>::epsilon();
   Scalar sigma2;
   if (sigma_ < 0)
-    sigma2 = square_distances.maxCoeff() / 9.0;
+    sigma2 = std::max(square_distances.maxCoeff() / Scalar(9.0), epsilon);
   else
-    sigma2 = sigma_ * sigma_;
+    sigma2 = std::max(sigma_ * sigma_, epsilon);
 
   for (int i = 0; i < npts; i++) {
-    weights[i] = std::exp(-square_distances[i] / (2.0 * sigma2));
+    weights[i] = std::exp(-square_distances[i] / (Scalar(2.0) * sigma2));
   }
-  weights = weights / weights.sum();
+  const Scalar weights_sum = weights.sum();
+  if (weights_sum > epsilon)
+    weights /= weights_sum;
+  else
+    weights.setConstant(Scalar(1.0) / static_cast<Scalar>(npts));
 
   source_it.reset();
   target_it.reset();
@@ -225,10 +209,15 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
       centroid_tgt.template head<3>() - Rc;
 
   if (pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG)) {
-    size_t N = cloud_src_demean.cols();
-    PCL_DEBUG("[pcl::registration::TransformationEstimationPointToPointRobust::"
-              "getTransformationFromCorrelation] Loss: %.10e\n",
-              (cloud_tgt_demean - R * cloud_src_demean).squaredNorm() / N);
+    const auto N = cloud_src_demean.cols();
+    if (N > 0) {
+      PCL_DEBUG("[pcl::registration::TransformationEstimationPointToPointRobust::"
+                "getTransformationFromCorrelation] Loss: %.10e\n",
+                (cloud_tgt_demean.template topRows<3>() -
+                 R * cloud_src_demean.template topRows<3>())
+                        .squaredNorm() /
+                    static_cast<double>(N));
+    }
   }
 }
 
@@ -243,22 +232,27 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
   Eigen::Matrix<Scalar, 4, 1> accumulator{0, 0, 0, 0};
 
   unsigned int cp = 0;
+  Scalar sum_weights = Scalar(0);
+  Eigen::Index weight_idx = 0;
 
   // For each point in the cloud
   // If the data is dense, we don't need to check for NaN
   while (cloud_iterator.isValid()) {
     // Check if the point is invalid
     if (pcl::isFinite(*cloud_iterator)) {
-      accumulator[0] += weights[cp] * cloud_iterator->x;
-      accumulator[1] += weights[cp] * cloud_iterator->y;
-      accumulator[2] += weights[cp] * cloud_iterator->z;
+      const Scalar w = weights[weight_idx];
+      accumulator[0] += w * cloud_iterator->x;
+      accumulator[1] += w * cloud_iterator->y;
+      accumulator[2] += w * cloud_iterator->z;
+      sum_weights += w;
       ++cp;
     }
+    ++weight_idx;
     ++cloud_iterator;
   }
 
-  if (cp > 0) {
-    centroid = accumulator;
+  if (cp > 0 && sum_weights > std::numeric_limits<Scalar>::epsilon()) {
+    centroid = accumulator / sum_weights;
     centroid[3] = 1;
   }
   return (cp);

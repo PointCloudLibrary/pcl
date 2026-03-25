@@ -162,7 +162,6 @@ set(srcs
   src/transformation_estimation_point_to_plane_weighted.cpp
   src/transformation_estimation_point_to_plane_lls.cpp
   src/transformation_estimation_point_to_plane_lls_weighted.cpp
-  src/transformation_estimation_point_to_point_robust.cpp
   src/transformation_validation_euclidean.cpp
   src/sample_consensus_prerejective.cpp
 )
