@@ -56,6 +56,15 @@ namespace pcl {
  * The solver relies on Welsch reweighting for robustness and optional Anderson
  * acceleration for faster convergence.
  *
+ * \code
+ * pcl::FastRobustIterativeClosestPoint<PointT, PointT> reg;
+ * reg.setInputSource (src); // src and tgt are clouds that must be created before
+ * reg.setInputTarget (tgt);
+ * reg.setMaximumIterations (60); // parameters may have to be tuned, depending on the point clouds
+ * reg.setTransformationEpsilon (1e-8);
+ * pcl::PointCloud<PointT> output;
+ * reg.align (output);
+ * \endcode
  * \ingroup registration
  */
 template <typename PointSource, typename PointTarget, typename Scalar = float>
