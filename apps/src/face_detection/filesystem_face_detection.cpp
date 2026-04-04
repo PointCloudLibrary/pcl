@@ -98,7 +98,11 @@ run(pcl::RFFaceDetectorTrainer& fdrf,
     bool result = face_detection_apps_utils::readMatrixFromFile(pose_file, pose_mat);
 
     if (result) {
+#if (EIGEN_WORLD_VERSION > 3 || (EIGEN_WORLD_VERSION == 3 && EIGEN_MAJOR_VERSION >= 5))
+      Eigen::Vector3f ea = pose_mat.topLeftCorner<3, 3>().canonicalEulerAngles(0, 1, 2);
+#else
       Eigen::Vector3f ea = pose_mat.topLeftCorner<3, 3>().eulerAngles(0, 1, 2);
+#endif
       Eigen::Vector3f trans_vector =
           Eigen::Vector3f(pose_mat(0, 3), pose_mat(1, 3), pose_mat(2, 3));
       std::cout << ea << std::endl;

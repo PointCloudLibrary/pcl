@@ -93,7 +93,11 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     if (readMatrixFromFile (pose_file, pose_mat))
     {
+#if (EIGEN_WORLD_VERSION > 3 || (EIGEN_WORLD_VERSION == 3 && EIGEN_MAJOR_VERSION >= 5))
+      Eigen::Vector3f ea = pose_mat.topLeftCorner<3, 3> ().canonicalEulerAngles (0, 1, 2);
+#else
       Eigen::Vector3f ea = pose_mat.topLeftCorner<3, 3> ().eulerAngles (0, 1, 2);
+#endif
       ea *= 57.2957795f; //transform it to degrees to do the binning
       int y = static_cast<int>(pcl_round ((ea[0] + static_cast<float>(std::abs (min_yaw))) / res_yaw));
       int p = static_cast<int>(pcl_round ((ea[1] + static_cast<float>(std::abs (min_pitch))) / res_pitch));
@@ -354,7 +358,11 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     pose_mat.setIdentity (4, 4);
     readMatrixFromFile (pose_file, pose_mat);
 
+#if (EIGEN_WORLD_VERSION > 3 || (EIGEN_WORLD_VERSION == 3 && EIGEN_MAJOR_VERSION >= 5))
+    Eigen::Vector3f ea = pose_mat.topLeftCorner<3, 3> ().canonicalEulerAngles (0, 1, 2);
+#else
     Eigen::Vector3f ea = pose_mat.topLeftCorner<3, 3> ().eulerAngles (0, 1, 2);
+#endif
     Eigen::Vector3f trans_vector = Eigen::Vector3f (pose_mat (0, 3), pose_mat (1, 3), pose_mat (2, 3));
 
     pcl::PointXYZ center_point;

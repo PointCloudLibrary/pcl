@@ -212,8 +212,11 @@ pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowIntera
 
     vtkPolyData* selected = glyph_filter->GetOutput ();
     vtkIdTypeArray* global_ids  = vtkIdTypeArray::SafeDownCast (selected->GetPointData ()->GetArray ("Indices"));
-
+#if (VTK_MAJOR_VERSION > 9 || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7))
+    if (!global_ids->GetCapacity () || !selected->GetNumberOfPoints ())
+#else
     if (!global_ids->GetSize () || !selected->GetNumberOfPoints ())
+#endif
       continue;
 
     Indices actor_indices;

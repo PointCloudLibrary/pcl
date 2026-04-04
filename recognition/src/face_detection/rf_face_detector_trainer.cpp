@@ -519,7 +519,11 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
       head_clusters_centers_[i][1] = icp_trans (1, 3);
       head_clusters_centers_[i][2] = icp_trans (2, 3);
 
+#if (EIGEN_WORLD_VERSION > 3 || (EIGEN_WORLD_VERSION == 3 && EIGEN_MAJOR_VERSION >= 5))
+      Eigen::Vector3f ea = icp_trans.topLeftCorner<3, 3> ().canonicalEulerAngles (0, 1, 2);
+#else
       Eigen::Vector3f ea = icp_trans.topLeftCorner<3, 3> ().eulerAngles (0, 1, 2);
+#endif
       head_clusters_rotation_[i][0] = ea[0];
       head_clusters_rotation_[i][1] = ea[1];
       head_clusters_rotation_[i][2] = ea[2];

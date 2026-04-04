@@ -66,7 +66,10 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
 {
   // Prepare for image flip
   algo_->SetInterpolationModeToCubic ();
+#if (VTK_MAJOR_VERSION < 9 || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION < 6))
+  // starting with VTK 9.6.0, this is a no-op and marked deprecated
   algo_->PreserveImageExtentOn ();
+#endif
   algo_->FlipAboutOriginOn ();
   algo_->SetFilteredAxis (1);
 
