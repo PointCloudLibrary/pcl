@@ -47,6 +47,7 @@
 #include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/common/common.h> // for getMaxDistance
 #include <pcl/common/transforms.h>
+#include <pcl/search/auto.h> // for autoSelectMethod
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void

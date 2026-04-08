@@ -39,6 +39,7 @@
 #define PCL_SURFACE_IMPL_TEXTURE_MAPPING_HPP_
 
 #include <pcl/common/distances.h>
+#include <pcl/search/auto.h> // for autoSelectMethod
 #include <pcl/surface/texture_mapping.h>
 #include <unordered_set>
 
