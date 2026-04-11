@@ -40,7 +40,10 @@
 
 #include <thrust/functional.h>
 #include <cuda.h>
-#include <functional>
+
+#if CUDA_VERSION >= 13000
+#include <cuda/std/functional>
+#endif
 
 namespace pcl
 {
@@ -85,9 +88,7 @@ namespace pcl
         };
 
         // Generalized Identity Operations
-        #if CUDA_VERSION >= 13020
-        using std::identity;
-        #elif CUDA_VERSION >= 13000
+        #if CUDA_VERSION >= 13000
         using cuda::std::identity;
         #else
         using thrust::identity;
