@@ -7,7 +7,6 @@
 // PCL - outofcore
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
-#include <pcl/outofcore/impl/monitor_queue.hpp>
 #include <pcl/outofcore/impl/lru_cache.hpp>
 
 #include <pcl/outofcore/visualization/camera.h>
@@ -36,7 +35,6 @@ std::condition_variable OutofcoreCloud::pcd_queue_ready;
 std::mutex OutofcoreCloud::pcd_queue_mutex;
 
 std::shared_ptr<std::thread> OutofcoreCloud::pcd_reader_thread;
-//MonitorQueue<std::string> OutofcoreCloud::pcd_queue;
 
 //std::map<std::string, vtkSmartPointer<vtkPolyData> > OutofcoreCloud::cloud_data_cache;
 OutofcoreCloud::CloudDataCache OutofcoreCloud::cloud_data_cache(524288);

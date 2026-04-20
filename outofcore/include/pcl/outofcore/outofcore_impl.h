@@ -41,8 +41,6 @@
 
 #include <pcl/outofcore/outofcore.h>
 
-#include <pcl/outofcore/impl/monitor_queue.hpp>
-
 #include <pcl/outofcore/impl/octree_base.hpp>
 #include <pcl/outofcore/impl/octree_base_node.hpp>
 
