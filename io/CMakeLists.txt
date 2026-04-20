@@ -228,6 +228,7 @@ set(srcs
   src/image_grabber.cpp
   src/hdl_grabber.cpp
   src/vlp_grabber.cpp
+  src/vlp32_grabber.cpp
   src/robot_eye_grabber.cpp
   src/auto_io.cpp
   src/io_exception.cpp
@@ -278,6 +279,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/image_grabber.h"
   "include/pcl/${SUBSYS_NAME}/hdl_grabber.h"
   "include/pcl/${SUBSYS_NAME}/vlp_grabber.h"
+  "include/pcl/${SUBSYS_NAME}/vlp32_grabber.h"
   "include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h"
   "include/pcl/${SUBSYS_NAME}/point_cloud_image_extractors.h"
   "include/pcl/${SUBSYS_NAME}/io_exception.h"
