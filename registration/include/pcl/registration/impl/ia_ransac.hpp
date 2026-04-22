@@ -172,12 +172,16 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeErro
   std::vector<float> nn_distance(1);
 
   const ErrorFunctor& compute_error = *error_functor_;
+  const auto tree = tree_;
   float error = 0;
 
-  for (const auto& point : cloud) {
+#pragma omp parallel for default(none) shared(cloud, tree, compute_error)              \
+    firstprivate(nn_index, nn_distance) reduction(+ : error)
+  for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(cloud.size()); ++i) {
+    const auto& point = cloud[static_cast<std::size_t>(i)];
     // Find the distance between point and its nearest neighbor in the target point
     // cloud
-    tree_->nearestKSearch(point, 1, nn_index, nn_distance);
+    tree->nearestKSearch(point, 1, nn_index, nn_distance);
 
     // Compute the error
     error += compute_error(nn_distance[0]);
