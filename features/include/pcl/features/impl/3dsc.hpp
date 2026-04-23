@@ -164,17 +164,18 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   }
   normal = normals[minIndex].getNormalVector3fMap ();
 
-  // Compute and store the RF direction
-  x_axis[0] = rnd ();
-  x_axis[1] = rnd ();
-  x_axis[2] = rnd ();
-  if (!pcl::utils::equal (normal[2], 0.0f))
-    x_axis[2] = - (normal[0]*x_axis[0] + normal[1]*x_axis[1]) / normal[2];
-  else if (!pcl::utils::equal (normal[1], 0.0f))
-    x_axis[1] = - (normal[0]*x_axis[0] + normal[2]*x_axis[2]) / normal[1];
-  else if (!pcl::utils::equal (normal[0], 0.0f))
-    x_axis[0] = - (normal[1]*x_axis[1] + normal[2]*x_axis[2]) / normal[0];
-
+  // Compute a deterministic x_axis by projecting the direction to the most
+  // distant neighbor onto the tangent plane. This replaces the previous
+  // random axis selection and makes the descriptor stable across runs.
+  x_axis = (*surface_)[nn_indices.back ()].getVector3fMap () - origin;
+  x_axis -= x_axis.dot (normal) * normal;
+  if (x_axis.norm () < 1e-6f)
+  {
+    // Fallback: use a fixed global axis projected onto the tangent plane
+    x_axis = Eigen::Vector3f::UnitX () - Eigen::Vector3f::UnitX ().dot (normal) * normal;
+    if (x_axis.norm () < 1e-6f)
+      x_axis = Eigen::Vector3f::UnitY () - Eigen::Vector3f::UnitY ().dot (normal) * normal;
+  }
   x_axis.normalize ();
 
   // Check if the computed x axis is orthogonal to the normal
@@ -280,4 +281,3 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (Poi
 }
 
 #define PCL_INSTANTIATE_ShapeContext3DEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::ShapeContext3DEstimation<T,NT,OutT>;
-
