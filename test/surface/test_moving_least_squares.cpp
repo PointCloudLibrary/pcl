@@ -61,10 +61,9 @@ PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
-PointCloud<PointXYZ>::Ptr cloud_almost_on_line(new PointCloud<PointXYZ>);
-
 TEST(PCL, MovingLeastSquares_almost_on_line)
 {
+  PointCloud<PointXYZ>::Ptr cloud_almost_on_line (new PointCloud<PointXYZ>);
   cloud_almost_on_line->push_back(pcl::PointXYZ(-89.546, 4.03964, 450.883));
   cloud_almost_on_line->push_back(pcl::PointXYZ(-88.8728, 4.03964, 450.883));
   cloud_almost_on_line->push_back(pcl::PointXYZ(-86.8529, 4.03964, 450.883));
@@ -83,10 +82,12 @@ TEST(PCL, MovingLeastSquares_almost_on_line)
 
   // Reconstruct
   mls.process(mls_points);
+  ASSERT_FALSE(mls_points.empty());
 
-  for (size_t i = 0; i < mls_points.size(); ++i) {
+  for (const auto& mls_point : mls_points)
+  {
     // Check for NaNs in output
-    EXPECT_TRUE(pcl::isFinite(mls_points[i]));
+    EXPECT_TRUE(pcl::isFinite(mls_point));
   }
 }
 
