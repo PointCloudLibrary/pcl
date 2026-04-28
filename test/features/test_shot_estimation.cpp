@@ -737,7 +737,16 @@ TEST (PCL,3DSCEstimation)
   EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[8], 0.0f);
 
   //EXPECT_EQ ((*sc3ds)[0].descriptor.size (), 64);
-
+  std::cerr << "sc3ds[94][88]="    << (*sc3ds)[94].descriptor[88]    << "\n";
+  std::cerr << "sc3ds[94][584]="   << (*sc3ds)[94].descriptor[584]   << "\n";
+  std::cerr << "sc3ds[94][1106]="  << (*sc3ds)[94].descriptor[1106]  << "\n";
+  std::cerr << "sc3ds[94][1560]="  << (*sc3ds)[94].descriptor[1560]  << "\n";
+  std::cerr << "sc3ds[94][1929]="  << (*sc3ds)[94].descriptor[1929]  << "\n";
+  std::cerr << "sc3ds[108][67]="   << (*sc3ds)[108].descriptor[67]   << "\n";
+  std::cerr << "sc3ds[108][548]="  << (*sc3ds)[108].descriptor[548]  << "\n";
+  std::cerr << "sc3ds[108][1091]=" << (*sc3ds)[108].descriptor[1091] << "\n";
+  std::cerr << "sc3ds[108][1421]=" << (*sc3ds)[108].descriptor[1421] << "\n";
+  std::cerr << "sc3ds[108][1900]=" << (*sc3ds)[108].descriptor[1900] << "\n";
   EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[88], 55.271168f);
   EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[584], 71.108765f);
   EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1106], 79.5896f);
