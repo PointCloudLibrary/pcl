@@ -167,7 +167,9 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   // Compute a deterministic x_axis by projecting the direction to the most
   // distant neighbor onto the tangent plane. This replaces the previous
   // random axis selection and makes the descriptor stable across runs.
-  x_axis = (*surface_)[nn_indices.back ()].getVector3fMap () - origin;
+  const auto maxDistIt = std::max_element (nn_dists.begin (), nn_dists.end ());
+  const auto maxIndex = nn_indices[std::distance (nn_dists.begin (), maxDistIt)];
+  x_axis = (*surface_)[maxIndex].getVector3fMap () - origin;
   x_axis -= x_axis.dot (normal) * normal;
   if (x_axis.norm () < 1e-6f)
   {
@@ -282,3 +284,4 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (Poi
 }
 
 #define PCL_INSTANTIATE_ShapeContext3DEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::ShapeContext3DEstimation<T,NT,OutT>;
+
