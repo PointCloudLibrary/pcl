@@ -11,6 +11,7 @@
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
+#include <pcl/pcl_exports.h>
 
 namespace pcl
 {
@@ -38,7 +39,7 @@ namespace pcl
     * \ingroup sample_consensus
     */
   template <typename PointT>
-  class SampleConsensusModelEllipse3D : public SampleConsensusModel<PointT>
+  class PCL_EXPORTS SampleConsensusModelEllipse3D : public SampleConsensusModel<PointT>
   {
     public:
       using SampleConsensusModel<PointT>::model_name_;
@@ -195,86 +196,71 @@ namespace pcl
       bool
       isSampleGood(const Indices &samples) const override;
 
-    private:
-      /** \brief Functor for the optimization function */
-      struct OptimizationFunctor : pcl::Functor<double>
-      {
-        /** Functor constructor
-          * \param[in] indices the indices of data points to evaluate
-          * \param[in] estimator pointer to the estimator object
-          */
-        OptimizationFunctor (const pcl::SampleConsensusModelEllipse3D<PointT> *model, const Indices& indices) :
-          pcl::Functor<double> (indices.size ()), model_ (model), indices_ (indices) {}
-
-       /** Cost function to be minimized
-         * \param[in] x the variables array
-         * \param[out] fvec the resultant functions evaluations
-         * \return 0
-         */
-        int operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
-        {
-          // c : Ellipse Center
-          const Eigen::Vector3f c(x[0], x[1], x[2]);
-          // n : Ellipse (Plane) Normal
-          const Eigen::Vector3f n_axis(x[5], x[6], x[7]);
-          // x : Ellipse (Plane) X-Axis
-          const Eigen::Vector3f x_axis(x[8], x[9], x[10]);
-          // y : Ellipse (Plane) Y-Axis
-          const Eigen::Vector3f y_axis = n_axis.cross(x_axis).normalized();
-          // a : Ellipse semi-major axis (X) length
-          const float par_a(x[3]);
-          // b : Ellipse semi-minor axis (Y) length
-          const float par_b(x[4]);
-
-          // Compute the rotation matrix and its transpose
-          const Eigen::Matrix3f Rot = (Eigen::Matrix3f(3,3)
-            << x_axis(0), y_axis(0), n_axis(0),
-            x_axis(1), y_axis(1), n_axis(1),
-            x_axis(2), y_axis(2), n_axis(2))
-            .finished();
-          const Eigen::Matrix3f Rot_T = Rot.transpose();
-
-          for (int i = 0; i < values (); ++i)
-          {
-            // what i have:
-            // p : Sample Point
-            const Eigen::Vector3f p = (*model_->input_)[indices_[i]].getVector3fMap().template cast<float>();
-
-            // Local coordinates of sample point p
-            const Eigen::Vector3f p_ = Rot_T * (p - c);
-
-            // k : Point on Ellipse
-            // Calculate the shortest distance from the point to the ellipse which is
-            // given by the norm of a vector that is normal to the ellipse tangent
-            // calculated at the point it intersects the tangent.
-            const Eigen::VectorXf params = (Eigen::VectorXf(5) << par_a, par_b, 0.0, 0.0, 0.0).finished();
-            float th_opt;
-            const Eigen::Vector2f distanceVector = dvec2ellipse(params, p_(0), p_(1), th_opt);
-            fvec[i] = distanceVector.norm();
-          }
-          return (0);
-        }
-
-        const pcl::SampleConsensusModelEllipse3D<PointT> *model_;
-        const Indices &indices_;
-      };
-
-      static void
-      get_ellipse_point(const Eigen::VectorXf& par, float th, float& x, float& y);
-
-      static Eigen::Vector2f
-      dvec2ellipse(const Eigen::VectorXf& par, float u, float v, float& th_opt);
-
-      static float
-      golden_section_search(
-          const Eigen::VectorXf& par,
-          float u,
-          float v,
-          float th_min,
-          float th_max,
-          float epsilon);
+      struct OptimizationFunctor;
   };
+
+  namespace internal
+  {
+    /** \brief Internal function to compute ellipse coefficients from 6 points. */
+    PCL_EXPORTS bool
+    computeModelCoefficientsEllipse3D (const Eigen::Matrix<float, 6, 3> &points,
+                                       Eigen::VectorXf &model_coefficients);
+
+    /** \brief Internal function to compute distances to an ellipse model. */
+    PCL_EXPORTS void
+    getDistancesToModelEllipse3D (const Eigen::VectorXf &model_coefficients,
+                                  const Eigen::ArrayXf &x,
+                                  const Eigen::ArrayXf &y,
+                                  const Eigen::ArrayXf &z,
+                                  std::vector<double> &distances);
+
+    /** \brief Internal function to optimize ellipse coefficients. */
+    PCL_EXPORTS void
+    optimizeModelCoefficientsEllipse3D (const Eigen::ArrayXf &x,
+                                        const Eigen::ArrayXf &y,
+                                        const Eigen::ArrayXf &z,
+                                        const Eigen::VectorXf &model_coefficients,
+                                        Eigen::VectorXf &optimized_coefficients);
+
+    /** \brief Internal function to compute ellipse point from parametric coefficients and angle.
+      * \param[in] par the parametric coefficients (a, b, h, k, slant)
+      * \param[in] th the angle (in radians)
+      * \param[out] x the resultant X coordinate in local frame
+      * \param[out] y the resultant Y coordinate in local frame
+      */
+    PCL_EXPORTS void
+    getEllipsePoint (const Eigen::VectorXf& par, float th, float& x, float& y);
+
+    /** \brief Internal function to compute the shortest distance vector from a point to an ellipse.
+      * \param[in] par the ellipse coefficients (a, b, 0, 0, 0)
+      * \param[in] u point X coordinate in local frame
+      * \param[in] v point Y coordinate in local frame
+      * \param[out] th_opt the resultant optimal angle on the ellipse
+      * \return the distance vector from the point to its projection on the ellipse
+      */
+    PCL_EXPORTS Eigen::Vector2f
+    dVec2Ellipse (const Eigen::VectorXf& par, float u, float v, float& th_opt);
+
+    /** \brief Internal function to find the optimal angle using Golden Section Search.
+      * \param[in] par the ellipse coefficients (a, b, 0, 0, 0)
+      * \param[in] u point X coordinate in local frame
+      * \param[in] v point Y coordinate in local frame
+      * \param[in] th_min search interval lower bound
+      * \param[in] th_max search interval upper bound
+      * \param[in] epsilon search convergence tolerance
+      * \return the optimal angle (in radians)
+      */
+    PCL_EXPORTS float
+    goldenSectionSearch (const Eigen::VectorXf& par,
+                         float u,
+                         float v,
+                         float th_min,
+                         float th_max,
+                         float epsilon);
+  }
 }
+
+#define PCL_INSTANTIATE_SampleConsensusModelEllipse3D(T) template class PCL_EXPORTS pcl::SampleConsensusModelEllipse3D<T>;
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_ellipse3d.hpp>
