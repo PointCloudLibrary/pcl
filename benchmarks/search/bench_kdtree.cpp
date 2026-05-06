@@ -15,7 +15,7 @@
 #include <pcl/search/kdtree.h>
 #include <pcl/search/flann_search.h>
 
-#ifdef PCL_HAVE_NANOFLANN
+#ifdef PCL_HAS_NANOFLANN
 #include <pcl/search/kdtree_nanoflann.h>
 #endif
 
@@ -116,7 +116,7 @@ BENCHMARK(BM_FlannKdTree_Radius)
 // Nanoflann KdTree — same benchmarks
 // ---------------------------------------------------------------------------
 
-#ifdef PCL_HAVE_NANOFLANN
+#ifdef PCL_HAS_NANOFLANN
 
 static void BM_NanoflannKdTree_Build(benchmark::State& state)
 {
@@ -175,7 +175,7 @@ BENCHMARK(BM_NanoflannKdTree_Radius)
   ->Arg(5)->Arg(10)->Arg(20)
   ->Unit(benchmark::kMicrosecond);
 
-#endif  // PCL_HAVE_NANOFLANN
+#endif  // PCL_HAS_NANOFLANN
 
 // ---------------------------------------------------------------------------
 // main — load cloud from argv[1] or fall back to synthetic 100k points
