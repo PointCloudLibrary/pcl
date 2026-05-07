@@ -231,6 +231,45 @@ TEST (PCL, IterativeClosestPoint)
   EXPECT_EQ (transformation (3, 3), 1);
 }
 
+TEST (PCL, IterativeClosestPoint_setIndices)
+{
+  pcl::IndicesPtr indices (new pcl::Indices);
+  for (std::size_t i = 0; i < cloud_source.size(); i += 2)
+    indices->push_back(i);
+
+  IterativeClosestPoint<PointXYZ, PointXYZ> reg_indices;
+  PointCloud<PointXYZ>::ConstPtr source (cloud_source.makeShared());
+  reg_indices.setInputSource(source);
+  reg_indices.setInputTarget(cloud_target.makeShared());
+  reg_indices.setIndices(indices);
+  reg_indices.setMaximumIterations(50);
+  reg_indices.setTransformationEpsilon(1e-8);
+  reg_indices.setMaxCorrespondenceDistance(0.05);
+
+  PointCloud<PointXYZ> cloud_reg_indices;
+  reg_indices.align(cloud_reg_indices);
+
+  PointCloud<PointXYZ>::Ptr source_cropped (new PointCloud<PointXYZ>);
+  pcl::copyPointCloud(*source, *indices, *source_cropped);
+
+  IterativeClosestPoint<PointXYZ, PointXYZ> reg_cropped;
+  reg_cropped.setInputSource(source_cropped);
+  reg_cropped.setInputTarget(cloud_target.makeShared());
+  reg_cropped.setMaximumIterations(50);
+  reg_cropped.setTransformationEpsilon(1e-8);
+  reg_cropped.setMaxCorrespondenceDistance(0.05);
+
+  PointCloud<PointXYZ> cloud_reg_cropped;
+  reg_cropped.align(cloud_reg_cropped);
+
+  Eigen::Matrix4f trans_indices = reg_indices.getFinalTransformation();
+  Eigen::Matrix4f trans_cropped = reg_cropped.getFinalTransformation();
+
+  for (int y = 0; y < 4; y++)
+    for (int x = 0; x < 4; x++)
+      EXPECT_NEAR(trans_indices(y, x), trans_cropped(y, x), 1e-5);
+}
+
 TEST (PCL, IterativeClosestPointWithNormals)
 {
   IterativeClosestPointWithNormals<PointNormal, PointNormal, float> reg_float;

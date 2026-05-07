@@ -86,32 +86,33 @@ Registration<PointSource, PointTarget, Scalar>::initCompute()
     target_cloud_updated_ = false;
   }
 
+  if (!PCLBase<PointSource>::initCompute())
+    return (false);
+
   // Update the correspondence estimation
   if (correspondence_estimation_) {
     correspondence_estimation_->setSearchMethodTarget(tree_, force_no_recompute_);
     correspondence_estimation_->setSearchMethodSource(tree_reciprocal_,
                                                       force_no_recompute_reciprocal_);
+    correspondence_estimation_->setIndicesSource(indices_);
   }
 
   // Note: we /cannot/ update the search method on all correspondence rejectors, because
   // we know nothing about them. If they should be cached, they must be cached
   // individually.
 
-  return (PCLBase<PointSource>::initCompute());
+  return (true);
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 bool
 Registration<PointSource, PointTarget, Scalar>::initComputeReciprocal()
 {
-  if (!input_) {
-    PCL_ERROR("[pcl::registration::%s::compute] No input source dataset was given!\n",
-              getClassName().c_str());
+  if (!PCLBase<PointSource>::initCompute())
     return (false);
-  }
 
   if (source_cloud_updated_ && !force_no_recompute_reciprocal_) {
-    tree_reciprocal_->setInputCloud(input_);
+    tree_reciprocal_->setInputCloud(input_, indices_);
     source_cloud_updated_ = false;
   }
   return (true);
