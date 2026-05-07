@@ -7,6 +7,8 @@
  *  All rights reserved
  */
 
+#define PCL_SAC_MODEL_ELLIPSE3D_INSTANTIATE
+#include <pcl/sample_consensus/sac_model_ellipse3d.h>
 #include <pcl/sample_consensus/impl/sac_model_ellipse3d.hpp>
 #include <unsupported/Eigen/NonLinearOptimization>
 #include <unsupported/Eigen/NumericalDiff>
@@ -15,6 +17,133 @@ namespace pcl
 {
   namespace internal
   {
+    /** \brief Internal function to compute ellipse point from parametric coefficients and angle.
+      * \param[in] par the parametric coefficients (a, b, h, k, slant)
+      * \param[in] th the angle (in radians)
+      * \param[out] x the resultant X coordinate in local frame
+      * \param[out] y the resultant Y coordinate in local frame
+      */
+    void
+    get_ellipse_point (const Eigen::VectorXf& par, float th, float& x, float& y)
+    {
+      const float par_a (par [0]);
+      const float par_b (par [1]);
+      const float par_h (par [2]);
+      const float par_k (par [3]);
+      const float par_t (par [4]);
+
+      x = par_h + std::cos (par_t) * par_a * std::cos (th) - std::sin (par_t) * par_b * std::sin (th);
+      y = par_k + std::sin (par_t) * par_a * std::cos (th) + std::cos (par_t) * par_b * std::sin (th);
+    }
+
+    /** \brief Internal function to find the optimal angle using Golden Section Search.
+      * \param[in] par the ellipse coefficients (a, b, h, k, slant)
+      * \param[in] u point X coordinate in local frame
+      * \param[in] v point Y coordinate in local frame
+      * \param[in] th_min search interval lower bound
+      * \param[in] th_max search interval upper bound
+      * \param[in] epsilon search convergence tolerance
+      * \return the optimal angle (in radians)
+      */
+    float
+    golden_section_search (const Eigen::VectorXf& par, float u, float v, float th_min, float th_max, float epsilon)
+    {
+      constexpr float phi (1.61803398874989484820f);
+      float tl (th_min), tu (th_max);
+      float ta = tl + (tu - tl) * (1.0f - 1.0f / phi);
+      float tb = tl + (tu - tl) * 1.0f / phi;
+
+      while ((tu - tl) > epsilon)
+      {
+        float x_a (0.0f), y_a (0.0f);
+        get_ellipse_point (par, ta, x_a, y_a);
+        float squared_dist_ta = (u - x_a) * (u - x_a) + (v - y_a) * (v - y_a);
+
+        float x_b (0.0f), y_b (0.0f);
+        get_ellipse_point (par, tb, x_b, y_b);
+        float squared_dist_tb = (u - x_b) * (u - x_b) + (v - y_b) * (v - y_b);
+
+        if (squared_dist_ta < squared_dist_tb)
+        {
+          tu = tb;
+          tb = ta;
+          ta = tl + (tu - tl) * (1.0f - 1.0f / phi);
+        }
+        else if (squared_dist_ta > squared_dist_tb)
+        {
+          tl = ta;
+          ta = tb;
+          tb = tl + (tu - tl) * 1.0f / phi;
+        }
+        else
+        {
+          tl = ta;
+          tu = tb;
+          ta = tl + (tu - tl) * (1.0f - 1.0f / phi);
+          tb = tl + (tu - tl) * 1.0f / phi;
+        }
+      }
+      return (tl + tu) / 2.0f;
+    }
+
+    /** \brief Internal function to compute the shortest distance vector from a point to an ellipse.
+      * \param[in] par the ellipse coefficients (a, b, h, k, slant)
+      * \param[in] u point X coordinate in local frame
+      * \param[in] v point Y coordinate in local frame
+      * \param[out] th_opt the resultant optimal angle on the ellipse
+      * \return the distance vector from the point to its projection on the ellipse
+      */
+    Eigen::Vector2f
+    dvec2ellipse (const Eigen::VectorXf& par, float u, float v, float& th_opt)
+    {
+      const float par_h = par [2];
+      const float par_k = par [3];
+
+      const Eigen::Vector2f center (par_h, par_k);
+      Eigen::Vector2f p (u, v);
+      p -= center;
+
+      Eigen::Vector2f x_axis (0.0f, 0.0f);
+      get_ellipse_point (par, 0.0f, x_axis (0), x_axis (1));
+      x_axis -= center;
+
+      Eigen::Vector2f y_axis (0.0f, 0.0f);
+      get_ellipse_point (par, static_cast<float> (M_PI / 2.0), y_axis (0), y_axis (1));
+      y_axis -= center;
+
+      const float x_proj = p.dot (x_axis) / x_axis.norm ();
+      const float y_proj = p.dot (y_axis) / y_axis.norm ();
+
+      float th_min (0.0f), th_max (0.0f);
+      const float th = std::atan2 (y_proj, x_proj);
+
+      if (th < -static_cast<float> (M_PI / 2.0))
+      {
+        th_min = -static_cast<float> (M_PI);
+        th_max = -static_cast<float> (M_PI / 2.0);
+      }
+      else if (th < 0.0f)
+      {
+        th_min = -static_cast<float> (M_PI / 2.0);
+        th_max = 0.0f;
+      }
+      else if (th < static_cast<float> (M_PI / 2.0))
+      {
+        th_min = 0.0f;
+        th_max = static_cast<float> (M_PI / 2.0);
+      }
+      else
+      {
+        th_min = static_cast<float> (M_PI / 2.0);
+        th_max = static_cast<float> (M_PI);
+      }
+
+      th_opt = golden_section_search (par, u, v, th_min, th_max, 1.e-3f);
+      float x (0.0f), y (0.0f);
+      get_ellipse_point (par, th_opt, x, y);
+      return {u - x, v - y};
+    }
+
     int
     optimizeModelCoefficientsEllipse3D (Eigen::VectorXf &coeff, const Eigen::ArrayXf &pts_x, const Eigen::ArrayXf &pts_y, const Eigen::ArrayXf &pts_z)
     {
