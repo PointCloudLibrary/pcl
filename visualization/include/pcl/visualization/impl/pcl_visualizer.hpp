@@ -227,7 +227,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   }
 
   // Create the supporting structures
-  vertices = polydata->GetVerts ();
+  //vertices = polydata->GetVerts (); // Using the return value of GetVerts() in SetVerts() does not guarantee consistent internal data in polydata
   if (!vertices)
     vertices = vtkSmartPointer<vtkCellArray>::New ();
 
@@ -329,7 +329,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   vtkIdType nr_points = points->GetNumberOfPoints ();
 
   // Create the supporting structures
-  vertices = polydata->GetVerts ();
+  //vertices = polydata->GetVerts (); // Using the return value of GetVerts() in SetVerts() does not guarantee consistent internal data in polydata
   if (!vertices)
     vertices = vtkSmartPointer<vtkCellArray>::New ();
 
