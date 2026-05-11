@@ -131,13 +131,16 @@ Registration<PointSource, PointTarget, Scalar>::getFitnessScore(
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 inline double
-Registration<PointSource, PointTarget, Scalar>::getFitnessScore(double max_range)
+Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max_range, bool use_indices)
 {
   double fitness_score = 0.0;
 
   // Transform the input dataset using the final transformation
   PointCloudSource input_transformed;
-  transformPointCloud(*input_, input_transformed, final_transformation_);
+  if (use_indices && indices_ && indices_->size () != input_->size ())
+    transformPointCloud (*input_, *indices_, input_transformed, final_transformation_);
+  else
+    transformPointCloud (*input_, input_transformed, final_transformation_);
 
   pcl::Indices nn_indices(1);
   std::vector<float> nn_dists(1);

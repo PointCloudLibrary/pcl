@@ -195,6 +195,44 @@ TEST(PCL, ICP_translated)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, Registration_getFitnessScore_Indices)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ>);
+
+  cloud_in->push_back (pcl::PointXYZ (0, 0, 0));
+  cloud_in->push_back (pcl::PointXYZ (0, 1, 0));
+  cloud_in->push_back (pcl::PointXYZ (0, 0, 1));
+  cloud_in->push_back (pcl::PointXYZ (10, 0, 0));
+
+  cloud_out->push_back (pcl::PointXYZ (0, 0, 0));
+  cloud_out->push_back (pcl::PointXYZ (0, 1, 0));
+  cloud_out->push_back (pcl::PointXYZ (0, 0, 1));
+  cloud_out->push_back (pcl::PointXYZ (10, 0, 0.5)); // Dist squared = 0.25
+
+  RegistrationWrapper<pcl::PointXYZ, pcl::PointXYZ> reg;
+  reg.setInputSource (cloud_in);
+  reg.setInputTarget (cloud_out);
+  
+  pcl::IndicesPtr indices (new pcl::Indices ());
+  indices->push_back (0);
+  indices->push_back (1);
+  indices->push_back (2);
+  reg.setIndices (indices);
+
+  pcl::PointCloud<pcl::PointXYZ> final_cloud;
+  reg.align (final_cloud);
+
+  // With use_indices = false (default), should calculate score using all points
+  // mean of squared distances: (0 + 0 + 0 + 0.25) / 4 = 0.0625
+  EXPECT_NEAR (reg.getFitnessScore (1.0, false), 0.0625, 1e-4);
+
+  // With use_indices = true, should calculate score using only indices (points 0, 1, 2)
+  // mean of squared distances: (0 + 0 + 0) / 3 = 0.0
+  EXPECT_NEAR (reg.getFitnessScore (1.0, true), 0.0, 1e-4);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, IterativeClosestPoint)
 {
   IterativeClosestPoint<PointXYZ, PointXYZ> reg;
