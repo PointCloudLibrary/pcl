@@ -1,0 +1,9 @@
+.*
+build/
+setup.bash
+split_file.bash
+package.xml
+compile_commands.json
+
+# ignore corpus since some files in it might be private
+corpus/

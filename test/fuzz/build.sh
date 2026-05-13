@@ -9,12 +9,11 @@
 #
 
 # This script is run inside OSS-fuzz's docker image
-# and builds PCL's fuzzers to run continuously 
-# through OSS-fuzz.
-# In the OSS-fuzz  docker image PCL is located at $SRC/pcl.
+# and builds PCL's fuzzers to run continuously through OSS-fuzz.
+# In the OSS-fuzz  docker image PCL is located at $SRC/pcl
 
 # The Dockerfile that builds PCL can be found here:
-# (url pending)
+# https://github.com/google/oss-fuzz/tree/master/projects/pcl/Dockerfile
 
 # Build PCL
 cd pcl
