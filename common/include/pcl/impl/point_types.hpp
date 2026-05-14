@@ -208,15 +208,26 @@ namespace pcl
   using Vector4cMap = Eigen::Map<Vector4c, Eigen::Aligned>;
   using Vector4cMapConst = const Eigen::Map<const Vector4c, Eigen::Aligned>;
 
+struct W_Initializer {
+    float w;
+    // Default constructor sets the value to 1.0
+    W_Initializer() : w(1.0f) {}
+    // Allow it to be treated like a normal float
+    operator float&() { return w; }
+    operator float() const { return w; }
+    W_Initializer& operator=(float v) { w = v; return *this; }
+};
+
 #define PCL_ADD_UNION_POINT4D \
-  union EIGEN_ALIGN16 { \
+  union EIGEN_ALIGN16 _data_u { \
       /* ensure last homogeneous component is 1 for affine transformations */ \
-    float data[4] {0, 0, 0, 1}; \
+    float data[4]; \
     struct { \
       float x; \
       float y; \
       float z; \
     }; \
+    _data_u() { data[3] = 1.0f; } \
   };
 
 #define PCL_ADD_EIGEN_MAPS_POINT4D \
