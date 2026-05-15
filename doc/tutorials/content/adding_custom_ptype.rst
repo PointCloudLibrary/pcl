@@ -813,9 +813,9 @@ for any classes that you expose (from PCL our outside PCL).
 .. note::
    Starting with PCL-1.7 you need to define PCL_NO_PRECOMPILE before you include
    any PCL headers to include the templated algorithms as well.
-   
+
 .. note::
-   The invocation of `POINT_CLOUD_REGISTER_POINT_STRUCT` must be in the global 
+   The invocation of `POINT_CLOUD_REGISTER_POINT_STRUCT` must be in the global
    namespace and the name of the new point type must be fully qualified.
 
 Example
@@ -864,3 +864,34 @@ data (SSE padded), together with a test float.
 
      pcl::io::savePCDFile ("test.pcd", cloud);
    }
+
+.. note::
+   The custom point type will not default-initialize its `data` field so that it can be
+   viewed as a homogeneous vector (i.e. the 4th coordinate is 1). This may lead to problems
+   when code expects this to be true and does math with the vector maps of the point type
+   (e.g. `getVector4fMap()`). If this is needed, you have to take care of this yourself,
+   e.g. like this:
+
+  .. code-block:: cpp
+     :linenos:
+
+     struct _MyPointType {
+        PCL_ADD_POINT4D;
+        float test;
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
+      };
+
+      struct MyPointType : public _MyPointType {
+        inline constexpr MyPointType(const _MyPointType& p) :
+            MyPointType(p.x, p.y, p.z) {
+        }
+
+        inline constexpr MyPointType() : MyPointType(0.f, 0.f, 0.f) {
+        }
+
+        inline constexpr MyPointType(float _x,
+                                    float _y,
+                                    float _z) :
+            _MyPointType({{{_x, _y, _z, 1.f}}}) {   // <- make sure that 4th coordinate is set to 1 on construction
+        }
+      };
