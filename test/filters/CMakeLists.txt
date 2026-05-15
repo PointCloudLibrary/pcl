@@ -23,6 +23,10 @@ PCL_ADD_TEST(filters_functor test_filters_functor
              FILES test_functor_filter.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters)
 
+PCL_ADD_TEST(filters_grid_filter test_filters_grid_filter
+             FILES test_grid_filter.cpp
+             LINK_WITH pcl_gtest pcl_common pcl_filters)
+
 PCL_ADD_TEST(filters_local_maximum test_filters_local_maximum
              FILES test_local_maximum.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters pcl_search pcl_octree)
