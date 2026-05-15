@@ -208,16 +208,6 @@ namespace pcl
   using Vector4cMap = Eigen::Map<Vector4c, Eigen::Aligned>;
   using Vector4cMapConst = const Eigen::Map<const Vector4c, Eigen::Aligned>;
 
-struct W_Initializer {
-    float w;
-    // Default constructor sets the value to 1.0
-    W_Initializer() : w(1.0f) {}
-    // Allow it to be treated like a normal float
-    operator float&() { return w; }
-    operator float() const { return w; }
-    W_Initializer& operator=(float v) { w = v; return *this; }
-};
-
 // note: 4th homogeneous coordinate is uninitialized, has to be set to 1
 // explicitly if needed for matrix operations.
 #define PCL_ADD_UNION_POINT4D \
