@@ -218,16 +218,16 @@ struct W_Initializer {
     W_Initializer& operator=(float v) { w = v; return *this; }
 };
 
+// note: 4th homogeneous coordinate is uninitialized, has to be set to 1
+// explicitly if needed for matrix operations.
 #define PCL_ADD_UNION_POINT4D \
-  union EIGEN_ALIGN16 _data_u { \
-      /* ensure last homogeneous component is 1 for affine transformations */ \
+  union EIGEN_ALIGN16 { \
     float data[4]; \
     struct { \
       float x; \
       float y; \
       float z; \
     }; \
-    _data_u() { data[3] = 1.0f; } \
   };
 
 #define PCL_ADD_EIGEN_MAPS_POINT4D \
