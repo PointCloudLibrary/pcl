@@ -51,7 +51,7 @@ namespace gpu {
  * \author Anatoly Baksheev
  */
 template <class T>
-class PCL_EXPORTS DeviceArray : public DeviceMemory {
+class DeviceArray : public DeviceMemory {
 public:
   /** \brief Element type. */
   using type = T;
@@ -185,7 +185,7 @@ public:
  * \author Anatoly Baksheev
  */
 template <class T>
-class PCL_EXPORTS DeviceArray2D : public DeviceMemory2D {
+class DeviceArray2D : public DeviceMemory2D {
 public:
   /** \brief Element type. */
   using type = T;

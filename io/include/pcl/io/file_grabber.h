@@ -50,7 +50,7 @@ namespace pcl
     * \ingroup io
     */
   template <typename PointT>
-  class PCL_EXPORTS FileGrabber
+  class FileGrabber
   {
   public:
 

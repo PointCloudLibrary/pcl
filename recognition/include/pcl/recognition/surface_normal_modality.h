@@ -59,7 +59,7 @@ namespace pcl
   /** \brief Map that stores orientations.
     * \author Stefan Holzer
     */
-  struct PCL_EXPORTS LINEMOD_OrientationMap
+  struct LINEMOD_OrientationMap
   {
     public:
       /** \brief Constructor. */

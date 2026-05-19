@@ -43,6 +43,7 @@
 #include <pcl/visualization/point_cloud_color_handlers.h>
 #include <pcl/visualization/point_cloud_geometry_handlers.h>
 #include <pcl/memory.h>
+#include <pcl/pcl_exports.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/point_cloud.h>
@@ -68,7 +69,7 @@ enum PointType {
   AXIS = (1 << 5),
 };
 }
-class CloudItem : public CloudComposerItem {
+class PCL_EXPORTS CloudItem : public CloudComposerItem {
 public:
   // This is needed because we have members which are Vector4f and Quaternionf
   PCL_MAKE_ALIGNED_OPERATOR_NEW

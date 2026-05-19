@@ -46,7 +46,7 @@ namespace pcl {
 
 /** Class representing a decision tree. */
 template <class NodeType>
-class PCL_EXPORTS DecisionTree {
+class DecisionTree {
 public:
   /** Constructor. */
   DecisionTree() : root_() {}

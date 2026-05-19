@@ -70,7 +70,7 @@ namespace pcl
     * \ingroup recognition
     */
   template <typename PointXYZT, typename PointRGBT=PointXYZT>
-  class PCL_EXPORTS LineRGBD
+  class LineRGBD
   {
     public:
 

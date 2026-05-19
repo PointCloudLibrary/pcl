@@ -57,7 +57,7 @@ namespace pcl
     * \param[in] sqr_eps maximum allowable squared distance to the true solution
     * \ingroup common
     */
-  PCL_EXPORTS inline bool
+  inline bool
   lineWithLineIntersection (const Eigen::VectorXf &line_a, 
                             const Eigen::VectorXf &line_b, 
                             Eigen::Vector4f &point,
@@ -71,7 +71,7 @@ namespace pcl
     * \ingroup common
     */
 
-  PCL_EXPORTS inline bool
+  inline bool
   lineWithLineIntersection (const pcl::ModelCoefficients &line_a, 
                             const pcl::ModelCoefficients &line_b, 
                             Eigen::Vector4f &point,

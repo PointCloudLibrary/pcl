@@ -47,7 +47,7 @@ namespace pcl
      *  Based on paper: TODO
      * \author Thomas Mörwald
      * \ingroup surface     */
-    class FittingSurfaceTDM : public FittingSurface
+    class PCL_EXPORTS FittingSurfaceTDM : public FittingSurface
     {
     public:
       using FittingSurface::assemble;

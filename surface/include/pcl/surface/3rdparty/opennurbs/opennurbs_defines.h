@@ -23,8 +23,6 @@
 #if !defined(OPENNURBS_DEFINES_INC_)
 #define OPENNURBS_DEFINES_INC_
 
-#include <pcl/pcl_exports.h>
-
 #if defined (cplusplus) || defined(_cplusplus) || defined(__cplusplus) || defined(ON_CPLUSPLUS)
 // C++ extern "C" declaration for C linkage
 
@@ -63,53 +61,7 @@
 //
 */
 
-#if defined(OPENNURBS_EXPORTS)
-// OPENNURBS_EXPORTS is Microsoft's prefered defined for building an opennurbs DLL.
-#if !defined(ON_DLL_EXPORTS)
-#define ON_DLL_EXPORTS
-#endif
-#if !defined(ON_COMPILING_OPENNURBS)
-#define ON_COMPILING_OPENNURBS
-#endif
-#endif
-
-#if defined(OPENNURBS_IMPORTS)
-// OPENNURBS_EXPORTS is Microsoft's prefered defined for linking with an opennurbs DLL.
-#if !defined(ON_DLL_IMPORTS)
-#define ON_DLL_IMPORTS
-#endif
-#endif
-
-#if defined(ON_DLL_EXPORTS) && defined(ON_DLL_IMPORTS)
-#error At most one of ON_DLL_EXPORTS and ON_DLL_IMPORTS can be defined.
-#endif
-
-/* export/import */
-#if defined(ON_DLL_EXPORTS)
-
-#if !defined(ON_COMPILING_OPENNURBS)
-#error When compiling an OpenNURBS DLL, ON_DLL_EXPORTS must be defined
-#endif
-
-/* compiling OpenNurbs as a Windows DLL - export classes, functions, templates, and globals */
-#define ON_CLASS __declspec(dllexport)
-#define ON_DECL __declspec(dllexport)
-#define ON_EXTERN_DECL __declspec(dllexport)
-#define ON_DLL_TEMPLATE
-
-#elif defined(ON_DLL_IMPORTS)
-
-#if defined(ON_COMPILING_OPENNURBS)
-#error When compiling an OpenNURBS DLL, ON_DLL_IMPORTS must NOT be defined
-#endif
-
-/* using OpenNurbs as a Windows DLL - import classes, functions, templates, and globals */
-#define ON_CLASS __declspec(dllimport)
-#define ON_DECL __declspec(dllimport)
-#define ON_EXTERN_DECL __declspec(dllimport)
-#define ON_DLL_TEMPLATE extern
-
-#else
+#ifdef PCL_STATIC_DEFINE
 
 /* compiling or using OpenNurbs as a static library */
 #define ON_CLASS
@@ -120,6 +72,40 @@
 #undef ON_DLL_TEMPLATE
 #endif
 
+#else
+#if defined WIN32 || defined _WIN32 || defined WINCE || defined __MINGW32__
+#ifdef OPENNURBS_EXPORTS
+/* compiling OpenNurbs as a Windows DLL - export classes, functions, templates, and
+ * globals */
+#define ON_CLASS __declspec(dllexport)
+#define ON_DECL __declspec(dllexport)
+#define ON_EXTERN_DECL __declspec(dllexport)
+#define ON_DLL_TEMPLATE
+#define ON_DLL_EXPORTS
+#else
+/* using OpenNurbs as a Windows DLL - import classes, functions, templates, and globals
+ */
+#define ON_CLASS __declspec(dllimport)
+#define ON_DECL __declspec(dllimport)
+#define ON_EXTERN_DECL __declspec(dllimport)
+#define ON_DLL_TEMPLATE extern
+#define ON_DLL_IMPORTS
+#endif
+#else
+#ifdef PCL_SYMBOL_VISIBILITY_HIDDEN
+#define ON_CLASS __attribute__((visibility("default")))
+#define ON_DECL __attribute__((visibility("default")))
+#define ON_EXTERN_DECL __attribute__((visibility("default")))
+#define ON_DLL_TEMPLATE
+#define ON_DLL_EXPORTS
+#else
+#define ON_CLASS
+#define ON_DECL
+#define ON_EXTERN_DECL
+#define ON_DLL_TEMPLATE
+#define ON_DLL_EXPORTS
+#endif
+#endif
 #endif
 
 
@@ -359,7 +345,7 @@ union ON_U
 #if defined(ON_CPLUSPLUS)
 
 // OpenNurbs enums
-class PCL_EXPORTS ON_CLASS ON
+class ON_CLASS ON
 {
 public:
   /*

@@ -318,7 +318,7 @@ namespace pcl
 
     inline constexpr PointXYZ (float _x, float _y, float _z) : _PointXYZ{{{_x, _y, _z, 1.f}}} {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointXYZ& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXYZ& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -359,7 +359,7 @@ namespace pcl
 
     inline constexpr RGB (std::uint8_t _r, std::uint8_t _g, std::uint8_t _b, std::uint8_t _a = 255) : _RGB{{{{_b, _g, _r, _a}}}} {}
 
-    friend std::ostream& operator << (std::ostream& os, const RGB& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const RGB& p);
   };
 
   struct _Intensity
@@ -378,7 +378,7 @@ namespace pcl
 
     inline constexpr Intensity (float _intensity = 0.f) : _Intensity{_intensity} {}
 
-    friend std::ostream& operator << (std::ostream& os, const Intensity& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const Intensity& p);
   };
 
 
@@ -405,7 +405,7 @@ namespace pcl
     }
 #endif
 
-    friend std::ostream& operator << (std::ostream& os, const Intensity8u& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const Intensity8u& p);
   };
 
   struct _Intensity32u
@@ -424,7 +424,7 @@ namespace pcl
 
     inline constexpr Intensity32u (std::uint32_t _intensity = 0) : _Intensity32u{_intensity} {}
 
-    friend std::ostream& operator << (std::ostream& os, const Intensity32u& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const Intensity32u& p);
   };
 
   /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
@@ -453,7 +453,7 @@ namespace pcl
 
     inline constexpr PointXYZI (float _x, float _y, float _z, float _intensity = 0.f) : _PointXYZI{{{_x, _y, _z, 1.0f}}, {{_intensity}}} {}
     
-    friend std::ostream& operator << (std::ostream& os, const PointXYZI& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXYZI& p);
   };
 
 
@@ -473,7 +473,7 @@ namespace pcl
 
     inline constexpr PointXYZL (float _x, float _y, float _z, std::uint32_t _label = 0) : _PointXYZL{{{_x, _y, _z, 1.0f}}, _label} {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointXYZL& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXYZL& p);
   };
 
 
@@ -484,7 +484,7 @@ namespace pcl
 
     inline constexpr Label (std::uint32_t _label = 0): label(_label) {}
 
-    friend std::ostream& operator << (std::ostream& os, const Label& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const Label& p);
   };
 
 
@@ -531,7 +531,7 @@ namespace pcl
     inline constexpr PointXYZRGBA (float _x, float _y, float _z, std::uint8_t _r,
                          std::uint8_t _g, std::uint8_t _b, std::uint8_t _a) : _PointXYZRGBA{{{_x, _y, _z, 1.0f}}, {{{_b, _g, _r, _a}}}} {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p);
   };
 
 
@@ -598,7 +598,7 @@ namespace pcl
                          std::uint8_t _r, std::uint8_t _g, std::uint8_t _b):
       _PointXYZRGB{{{_x, _y, _z, 1.0f}}, {{{_b, _g, _r, 255}}}} {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointXYZRGB& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXYZRGB& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -622,7 +622,7 @@ namespace pcl
                          std::uint32_t _label = 0, std::uint8_t _a = 255) :
       _PointXYZRGBL{{{_x, _y, _z, 1.0f}}, {{{_b, _g, _r, _a}}}, _label} {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointXYZRGBL& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXYZRGBL& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -657,7 +657,7 @@ namespace pcl
                         float _l, float _a, float _b) :
       _PointXYZLAB{ {{_x, _y, _z, 1.0f}}, {{_l, _a, _b}} } {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointXYZLAB& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXYZLAB& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -695,7 +695,7 @@ namespace pcl
                         float _h, float _s, float _v) :
       _PointXYZHSV{{{_x, _y, _z, 1.0f}}, {{_h, _s, _v}}} {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointXYZHSV& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXYZHSV& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -722,7 +722,7 @@ namespace pcl
     inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); }
     inline pcl::Vector2fMapConst getVector2fMap () const { return (pcl::Vector2fMapConst (data)); }
     
-    friend std::ostream& operator << (std::ostream& os, const PointXY& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXY& p);
   };
   // NOLINTEND(modernize-use-default-member-init)
 
@@ -740,7 +740,7 @@ namespace pcl
 
     inline constexpr PointUV(float _u, float _v): u(_u), v(_v) {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointUV& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointUV& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const InterestPoint& p);
@@ -761,7 +761,7 @@ namespace pcl
     };
     PCL_MAKE_ALIGNED_OPERATOR_NEW
 
-    friend std::ostream& operator << (std::ostream& os, const InterestPoint& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const InterestPoint& p);
   };
 
   struct EIGEN_ALIGN16 _Normal
@@ -791,7 +791,7 @@ namespace pcl
     inline constexpr Normal (float n_x, float n_y, float n_z, float _curvature = 0.f) :
       _Normal{{{n_x, n_y, n_z, 0.0f}}, {{_curvature}}} {}
 
-    friend std::ostream& operator << (std::ostream& os, const Normal& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const Normal& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -814,7 +814,7 @@ namespace pcl
 
     inline constexpr Axis (float n_x, float n_y, float n_z) : _Axis{{{n_x, n_y, n_z, 0.0f}}} {}
 
-    friend std::ostream& operator << (std::ostream& os, const Axis& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const Axis& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -850,7 +850,7 @@ namespace pcl
     inline constexpr PointNormal (float _x, float _y, float _z, float n_x, float n_y, float n_z, float _curvature = 0.f) :
       _PointNormal{{{_x, _y, _z, 1.0f}}, {{n_x, n_y, n_z, 0.0f}}, {{_curvature}}} {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointNormal& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointNormal& p);
   };
 
 
@@ -937,7 +937,7 @@ namespace pcl
     {}
 
 
-    friend std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p);
   };
 
   struct EIGEN_ALIGN16 _PointXYZINormal
@@ -979,7 +979,7 @@ namespace pcl
       }
     {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointXYZINormal& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXYZINormal& p);
   };
 
 //----
@@ -1022,7 +1022,7 @@ namespace pcl
       }
     {} 
 
-    friend std::ostream& operator << (std::ostream& os, const PointXYZLNormal& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointXYZLNormal& p);
   };
 
 //  ---
@@ -1055,7 +1055,7 @@ namespace pcl
     inline constexpr PointWithRange (float _x, float _y, float _z, float _range = 0.f) :
       _PointWithRange{{{_x, _y, _z, 1.0f}}, {{_range}}} {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointWithRange& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointWithRange& p);
   };
 
 
@@ -1090,7 +1090,7 @@ namespace pcl
     inline constexpr PointWithViewpoint (float _x, float _y, float _z, float _vp_x, float _vp_y, float _vp_z) :
       _PointWithViewpoint{{{_x, _y, _z, 1.0f}}, {{_vp_x, _vp_y, _vp_z}}} {}
 
-    friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -1105,7 +1105,7 @@ namespace pcl
 
     inline constexpr MomentInvariants (float _j1, float _j2, float _j3): j1 (_j1), j2 (_j2), j3 (_j3) {}
 
-    friend std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p);
@@ -1120,7 +1120,7 @@ namespace pcl
 
     inline constexpr PrincipalRadiiRSD (float _r_min, float _r_max): r_min (_r_min), r_max (_r_max) {}
 
-    friend std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Boundary& p);
@@ -1140,7 +1140,7 @@ namespace pcl
 
     inline constexpr Boundary (std::uint8_t _boundary = 0): boundary_point (_boundary) {}
 
-    friend std::ostream& operator << (std::ostream& os, const Boundary& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const Boundary& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PrincipalCurvatures& p);
@@ -1171,7 +1171,7 @@ namespace pcl
     inline constexpr PrincipalCurvatures (float _x, float _y, float _z, float _pc1, float _pc2):
       principal_curvature_x (_x), principal_curvature_y (_y), principal_curvature_z (_z), pc1 (_pc1), pc2 (_pc2) {}
 
-    friend std::ostream& operator << (std::ostream& os, const PrincipalCurvatures& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PrincipalCurvatures& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PFHSignature125& p);
@@ -1185,7 +1185,7 @@ namespace pcl
 
     inline constexpr PFHSignature125 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const PFHSignature125& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PFHSignature125& p);
   };
 
 
@@ -1200,7 +1200,7 @@ namespace pcl
 
     inline constexpr PFHRGBSignature250 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const PFHRGBSignature250& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PFHRGBSignature250& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PPFSignature& p);
@@ -1217,7 +1217,7 @@ namespace pcl
     inline constexpr PPFSignature (float _f1, float _f2, float _f3, float _f4, float _alpha = 0.f):
       f1 (_f1), f2 (_f2), f3 (_f3), f4 (_f4), alpha_m (_alpha) {}
 
-    friend std::ostream& operator << (std::ostream& os, const PPFSignature& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PPFSignature& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const CPPFSignature& p);
@@ -1237,7 +1237,7 @@ namespace pcl
       f1 (_f1), f2 (_f2), f3 (_f3), f4 (_f4), f5 (_f5), f6 (_f6),
       f7 (_f7), f8 (_f8), f9 (_f9), f10 (_f10), alpha_m (_alpha) {}
 
-    friend std::ostream& operator << (std::ostream& os, const CPPFSignature& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const CPPFSignature& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PPFRGBSignature& p);
@@ -1258,7 +1258,7 @@ namespace pcl
     inline constexpr PPFRGBSignature (float _f1, float _f2, float _f3, float _f4, float _alpha, float _r, float _g, float _b):
       f1 (_f1), f2 (_f2), f3 (_f3), f4 (_f4), r_ratio (_r), g_ratio (_g), b_ratio (_b), alpha_m (_alpha) {}
 
-    friend std::ostream& operator << (std::ostream& os, const PPFRGBSignature& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PPFRGBSignature& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
@@ -1272,7 +1272,7 @@ namespace pcl
 
     inline constexpr NormalBasedSignature12 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const ShapeContext1980& p);
@@ -1287,7 +1287,7 @@ namespace pcl
 
     inline constexpr ShapeContext1980 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const ShapeContext1980& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const ShapeContext1980& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const UniqueShapeContext1960& p);
@@ -1302,7 +1302,7 @@ namespace pcl
 
     inline constexpr UniqueShapeContext1960 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const UniqueShapeContext1960& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const UniqueShapeContext1960& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const SHOT352& p);
@@ -1317,7 +1317,7 @@ namespace pcl
 
     inline constexpr SHOT352 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const SHOT352& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const SHOT352& p);
   };
 
 
@@ -1333,7 +1333,7 @@ namespace pcl
 
     inline constexpr SHOT1344 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const SHOT1344& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const SHOT1344& p);
   };
 
 
@@ -1386,7 +1386,7 @@ namespace pcl
     inline constexpr ReferenceFrame (const float (&_rf)[9]) :
       _ReferenceFrame{ {{_rf[0], _rf[1], _rf[2], _rf[3], _rf[4], _rf[5], _rf[6], _rf[7], _rf[8]}} } {}
 
-    friend std::ostream& operator << (std::ostream& os, const ReferenceFrame& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const ReferenceFrame& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -1402,7 +1402,7 @@ namespace pcl
 
     inline constexpr FPFHSignature33 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const FPFHSignature33& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const FPFHSignature33& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const VFHSignature308& p);
@@ -1416,7 +1416,7 @@ namespace pcl
 
     inline constexpr VFHSignature308 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const VFHSignature308& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const VFHSignature308& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GRSDSignature21& p);
@@ -1430,7 +1430,7 @@ namespace pcl
 
     inline constexpr GRSDSignature21 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const GRSDSignature21& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const GRSDSignature21& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
@@ -1448,7 +1448,7 @@ namespace pcl
 
     inline constexpr BRISKSignature512 (float _scale, float _orientation): scale (_scale), orientation (_orientation) {}
 
-    friend std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const ESFSignature640& p);
@@ -1462,7 +1462,7 @@ namespace pcl
 
     inline constexpr ESFSignature640 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const ESFSignature640& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const ESFSignature640& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GASDSignature512& p);
@@ -1476,7 +1476,7 @@ namespace pcl
 
     inline constexpr GASDSignature512 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const GASDSignature512& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const GASDSignature512& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
@@ -1490,7 +1490,7 @@ namespace pcl
 
     inline constexpr GASDSignature984 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GASDSignature7992& p);
@@ -1504,7 +1504,7 @@ namespace pcl
 
     inline constexpr GASDSignature7992 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const GASDSignature7992& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const GASDSignature7992& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
@@ -1518,7 +1518,7 @@ namespace pcl
 
     inline constexpr GFPFHSignature16 () = default;
 
-    friend std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Narf36& p);
@@ -1538,7 +1538,7 @@ namespace pcl
     inline constexpr Narf36 (float _x, float _y, float _z, float _roll, float _pitch, float _yaw):
       x (_x), y (_y), z (_z), roll (_roll), pitch (_pitch), yaw (_yaw) {}
 
-    friend std::ostream& operator << (std::ostream& os, const Narf36& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const Narf36& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const BorderDescription& p);
@@ -1555,7 +1555,7 @@ namespace pcl
 
     inline constexpr BorderDescription (int _x, int _y) : x(_x), y(_y) {}
 
-    friend std::ostream& operator << (std::ostream& os, const BorderDescription& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const BorderDescription& p);
   };
 
 
@@ -1579,7 +1579,7 @@ namespace pcl
     inline constexpr IntensityGradient (): IntensityGradient (0.f, 0.f, 0.f) {}
 
     inline constexpr IntensityGradient (float _x, float _y, float _z): gradient_x (_x), gradient_y (_y), gradient_z (_z) {}
-    friend std::ostream& operator << (std::ostream& os, const IntensityGradient& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const IntensityGradient& p);
   };
 
   // TODO: Maybe make other histogram based structs an alias for this
@@ -1629,7 +1629,7 @@ namespace pcl
                            float _angle = -1.f, float _response = 0.f, int _octave = 0) :
       _PointWithScale{{{_x, _y, _z, 1.0f}}, {_scale}, _angle, _response, _octave } {}
     
-    friend std::ostream& operator << (std::ostream& os, const PointWithScale& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointWithScale& p);
   };
 
 
@@ -1674,7 +1674,7 @@ namespace pcl
       } {}
 
 
-    friend std::ostream& operator << (std::ostream& os, const PointSurfel& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointSurfel& p);
   };
 
   struct EIGEN_ALIGN16 _PointDEM
@@ -1703,7 +1703,7 @@ namespace pcl
                      float _intensity_variance, float _height_variance) :
       _PointDEM{{{_x, _y, _z, 1.0f}}, _intensity, _intensity_variance, _height_variance} {}
     
-    friend std::ostream& operator << (std::ostream& os, const PointDEM& p);
+    PCL_EXPORTS friend std::ostream& operator << (std::ostream& os, const PointDEM& p);
   };
 
   template <int N> std::ostream&

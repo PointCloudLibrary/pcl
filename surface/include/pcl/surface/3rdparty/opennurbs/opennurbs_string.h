@@ -17,8 +17,6 @@
 #if !defined(ON_STRING_INC_)
 #define ON_STRING_INC_
 
-#include <pcl/pcl_exports.h>
-
 /*
 Description:
   Sort an index array.
@@ -697,7 +695,7 @@ protected:
 // ON_wString
 //
 
-class PCL_EXPORTS ON_CLASS ON_wString
+class ON_CLASS ON_wString
 {
 public:
 

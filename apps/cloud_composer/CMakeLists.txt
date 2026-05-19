@@ -64,16 +64,8 @@ set(INTERFACE_SOURCES
   src/tool_interface/abstract_tool.cpp
 )
 
-# Build pcl_cc_tool_interface as static library, to fix issue mentioned in #2708
-set(PCL_LIB_TYPE_ORIGIN ${PCL_LIB_TYPE})
-set(PCL_LIB_TYPE STATIC)
-
 PCL_ADD_LIBRARY(pcl_cc_tool_interface COMPONENT ${SUBSUBSYS_NAME} SOURCES ${INTERFACE_HEADERS} ${INTERFACE_SOURCES})
-
-
 target_link_libraries(pcl_cc_tool_interface pcl_common pcl_features pcl_filters pcl_search pcl_visualization ${QTX}::Widgets)
-
-set(PCL_LIB_TYPE ${PCL_LIB_TYPE_ORIGIN})
 
 if(APPLE)
   set_target_properties(pcl_cc_tool_interface PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
@@ -133,7 +125,6 @@ PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs} ${item_incs} ${
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${impl_incs})
 
 PCL_MAKE_PKGCONFIG(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} DESC ${SUBSYS_DESC})
-
 
 #TOOL buildING SCRIPTS
 include(ComposerTool.cmake REQUIRED)

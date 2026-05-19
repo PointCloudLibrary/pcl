@@ -37,12 +37,14 @@
 
 #pragma once
 
+#include <pcl/pcl_exports.h>
+
 #include <QStandardItemModel>
 
 namespace pcl {
 namespace cloud_composer {
 class CloudComposerItem;
-class PropertiesModel : public QStandardItemModel {
+class PCL_EXPORTS PropertiesModel : public QStandardItemModel {
   Q_OBJECT
 public:
   /** \brief Constructor used for tool parameters */

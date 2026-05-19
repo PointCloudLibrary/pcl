@@ -23,8 +23,6 @@
 #if !defined(OPENNURBS_NURBSSURFACE_INC_)
 #define OPENNURBS_NURBSSURFACE_INC_
 
-#include <pcl/pcl_exports.h>
-
 class ON_CLASS ON_TensorProduct
 {
   // Pure virtual tensor passed to ON_NurbsSurface::TensorProduct()
@@ -61,7 +59,7 @@ public:
 class ON_Brep;
 class ON_NurbsSurface;
 
-class PCL_EXPORTS ON_CLASS ON_NurbsSurface : public ON_Surface
+class ON_CLASS ON_NurbsSurface : public ON_Surface
 {
   ON_OBJECT_DECLARE(ON_NurbsSurface);
 
@@ -1025,7 +1023,7 @@ public:
 };
 
 
-class PCL_EXPORTS ON_CLASS ON_NurbsCage : public ON_Geometry
+class ON_CLASS ON_NurbsCage : public ON_Geometry
 {
   ON_OBJECT_DECLARE(ON_NurbsCage);
 
@@ -1733,7 +1731,7 @@ bool ON_GetCageXform(
           );
 
 
-class PCL_EXPORTS ON_CLASS ON_MorphControl : public ON_Geometry
+class ON_CLASS ON_MorphControl : public ON_Geometry
 {
   ON_OBJECT_DECLARE(ON_MorphControl);
 
@@ -1928,7 +1926,7 @@ public:
 };
 
 
-class PCL_EXPORTS ON_CLASS ON_CageMorph : public ON_SpaceMorph
+class ON_CLASS ON_CageMorph : public ON_SpaceMorph
 {
 public:
   ON_CageMorph();

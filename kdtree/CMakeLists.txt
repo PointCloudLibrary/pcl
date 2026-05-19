@@ -29,7 +29,8 @@ set(impl_incs
 )
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-if(FLANN_FOUND)
+# PCL_ADD_LIBRARY will create an INTERFACE library if no sources are added and a normal library if sources are present.
+if((NOT PCL_NO_PRECOMPILE) AND FLANN_FOUND)
   PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
   target_link_libraries("${LIB_NAME}" pcl_common FLANN::FLANN)
   set(EXT_DEPS flann)
