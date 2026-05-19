@@ -1444,6 +1444,21 @@ GPU
      .. |gp_2| image:: images/gpu/people/c2_100.jpg
                :height: 100px
 
+  * :ref:`gpu_octree_search`
+
+     ======  ======
+     |gp_3|  Title: **Using GPU Octree search functions**
+
+             Author: *Haritha Jayasinghe*
+
+             Compatibility: >= PCL 1.12
+
+             This tutorial demonstrates the use of GPU octree search methods.
+     ======  ======
+
+     .. |gp_3| image:: images/gpu/octree/gpu_radius.jpg
+               :height: 100px
+
  ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation
