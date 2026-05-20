@@ -38,7 +38,7 @@
 
 #pragma once
 
-#include <boost/filesystem.hpp>
+#include <pcl/common/pcl_filesystem.h>
 
 #include <mutex>
 #include <vector>
@@ -58,7 +58,7 @@ namespace pcl
           : container_ ()
         {}
 
-        OutofcoreAbstractNodeContainer (const boost::filesystem::path&) {}
+        OutofcoreAbstractNodeContainer (const pcl_fs::path&) {}
 
         virtual 
         ~OutofcoreAbstractNodeContainer () = default;        
@@ -85,7 +85,7 @@ namespace pcl
         clear ()=0;
 
         virtual void
-        convertToXYZ (const boost::filesystem::path& path)=0;
+        convertToXYZ (const pcl_fs::path& path)=0;
 
         virtual PointT
         operator[] (std::uint64_t idx) const=0;

@@ -126,8 +126,8 @@ using AlignedPointT = Eigen::aligned_allocator<PointT>;
 #include <vtkInteractorStyleRubberBand3D.h>
 #include <vtkParallelCoordinatesInteractorStyle.h>
 
-// Boost
-#include <boost/filesystem.hpp>
+// PCL filesystem
+#include <pcl/common/pcl_filesystem.h>
 
 // Globals
 vtkSmartPointer<vtkRenderWindow> window;
@@ -220,9 +220,9 @@ renderEndCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(ev
 }
 
 int
-outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octree=true, unsigned int gpu_cache_size=512)
+outofcoreViewer (pcl_fs::path tree_root, int depth, bool display_octree=true, unsigned int gpu_cache_size=512)
 {
-  std::cout << boost::filesystem::absolute (tree_root) << std::endl;
+  std::cout << pcl_fs::absolute (tree_root) << std::endl;
 
   // Create top level scene
   Scene *scene = Scene::instance ();
@@ -371,16 +371,16 @@ main (int argc, char* argv[])
   parse_argument (argc, argv, "-lod_threshold", lod_threshold);
 
   // Parse non-option arguments
-  boost::filesystem::path tree_root (argv[argc - 1]);
+  pcl_fs::path tree_root (argv[argc - 1]);
 
   // Check if a root directory was specified, use directory of pcd file
-  if (boost::filesystem::is_directory (tree_root))
+  if (pcl_fs::is_directory (tree_root))
   {
-    boost::filesystem::directory_iterator diterend;
-    for (boost::filesystem::directory_iterator diter (tree_root); diter != diterend; ++diter)
+    pcl_fs::directory_iterator diterend;
+    for (pcl_fs::directory_iterator diter (tree_root); diter != diterend; ++diter)
     {
-      const boost::filesystem::path& file = *diter;
-      if (!boost::filesystem::is_directory (file))
+      const pcl_fs::path& file = *diter;
+      if (!pcl_fs::is_directory (file))
       {
         if (file.extension ().string () == octree_disk_node::node_index_extension)
         {

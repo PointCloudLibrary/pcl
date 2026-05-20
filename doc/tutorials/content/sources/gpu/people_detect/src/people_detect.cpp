@@ -54,7 +54,6 @@
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/png_io.h>
-#include <boost/filesystem.hpp>
 
 #include <iostream>
 

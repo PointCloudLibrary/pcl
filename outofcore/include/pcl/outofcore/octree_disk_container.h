@@ -92,7 +92,7 @@ namespace pcl
          * \param[in] dir Path to the tree. If it is a directory, it
          * will create the metadata. If it is a file, it will load the metadata into memory.
          */
-        OutofcoreOctreeDiskContainer (const boost::filesystem::path &dir);
+        OutofcoreOctreeDiskContainer (const pcl_fs::path &dir);
 
         /** \brief flushes write buffer, then frees memory */
         ~OutofcoreOctreeDiskContainer () override;
@@ -212,7 +212,7 @@ namespace pcl
           writebuff_.clear ();
           //remove the binary data in the directory
           PCL_DEBUG ("[Octree Disk Container] Removing the point data from disk, in file %s\n", disk_storage_filename_.c_str ());
-          boost::filesystem::remove (static_cast<boost::filesystem::path> (disk_storage_filename_.c_str ()));
+          pcl_fs::remove (static_cast<pcl_fs::path> (disk_storage_filename_.c_str ()));
           //reset the size-of-file counter
           filelen_ = 0;
         }
@@ -222,9 +222,9 @@ namespace pcl
          * \param[in] path
          */
         void
-        convertToXYZ (const boost::filesystem::path &path) override
+        convertToXYZ (const pcl_fs::path &path) override
         {
-          if (boost::filesystem::exists (disk_storage_filename_))
+          if (pcl_fs::exists (disk_storage_filename_))
           {
             FILE* fxyz = fopen (path.string ().c_str (), "we");
 

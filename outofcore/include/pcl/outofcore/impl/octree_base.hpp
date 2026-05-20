@@ -79,7 +79,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT>
-    OutofcoreOctreeBase<ContainerT, PointT>::OutofcoreOctreeBase (const boost::filesystem::path& root_name, const bool load_all)
+    OutofcoreOctreeBase<ContainerT, PointT>::OutofcoreOctreeBase (const pcl_fs::path& root_name, const bool load_all)
       : root_node_ ()
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
@@ -98,7 +98,7 @@ namespace pcl
       root_node_->m_tree_ = this;
 
       // Set the path to the outofcore octree metadata (unique to the root folder) ending in .octree
-      boost::filesystem::path treepath = root_name.parent_path () / (root_name.stem ().string () + TREE_EXTENSION_);
+      pcl_fs::path treepath = root_name.parent_path () / (root_name.stem ().string () + TREE_EXTENSION_);
 
       //Load the JSON metadata
       metadata_->loadMetadataFromDisk (treepath);
@@ -107,7 +107,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT>
-    OutofcoreOctreeBase<ContainerT, PointT>::OutofcoreOctreeBase (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double resolution_arg, const boost::filesystem::path& root_node_name, const std::string& coord_sys)
+    OutofcoreOctreeBase<ContainerT, PointT>::OutofcoreOctreeBase (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double resolution_arg, const pcl_fs::path& root_node_name, const std::string& coord_sys)
       : root_node_()
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
@@ -129,7 +129,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT>
-    OutofcoreOctreeBase<ContainerT, PointT>::OutofcoreOctreeBase (const std::uint64_t max_depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_node_name, const std::string& coord_sys)
+    OutofcoreOctreeBase<ContainerT, PointT>::OutofcoreOctreeBase (const std::uint64_t max_depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const pcl_fs::path& root_node_name, const std::string& coord_sys)
       : root_node_()
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
@@ -142,7 +142,7 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::init (const std::uint64_t& depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys)
+    OutofcoreOctreeBase<ContainerT, PointT>::init (const std::uint64_t& depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const pcl_fs::path& root_name, const std::string& coord_sys)
     {
       //Validate the extension of the pathname
       if (!this->checkExtension (root_name))
@@ -151,18 +151,18 @@ namespace pcl
       }
 
       //Check to make sure that we are not overwriting existing data
-      if (boost::filesystem::exists (root_name.parent_path ()))
+      if (pcl_fs::exists (root_name.parent_path ()))
       {
         PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBase] A dir named %s already exists. Overwriting an existing tree is not supported.\n", root_name.parent_path ().c_str () );
         PCL_THROW_EXCEPTION ( PCLException, "[pcl::outofcore::OutofcoreOctreeBase] Directory exists; Overwriting an existing tree is not supported\n");
       }
 
       // Get fullpath and recreate directories
-      boost::filesystem::path dir = root_name.parent_path ();
+      pcl_fs::path dir = root_name.parent_path ();
 
-      if (!boost::filesystem::exists (dir))
+      if (!pcl_fs::exists (dir))
       {
-        boost::filesystem::create_directory (dir);
+        pcl_fs::create_directory (dir);
       }
 
       Eigen::Vector3d tmp_min = min;
@@ -174,7 +174,7 @@ namespace pcl
       root_node_->m_tree_ = this;
       
       // Set root nodes file path
-      boost::filesystem::path treepath = dir / (root_name.stem ().string () + TREE_EXTENSION_);
+      pcl_fs::path treepath = dir / (root_name.stem ().string () + TREE_EXTENSION_);
 
       //fill the fields of the metadata
       metadata_->setCoordinateSystem (coord_sys);
@@ -435,7 +435,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::writeVPythonVisual (const boost::filesystem::path& filename)
+    OutofcoreOctreeBase<ContainerT, PointT>::writeVPythonVisual (const pcl_fs::path& filename)
     {
       std::ofstream f (filename.c_str ());
 
@@ -702,7 +702,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> bool
-    OutofcoreOctreeBase<ContainerT, PointT>::checkExtension (const boost::filesystem::path& path_name)
+    OutofcoreOctreeBase<ContainerT, PointT>::checkExtension (const pcl_fs::path& path_name)
     {
       if (path_name.extension ().string () != OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension)
       {
