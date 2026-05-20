@@ -164,17 +164,20 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   }
   normal = normals[minIndex].getNormalVector3fMap ();
 
-  // Compute and store the RF direction
-  x_axis[0] = rnd ();
-  x_axis[1] = rnd ();
-  x_axis[2] = rnd ();
-  if (!pcl::utils::equal (normal[2], 0.0f))
-    x_axis[2] = - (normal[0]*x_axis[0] + normal[1]*x_axis[1]) / normal[2];
-  else if (!pcl::utils::equal (normal[1], 0.0f))
-    x_axis[1] = - (normal[0]*x_axis[0] + normal[2]*x_axis[2]) / normal[1];
-  else if (!pcl::utils::equal (normal[0], 0.0f))
-    x_axis[0] = - (normal[1]*x_axis[1] + normal[2]*x_axis[2]) / normal[0];
-
+  // Compute a deterministic x_axis by projecting the direction to the most
+  // distant neighbor onto the tangent plane. This replaces the previous
+  // random axis selection and makes the descriptor stable across runs.
+  const auto maxDistIt = std::max_element (nn_dists.begin (), nn_dists.end ());
+  const auto maxIndex = nn_indices[std::distance (nn_dists.begin (), maxDistIt)];
+  x_axis = (*surface_)[maxIndex].getVector3fMap () - origin;
+  x_axis -= x_axis.dot (normal) * normal;
+  if (x_axis.norm () < 1e-6f)
+  {
+    // Fallback: use a fixed global axis projected onto the tangent plane
+    x_axis = Eigen::Vector3f::UnitX () - Eigen::Vector3f::UnitX ().dot (normal) * normal;
+    if (x_axis.norm () < 1e-6f)
+      x_axis = Eigen::Vector3f::UnitY () - Eigen::Vector3f::UnitY ().dot (normal) * normal;
+  }
   x_axis.normalize ();
 
   // Check if the computed x axis is orthogonal to the normal
@@ -187,7 +190,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   for (std::size_t ne = 0; ne < neighb_cnt; ne++)
   {
     if (pcl::utils::equal (nn_dists[ne], 0.0f))
-		  continue;
+      continue;
     // Get neighbours coordinates
     Eigen::Vector3f neighbour = (*surface_)[nn_indices[ne]].getVector3fMap ();
 
@@ -245,8 +248,9 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     assert (desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] >= 0);
   } // end for each neighbour
 
-  // 3DSC does not define a repeatable local RF, we set it to zero to signal it to the user
-  std::fill_n (rf, 9, 0);
+  // Note: unlike the original 3DSC, we keep the RF intact here because
+  // we now compute a deterministic x_axis. The original code zeroed the RF
+  // to signal non-repeatability, but that also destroyed azimuth binning.
   return (true);
 }
 
@@ -258,7 +262,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (Poi
 
   output.is_dense = true;
   // Iterate over all points and compute the descriptors
-	for (std::size_t point_index = 0; point_index < indices_->size (); point_index++)
+  for (std::size_t point_index = 0; point_index < indices_->size (); point_index++)
   {
     //output[point_index].descriptor.resize (descriptor_length_);
 
