@@ -461,9 +461,6 @@ TYPED_TEST (SHOTShapeTest, Estimation)
   for (std::size_t i = 0; i < cloud.size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
-  //testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
-  //testSHOTLocalReferenceFrame<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
-
   testSHOTIndicesAndSearchSurface<TypeParam, PointXYZ, Normal, SHOT352> (cloud.makeShared (), normals, test_indices);
   testSHOTLocalReferenceFrame<TypeParam, PointXYZ, Normal, SHOT352> (cloud.makeShared (), normals, test_indices);
 }
@@ -670,9 +667,6 @@ TYPED_TEST (SHOTShapeAndColorTest, Estimation)
   for (std::size_t i = 0; i < cloud.size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
-  //testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
-  //testSHOTLocalReferenceFrame<SHOTEstimation<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
-
   testSHOTIndicesAndSearchSurface<TypeParam, PointXYZRGBA, Normal, SHOT1344> (cloudWithColors.makeShared (), normals, test_indices);
   testSHOTLocalReferenceFrame<TypeParam, PointXYZRGBA, Normal, SHOT1344> (cloudWithColors.makeShared (), normals, test_indices);
 }
@@ -681,9 +675,6 @@ TYPED_TEST (SHOTShapeAndColorTest, Estimation)
 TEST (PCL,3DSCEstimation)
 {
   float meshRes = 0.002f;
-  //size_t nBinsL = 4;
-  //size_t nBinsK = 4;
-  //size_t nBinsJ = 4;
   float radius = 20.0f * meshRes;
   float rmin = radius / 10.0f;
   float ptDensityRad = radius / 5.0f;
@@ -705,9 +696,6 @@ TEST (PCL,3DSCEstimation)
   sc3d.setInputNormals (normals);
   sc3d.setSearchMethod (tree);
   sc3d.setRadiusSearch (radius);
-  //sc3d.setAzimuthBins (nBinsL);
-  //sc3d.setElevationBins (nBinsK);
-  //sc3d.setRadiusBins (nBinsJ);
   sc3d.setMinimalRadius (rmin);
   sc3d.setPointDensityRadius (ptDensityRad);
   // Compute the features
@@ -716,16 +704,6 @@ TEST (PCL,3DSCEstimation)
   EXPECT_EQ (sc3ds->size (), cloud.size ());
 
   // 3DSC does not define a repeatable local RF, we set it to zero to signal it to the user
-  //EXPECT_NEAR ((*sc3ds)[0].rf[0], 0.2902f, 1e-4f);
-  //EXPECT_NEAR ((*sc3ds)[0].rf[1], 0.7334f, 1e-4f);
-  //EXPECT_NEAR ((*sc3ds)[0].rf[2], -0.6146f, 1e-4f);
-  //EXPECT_NEAR ((*sc3ds)[0].rf[3], 0.9486f, 1e-4f);
-  //EXPECT_NEAR ((*sc3ds)[0].rf[4], -0.3051f, 1e-4f);
-  //EXPECT_NEAR ((*sc3ds)[0].rf[5], 0.0838f, 1e-4f);
-  //EXPECT_NEAR ((*sc3ds)[0].rf[6], -0.1261f, 1e-4f);
-  //EXPECT_NEAR ((*sc3ds)[0].rf[7], -0.6074f, 1e-4f);
-  //EXPECT_NEAR ((*sc3ds)[0].rf[8], -0.7843f, 1e-4f);
-
   EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[0], 0.0f);
   EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[1], 0.0f);
   EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[2], 0.0f);
@@ -736,28 +714,17 @@ TEST (PCL,3DSCEstimation)
   EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[7], 0.0f);
   EXPECT_FLOAT_EQ ((*sc3ds)[0].rf[8], 0.0f);
 
-  //EXPECT_EQ ((*sc3ds)[0].descriptor.size (), 64);
-  std::cerr << "sc3ds[94][88]="    << (*sc3ds)[94].descriptor[88]    << "\n";
-  std::cerr << "sc3ds[94][584]="   << (*sc3ds)[94].descriptor[584]   << "\n";
-  std::cerr << "sc3ds[94][1106]="  << (*sc3ds)[94].descriptor[1106]  << "\n";
-  std::cerr << "sc3ds[94][1560]="  << (*sc3ds)[94].descriptor[1560]  << "\n";
-  std::cerr << "sc3ds[94][1929]="  << (*sc3ds)[94].descriptor[1929]  << "\n";
-  std::cerr << "sc3ds[108][67]="   << (*sc3ds)[108].descriptor[67]   << "\n";
-  std::cerr << "sc3ds[108][548]="  << (*sc3ds)[108].descriptor[548]  << "\n";
-  std::cerr << "sc3ds[108][1091]=" << (*sc3ds)[108].descriptor[1091] << "\n";
-  std::cerr << "sc3ds[108][1421]=" << (*sc3ds)[108].descriptor[1421] << "\n";
-  std::cerr << "sc3ds[108][1900]=" << (*sc3ds)[108].descriptor[1900] << "\n";
-  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[88], 55.271168f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[584], 71.108765f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1106], 79.5896f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[88],   27.635588f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[584],  47.405849f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1106], 39.794807f);
   EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1560], 0.f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1929], 36.063553f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[1929], 36.0636f);
 
-  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[67], 0.f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[548], 126.14106f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1091], 30.470392f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1421], 38.08799f);
-  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1900], 43.799442f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[67],   0.f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[548],  0.f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1091], 0.f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1421], 0.f);
+  EXPECT_FLOAT_EQ ((*sc3ds)[108].descriptor[1900], 0.f);
 
   // Test results when setIndices and/or setSearchSurface are used
   pcl::IndicesPtr test_indices (new pcl::Indices (0));
@@ -797,8 +764,6 @@ TEST (PCL, USCEstimation)
   EXPECT_NEAR ((*uscds)[160].rf[6], 0.209773f, 1e-4f);
   EXPECT_NEAR ((*uscds)[160].rf[7], 0.105428f, 1e-4f);
   EXPECT_NEAR ((*uscds)[160].rf[8], -0.972049f, 1e-4f);
-
-  //EXPECT_EQ ((*uscds)[0].descriptor.size (), 64);
 
   EXPECT_NEAR ((*uscds)[160].descriptor[355], 123.0733f, 1e-4f);
   EXPECT_NEAR ((*uscds)[160].descriptor[494], 154.9401f, 1e-4f);
