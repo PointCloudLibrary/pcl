@@ -17,7 +17,10 @@
 /** @{*/
 namespace pcl
 {
-
+  /** \brief Members: float j1, j2, j3
+    * \ingroup common
+    */
+  struct MomentInvariants;
 } // namespace pcl
 /** @} */
 

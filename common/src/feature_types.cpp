@@ -9,5 +9,10 @@
 
 namespace pcl
 {
-
+  std::ostream&
+  operator << (std::ostream& os, const MomentInvariants& p)
+  {
+    os << "(" << p.j1 << "," << p.j2 << "," << p.j3 << ")";
+    return (os);
+  }
 } // namespace pcl

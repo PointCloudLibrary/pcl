@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float j1, j2, j3
-    * \ingroup common
-    */
-  struct MomentInvariants;
-
   /** \brief Members: float r_min, r_max
     * \ingroup common
     */
