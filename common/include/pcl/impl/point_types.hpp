@@ -43,6 +43,7 @@
 #include <pcl/pcl_macros.h>             // for PCL_EXPORTS
 #include <pcl/PCLPointField.h>          // for PCLPointField
 #include <pcl/point_types.h>            // implementee
+#include <pcl/feature_types.h>          // for feature types
 #include <pcl/register_point_struct.h>  // for POINT_CLOUD_REGISTER_POINT_STRUCT, POINT_CLOUD_REGISTER_POINT_WRAPPER
 
 #include <Eigen/Core>                   // for MatrixMap

@@ -44,6 +44,8 @@
 #include <pcl/field_traits.h>
 #endif
 
+#include <pcl/feature_types.h>      // feature types are point types too
+
 #include <bitset>
 
 
