@@ -233,13 +233,6 @@ namespace pcl
   }
 
   std::ostream& 
-  operator << (std::ostream& os, const PrincipalRadiiRSD& p)
-  {
-    os << "(" << p.r_min << "," << p.r_max << ")";
-    return (os);
-  }
-
-  std::ostream& 
   operator << (std::ostream& os, const Boundary& p)
   {
     os << p.boundary_point;

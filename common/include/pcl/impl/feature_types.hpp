@@ -30,10 +30,30 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p);
+  /** \brief A point structure representing the minimum and maximum surface radii (in meters) computed using RSD.
+    * \ingroup common
+    */
+  struct PrincipalRadiiRSD
+  {
+    float r_min = 0.f, r_max = 0.f;
+
+    inline constexpr PrincipalRadiiRSD () = default;
+
+    inline constexpr PrincipalRadiiRSD (float _r_min, float _r_max): r_min (_r_min), r_max (_r_max) {}
+
+    friend std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
     (float, j1, j1)
     (float, j2, j2)
     (float, j3, j3)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PrincipalRadiiRSD,
+    (float, r_min, r_min)
+    (float, r_max, r_max)
 )

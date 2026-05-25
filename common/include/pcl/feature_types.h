@@ -21,6 +21,11 @@ namespace pcl
     * \ingroup common
     */
   struct MomentInvariants;
+
+  /** \brief Members: float r_min, r_max
+    * \ingroup common
+    */
+  struct PrincipalRadiiRSD;
 } // namespace pcl
 /** @} */
 

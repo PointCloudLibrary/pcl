@@ -1096,21 +1096,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p);
-  /** \brief A point structure representing the minimum and maximum surface radii (in meters) computed using RSD.
-    * \ingroup common
-    */
-  struct PrincipalRadiiRSD
-  {
-    float r_min = 0.f, r_max = 0.f;
-
-    inline constexpr PrincipalRadiiRSD () = default;
-
-    inline constexpr PrincipalRadiiRSD (float _r_min, float _r_max): r_min (_r_min), r_max (_r_max) {}
-
-    friend std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Boundary& p);
   /** \brief A point structure representing a description of whether a point is lying on a surface boundary or not.
     * \ingroup common
@@ -1889,11 +1874,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointWithViewpoint,
     (float, vp_z, vp_z)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointWithViewpoint, pcl::_PointWithViewpoint)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PrincipalRadiiRSD,
-    (float, r_min, r_min)
-    (float, r_max, r_max)
-)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Boundary,
     (std::uint8_t, boundary_point, boundary_point)

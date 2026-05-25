@@ -15,4 +15,11 @@ namespace pcl
     os << "(" << p.j1 << "," << p.j2 << "," << p.j3 << ")";
     return (os);
   }
+
+  std::ostream&
+  operator << (std::ostream& os, const PrincipalRadiiRSD& p)
+  {
+    os << "(" << p.r_min << "," << p.r_max << ")";
+    return (os);
+  }
 } // namespace pcl

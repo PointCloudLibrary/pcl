@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float r_min, r_max
-    * \ingroup common
-    */
-  struct PrincipalRadiiRSD;
-
   /** \brief Members: std::uint8_t boundary_point
     * \ingroup common
     */
