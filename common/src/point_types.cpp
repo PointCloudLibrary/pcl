@@ -233,13 +233,6 @@ namespace pcl
   }
 
   std::ostream& 
-  operator << (std::ostream& os, const PrincipalCurvatures& p)
-  {
-    os << "(" << p.principal_curvature[0] << "," << p.principal_curvature[1] << "," << p.principal_curvature[2] << " - " << p.pc1 << "," << p.pc2 << ")";
-    return (os);
-  }
-
-  std::ostream& 
   operator << (std::ostream& os, const PFHSignature125& p)
   {
     for (int i = 0; i < 125; ++i)

@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float principal_curvature[3], pc1, pc2
-    * \ingroup common
-    */
-  struct PrincipalCurvatures;
-
   /** \brief Members: float descriptor[352], rf[9]
     * \ingroup common
     */

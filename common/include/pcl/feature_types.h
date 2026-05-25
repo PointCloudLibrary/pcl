@@ -31,6 +31,11 @@ namespace pcl
     * \ingroup common
     */
   struct Boundary;
+
+  /** \brief Members: float principal_curvature[3], pc1, pc2
+    * \ingroup common
+    */
+  struct PrincipalCurvatures;
 } // namespace pcl
 /** @} */
 

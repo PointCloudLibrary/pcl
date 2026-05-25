@@ -65,6 +65,37 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const Boundary& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PrincipalCurvatures& p);
+  /** \brief A point structure representing the principal curvatures and their magnitudes.
+    * \ingroup common
+    */
+  struct PrincipalCurvatures
+  {
+    union
+    {
+      float principal_curvature[3];
+      struct
+      {
+        float principal_curvature_x;
+        float principal_curvature_y;
+        float principal_curvature_z;
+      };
+    };
+    float pc1 = 0.f;
+    float pc2 = 0.f;
+
+    inline constexpr PrincipalCurvatures (): PrincipalCurvatures (0.f, 0.f) {}
+
+    inline constexpr PrincipalCurvatures (float _pc1, float _pc2): PrincipalCurvatures (0.f, 0.f, 0.f, _pc1, _pc2) {}
+
+    inline constexpr PrincipalCurvatures (float _x, float _y, float _z): PrincipalCurvatures (_x, _y, _z, 0.f, 0.f) {}
+
+    inline constexpr PrincipalCurvatures (float _x, float _y, float _z, float _pc1, float _pc2):
+      principal_curvature_x (_x), principal_curvature_y (_y), principal_curvature_z (_z), pc1 (_pc1), pc2 (_pc2) {}
+
+    friend std::ostream& operator << (std::ostream& os, const PrincipalCurvatures& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -80,4 +111,12 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PrincipalRadiiRSD,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Boundary,
     (std::uint8_t, boundary_point, boundary_point)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PrincipalCurvatures,
+    (float, principal_curvature_x, principal_curvature_x)
+    (float, principal_curvature_y, principal_curvature_y)
+    (float, principal_curvature_z, principal_curvature_z)
+    (float, pc1, pc1)
+    (float, pc2, pc2)
 )
