@@ -22,4 +22,11 @@ namespace pcl
     os << "(" << p.r_min << "," << p.r_max << ")";
     return (os);
   }
+
+  std::ostream&
+  operator << (std::ostream& os, const Boundary& p)
+  {
+    os << p.boundary_point;
+    return (os);
+  }
 } // namespace pcl

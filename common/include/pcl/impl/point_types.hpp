@@ -1096,26 +1096,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Boundary& p);
-  /** \brief A point structure representing a description of whether a point is lying on a surface boundary or not.
-    * \ingroup common
-    */
-  struct Boundary
-  {
-    std::uint8_t boundary_point = 0;
-
-#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION <= 1101
-    constexpr operator unsigned char() const
-    {
-      return boundary_point;
-    }
-#endif
-
-    inline constexpr Boundary (std::uint8_t _boundary = 0): boundary_point (_boundary) {}
-
-    friend std::ostream& operator << (std::ostream& os, const Boundary& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PrincipalCurvatures& p);
   /** \brief A point structure representing the principal curvatures and their magnitudes.
     * \ingroup common
@@ -1874,10 +1854,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointWithViewpoint,
     (float, vp_z, vp_z)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointWithViewpoint, pcl::_PointWithViewpoint)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Boundary,
-    (std::uint8_t, boundary_point, boundary_point)
-)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PrincipalCurvatures,
     (float, principal_curvature_x, principal_curvature_x)

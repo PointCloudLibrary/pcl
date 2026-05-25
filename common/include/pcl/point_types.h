@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: std::uint8_t boundary_point
-    * \ingroup common
-    */
-  struct Boundary;
-
   /** \brief Members: float principal_curvature[3], pc1, pc2
     * \ingroup common
     */

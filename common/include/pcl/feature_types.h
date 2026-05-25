@@ -26,6 +26,11 @@ namespace pcl
     * \ingroup common
     */
   struct PrincipalRadiiRSD;
+
+  /** \brief Members: std::uint8_t boundary_point
+    * \ingroup common
+    */
+  struct Boundary;
 } // namespace pcl
 /** @} */
 

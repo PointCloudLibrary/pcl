@@ -45,6 +45,26 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Boundary& p);
+  /** \brief A point structure representing a description of whether a point is lying on a surface boundary or not.
+    * \ingroup common
+    */
+  struct Boundary
+  {
+    std::uint8_t boundary_point = 0;
+
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION <= 1101
+    constexpr operator unsigned char() const
+    {
+      return boundary_point;
+    }
+#endif
+
+    inline constexpr Boundary (std::uint8_t _boundary = 0): boundary_point (_boundary) {}
+
+    friend std::ostream& operator << (std::ostream& os, const Boundary& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -56,4 +76,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PrincipalRadiiRSD,
     (float, r_min, r_min)
     (float, r_max, r_max)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Boundary,
+    (std::uint8_t, boundary_point, boundary_point)
 )
