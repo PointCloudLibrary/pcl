@@ -46,4 +46,14 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 351 ? ", " : ")");
     return (os);
   }
+
+  std::ostream&
+  operator << (std::ostream& os, const SHOT1344& p)
+  {
+    for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+    for (std::size_t i = 0; i < 1344; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1343 ? ", " : ")");
+    return (os);
+  }
 } // namespace pcl

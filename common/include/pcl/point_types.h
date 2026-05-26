@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float descriptor[1344], rf[9]
-    * \ingroup common
-    */
-  struct SHOT1344;
-
   /** \brief Members: Axis x_axis, y_axis, z_axis
     * \ingroup common
     */

@@ -41,6 +41,11 @@ namespace pcl
     * \ingroup common
     */
   struct SHOT352;
+
+  /** \brief Members: float descriptor[1344], rf[9]
+    * \ingroup common
+    */
+  struct SHOT1344;
 } // namespace pcl
 /** @} */
 

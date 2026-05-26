@@ -161,7 +161,6 @@ namespace pcl
       template<> struct descriptorSize<PFHRGBSignature250> { static constexpr const int value = 250; };
       template<> struct descriptorSize<ShapeContext1980> { static constexpr const int value = 1980; };
       template<> struct descriptorSize<UniqueShapeContext1960> { static constexpr const int value = 1960; };
-      template<> struct descriptorSize<SHOT1344> { static constexpr const int value = 1344; };
       template<> struct descriptorSize<FPFHSignature33> { static constexpr const int value = 33; };
       template<> struct descriptorSize<VFHSignature308> { static constexpr const int value = 308; };
       template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
@@ -1222,22 +1221,6 @@ namespace pcl
   };
 
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const SHOT1344& p);
-  /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape+color.
-    * \ingroup common
-    */
-  struct SHOT1344
-  {
-    float descriptor[1344] = {0.f};
-    float rf[9] = {0.f};
-    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<SHOT1344>; }
-
-    inline constexpr SHOT1344 () = default;
-
-    friend std::ostream& operator << (std::ostream& os, const SHOT1344& p);
-  };
-
-
   /** \brief A structure representing the Local Reference Frame of a point.
     *  \ingroup common
     */
@@ -1855,11 +1838,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ShapeContext1980,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::UniqueShapeContext1960,
     (float[1960], descriptor, shape_context)
-    (float[9], rf, rf)
-)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SHOT1344,
-    (float[1344], descriptor, shot)
     (float[9], rf, rf)
 )
 
