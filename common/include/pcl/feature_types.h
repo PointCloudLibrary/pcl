@@ -36,6 +36,11 @@ namespace pcl
     * \ingroup common
     */
   struct PrincipalCurvatures;
+
+  /** \brief Members: float descriptor[352], rf[9]
+    * \ingroup common
+    */
+  struct SHOT352;
 } // namespace pcl
 /** @} */
 

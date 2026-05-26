@@ -21,6 +21,7 @@ namespace pcl
   {
     namespace traits
     {
+      template<> struct descriptorSize<SHOT352> { static constexpr const int value = 352; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -103,6 +104,21 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const PrincipalCurvatures& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const SHOT352& p);
+  /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape only.
+    * \ingroup common
+    */
+  struct SHOT352
+  {
+    float descriptor[352] = {0.f};
+    float rf[9] = {0.f};
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<SHOT352>; }
+
+    inline constexpr SHOT352 () = default;
+
+    friend std::ostream& operator << (std::ostream& os, const SHOT352& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -126,4 +142,9 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PrincipalCurvatures,
     (float, principal_curvature_z, principal_curvature_z)
     (float, pc1, pc1)
     (float, pc2, pc2)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SHOT352,
+    (float[352], descriptor, shot)
+    (float[9], rf, rf)
 )
