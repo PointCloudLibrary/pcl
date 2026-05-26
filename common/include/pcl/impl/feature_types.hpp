@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pcl/descriptor_size.h>        // for descriptorSize_v
 #include <pcl/feature_types.h>          // implementee
 #include <pcl/pcl_exports.h>            // for PCL_EXPORTS
 #include <pcl/register_point_struct.h>  // for POINT_CLOUD_REGISTER_POINT_STRUCT
@@ -16,6 +17,12 @@
 
 namespace pcl
 {
+  namespace detail
+  {
+    namespace traits
+    {
+    }
+  }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
   /** \brief A point structure representing the three moment invariants.
     * \ingroup common

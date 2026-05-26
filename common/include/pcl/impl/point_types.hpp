@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/descriptor_size.h>        // for descriptorSize_v
 #include <pcl/memory.h>                 // for PCL_MAKE_ALIGNED_OPERATOR_NEW
 #include <pcl/pcl_config.h>             // for PCL_XYZ_POINT_TYPES, PCL_NORMAL_POINT_TYPES
 #include <pcl/pcl_macros.h>             // for PCL_EXPORTS
@@ -156,8 +157,6 @@ namespace pcl
   {
     namespace traits
     {
-      template<typename FeaturePointT> struct descriptorSize {};
-
       template<> struct descriptorSize<PFHSignature125> { static constexpr const int value = 125; };
       template<> struct descriptorSize<PFHRGBSignature250> { static constexpr const int value = 250; };
       template<> struct descriptorSize<ShapeContext1980> { static constexpr const int value = 1980; };
@@ -176,10 +175,6 @@ namespace pcl
       template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
       template<> struct descriptorSize<NormalBasedSignature12> { static constexpr const int value = 12; };
       template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
-
-
-      template<typename FeaturePointT>
-      static constexpr int descriptorSize_v = descriptorSize<FeaturePointT>::value;
     }
   }
 
