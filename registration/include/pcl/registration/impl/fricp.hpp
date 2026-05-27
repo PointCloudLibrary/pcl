@@ -467,8 +467,8 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::findKNearestM
   std::vector<double> dists;
   dists.reserve(k - 1);
 
-  for (std::size_t i = 0; i < cloud.size(); ++i) {
-    if (tree.nearestKSearch(cloud[i], k, nn_indices, nn_sqr_dists) != k)
+  for (const auto& point : cloud) {
+    if (tree.nearestKSearch(point, k, nn_indices, nn_sqr_dists) != k)
       continue;
     dists.clear();
     for (int j = 1; j < k; ++j)
