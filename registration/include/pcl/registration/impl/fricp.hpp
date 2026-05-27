@@ -7,8 +7,7 @@
  *  All rights reserved.
  */
 
-#ifndef PCL_REGISTRATION_IMPL_FRICP_HPP_
-#define PCL_REGISTRATION_IMPL_FRICP_HPP_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/common/transforms.h>
@@ -133,7 +132,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     return;
   }
 
-  std::vector<int> source_indices;
+  std::vector<pcl::index_t> source_indices;
   if (this->indices_ && !this->indices_->empty())
     source_indices.assign(this->indices_->begin(), this->indices_->end());
   else {
@@ -212,8 +211,8 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   if (use_welsch) {
     const double neighbor_med = findKNearestMedian(*target_centered, tree_data, 7);
     std::vector<double> residual_values(static_cast<std::size_t>(residuals.size()));
-    for (int i = 0; i < residuals.size(); ++i)
-      residual_values[static_cast<std::size_t>(i)] = residuals[i];
+    for (Eigen::Index i = 0; i < residuals.size(); ++i)
+      residual_values[static_cast<std::size_t>(i)] = std::sqrt(residuals(i));
     const double residual_med =
         pcl::computeMedian(residual_values.begin(), residual_values.end());
     nu_limit = std::max(nu_end_ratio_ * neighbor_med, same_threshold_);
@@ -239,7 +238,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   while (!outer_done) {
     for (int iter = 0; iter < this->max_iterations_; ++iter) {
       double energy =
-          use_welsch ? computeEnergy(residuals, nu_current) : residuals.squaredNorm();
+          use_welsch ? computeEnergy(residuals, nu_current) : residuals.sum();
       if (use_anderson_) {
         if (energy <= last_energy) {
           last_energy = energy;
@@ -259,8 +258,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
                       this->getClassName().c_str());
             return;
           }
-          energy = use_welsch ? computeEnergy(residuals, nu_current)
-                              : residuals.squaredNorm();
+          energy = use_welsch ? computeEnergy(residuals, nu_current) : residuals.sum();
           last_energy = energy;
         }
       }
@@ -371,7 +369,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   pcl::Indices nn_indices(1);
   std::vector<float> nn_sqr_dists(1);
 
-  for (int i = 0; i < source.cols(); ++i) {
+  for (Eigen::Index i = 0; i < source.cols(); ++i) {
     const Eigen::Vector3d current = R * source.col(i) + t;
     query.x = static_cast<float>(current.x());
     query.y = static_cast<float>(current.y());
@@ -380,7 +378,9 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
       return false;
     const auto idx = nn_indices[0];
     matched_targets.col(i) = target.col(static_cast<int>(idx));
-    residuals[i] = (current - matched_targets.col(i)).norm();
+    // Store squared distance reported by the search (avoid recomputing
+    // the difference).  Promote to double for internal computations.
+    residuals(i) = static_cast<double>(nn_sqr_dists[0]);
   }
   return true;
 }
@@ -393,7 +393,8 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeEnergy
   if (nu < same_threshold_)
     nu = same_threshold_;
   const double denom = 2.0 * nu * nu;
-  const Eigen::ArrayXd dist2 = residuals.array().square();
+  // "residuals" contains squared distances already
+  const Eigen::ArrayXd dist2 = residuals.array();
   return (1.0 - (-dist2 / denom).exp()).sum();
 }
 
@@ -405,7 +406,8 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeWeight
   if (nu < same_threshold_)
     nu = same_threshold_;
   const double denom = 2.0 * nu * nu;
-  return (-residuals.array().square() / denom).exp().matrix();
+  // residuals already squared
+  return (-residuals.array() / denom).exp().matrix();
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
@@ -459,7 +461,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::findKNearestM
   if (k < 2)
     return 0.0;
 
-  std::vector<double> local_medians(cloud.size(), 0.0);
+  std::vector<double> local_medians;
   pcl::Indices nn_indices(k);
   std::vector<float> nn_sqr_dists(k);
   std::vector<double> dists;
@@ -471,10 +473,13 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::findKNearestM
     dists.clear();
     for (int j = 1; j < k; ++j)
       dists.push_back(std::sqrt(nn_sqr_dists[j]));
-    if (!dists.empty())
-      local_medians[i] = pcl::computeMedian(dists.begin(), dists.end());
+    if (!dists.empty()) {
+      local_medians.push_back(pcl::computeMedian(dists.begin(), dists.end()));
+    }
   }
 
+  if (local_medians.empty())
+    return 0.0;
   return pcl::computeMedian(local_medians.begin(), local_medians.end());
 }
 
@@ -529,5 +534,3 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::matrixLog(
 }
 
 } // namespace pcl
-
-#endif // PCL_REGISTRATION_IMPL_FRICP_HPP_
