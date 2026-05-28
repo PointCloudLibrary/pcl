@@ -704,11 +704,25 @@ TEST (PCL,3DSCEstimation)
   EXPECT_EQ (sc3ds->size (), cloud.size ());
 
   // 3DSC does not define a repeatable local RF, we set it to zero to signal it to the user
-for (int i = 0; i < 9; i++)
-    std::cerr << "sc3ds[0].rf[" << i << "]=" << (*sc3ds)[0].rf[i] << "\n";
-  for (int idx = 0; idx < 1980; ++idx)
-    if ((*sc3ds)[108].descriptor[idx] != 0.f)
-      std::cerr << "sc3ds[108][" << idx << "]=" << (*sc3ds)[108].descriptor[idx] << "\n";
+  EXPECT_NEAR ((*sc3ds)[0].rf[0], -0.932515f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[0].rf[1], 0.342274f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[0].rf[2], -0.115173f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[0].rf[3], 0.33841f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[0].rf[4], 0.716871f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[0].rf[5], -0.60957f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[0].rf[6], -0.126076f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[0].rf[7], -0.607408f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[0].rf[8], -0.784321f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[108].descriptor[54], 54.0953f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[108].descriptor[71], 76.176f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[108].descriptor[87], 64.4415f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[108].descriptor[88], 110.542f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[108].descriptor[89], 55.3068f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[108].descriptor[218], 126.141f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[108].descriptor[235], 88.8147f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[108].descriptor[237], 43.5572f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[108].descriptor[238], 56.0383f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[108].descriptor[253], 36.8475f, 1e-4f);
 
   EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[88],   27.635588f);
   EXPECT_FLOAT_EQ ((*sc3ds)[94].descriptor[584],  47.405849f);
