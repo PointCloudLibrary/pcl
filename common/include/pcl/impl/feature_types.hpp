@@ -24,6 +24,7 @@ namespace pcl
     {
       template<> struct descriptorSize<SHOT352> { static constexpr const int value = 352; };
       template<> struct descriptorSize<SHOT1344> { static constexpr const int value = 1344; };
+      template<> struct descriptorSize<ShapeContext1980> { static constexpr const int value = 1980; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -189,6 +190,21 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const ReferenceFrame& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const ShapeContext1980& p);
+  /** \brief A point structure representing a Shape Context.
+    * \ingroup common
+    */
+  struct ShapeContext1980
+  {
+    float descriptor[1980] = {0.f};
+    float rf[9] = {0.f};
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<ShapeContext1980>; }
+
+    inline constexpr ShapeContext1980 () = default;
+
+    friend std::ostream& operator << (std::ostream& os, const ShapeContext1980& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -230,3 +246,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_ReferenceFrame,
     (float[3], z_axis, z_axis)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::ReferenceFrame, pcl::_ReferenceFrame)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ShapeContext1980,
+    (float[1980], descriptor, shape_context)
+    (float[9], rf, rf)
+)

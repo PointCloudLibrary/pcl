@@ -159,7 +159,6 @@ namespace pcl
     {
       template<> struct descriptorSize<PFHSignature125> { static constexpr const int value = 125; };
       template<> struct descriptorSize<PFHRGBSignature250> { static constexpr const int value = 250; };
-      template<> struct descriptorSize<ShapeContext1980> { static constexpr const int value = 1980; };
       template<> struct descriptorSize<UniqueShapeContext1960> { static constexpr const int value = 1960; };
       template<> struct descriptorSize<FPFHSignature33> { static constexpr const int value = 33; };
       template<> struct descriptorSize<VFHSignature308> { static constexpr const int value = 308; };
@@ -1190,21 +1189,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const ShapeContext1980& p);
-  /** \brief A point structure representing a Shape Context.
-    * \ingroup common
-    */
-  struct ShapeContext1980
-  {
-    float descriptor[1980] = {0.f};
-    float rf[9] = {0.f};
-    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<ShapeContext1980>; }
-
-    inline constexpr ShapeContext1980 () = default;
-
-    friend std::ostream& operator << (std::ostream& os, const ShapeContext1980& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const UniqueShapeContext1960& p);
   /** \brief A point structure representing a Unique Shape Context.
     * \ingroup common
@@ -1775,11 +1759,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFRGBSignature,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::NormalBasedSignature12,
     (float[12], values, values)
-)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ShapeContext1980,
-    (float[1980], descriptor, shape_context)
-    (float[9], rf, rf)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::UniqueShapeContext1960,
