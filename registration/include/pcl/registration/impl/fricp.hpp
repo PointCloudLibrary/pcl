@@ -132,7 +132,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     return;
   }
 
-  std::vector<pcl::index_t> source_indices;
+  std::vector<pcl::uindex_t> source_indices;
   if (this->indices_ && !this->indices_->empty())
     source_indices.assign(this->indices_->begin(), this->indices_->end());
   else {
