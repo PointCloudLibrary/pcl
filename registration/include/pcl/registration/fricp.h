@@ -177,7 +177,7 @@ private:
   Matrix4d
   matrixLog(const Matrix4d& transform) const;
 
-  RobustFunction robust_function_;
+  RobustFunction robust_function_ = RobustFunction::WELSCH;
   bool use_anderson_ = false;
   std::size_t anderson_history_ = 5;
   double nu_begin_ratio_ = 3.0;
