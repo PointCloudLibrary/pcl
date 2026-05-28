@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/registration/anderson_acceleration.h>
 #include <pcl/registration/icp.h>
 #include <pcl/search/kdtree.h>
@@ -29,6 +30,21 @@ namespace pcl {
  * The solver relies on Welsch reweighting for robustness and optional Anderson
  * acceleration for faster convergence.
  *
+ * \note FRICP uses its own robust correspondence mechanism based on the Welsch
+ * function. The following inherited ICP settings have no effect:
+ *   - setMaxCorrespondenceDistance() — FRICP controls outlier rejection via
+ *     the Welsch scale parameter instead.
+ *   - Correspondence estimators, rejectors, and reciprocal correspondences
+ *     are not used by this class.
+ *   - setEuclideanFitnessEpsilon() and setRotationEpsilon() are not evaluated.
+ *
+ * \note setMaximumIterations() controls the number of inner-loop iterations
+ * per Welsch scale stage. The outer loop may run multiple stages as the
+ * scale decays, so the total number of iterations can exceed this value.
+ *
+ * \note Input point clouds must not contain NaN or Inf values. Non-finite
+ * points are not handled and will produce incorrect results.
+ *
  * \code
  * pcl::FastRobustIterativeClosestPoint<PointT, PointT> reg;
  * reg.setInputSource (src); // src and tgt are clouds that must be created before
@@ -45,6 +61,13 @@ template <typename PointSource, typename PointTarget, typename Scalar = float>
 class FastRobustIterativeClosestPoint
 : public IterativeClosestPoint<PointSource, PointTarget, Scalar> {
 public:
+  using Ptr = shared_ptr<
+      FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>>;
+  using ConstPtr =
+      shared_ptr<const FastRobustIterativeClosestPoint<PointSource,
+                                                        PointTarget,
+                                                        Scalar>>;
+
   using Base = IterativeClosestPoint<PointSource, PointTarget, Scalar>;
   using typename Base::Matrix4;
   using typename Base::PointCloudSource;
@@ -100,8 +123,10 @@ public:
 
   /** \brief Set the multiplicative decay applied to the dynamic Welsch scale.
    *
-   * Valid range is [0, 1]. Smaller values reduce the scale faster per outer
-   * iteration, while larger values keep it closer to the current value.
+   * Valid range is (0, 1]. A value of 0 or a very small positive number is
+   * silently replaced by the default (0.5). Smaller values reduce the scale
+   * faster per outer iteration, while larger values keep it closer to the
+   * current value.
    */
   void
   setDynamicWelschDecay(double ratio);

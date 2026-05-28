@@ -29,7 +29,6 @@ namespace pcl {
 template <typename PointSource, typename PointTarget, typename Scalar>
 FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     FastRobustIterativeClosestPoint()
-: robust_function_(RobustFunction::WELSCH), nu_end_ratio_(1.0 / (3.0 * std::sqrt(3.0)))
 {
   this->reg_name_ = "FastRobustIterativeClosestPoint";
   this->max_iterations_ = 50;
@@ -161,6 +160,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   Matrix3Xd source_mat(3, source_size);
   for (std::size_t i = 0; i < source_size; ++i) {
     const auto& pt = (*this->input_)[source_indices[i]];
+    assert(pcl::isFinite(pt) && "FRICP requires finite source points (no NaN/Inf)");
     source_mat.col(i) = pt.getVector3fMap().template cast<double>();
   }
   Vector3d source_mean = source_mat.rowwise().mean();
@@ -169,6 +169,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   Matrix3Xd target_mat(3, target_size);
   for (std::size_t i = 0; i < target_size; ++i) {
     const auto& pt = (*this->target_)[i];
+    assert(pcl::isFinite(pt) && "FRICP requires finite target points (no NaN/Inf)");
     target_mat.col(i) = pt.getVector3fMap().template cast<double>();
   }
   Vector3d target_mean = target_mat.rowwise().mean();
