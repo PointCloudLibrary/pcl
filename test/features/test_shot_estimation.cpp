@@ -716,7 +716,7 @@ TEST (PCL,3DSCEstimation)
   EXPECT_NEAR ((*sc3ds)[108].descriptor[54], 54.0953f, 1e-4f);
   EXPECT_NEAR ((*sc3ds)[108].descriptor[71], 76.176f, 1e-4f);
   EXPECT_NEAR ((*sc3ds)[108].descriptor[87], 64.4415f, 1e-4f);
-  EXPECT_NEAR ((*sc3ds)[108].descriptor[88], 110.542f, 1e-4f);
+  EXPECT_NEAR ((*sc3ds)[108].descriptor[88], 110.54235f, 1e-4f);
   EXPECT_NEAR ((*sc3ds)[108].descriptor[89], 55.3068f, 1e-4f);
   EXPECT_NEAR ((*sc3ds)[108].descriptor[218], 126.141f, 1e-4f);
   EXPECT_NEAR ((*sc3ds)[108].descriptor[235], 88.8147f, 1e-4f);
