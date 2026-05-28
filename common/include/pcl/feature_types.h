@@ -46,6 +46,11 @@ namespace pcl
     * \ingroup common
     */
   struct SHOT1344;
+
+  /** \brief Members: Axis x_axis, y_axis, z_axis
+    * \ingroup common
+    */
+  struct ReferenceFrame;
 } // namespace pcl
 /** @} */
 

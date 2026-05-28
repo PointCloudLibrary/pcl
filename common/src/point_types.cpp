@@ -299,16 +299,6 @@ namespace pcl
   }
 
   std::ostream& 
-  operator << (std::ostream& os, const ReferenceFrame& p)
-  {
-    os << "("
-       << p.x_axis[0] << " " << p.x_axis[1] << " " << p.x_axis[2] << ","
-       << p.y_axis[0] << " " << p.y_axis[1] << " " << p.y_axis[2] << ","
-       << p.z_axis[0] << " " << p.z_axis[1] << " " << p.z_axis[2] << ")";
-    return (os);
-  }
-
-  std::ostream& 
   operator << (std::ostream& os, const FPFHSignature33& p)
   {
     for (int i = 0; i < 33; ++i)

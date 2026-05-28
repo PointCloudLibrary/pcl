@@ -1221,60 +1221,6 @@ namespace pcl
   };
 
 
-  /** \brief A structure representing the Local Reference Frame of a point.
-    *  \ingroup common
-    */
-  struct EIGEN_ALIGN16 _ReferenceFrame
-  {
-    union
-    {
-      float rf[9];
-      struct
-      {
-        float x_axis[3];
-        float y_axis[3];
-        float z_axis[3];
-      };
-    };
-
-    inline Eigen::Map<Eigen::Vector3f> getXAxisVector3fMap () { return (Eigen::Vector3f::Map (x_axis)); }
-    inline const Eigen::Map<const Eigen::Vector3f> getXAxisVector3fMap () const { return (Eigen::Vector3f::Map (x_axis)); }
-    inline Eigen::Map<Eigen::Vector3f> getYAxisVector3fMap () { return (Eigen::Vector3f::Map (y_axis)); }
-    inline const Eigen::Map<const Eigen::Vector3f> getYAxisVector3fMap () const { return (Eigen::Vector3f::Map (y_axis)); }
-    inline Eigen::Map<Eigen::Vector3f> getZAxisVector3fMap () { return (Eigen::Vector3f::Map (z_axis)); }
-    inline const Eigen::Map<const Eigen::Vector3f> getZAxisVector3fMap () const { return (Eigen::Vector3f::Map (z_axis)); }
-    inline Eigen::Map<Eigen::Matrix3f> getMatrix3fMap () { return (Eigen::Matrix3f::Map (rf)); }
-    inline const Eigen::Map<const Eigen::Matrix3f> getMatrix3fMap () const { return (Eigen::Matrix3f::Map (rf)); }
-
-    PCL_MAKE_ALIGNED_OPERATOR_NEW
-  };
-
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const ReferenceFrame& p);
-  struct EIGEN_ALIGN16 ReferenceFrame : public _ReferenceFrame
-  {
-    inline constexpr ReferenceFrame (const _ReferenceFrame &p) :
-      ReferenceFrame{p.rf}
-    {
-      //std::copy_n(p.rf, 9, rf); // this algorithm is constexpr starting from C++20
-    }
-
-    inline constexpr ReferenceFrame () :
-      _ReferenceFrame{ {{0.0f}} }
-    {
-      // this algorithm is constexpr starting from C++20
-      /*std::fill_n(x_axis, 3, 0.f);
-      std::fill_n(y_axis, 3, 0.f);
-      std::fill_n(z_axis, 3, 0.f);*/
-    }
-
-    inline constexpr ReferenceFrame (const float (&_rf)[9]) :
-      _ReferenceFrame{ {{_rf[0], _rf[1], _rf[2], _rf[3], _rf[4], _rf[5], _rf[6], _rf[7], _rf[8]}} } {}
-
-    friend std::ostream& operator << (std::ostream& os, const ReferenceFrame& p);
-    PCL_MAKE_ALIGNED_OPERATOR_NEW
-  };
-
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const FPFHSignature33& p);
   /** \brief A point structure representing the Fast Point Feature Histogram (FPFH).
     * \ingroup common
@@ -1908,13 +1854,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointSurfel,
     (float, confidence, confidence)
     (float, curvature, curvature)
 )
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_ReferenceFrame,
-    (float[3], x_axis, x_axis)
-    (float[3], y_axis, y_axis)
-    (float[3], z_axis, z_axis)
-)
-POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::ReferenceFrame, pcl::_ReferenceFrame)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointDEM,
     (float, x, x)
