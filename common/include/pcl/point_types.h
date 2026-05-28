@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float descriptor[1960], rf[9]
-    * \ingroup common
-    */
-  struct UniqueShapeContext1960;
-
   /** \brief Members: float pfh[125]
     * \ingroup common
     */

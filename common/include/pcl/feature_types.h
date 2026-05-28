@@ -56,6 +56,11 @@ namespace pcl
     * \ingroup common
     */
   struct ShapeContext1980;
+
+  /** \brief Members: float descriptor[1960], rf[9]
+    * \ingroup common
+    */
+  struct UniqueShapeContext1960;
 } // namespace pcl
 /** @} */
 

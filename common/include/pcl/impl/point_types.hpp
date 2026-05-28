@@ -159,7 +159,6 @@ namespace pcl
     {
       template<> struct descriptorSize<PFHSignature125> { static constexpr const int value = 125; };
       template<> struct descriptorSize<PFHRGBSignature250> { static constexpr const int value = 250; };
-      template<> struct descriptorSize<UniqueShapeContext1960> { static constexpr const int value = 1960; };
       template<> struct descriptorSize<FPFHSignature33> { static constexpr const int value = 33; };
       template<> struct descriptorSize<VFHSignature308> { static constexpr const int value = 308; };
       template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
@@ -1189,22 +1188,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const UniqueShapeContext1960& p);
-  /** \brief A point structure representing a Unique Shape Context.
-    * \ingroup common
-    */
-  struct UniqueShapeContext1960
-  {
-    float descriptor[1960] = {0.f};
-    float rf[9] = {0.f};
-    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<UniqueShapeContext1960>; }
-
-    inline constexpr UniqueShapeContext1960 () = default;
-
-    friend std::ostream& operator << (std::ostream& os, const UniqueShapeContext1960& p);
-  };
-
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const FPFHSignature33& p);
   /** \brief A point structure representing the Fast Point Feature Histogram (FPFH).
     * \ingroup common
@@ -1759,11 +1742,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFRGBSignature,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::NormalBasedSignature12,
     (float[12], values, values)
-)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::UniqueShapeContext1960,
-    (float[1960], descriptor, shape_context)
-    (float[9], rf, rf)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::FPFHSignature33,

@@ -279,16 +279,6 @@ namespace pcl
   }
 
   std::ostream& 
-  operator << (std::ostream& os, const UniqueShapeContext1960& p)
-  {
-    for (int i = 0; i < 9; ++i)
-    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-    for (std::size_t i = 0; i < 1960; ++i)
-      os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1959 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
   operator << (std::ostream& os, const FPFHSignature33& p)
   {
     for (int i = 0; i < 33; ++i)
