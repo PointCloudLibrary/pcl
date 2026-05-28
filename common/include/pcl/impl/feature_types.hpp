@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pcl/descriptor_size.h>        // for descriptorSize_v
+#include <pcl/memory.h>                 // for PCL_MAKE_ALIGNED_OPERATOR_NEW
 #include <pcl/feature_types.h>          // implementee
 #include <pcl/pcl_exports.h>            // for PCL_EXPORTS
 #include <pcl/register_point_struct.h>  // for POINT_CLOUD_REGISTER_POINT_STRUCT
