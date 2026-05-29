@@ -71,6 +71,11 @@ namespace pcl
     * \ingroup common
     */
   struct PFHRGBSignature250;
+
+  /** \brief Members: float f1, f2, f3, f4, alpha_m
+    * \ingroup common
+    */
+  struct PPFSignature;
 } // namespace pcl
 /** @} */
 

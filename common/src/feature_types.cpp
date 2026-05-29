@@ -102,4 +102,11 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 249 ? ", " : ")");
     return (os);
   }
+
+  std::ostream&
+  operator << (std::ostream& os, const PPFSignature& p)
+  {
+    os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.alpha_m << ")";
+    return (os);
+  }
 } // namespace pcl

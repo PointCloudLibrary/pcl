@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float f1, f2, f3, f4, alpha_m
-    * \ingroup common
-    */
-  struct PPFSignature;
-
   /** \brief Members: float f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, alpha_m
     * \ingroup common
     */

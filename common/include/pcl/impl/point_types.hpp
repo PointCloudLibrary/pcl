@@ -1085,23 +1085,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PPFSignature& p);
-  /** \brief A point structure for storing the Point Pair Feature (PPF) values
-    * \ingroup common
-    */
-  struct PPFSignature
-  {
-    float f1 = 0.f, f2 = 0.f, f3 = 0.f, f4 = 0.f;
-    float alpha_m = 0.f;
-
-    inline constexpr PPFSignature (float _alpha = 0.f): PPFSignature (0.f, 0.f, 0.f, 0.f, _alpha) {}
-
-    inline constexpr PPFSignature (float _f1, float _f2, float _f3, float _f4, float _alpha = 0.f):
-      f1 (_f1), f2 (_f2), f3 (_f3), f4 (_f4), alpha_m (_alpha) {}
-
-    friend std::ostream& operator << (std::ostream& os, const PPFSignature& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const CPPFSignature& p);
   /** \brief A point structure for storing the Point Pair Feature (CPPF) values
     * \ingroup common
@@ -1667,14 +1650,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointWithViewpoint,
     (float, vp_z, vp_z)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointWithViewpoint, pcl::_PointWithViewpoint)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFSignature,
-    (float, f1, f1)
-    (float, f2, f2)
-    (float, f3, f3)
-    (float, f4, f4)
-    (float, alpha_m, alpha_m)
-)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::CPPFSignature,
     (float, f1, f1)
