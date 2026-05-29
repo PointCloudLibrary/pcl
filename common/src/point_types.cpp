@@ -233,14 +233,6 @@ namespace pcl
   }
 
   std::ostream& 
-  operator << (std::ostream& os, const PFHRGBSignature250& p)
-  {
-    for (int i = 0; i < 250; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 249 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
   operator << (std::ostream& os, const PPFSignature& p)
   {
     os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.alpha_m << ")";

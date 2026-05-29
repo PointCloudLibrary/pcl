@@ -157,7 +157,6 @@ namespace pcl
   {
     namespace traits
     {
-      template<> struct descriptorSize<PFHRGBSignature250> { static constexpr const int value = 250; };
       template<> struct descriptorSize<FPFHSignature33> { static constexpr const int value = 33; };
       template<> struct descriptorSize<VFHSignature308> { static constexpr const int value = 308; };
       template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
@@ -1086,21 +1085,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   };
 
-
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PFHRGBSignature250& p);
-  /** \brief A point structure representing the Point Feature Histogram with colors (PFHRGB).
-    * \ingroup common
-    */
-  struct PFHRGBSignature250
-  {
-    float histogram[250] = {0.f};
-    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<PFHRGBSignature250>; }
-
-    inline constexpr PFHRGBSignature250 () = default;
-
-    friend std::ostream& operator << (std::ostream& os, const PFHRGBSignature250& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PPFSignature& p);
   /** \brief A point structure for storing the Point Pair Feature (PPF) values
     * \ingroup common
@@ -1683,10 +1667,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointWithViewpoint,
     (float, vp_z, vp_z)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointWithViewpoint, pcl::_PointWithViewpoint)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PFHRGBSignature250,
-    (float[250], histogram, pfhrgb)
-)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFSignature,
     (float, f1, f1)

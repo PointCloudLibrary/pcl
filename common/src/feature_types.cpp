@@ -94,4 +94,12 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 124 ? ", " : ")");
     return (os);
   }
+
+  std::ostream&
+  operator << (std::ostream& os, const PFHRGBSignature250& p)
+  {
+    for (int i = 0; i < 250; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 249 ? ", " : ")");
+    return (os);
+  }
 } // namespace pcl
