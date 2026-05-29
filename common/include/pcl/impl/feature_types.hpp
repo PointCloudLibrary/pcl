@@ -26,6 +26,7 @@ namespace pcl
       template<> struct descriptorSize<SHOT1344> { static constexpr const int value = 1344; };
       template<> struct descriptorSize<ShapeContext1980> { static constexpr const int value = 1980; };
       template<> struct descriptorSize<UniqueShapeContext1960> { static constexpr const int value = 1960; };
+      template<> struct descriptorSize<PFHSignature125> { static constexpr const int value = 125; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -222,6 +223,19 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const UniqueShapeContext1960& p);
   };
 
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PFHSignature125& p);
+  /** \brief A point structure representing the Point Feature Histogram (PFH).
+    * \ingroup common
+    */
+  struct PFHSignature125
+  {
+    float histogram[125] = {0.f};
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<PFHSignature125>; }
+
+    inline constexpr PFHSignature125 () = default;
+
+    friend std::ostream& operator << (std::ostream& os, const PFHSignature125& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -272,4 +286,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ShapeContext1980,
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::UniqueShapeContext1960,
     (float[1960], descriptor, shape_context)
     (float[9], rf, rf)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PFHSignature125,
+    (float[125], histogram, pfh)
 )

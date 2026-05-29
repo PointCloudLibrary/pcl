@@ -61,6 +61,11 @@ namespace pcl
     * \ingroup common
     */
   struct UniqueShapeContext1960;
+
+  /** \brief Members: float pfh[125]
+    * \ingroup common
+    */
+  struct PFHSignature125;
 } // namespace pcl
 /** @} */
 
