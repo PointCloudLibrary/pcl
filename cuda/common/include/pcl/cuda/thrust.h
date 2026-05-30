@@ -45,3 +45,13 @@
 #include <thrust/copy.h>
 #include <thrust/device_ptr.h>
 #include <thrust/sequence.h>
+
+// thrust::tuple/make_tuple/get were removed in Thrust 3.0 (CUDA 13)
+#if THRUST_MAJOR_VERSION >= 3
+#include <cuda/std/tuple>
+namespace thrust {
+    using ::cuda::std::tuple;
+    using ::cuda::std::make_tuple;
+    using ::cuda::std::get;
+}
+#endif
