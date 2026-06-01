@@ -109,4 +109,11 @@ namespace pcl
     os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.alpha_m << ")";
     return (os);
   }
+
+  std::ostream&
+  operator << (std::ostream& os, const CPPFSignature& p)
+  {
+    os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.f5 << ", " << p.f6 << ", " << p.f7 << ", " << p.f8 << ", " << p.f9 << ", " << p.f10 << ", " << p.alpha_m << ")";
+    return (os);
+  }
 } // namespace pcl

@@ -268,6 +268,26 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const PPFSignature& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const CPPFSignature& p);
+  /** \brief A point structure for storing the Point Pair Feature (CPPF) values
+    * \ingroup common
+    */
+  struct CPPFSignature
+  {
+    float f1, f2, f3, f4, f5, f6, f7, f8, f9, f10;
+    float alpha_m;
+
+    inline constexpr CPPFSignature (float _alpha = 0.f):
+      CPPFSignature (0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _alpha) {}
+
+    inline constexpr CPPFSignature (float _f1, float _f2, float _f3, float _f4, float _f5, float _f6,
+                          float _f7, float _f8, float _f9, float _f10, float _alpha = 0.f):
+      f1 (_f1), f2 (_f2), f3 (_f3), f4 (_f4), f5 (_f5), f6 (_f6),
+      f7 (_f7), f8 (_f8), f9 (_f9), f10 (_f10), alpha_m (_alpha) {}
+
+    friend std::ostream& operator << (std::ostream& os, const CPPFSignature& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -333,5 +353,19 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFSignature,
     (float, f2, f2)
     (float, f3, f3)
     (float, f4, f4)
+    (float, alpha_m, alpha_m)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::CPPFSignature,
+    (float, f1, f1)
+    (float, f2, f2)
+    (float, f3, f3)
+    (float, f4, f4)
+    (float, f5, f5)
+    (float, f6, f6)
+    (float, f7, f7)
+    (float, f8, f8)
+    (float, f9, f9)
+    (float, f10, f10)
     (float, alpha_m, alpha_m)
 )
