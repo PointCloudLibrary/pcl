@@ -38,7 +38,7 @@ if(EXCLUDE_TESTS)
   set(PCL_CTEST_ARGUMENTS ${PCL_CTEST_ARGUMENTS} -E "(${EXCLUDE_TESTS_REGEX})")
 endif()
 
-add_custom_target(tests "${CMAKE_CTEST_COMMAND}" ${PCL_CTEST_ARGUMENTS} -V -T Test VERBATIM)
+add_custom_target(tests "${CMAKE_CTEST_COMMAND}" ${PCL_CTEST_ARGUMENTS} -V -T Test VERBATIM USES_TERMINAL)
 
 set_target_properties(tests PROPERTIES FOLDER "Tests")
 
