@@ -233,14 +233,6 @@ namespace pcl
   }
 
   std::ostream& 
-  operator << (std::ostream& os, const PPFRGBSignature& p)
-   {
-     os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " <<
-         p.r_ratio << ", " << p.g_ratio << ", " << p.b_ratio << ", " << p.alpha_m << ")";
-     return (os);
-   }
-
-  std::ostream& 
   operator << (std::ostream& os, const NormalBasedSignature12& p)
   {
     for (int i = 0; i < 12; ++i)

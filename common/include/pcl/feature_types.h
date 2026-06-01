@@ -81,6 +81,11 @@ namespace pcl
     * \ingroup common
     */
   struct CPPFSignature;
+
+  /** \brief Members: float f1, f2, f3, f4, r_ratio, g_ratio, b_ratio, alpha_m
+    * \ingroup common
+    */
+  struct PPFRGBSignature;
 } // namespace pcl
 /** @} */
 
