@@ -86,6 +86,11 @@ namespace pcl
     * \ingroup common
     */
   struct PPFRGBSignature;
+
+  /** \brief Members: float values[12]
+    * \ingroup common
+    */
+  struct NormalBasedSignature12;
 } // namespace pcl
 /** @} */
 

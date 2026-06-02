@@ -124,4 +124,12 @@ namespace pcl
         p.r_ratio << ", " << p.g_ratio << ", " << p.b_ratio << ", " << p.alpha_m << ")";
     return (os);
   }
+
+  std::ostream&
+  operator << (std::ostream& os, const NormalBasedSignature12& p)
+  {
+    for (int i = 0; i < 12; ++i)
+    os << (i == 0 ? "(" : "") << p.values[i] << (i < 11 ? ", " : ")");
+    return (os);
+  }
 } // namespace pcl

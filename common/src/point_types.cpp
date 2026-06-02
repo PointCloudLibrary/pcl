@@ -233,14 +233,6 @@ namespace pcl
   }
 
   std::ostream& 
-  operator << (std::ostream& os, const NormalBasedSignature12& p)
-  {
-    for (int i = 0; i < 12; ++i)
-    os << (i == 0 ? "(" : "") << p.values[i] << (i < 11 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
   operator << (std::ostream& os, const FPFHSignature33& p)
   {
     for (int i = 0; i < 33; ++i)

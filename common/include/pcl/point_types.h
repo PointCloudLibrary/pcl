@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float values[12]
-    * \ingroup common
-    */
-  struct NormalBasedSignature12;
-
   /** \brief Members: float fpfh[33]
     * \ingroup common
     */

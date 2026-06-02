@@ -28,6 +28,7 @@ namespace pcl
       template<> struct descriptorSize<UniqueShapeContext1960> { static constexpr const int value = 1960; };
       template<> struct descriptorSize<PFHSignature125> { static constexpr const int value = 125; };
       template<> struct descriptorSize<PFHRGBSignature250> { static constexpr const int value = 250; };
+      template<> struct descriptorSize<NormalBasedSignature12> { static constexpr const int value = 12; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -309,6 +310,20 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const PPFRGBSignature& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
+  /** \brief A point structure representing the Normal Based Signature for
+    * a feature matrix of 4-by-3
+    * \ingroup common
+    */
+  struct NormalBasedSignature12
+  {
+    float values[12] = {0.f};
+
+    inline constexpr NormalBasedSignature12 () = default;
+
+    friend std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -400,4 +415,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFRGBSignature,
     (float, g_ratio, g_ratio)
     (float, b_ratio, b_ratio)
     (float, alpha_m, alpha_m)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::NormalBasedSignature12,
+    (float[12], values, values)
 )

@@ -167,7 +167,6 @@ namespace pcl
       template<> struct descriptorSize<GASDSignature7992> { static constexpr const int value = 7992; };
       template<> struct descriptorSize<GFPFHSignature16> { static constexpr const int value = 16; };
       template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
-      template<> struct descriptorSize<NormalBasedSignature12> { static constexpr const int value = 12; };
       template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
     }
   }
@@ -1085,20 +1084,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
-  /** \brief A point structure representing the Normal Based Signature for
-    * a feature matrix of 4-by-3
-    * \ingroup common
-    */
-  struct NormalBasedSignature12
-  {
-    float values[12] = {0.f};
-
-    inline constexpr NormalBasedSignature12 () = default;
-
-    friend std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const FPFHSignature33& p);
   /** \brief A point structure representing the Fast Point Feature Histogram (FPFH).
     * \ingroup common
@@ -1609,10 +1594,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointWithViewpoint,
     (float, vp_z, vp_z)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointWithViewpoint, pcl::_PointWithViewpoint)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::NormalBasedSignature12,
-    (float[12], values, values)
-)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::FPFHSignature33,
     (float[33], histogram, fpfh)
