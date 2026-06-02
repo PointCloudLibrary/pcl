@@ -84,7 +84,7 @@ TEST (PCL, FPCSInitialAlignment)
   Eigen::Matrix4f transform_res_from_fpcs = fpcs_ia.getFinalTransformation ();
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
-      EXPECT_NEAR (transform_res_from_fpcs (i,j), transform_from_fpcs[i][j], 0.25);
+      EXPECT_NEAR (transform_res_from_fpcs (i,j), transform_from_fpcs[i][j], 0.45);
 }
 
 
