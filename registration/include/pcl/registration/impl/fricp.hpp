@@ -113,19 +113,46 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
+typename FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
+    ConvergenceTrigger
+    FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
+        getLastConvergenceTrigger() const
+{
+  return last_convergence_trigger_;
+}
+
+template <typename PointSource, typename PointTarget, typename Scalar>
 void
 FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     computeTransformation(PointCloudSource& output, const Matrix4& guess)
 {
   pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::initComputeReciprocal();
 
+  last_convergence_trigger_ = ConvergenceTrigger::NONE;
+
+  auto convergence_criteria = this->getConvergeCriteria();
+  if (convergence_criteria) {
+    convergence_criteria->setMaximumIterations(this->max_iterations_);
+    convergence_criteria->setRelativeMSE(this->euclidean_fitness_epsilon_);
+    convergence_criteria->setTranslationThreshold(this->transformation_epsilon_);
+    if (this->transformation_rotation_epsilon_ > 0) {
+      convergence_criteria->setRotationThreshold(
+          this->transformation_rotation_epsilon_);
+    }
+    convergence_criteria->setConvergenceState(
+        pcl::registration::DefaultConvergenceCriteria<
+            Scalar>::CONVERGENCE_CRITERIA_NOT_CONVERGED);
+  }
+
   if (!this->input_ || !this->target_) {
+    last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
     PCL_ERROR("[pcl::%s::computeTransformation] Invalid input clouds.\n",
               this->getClassName().c_str());
     return;
   }
 
   if (this->input_->empty() || this->target_->empty()) {
+    last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
     PCL_ERROR("[pcl::%s::computeTransformation] Empty input point clouds.\n",
               this->getClassName().c_str());
     return;
@@ -144,6 +171,12 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     PCL_ERROR("[pcl::%s::computeTransformation] Not enough source points (%zu).\n",
               this->getClassName().c_str(),
               source_indices.size());
+    if (convergence_criteria) {
+      convergence_criteria->setConvergenceState(
+          pcl::registration::DefaultConvergenceCriteria<
+              Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
+    }
+    last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
     return;
   }
 
@@ -154,6 +187,12 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     PCL_ERROR("[pcl::%s::computeTransformation] Not enough target points (%zu).\n",
               this->getClassName().c_str(),
               target_size);
+    if (convergence_criteria) {
+      convergence_criteria->setConvergenceState(
+          pcl::registration::DefaultConvergenceCriteria<
+              Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
+    }
+    last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
     return;
   }
 
@@ -199,10 +238,17 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
                              target_mat,
                              tree,
                              matched_targets,
-                             residuals)) {
+                             residuals,
+                             this->correspondences_.get())) {
     PCL_ERROR(
         "[pcl::%s::computeTransformation] Failed to initialize correspondences.\n",
         this->getClassName().c_str());
+    if (convergence_criteria) {
+      convergence_criteria->setConvergenceState(
+          pcl::registration::DefaultConvergenceCriteria<
+              Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
+    }
+    last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
     return;
   }
 
@@ -253,10 +299,17 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
                                      target_mat,
                                      tree,
                                      matched_targets,
-                                     residuals)) {
+                                     residuals,
+                                     this->correspondences_.get())) {
             PCL_ERROR("[pcl::%s::computeTransformation] Unable to recompute "
                       "correspondences during fallback.\n",
                       this->getClassName().c_str());
+            if (convergence_criteria) {
+              convergence_criteria->setConvergenceState(
+                  pcl::registration::DefaultConvergenceCriteria<
+                      Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
+            }
+            last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
             return;
           }
           energy = use_welsch ? computeEnergy(residuals, nu_current) : residuals.sum();
@@ -274,6 +327,10 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
       svd_transform = candidate;
       transform_centered = candidate;
 
+      const Matrix4d delta_transform =
+          transform_centered * previous_transform.inverse();
+      this->transformation_ = delta_transform.template cast<Scalar>();
+
       if (use_anderson_) {
         const Matrix4d log_matrix = matrixLog(transform_centered);
         const Eigen::VectorXd& accelerated = anderson_.compute(log_matrix.data());
@@ -285,10 +342,17 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
                                  target_mat,
                                  tree,
                                  matched_targets,
-                                 residuals)) {
+                                 residuals,
+                                 this->correspondences_.get())) {
         PCL_ERROR("[pcl::%s::computeTransformation] Failed to update "
                   "correspondences.\n",
                   this->getClassName().c_str());
+        if (convergence_criteria) {
+          convergence_criteria->setConvergenceState(
+              pcl::registration::DefaultConvergenceCriteria<
+                  Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
+        }
+        last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
         return;
       }
 
@@ -296,8 +360,20 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
       previous_transform = transform_centered;
       ++this->nr_iterations_;
 
+      if (convergence_criteria && static_cast<bool>(*convergence_criteria)) {
+        converged = true;
+        last_convergence_trigger_ = ConvergenceTrigger::DEFAULT_CRITERIA;
+        break;
+      }
+
       if (delta < stop_threshold) {
         converged = true;
+        if (convergence_criteria) {
+          convergence_criteria->setConvergenceState(
+              pcl::registration::DefaultConvergenceCriteria<
+                  Scalar>::CONVERGENCE_CRITERIA_TRANSFORM);
+        }
+        last_convergence_trigger_ = ConvergenceTrigger::FRICP_STOP_THRESHOLD;
         break;
       }
     }
@@ -316,6 +392,15 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   }
 
   this->converged_ = converged;
+  if (!converged && convergence_criteria &&
+      convergence_criteria->getConvergenceState() ==
+          pcl::registration::DefaultConvergenceCriteria<
+              Scalar>::CONVERGENCE_CRITERIA_NOT_CONVERGED) {
+    convergence_criteria->setConvergenceState(
+        pcl::registration::DefaultConvergenceCriteria<
+            Scalar>::CONVERGENCE_CRITERIA_ITERATIONS);
+    last_convergence_trigger_ = ConvergenceTrigger::ITERATION_LIMIT;
+  }
 
   const Matrix4d final_transform =
       convertCenteredToActual(transform_centered, source_mean, target_mean);
@@ -362,13 +447,19 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
                           const Matrix3Xd& target,
                           pcl::search::Search<pcl::PointXYZ>& tree,
                           Matrix3Xd& matched_targets,
-                          VectorXd& residuals) const
+                          VectorXd& residuals,
+                          pcl::Correspondences* correspondences) const
 {
   const Eigen::Matrix3d R = transform.block<3, 3>(0, 0);
   const Eigen::Vector3d t = transform.block<3, 1>(0, 3);
   pcl::PointXYZ query;
   pcl::Indices nn_indices(1);
   std::vector<float> nn_sqr_dists(1);
+
+  if (correspondences) {
+    correspondences->clear();
+    correspondences->reserve(static_cast<std::size_t>(source.cols()));
+  }
 
   for (Eigen::Index i = 0; i < source.cols(); ++i) {
     const Eigen::Vector3d current = R * source.col(i) + t;
@@ -382,6 +473,13 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     // Store squared distance reported by the search (avoid recomputing
     // the difference).  Promote to double for internal computations.
     residuals(i) = static_cast<double>(nn_sqr_dists[0]);
+    if (correspondences) {
+      pcl::Correspondence corr;
+      corr.index_query = static_cast<int>(i);
+      corr.index_match = idx;
+      corr.distance = nn_sqr_dists[0];
+      correspondences->push_back(corr);
+    }
   }
   return true;
 }
