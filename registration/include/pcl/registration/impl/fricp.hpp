@@ -113,22 +113,11 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
-typename FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
-    ConvergenceTrigger
-    FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
-        getLastConvergenceTrigger() const
-{
-  return last_convergence_trigger_;
-}
-
-template <typename PointSource, typename PointTarget, typename Scalar>
 void
 FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     computeTransformation(PointCloudSource& output, const Matrix4& guess)
 {
   pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::initComputeReciprocal();
-
-  last_convergence_trigger_ = ConvergenceTrigger::NONE;
 
   auto convergence_criteria = this->getConvergeCriteria();
   if (convergence_criteria) {
@@ -145,14 +134,22 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   }
 
   if (!this->input_ || !this->target_) {
-    last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
+    if (convergence_criteria) {
+      convergence_criteria->setConvergenceState(
+          pcl::registration::DefaultConvergenceCriteria<
+              Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
+    }
     PCL_ERROR("[pcl::%s::computeTransformation] Invalid input clouds.\n",
               this->getClassName().c_str());
     return;
   }
 
   if (this->input_->empty() || this->target_->empty()) {
-    last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
+    if (convergence_criteria) {
+      convergence_criteria->setConvergenceState(
+          pcl::registration::DefaultConvergenceCriteria<
+              Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
+    }
     PCL_ERROR("[pcl::%s::computeTransformation] Empty input point clouds.\n",
               this->getClassName().c_str());
     return;
@@ -176,7 +173,6 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
           pcl::registration::DefaultConvergenceCriteria<
               Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
     }
-    last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
     return;
   }
 
@@ -192,7 +188,6 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
           pcl::registration::DefaultConvergenceCriteria<
               Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
     }
-    last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
     return;
   }
 
@@ -248,7 +243,6 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
           pcl::registration::DefaultConvergenceCriteria<
               Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
     }
-    last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
     return;
   }
 
@@ -265,10 +259,6 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     nu_limit = std::max(nu_end_ratio_ * neighbor_med, same_threshold_);
     nu_current = std::max(nu_begin_ratio_ * residual_med, nu_limit);
   }
-
-  const double stop_threshold = (this->transformation_epsilon_ > 0)
-                                    ? static_cast<double>(this->transformation_epsilon_)
-                                    : 1e-6;
 
   this->nr_iterations_ = 0;
   this->converged_ = false;
@@ -309,7 +299,6 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
                   pcl::registration::DefaultConvergenceCriteria<
                       Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
             }
-            last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
             return;
           }
           energy = use_welsch ? computeEnergy(residuals, nu_current) : residuals.sum();
@@ -327,15 +316,15 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
       svd_transform = candidate;
       transform_centered = candidate;
 
-      const Matrix4d delta_transform =
-          transform_centered * previous_transform.inverse();
-      this->transformation_ = delta_transform.template cast<Scalar>();
-
       if (use_anderson_) {
         const Matrix4d log_matrix = matrixLog(transform_centered);
         const Eigen::VectorXd& accelerated = anderson_.compute(log_matrix.data());
         transform_centered = Eigen::Map<const Matrix4d>(accelerated.data()).exp();
       }
+
+      const Matrix4d delta_transform =
+          transform_centered * previous_transform.inverse();
+      this->transformation_ = delta_transform.template cast<Scalar>();
 
       if (!updateCorrespondences(transform_centered,
                                  source_mat,
@@ -352,28 +341,14 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
               pcl::registration::DefaultConvergenceCriteria<
                   Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
         }
-        last_convergence_trigger_ = ConvergenceTrigger::NO_CORRESPONDENCES;
         return;
       }
 
-      const double delta = (transform_centered - previous_transform).norm();
       previous_transform = transform_centered;
       ++this->nr_iterations_;
 
       if (convergence_criteria && static_cast<bool>(*convergence_criteria)) {
         converged = true;
-        last_convergence_trigger_ = ConvergenceTrigger::DEFAULT_CRITERIA;
-        break;
-      }
-
-      if (delta < stop_threshold) {
-        converged = true;
-        if (convergence_criteria) {
-          convergence_criteria->setConvergenceState(
-              pcl::registration::DefaultConvergenceCriteria<
-                  Scalar>::CONVERGENCE_CRITERIA_TRANSFORM);
-        }
-        last_convergence_trigger_ = ConvergenceTrigger::FRICP_STOP_THRESHOLD;
         break;
       }
     }
@@ -399,7 +374,6 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     convergence_criteria->setConvergenceState(
         pcl::registration::DefaultConvergenceCriteria<
             Scalar>::CONVERGENCE_CRITERIA_ITERATIONS);
-    last_convergence_trigger_ = ConvergenceTrigger::ITERATION_LIMIT;
   }
 
   const Matrix4d final_transform =
