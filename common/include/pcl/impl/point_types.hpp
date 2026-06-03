@@ -157,7 +157,6 @@ namespace pcl
   {
     namespace traits
     {
-      template<> struct descriptorSize<VFHSignature308> { static constexpr const int value = 308; };
       template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
       template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
       template<> struct descriptorSize<ESFSignature640> { static constexpr const int value = 640; };
@@ -1083,20 +1082,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const VFHSignature308& p);
-  /** \brief A point structure representing the Viewpoint Feature Histogram (VFH).
-    * \ingroup common
-    */
-  struct VFHSignature308
-  {
-    float histogram[308] = {0.f};
-    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<VFHSignature308>; }
-
-    inline constexpr VFHSignature308 () = default;
-
-    friend std::ostream& operator << (std::ostream& os, const VFHSignature308& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GRSDSignature21& p);
   /** \brief A point structure representing the Global Radius-based Surface Descriptor (GRSD).
     * \ingroup common
@@ -1584,10 +1569,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BRISKSignature512,
     (float, scale, brisk_scale)
     (float, orientation, brisk_orientation)
     (unsigned char[64], descriptor, brisk_descriptor512)
-)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::VFHSignature308,
-    (float[308], histogram, vfh)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::GRSDSignature21,

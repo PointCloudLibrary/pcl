@@ -140,4 +140,12 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 32 ? ", " : ")");
     return (os);
   }
+
+  std::ostream&
+  operator << (std::ostream& os, const VFHSignature308& p)
+  {
+    for (int i = 0; i < 308; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 307 ? ", " : ")");
+    return (os);
+  }
 } // namespace pcl

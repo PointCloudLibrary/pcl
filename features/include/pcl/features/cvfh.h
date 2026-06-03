@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/point_types.h>   // for pcl::PointNormal
 #include <pcl/features/feature.h>
 #include <pcl/features/vfh.h>
 #include <pcl/search/search.h> // for Search

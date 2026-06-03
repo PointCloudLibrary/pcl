@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float vfh[308]
-    * \ingroup common
-    */
-  struct VFHSignature308;
-
   /** \brief Members: float grsd[21]
     * \ingroup common
     */
