@@ -29,6 +29,7 @@ namespace pcl
       template<> struct descriptorSize<PFHSignature125> { static constexpr const int value = 125; };
       template<> struct descriptorSize<PFHRGBSignature250> { static constexpr const int value = 250; };
       template<> struct descriptorSize<NormalBasedSignature12> { static constexpr const int value = 12; };
+      template<> struct descriptorSize<FPFHSignature33> { static constexpr const int value = 33; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -324,6 +325,20 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const FPFHSignature33& p);
+  /** \brief A point structure representing the Fast Point Feature Histogram (FPFH).
+    * \ingroup common
+    */
+  struct FPFHSignature33
+  {
+    float histogram[33] = {0.f};
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<FPFHSignature33>; }
+
+    inline constexpr FPFHSignature33 () = default;
+
+    friend std::ostream& operator << (std::ostream& os, const FPFHSignature33& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -419,4 +434,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFRGBSignature,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::NormalBasedSignature12,
     (float[12], values, values)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::FPFHSignature33,
+    (float[33], histogram, fpfh)
 )

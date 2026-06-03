@@ -91,6 +91,11 @@ namespace pcl
     * \ingroup common
     */
   struct NormalBasedSignature12;
+
+  /** \brief Members: float fpfh[33]
+    * \ingroup common
+    */
+  struct FPFHSignature33;
 } // namespace pcl
 /** @} */
 
