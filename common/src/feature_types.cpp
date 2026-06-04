@@ -156,4 +156,12 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 639 ? ", " : ")");
     return (os);
   }
+
+  std::ostream&
+  operator << (std::ostream& os, const GASDSignature512& p)
+  {
+    for (int i = 0; i < 512; ++i)
+      os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 511 ? ", " : ")");
+    return (os);
+  }
 } // namespace pcl
