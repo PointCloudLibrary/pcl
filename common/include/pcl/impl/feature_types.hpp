@@ -32,6 +32,7 @@ namespace pcl
       template<> struct descriptorSize<FPFHSignature33> { static constexpr const int value = 33; };
       template<> struct descriptorSize<VFHSignature308> { static constexpr const int value = 308; };
       template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
+      template<> struct descriptorSize<ESFSignature640> { static constexpr const int value = 640; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -369,6 +370,20 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const GRSDSignature21& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const ESFSignature640& p);
+  /** \brief A point structure representing the Ensemble of Shape Functions (ESF).
+    * \ingroup common
+    */
+  struct ESFSignature640
+  {
+    float histogram[640] = {0.f};
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<ESFSignature640>; }
+
+    inline constexpr ESFSignature640 () = default;
+
+    friend std::ostream& operator << (std::ostream& os, const ESFSignature640& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -476,4 +491,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::VFHSignature308,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::GRSDSignature21,
     (float[21], histogram, grsd)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ESFSignature640,
+    (float[640], histogram, esf)
 )

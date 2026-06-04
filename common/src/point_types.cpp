@@ -241,14 +241,6 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
-  operator << (std::ostream& os, const ESFSignature640& p)
-  {
-    for (int i = 0; i < 640; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 639 ? ", " : ")");
-    return (os);
-  }
-
   std::ostream&
   operator << (std::ostream& os, const GASDSignature512& p)
   {

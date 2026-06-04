@@ -106,6 +106,11 @@ namespace pcl
     * \ingroup common
     */
   struct GRSDSignature21;
+
+  /** \brief Members: float esf[640]
+    * \ingroup common
+    */
+  struct ESFSignature640;
 } // namespace pcl
 /** @} */
 

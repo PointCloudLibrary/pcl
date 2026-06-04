@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float esf[640]
-    * \ingroup common
-    */
-  struct ESFSignature640;
-
   /** \brief Members: float gasd[512]
   * \ingroup common
   */
