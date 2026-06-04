@@ -158,7 +158,6 @@ namespace pcl
     namespace traits
     {
       template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
-      template<> struct descriptorSize<GASDSignature984> { static constexpr const int value = 984; };
       template<> struct descriptorSize<GASDSignature7992> { static constexpr const int value = 7992; };
       template<> struct descriptorSize<GFPFHSignature16> { static constexpr const int value = 16; };
       template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
@@ -1097,20 +1096,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
-  /** \brief A point structure representing the Globally Aligned Spatial Distribution (GASD) shape and color descriptor.
-  * \ingroup common
-  */
-  struct GASDSignature984
-  {
-    float histogram[984] = {0.f};
-    static constexpr int descriptorSize() { return detail::traits::descriptorSize_v<GASDSignature984>; }
-
-    inline constexpr GASDSignature984 () = default;
-
-    friend std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GASDSignature7992& p);
   /** \brief A point structure representing the Globally Aligned Spatial Distribution (GASD) shape and color descriptor.
   * \ingroup common
@@ -1524,10 +1509,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BRISKSignature512,
     (float, scale, brisk_scale)
     (float, orientation, brisk_orientation)
     (unsigned char[64], descriptor, brisk_descriptor512)
-)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::GASDSignature984,
-    (float[984], histogram, gasd)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::GASDSignature7992,

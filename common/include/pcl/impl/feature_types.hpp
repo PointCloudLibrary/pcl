@@ -34,6 +34,7 @@ namespace pcl
       template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
       template<> struct descriptorSize<ESFSignature640> { static constexpr const int value = 640; };
       template<> struct descriptorSize<GASDSignature512> { static constexpr const int value = 512; };
+      template<> struct descriptorSize<GASDSignature984> { static constexpr const int value = 984; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -399,6 +400,20 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const GASDSignature512& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
+  /** \brief A point structure representing the Globally Aligned Spatial Distribution (GASD) shape and color descriptor.
+  * \ingroup common
+  */
+  struct GASDSignature984
+  {
+    float histogram[984] = {0.f};
+    static constexpr int descriptorSize() { return detail::traits::descriptorSize_v<GASDSignature984>; }
+
+    inline constexpr GASDSignature984 () = default;
+
+    friend std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -514,4 +529,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ESFSignature640,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::GASDSignature512,
     (float[512], histogram, gasd)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::GASDSignature984,
+    (float[984], histogram, gasd)
 )

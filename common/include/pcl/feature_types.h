@@ -116,6 +116,11 @@ namespace pcl
   * \ingroup common
   */
   struct GASDSignature512;
+
+  /** \brief Members: float gasd[984]
+  * \ingroup common
+  */
+  struct GASDSignature984;
 } // namespace pcl
 /** @} */
 

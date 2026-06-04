@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float gasd[984]
-  * \ingroup common
-  */
-  struct GASDSignature984;
-
   /** \brief Members: float gasd[7992]
   * \ingroup common
   */
