@@ -31,6 +31,7 @@ namespace pcl
       template<> struct descriptorSize<NormalBasedSignature12> { static constexpr const int value = 12; };
       template<> struct descriptorSize<FPFHSignature33> { static constexpr const int value = 33; };
       template<> struct descriptorSize<VFHSignature308> { static constexpr const int value = 308; };
+      template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -354,6 +355,20 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const VFHSignature308& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GRSDSignature21& p);
+  /** \brief A point structure representing the Global Radius-based Surface Descriptor (GRSD).
+    * \ingroup common
+    */
+  struct GRSDSignature21
+  {
+    float histogram[21] = {0.f};
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<GRSDSignature21>; }
+
+    inline constexpr GRSDSignature21 () = default;
+
+    friend std::ostream& operator << (std::ostream& os, const GRSDSignature21& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -457,4 +472,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::FPFHSignature33,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::VFHSignature308,
     (float[308], histogram, vfh)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::GRSDSignature21,
+    (float[21], histogram, grsd)
 )

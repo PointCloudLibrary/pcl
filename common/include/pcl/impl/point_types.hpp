@@ -157,7 +157,6 @@ namespace pcl
   {
     namespace traits
     {
-      template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
       template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
       template<> struct descriptorSize<ESFSignature640> { static constexpr const int value = 640; };
       template<> struct descriptorSize<GASDSignature512> { static constexpr const int value = 512; };
@@ -1082,20 +1081,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GRSDSignature21& p);
-  /** \brief A point structure representing the Global Radius-based Surface Descriptor (GRSD).
-    * \ingroup common
-    */
-  struct GRSDSignature21
-  {
-    float histogram[21] = {0.f};
-    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<GRSDSignature21>; }
-
-    inline constexpr GRSDSignature21 () = default;
-
-    friend std::ostream& operator << (std::ostream& os, const GRSDSignature21& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
   /** \brief A point structure representing the Binary Robust Invariant Scalable Keypoints (BRISK).
     * \ingroup common
@@ -1569,10 +1554,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BRISKSignature512,
     (float, scale, brisk_scale)
     (float, orientation, brisk_orientation)
     (unsigned char[64], descriptor, brisk_descriptor512)
-)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::GRSDSignature21,
-    (float[21], histogram, grsd)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ESFSignature640,

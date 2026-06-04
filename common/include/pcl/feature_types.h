@@ -101,6 +101,11 @@ namespace pcl
     * \ingroup common
     */
   struct VFHSignature308;
+
+  /** \brief Members: float grsd[21]
+    * \ingroup common
+    */
+  struct GRSDSignature21;
 } // namespace pcl
 /** @} */
 
