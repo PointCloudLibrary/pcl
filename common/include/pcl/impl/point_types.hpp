@@ -157,7 +157,6 @@ namespace pcl
   {
     namespace traits
     {
-      template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
       template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
     }
   }
@@ -1075,26 +1074,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Narf36& p);
-  /** \brief A point structure representing the Narf descriptor.
-    * \ingroup common
-    */
-  struct Narf36
-  {
-    float x = 0.f, y = 0.f, z = 0.f, roll = 0.f, pitch = 0.f, yaw = 0.f;
-    float descriptor[36] = {0.f};
-    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<Narf36>; }
-
-    inline constexpr Narf36 () = default;
-
-    inline constexpr Narf36 (float _x, float _y, float _z): Narf36 (_x, _y, _z, 0.f, 0.f, 0.f) {}
-
-    inline constexpr Narf36 (float _x, float _y, float _z, float _roll, float _pitch, float _yaw):
-      x (_x), y (_y), z (_z), roll (_roll), pitch (_pitch), yaw (_yaw) {}
-
-    friend std::ostream& operator << (std::ostream& os, const Narf36& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const BorderDescription& p);
   /** \brief A structure to store if a point in a range image lies on a border between an obstacle and the background.
     * \ingroup common
@@ -1455,10 +1434,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointWithViewpoint,
     (float, vp_z, vp_z)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointWithViewpoint, pcl::_PointWithViewpoint)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Narf36,
-    (float[36], descriptor, descriptor)
-)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::IntensityGradient,
     (float, gradient_x, gradient_x)

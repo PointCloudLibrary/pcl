@@ -233,15 +233,6 @@ namespace pcl
   }
 
   std::ostream& 
-  operator << (std::ostream& os, const Narf36& p)
-  {
-    os << p.x<<","<<p.y<<","<<p.z<<" - "<<p.roll*360.0/M_PI<<"deg,"<<p.pitch*360.0/M_PI<<"deg,"<<p.yaw*360.0/M_PI<<"deg - ";
-    for (int i = 0; i < 36; ++i)
-    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 35 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
   operator << (std::ostream& os, const BorderDescription& p)
   {
     os << "(" << p.x << "," << p.y << ")";

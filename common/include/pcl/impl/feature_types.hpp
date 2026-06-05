@@ -38,6 +38,7 @@ namespace pcl
       template<> struct descriptorSize<GASDSignature7992> { static constexpr const int value = 7992; };
       template<> struct descriptorSize<GFPFHSignature16> { static constexpr const int value = 16; };
       template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
+      template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -463,6 +464,26 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Narf36& p);
+  /** \brief A point structure representing the Narf descriptor.
+    * \ingroup common
+    */
+  struct Narf36
+  {
+    float x = 0.f, y = 0.f, z = 0.f, roll = 0.f, pitch = 0.f, yaw = 0.f;
+    float descriptor[36] = {0.f};
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<Narf36>; }
+
+    inline constexpr Narf36 () = default;
+
+    inline constexpr Narf36 (float _x, float _y, float _z): Narf36 (_x, _y, _z, 0.f, 0.f, 0.f) {}
+
+    inline constexpr Narf36 (float _x, float _y, float _z, float _roll, float _pitch, float _yaw):
+      x (_x), y (_y), z (_z), roll (_roll), pitch (_pitch), yaw (_yaw) {}
+
+    friend std::ostream& operator << (std::ostream& os, const Narf36& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -596,4 +617,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BRISKSignature512,
     (float, scale, brisk_scale)
     (float, orientation, brisk_orientation)
     (unsigned char[64], descriptor, brisk_descriptor512)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Narf36,
+    (float[36], descriptor, descriptor)
 )

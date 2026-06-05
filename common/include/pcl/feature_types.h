@@ -136,6 +136,11 @@ namespace pcl
     * \ingroup common
     */
   struct BRISKSignature512;
+
+  /** \brief Members: float x, y, z, roll, pitch, yaw; float descriptor[36]
+    * \ingroup common
+    */
+ struct Narf36;
 } // namespace pcl
 /** @} */
 
