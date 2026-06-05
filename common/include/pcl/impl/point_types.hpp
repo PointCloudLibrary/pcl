@@ -153,13 +153,6 @@
 
 namespace pcl
 {
-  namespace detail
-  {
-    namespace traits
-    {
-    }
-  }
-
   using Vector2fMap = Eigen::Map<Eigen::Vector2f>;
   using Vector2fMapConst = const Eigen::Map<const Eigen::Vector2f>;
   using Array3fMap = Eigen::Map<Eigen::Array3f>;
