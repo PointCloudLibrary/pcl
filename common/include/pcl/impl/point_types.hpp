@@ -157,7 +157,6 @@ namespace pcl
   {
     namespace traits
     {
-      template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
     }
   }
 
@@ -1115,17 +1114,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const IntensityGradient& p);
   };
 
-  // TODO: Maybe make other histogram based structs an alias for this
-  /** \brief A point structure representing an N-D histogram.
-    * \ingroup common
-    */
-  template <int N>
-  struct Histogram
-  {
-    float histogram[N];
-    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<Histogram<N>>; }
-  };
-
   struct EIGEN_ALIGN16 _PointWithScale
   {
     PCL_ADD_POINT4D // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -1238,20 +1226,6 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const PointDEM& p);
   };
-
-  template <int N> std::ostream&
-  operator << (std::ostream& os, const Histogram<N>& p)
-  {
-    // make constexpr
-    PCL_IF_CONSTEXPR(N > 0)
-    {
-        os << "(" << p.histogram[0];
-        std::for_each(p.histogram + 1, std::end(p.histogram),
-            [&os](const auto& hist) { os << ", " << hist; });
-        os << ")";
-    }
-    return (os);
-  }
 } // namespace pcl
 
 // Register point structs and wrappers

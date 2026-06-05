@@ -141,6 +141,12 @@ namespace pcl
     * \ingroup common
     */
  struct Narf36;
+
+  /** \brief Members: float histogram[N]
+    * \ingroup common
+    */
+  template<int N>
+  struct Histogram;
 } // namespace pcl
 /** @} */
 

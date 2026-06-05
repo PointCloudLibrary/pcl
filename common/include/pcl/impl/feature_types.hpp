@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pcl/descriptor_size.h>        // for descriptorSize_v
+#include <pcl/pcl_macros.h>             // for PCL_IF_CONSTEXPR
 #include <pcl/memory.h>                 // for PCL_MAKE_ALIGNED_OPERATOR_NEW
 #include <pcl/feature_types.h>          // implementee
 #include <pcl/pcl_exports.h>            // for PCL_EXPORTS
@@ -39,6 +40,7 @@ namespace pcl
       template<> struct descriptorSize<GFPFHSignature16> { static constexpr const int value = 16; };
       template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
       template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
+      template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -484,6 +486,31 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const Narf36& p);
   };
+
+  // TODO: Maybe make other histogram based structs an alias for this
+  /** \brief A point structure representing an N-D histogram.
+    * \ingroup common
+    */
+  template <int N>
+  struct Histogram
+  {
+    float histogram[N];
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<Histogram<N>>; }
+  };
+
+  template <int N> std::ostream&
+  operator << (std::ostream& os, const Histogram<N>& p)
+  {
+    // make constexpr
+    PCL_IF_CONSTEXPR(N > 0)
+    {
+        os << "(" << p.histogram[0];
+        std::for_each(p.histogram + 1, std::end(p.histogram),
+            [&os](const auto& hist) { os << ", " << hist; });
+        os << ")";
+    }
+    return (os);
+  }
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,

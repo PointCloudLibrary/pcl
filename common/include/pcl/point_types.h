@@ -211,12 +211,6 @@ namespace pcl
     */
   struct IntensityGradient;
 
-  /** \brief Members: float histogram[N]
-    * \ingroup common
-    */
-  template<int N>
-  struct Histogram;
-
   /** \brief Members: float x, y, z, scale, angle, response, octave
     * \ingroup common
     */
