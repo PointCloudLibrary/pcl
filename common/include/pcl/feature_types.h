@@ -131,6 +131,11 @@ namespace pcl
     * \ingroup common
     */
   struct GFPFHSignature16;
+
+  /** \brief Members: float scale; float orientation; std::uint8_t descriptor[64]
+    * \ingroup common
+    */
+  struct BRISKSignature512;
 } // namespace pcl
 /** @} */
 

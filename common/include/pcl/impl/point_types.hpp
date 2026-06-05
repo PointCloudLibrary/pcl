@@ -157,7 +157,6 @@ namespace pcl
   {
     namespace traits
     {
-      template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
       template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
       template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
     }
@@ -1076,24 +1075,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
-  /** \brief A point structure representing the Binary Robust Invariant Scalable Keypoints (BRISK).
-    * \ingroup common
-    */
-  struct BRISKSignature512
-  {
-    float scale = 0.f;
-    float orientation = 0.f;
-    unsigned char descriptor[64] = {0};
-    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<BRISKSignature512>; }
-
-    inline constexpr BRISKSignature512 () = default;
-
-    inline constexpr BRISKSignature512 (float _scale, float _orientation): scale (_scale), orientation (_orientation) {}
-
-    friend std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Narf36& p);
   /** \brief A point structure representing the Narf descriptor.
     * \ingroup common
@@ -1474,12 +1455,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointWithViewpoint,
     (float, vp_z, vp_z)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointWithViewpoint, pcl::_PointWithViewpoint)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BRISKSignature512,
-    (float, scale, brisk_scale)
-    (float, orientation, brisk_orientation)
-    (unsigned char[64], descriptor, brisk_descriptor512)
-)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Narf36,
     (float[36], descriptor, descriptor)

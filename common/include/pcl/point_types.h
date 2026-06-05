@@ -184,11 +184,6 @@ namespace pcl
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float scale; float orientation; std::uint8_t descriptor[64]
-    * \ingroup common
-    */
-  struct BRISKSignature512;
-
    /** \brief Members: float x, y, z, roll, pitch, yaw; float descriptor[36]
      * \ingroup common
      */

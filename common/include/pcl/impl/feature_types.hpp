@@ -37,6 +37,7 @@ namespace pcl
       template<> struct descriptorSize<GASDSignature984> { static constexpr const int value = 984; };
       template<> struct descriptorSize<GASDSignature7992> { static constexpr const int value = 7992; };
       template<> struct descriptorSize<GFPFHSignature16> { static constexpr const int value = 16; };
+      template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -444,6 +445,24 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
+  /** \brief A point structure representing the Binary Robust Invariant Scalable Keypoints (BRISK).
+    * \ingroup common
+    */
+  struct BRISKSignature512
+  {
+    float scale = 0.f;
+    float orientation = 0.f;
+    unsigned char descriptor[64] = {0};
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<BRISKSignature512>; }
+
+    inline constexpr BRISKSignature512 () = default;
+
+    inline constexpr BRISKSignature512 (float _scale, float _orientation): scale (_scale), orientation (_orientation) {}
+
+    friend std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -571,4 +590,10 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::GASDSignature7992,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::GFPFHSignature16,
     (float[16], histogram, gfpfh)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BRISKSignature512,
+    (float, scale, brisk_scale)
+    (float, orientation, brisk_orientation)
+    (unsigned char[64], descriptor, brisk_descriptor512)
 )
