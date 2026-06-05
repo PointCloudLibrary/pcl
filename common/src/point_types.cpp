@@ -242,14 +242,6 @@ namespace pcl
   }
 
   std::ostream& 
-  operator << (std::ostream& os, const GFPFHSignature16& p)
-  {
-    for (int i = 0; i < pcl::GFPFHSignature16::descriptorSize (); ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < (pcl::GFPFHSignature16::descriptorSize () - 1) ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
   operator << (std::ostream& os, const Narf36& p)
   {
     os << p.x<<","<<p.y<<","<<p.z<<" - "<<p.roll*360.0/M_PI<<"deg,"<<p.pitch*360.0/M_PI<<"deg,"<<p.yaw*360.0/M_PI<<"deg - ";

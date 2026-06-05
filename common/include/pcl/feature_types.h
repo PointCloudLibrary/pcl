@@ -126,6 +126,11 @@ namespace pcl
   * \ingroup common
   */
   struct GASDSignature7992;
+
+  /** \brief Members: float histogram[16]
+    * \ingroup common
+    */
+  struct GFPFHSignature16;
 } // namespace pcl
 /** @} */
 

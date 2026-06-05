@@ -180,4 +180,12 @@ namespace pcl
       os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 7991 ? ", " : ")");
     return (os);
   }
+
+  std::ostream&
+  operator << (std::ostream& os, const GFPFHSignature16& p)
+  {
+    for (int i = 0; i < pcl::GFPFHSignature16::descriptorSize (); ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < (pcl::GFPFHSignature16::descriptorSize () - 1) ? ", " : ")");
+    return (os);
+  }
 } // namespace pcl

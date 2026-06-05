@@ -36,6 +36,7 @@ namespace pcl
       template<> struct descriptorSize<GASDSignature512> { static constexpr const int value = 512; };
       template<> struct descriptorSize<GASDSignature984> { static constexpr const int value = 984; };
       template<> struct descriptorSize<GASDSignature7992> { static constexpr const int value = 7992; };
+      template<> struct descriptorSize<GFPFHSignature16> { static constexpr const int value = 16; };
     }
   }
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
@@ -429,6 +430,20 @@ namespace pcl
 
     friend std::ostream& operator << (std::ostream& os, const GASDSignature7992& p);
   };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
+  /** \brief A point structure representing the GFPFH descriptor with 16 bins.
+    * \ingroup common
+    */
+  struct GFPFHSignature16
+  {
+    float histogram[16] = {0.f};
+    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<GFPFHSignature16>; }
+
+    inline constexpr GFPFHSignature16 () = default;
+
+    friend std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
+  };
 } // namespace pcl
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::MomentInvariants,
@@ -552,4 +567,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::GASDSignature984,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::GASDSignature7992,
     (float[7992], histogram, gasd)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::GFPFHSignature16,
+    (float[16], histogram, gfpfh)
 )

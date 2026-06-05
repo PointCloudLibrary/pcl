@@ -158,7 +158,6 @@ namespace pcl
     namespace traits
     {
       template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
-      template<> struct descriptorSize<GFPFHSignature16> { static constexpr const int value = 16; };
       template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
       template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
     }
@@ -1095,20 +1094,6 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
   };
 
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
-  /** \brief A point structure representing the GFPFH descriptor with 16 bins.
-    * \ingroup common
-    */
-  struct GFPFHSignature16
-  {
-    float histogram[16] = {0.f};
-    static constexpr int descriptorSize () { return detail::traits::descriptorSize_v<GFPFHSignature16>; }
-
-    inline constexpr GFPFHSignature16 () = default;
-
-    friend std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
-  };
-
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Narf36& p);
   /** \brief A point structure representing the Narf descriptor.
     * \ingroup common
@@ -1498,10 +1483,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BRISKSignature512,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Narf36,
     (float[36], descriptor, descriptor)
-)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::GFPFHSignature16,
-    (float[16], histogram, gfpfh)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::IntensityGradient,
