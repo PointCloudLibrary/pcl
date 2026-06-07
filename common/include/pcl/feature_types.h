@@ -14,6 +14,12 @@
  * \ingroup common
  */
 
+// Allow nameless structs/unions
+#if defined _MSC_VER
+  #pragma warning(push)
+  #pragma warning(disable: 4201)
+#endif
+
 /** @{*/
 namespace pcl
 {
@@ -151,3 +157,7 @@ namespace pcl
 /** @} */
 
 #include <pcl/impl/feature_types.hpp>
+
+#if defined _MSC_VER
+  #pragma warning(pop)
+#endif
