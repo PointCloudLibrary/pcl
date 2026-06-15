@@ -28,7 +28,7 @@ jobs:
           cmake $(Build.SourcesDirectory) \
             -DDOXYGEN_USE_SHORT_NAMES=OFF \
             -DWITH_DOCS=ON \
-            -DWITH_TUTORIALS=ON
+            -DWITH_TUTORIALS=OFF
         displayName: 'CMake Configuration'
       - script: |
           cd $BUILD_DIR
