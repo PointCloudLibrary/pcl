@@ -2,11 +2,15 @@ trigger:
   paths:
     include:
     - doc
+    - .ci/azure-pipelines/documentation.yaml
+    - .ci/azure-pipelines/tutorials.yaml
 
 pr:
   paths:
     include:
     - doc
+    - .ci/azure-pipelines/documentation.yaml
+    - .ci/azure-pipelines/tutorials.yaml
 
 resources:
   pipelines:
