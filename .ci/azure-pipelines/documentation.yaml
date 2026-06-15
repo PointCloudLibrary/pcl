@@ -44,8 +44,6 @@ jobs:
           echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
           git clone git@github.com:PointCloudLibrary/documentation.git $DOC_DIR
           cd $DOC_DIR
-          cp -r $BUILD_DIR/doc/tutorials/html/* tutorials
-          cp -r $BUILD_DIR/doc/advanced/html/* advanced
           cp -r $BUILD_DIR/doc/doxygen/html/* .
           cp $CHANGELOG.html .
           git add --all
