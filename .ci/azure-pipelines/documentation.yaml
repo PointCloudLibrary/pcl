@@ -32,7 +32,7 @@ jobs:
         displayName: 'CMake Configuration'
       - script: |
           cd $BUILD_DIR
-          cmake --build . -- doc tutorials advanced
+          cmake --build . -- doc
         displayName: 'Build Documentation'
       - script: |
           cd $BUILD_DIR
