@@ -10,7 +10,7 @@ if(NOT HAVE_QVTK)
   set(REASON "VTK was not built with Qt support.")
 endif()
 
-if(NOT HAVE_QVTK)  
+if(NOT HAVE_QVTK)
   set(REASON "VTK was not built with Qt support.")
 endif()
 

@@ -15,7 +15,7 @@ if("${QTX}" STREQUAL "")
   set(REASON "Cloud composer requires Qt.")
 endif()
 
-if(NOT HAVE_QVTK)  
+if(NOT HAVE_QVTK)
   set(REASON "VTK was not built with Qt support.")
 endif()
 
@@ -107,7 +107,7 @@ set(srcs
   src/merge_selection.cpp
   src/project_model.cpp
   src/properties_model.cpp
-  src/signal_multiplexer.cpp  
+  src/signal_multiplexer.cpp
   src/toolbox_model.cpp
   src/transform_clouds.cpp
   src/work_queue.cpp

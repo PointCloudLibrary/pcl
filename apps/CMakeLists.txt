@@ -212,16 +212,16 @@ if(VTK_FOUND)
     if(QHULL_FOUND)
       PCL_ADD_EXECUTABLE(pcl_openni_3d_convex_hull COMPONENT ${SUBSYS_NAME} SOURCES src/openni_3d_convex_hull.cpp BUNDLE)
       target_link_libraries(pcl_openni_3d_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
-  
+
       PCL_ADD_EXECUTABLE(pcl_openni_3d_concave_hull COMPONENT ${SUBSYS_NAME} SOURCES src/openni_3d_concave_hull.cpp BUNDLE)
       target_link_libraries(pcl_openni_3d_concave_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
-  
+
       PCL_ADD_EXECUTABLE(pcl_openni_tracking COMPONENT ${SUBSYS_NAME} SOURCES src/openni_tracking.cpp BUNDLE)
       target_link_libraries(pcl_openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation pcl_tracking pcl_search)
-  
+
       PCL_ADD_EXECUTABLE(pcl_openni_planar_convex_hull COMPONENT ${SUBSYS_NAME} SOURCES src/openni_planar_convex_hull.cpp BUNDLE)
       target_link_libraries(pcl_openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
-  
+
       PCL_ADD_EXECUTABLE(pcl_ni_linemod COMPONENT ${SUBSYS_NAME} SOURCES src/ni_linemod.cpp BUNDLE)
       target_link_libraries(pcl_ni_linemod pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search)
       target_include_directories(pcl_ni_linemod PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)

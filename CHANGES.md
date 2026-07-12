@@ -2400,8 +2400,8 @@ abstraction for non-PCL types.
   [[#1478]](https://github.com/PointCloudLibrary/pcl/pull/1478)
 * VTK directory can now be manually specified during configuration
   [[#1605]](https://github.com/PointCloudLibrary/pcl/pull/1605)
-* Updated the find Boost cmake macro to support the latest versions plus 
-  exported definitions now give priority to finding the same Boost version 
+* Updated the find Boost cmake macro to support the latest versions plus
+  exported definitions now give priority to finding the same Boost version
   PCL was compiled with.
   [[#1630]](https://github.com/PointCloudLibrary/pcl/pull/1630)
 * Corrected PCL_ROOT in PCLConfig.cmake
@@ -2446,7 +2446,7 @@ abstraction for non-PCL types.
 
 ### `libpcl_2d:`
 
-* Removed the non-free lena-grayscale-png image :( 
+* Removed the non-free lena-grayscale-png image :(
   [[#1676]](https://github.com/PointCloudLibrary/pcl/pull/1676)
 * 2d library is no longer generated since it contained no symbols
   [[#1679]](https://github.com/PointCloudLibrary/pcl/pull/1679)
@@ -2528,7 +2528,7 @@ abstraction for non-PCL types.
 
 * RGB values are now always saved as uint32 on PCD files
   [[#1385]](https://github.com/PointCloudLibrary/pcl/pull/1385)
-* Fixed find RealSense macro and compilation error with RealSenseGrabber 
+* Fixed find RealSense macro and compilation error with RealSenseGrabber
   on Windows
   [[#1560]](https://github.com/PointCloudLibrary/pcl/pull/1560)
 * Unified verbose on OctreePointCloudCompression
@@ -2604,7 +2604,7 @@ abstraction for non-PCL types.
 
 ### `libpcl_segmentation:`
 
-* Fixed bug in organized multiplane segmentation refine function where label 
+* Fixed bug in organized multiplane segmentation refine function where label
   indices were not being updated correctly
   [[#1502]](https://github.com/PointCloudLibrary/pcl/pull/1502)
 * Corrected function signature in lccp segmentation
@@ -3515,42 +3515,42 @@ abstraction for non-PCL types.
 ### `PCL Apps:`
 
 * Added cloud_composer app
-* Added PCLModeler, with a tree view scene explorer and multiple render windows support 
-* Added client app for the point cloud streaming server 
+* Added PCLModeler, with a tree view scene explorer and multiple render windows support
+* Added client app for the point cloud streaming server
 * Added new server app for point cloud streaming to mobile devices (pcl_openni_mobile_server)
-* Added a new demo for the connected component segmentation. Includes a QT gui that allows various features to be toggled on/off. 
+* Added a new demo for the connected component segmentation. Includes a QT gui that allows various features to be toggled on/off.
 * Added SHOT estimator wrapper using OMP
-* Added openni_organized_multi_plane_segmentation to demonstrate the OrganizedMultiPlaneSegmentation class. 
+* Added openni_organized_multi_plane_segmentation to demonstrate the OrganizedMultiPlaneSegmentation class.
 
 ### `libpcl_recognition:`
 
 * Added a new tutorial for "libpcl_recognition" for Correspondence Grouping by Tommaso Cavallari (#666)
 * Added support for .LMT file loading (which are TARed files for PCD masks and SQMMT linemod templates)
-* Changes in the computation of the modality to improve performance 
-* Fixed a compilation error on windows; for some reason 'NULL' needs to be explicitly casted to the pointer type 
-* Added a model library class used for maintaining the object models to be recognized. 
-* Changed the interface to make it less confusing to use. 
+* Changes in the computation of the modality to improve performance
+* Fixed a compilation error on windows; for some reason 'NULL' needs to be explicitly casted to the pointer type
+* Added a model library class used for maintaining the object models to be recognized.
+* Changed the interface to make it less confusing to use.
 * Added a couple useful overloads for "Houg###Grouping" and "GeometricConsistencyGrouping"
-* Added CRHAlignment class. 
-* Added Papazov HV method. 
+* Added CRHAlignment class.
+* Added Papazov HV method.
 * Fixed a bug in Poisson surface reconstruction that was causing the unit test to fail
 * Added option for automatic selection of number of features in extractFeature
-* Added a new greedy hypotheses verification method. 
-* Added semi scale invariant linemod template detection 
-* Fixed RF search radius in "Houg###Grouping" 
-* Fixed some bugs in detection refinement along viewing direction  
-* Fixed bug in LineRGBD::computeTransformedTemplatePoints (template point cloud's width and height fields were not set) 
-* Converted uses of PointXYZRGB to PointXYZRGBA; converted std::cerr messages to PCL_DEBUG; minor reformatting to keep lines under 120 characters 
-* Fixed some bugs related to bounding box computation and computation of transformed template point clouds 
-* Added functionality to specify an object ID when loading templates in LineRGBD; 
-* Added "GeometricConsistencyGrouping" clustering class 
-* Added high level interface for RGBD version of linemod (not all parts are implemented yet) 
-* Added SSE optimizations to improve detection speed 
-* Added Ransac Correspondence Rejection into Houg###Grouping 
-* Changed method for selecting features in color gradient modality 
+* Added a new greedy hypotheses verification method.
+* Added semi scale invariant linemod template detection
+* Fixed RF search radius in "Houg###Grouping"
+* Fixed some bugs in detection refinement along viewing direction
+* Fixed bug in LineRGBD::computeTransformedTemplatePoints (template point cloud's width and height fields were not set)
+* Converted uses of PointXYZRGB to PointXYZRGBA; converted std::cerr messages to PCL_DEBUG; minor reformatting to keep lines under 120 characters
+* Fixed some bugs related to bounding box computation and computation of transformed template point clouds
+* Added functionality to specify an object ID when loading templates in LineRGBD;
+* Added "GeometricConsistencyGrouping" clustering class
+* Added high level interface for RGBD version of linemod (not all parts are implemented yet)
+* Added SSE optimizations to improve detection speed
+* Added Ransac Correspondence Rejection into Houg###Grouping
+* Changed method for selecting features in color gradient modality
 * Added "CorrespondenceGrouping" abstract base class for correspondence grouping in pcl_recognitio
-* Added cosine approximation in score computation 
-* Added structure for hypotheses verification methods. Base abstract class 
+* Added cosine approximation in score computation
+* Added structure for hypotheses verification methods. Base abstract class
 
 ### `libpcl_keypoints`
 
@@ -3563,8 +3563,8 @@ abstraction for non-PCL types.
 * Added PointCloud2 support for outofcore queries via new "queryBBIncludes" method
 * Added "copyPointCloud" support for PointCloud2 without indices
 * Added feature: outofcore binary compressed pcd files to store point data on disk
-* Bug fix: outofcore write buffer constant limitation fixed so outofcore_process will work with large 20M+ point TRCS data sets 
-* Constants for write buffer changed to 2e12 to support insertion of very large point clouds until new serialization is implemented 
+* Bug fix: outofcore write buffer constant limitation fixed so outofcore_process will work with large 20M+ point TRCS data sets
+* Constants for write buffer changed to 2e12 to support insertion of very large point clouds until new serialization is implemented
 * Added getVoxelSideLength to octree_base for displaying of nodes in visualizer
 
 
@@ -3606,7 +3606,7 @@ The most notable overall changes are:
 ### `libpcl_common:`
 
 * Fixed bug #658: Compiler error: undefined reference for getEulerAngles in pcl/common (thanks Gioia!)
-* Moved towards a unified "eigen.h" header that only includes the Eigen headers that we need. 
+* Moved towards a unified "eigen.h" header that only includes the Eigen headers that we need.
 * Added boost 1.48 and 1.49
 * Added a default "PointRepresentation" type for "ShapeContext" (thanks Elizabeth!)
 * Added a new "PlanarPolygon" class for representing 2D planar polygon regions
@@ -3615,14 +3615,14 @@ The most notable overall changes are:
 * Added point value initialization by default in constructors for "PointXYZI", "Normal", "PointXYZHSV", "PointXYZRGBL", and "PointXYZRGB"
 * Updating transforms.hpp to ensure that point fields are copied when applying affine transform to a specific set of indices.
 * Added error messages on failure of aux functions for PointCloud2, "pcl::concatenatePointCloud" and "pcl::concatenateFields"
-* Fixed win32 compilation error on test_plane_intersection 
-* Implemented plane intersection feature (feature #644) with a related unit test 
-* Added kissfft library 
-* Bugfix of eigen22 version for smallest eigenvalue/vector 
-* Add specialization for pcl::RGB point type 
-* Intensity field accessor moved from keypoints/sift to common to be shared by others 
-* Fixed some valid usages of point traits (e.g. static_cast::type>(...) ) on GCC 4.4.3 by explicitly instantiating some assert template long before it should actually be needed. 
-* Added ESF Histogram 640 to point types 
+* Fixed win32 compilation error on test_plane_intersection
+* Implemented plane intersection feature (feature #644) with a related unit test
+* Added kissfft library
+* Bugfix of eigen22 version for smallest eigenvalue/vector
+* Add specialization for pcl::RGB point type
+* Intensity field accessor moved from keypoints/sift to common to be shared by others
+* Fixed some valid usages of point traits (e.g. static_cast::type>(...) ) on GCC 4.4.3 by explicitly instantiating some assert template long before it should actually be needed.
+* Added ESF Histogram 640 to point types
 
 ### `libpcl_filter:`
 
@@ -3634,10 +3634,10 @@ The most notable overall changes are:
 * Fixed and implemented feature #518: VoxelGrid<> performance improvement (roughly 50+ times) (thanks Radoslaw!)
 * Fixed the visual studio compilation error described in feature #614 (thanks Remus!)
 * Fixed bug #674 (Elements in leaf_layout_ in VoxelGrid are not reset between calls to VoxelGrid::filter), Thanks Nicholas for the patch!
-* Work on issue 614: updated the PassThrough filter to derive from FilterIndices instead of Filter 
-* Fix: use a makInfinite function to annihilate points in zero_padding cases 
-* Add new class to handle convolution in 3D space for radial basis kernel 
-* Modifying VoxelGridCovariance to allow for control over minimum number of points and eigen value inflation for singularity prevention. 
+* Work on issue 614: updated the PassThrough filter to derive from FilterIndices instead of Filter
+* Fix: use a makInfinite function to annihilate points in zero_padding cases
+* Add new class to handle convolution in 3D space for radial basis kernel
+* Modifying VoxelGridCovariance to allow for control over minimum number of points and eigen value inflation for singularity prevention.
 
 ### `libpcl_visualization:`
 
@@ -3654,7 +3654,7 @@ The most notable overall changes are:
 * Added "wasStopped" to "ImageViewer" to check if the window has been closed
 * Fixed an issue in pcd_viewer where the PointPicking callback wasn't functioning properly
 * Added "setPosition" to "pcl::visualization::ImageViewer" for allowing the image viewer to be moved somewhere else on screen
-* Added two additional "addPointCloud" helpers for directly displaying "sensor_msgs::PointCloud2" data 
+* Added two additional "addPointCloud" helpers for directly displaying "sensor_msgs::PointCloud2" data
 * Added "addPointCloud" method for "sensor_msgs::PointCloud2" data (useful to bypass the conversion to XYZ for "pcd_viewer")
 * Added the capability to remove a cloud when "removeShape" is called, to preserve API backward compatibility (a "PolygonMesh" is not treated as a "CloudActor" inside "PCLVisualizer")
 * Fixed a bug where the scalars were not updated properly on "updatePointCloud" thus causing VTK warnings on the console
@@ -3664,25 +3664,25 @@ The most notable overall changes are:
 * Fixed a bug where changing the point color using "setPointCloudRenderingProperties" would not update the actor's colors on screen
 * Fix for #532: "PCLVizualizer::addCoordinateSystem()" switch from "Eigen::Matrix4f" to "Eigen::Affine3f" (thanks Aurel!)
 * Fix for #524: ctrl problem with pcd_viewer (thanks Mourad!)
-* Adding opt in flag -use_vbos to pcl_visuzlier. It's still quite buggy, but shouldn't affect the visualizer unless this flag is passed. 
-* Added vtkVertexBufferObject/Mapper and moved pcl_image_canvas_source2d 
-* Added case handling where an actor might not have a valid viewpoint_transformation matrix resulting in a seg fault if pressing ALT+R 
+* Adding opt in flag -use_vbos to pcl_visuzlier. It's still quite buggy, but shouldn't affect the visualizer unless this flag is passed.
+* Added vtkVertexBufferObject/Mapper and moved pcl_image_canvas_source2d
+* Added case handling where an actor might not have a valid viewpoint_transformation matrix resulting in a seg fault if pressing ALT+R
 * Fixed bug in displaying addCoordinateSystem
-* Added method to visualize intensity gradients 
-* Added zoom functionality for ALT + Scroll-Wheel 
-* Merged openni_viewer_simple with openni_viewer with all the available options except XYZI 
+* Added method to visualize intensity gradients
+* Added zoom functionality for ALT + Scroll-Wheel
+* Merged openni_viewer_simple with openni_viewer with all the available options except XYZI
 
 ### `libpcl_octree:`
 
 * Fixed bug #693 - bounding box adaption affected change detection results
 * Applied patch by Robert Huitl, Issue #651, define maxVoxelCount in octree raycasting
-* Fixed OSX compiler warnings 
-* Fixed bug #683 - octree depth changes during stream compression 
-* Added new octree key class 
-* Added bounding box checks in method isVoxelOccupiedAtPoint (octree pointcloud class) 
-* Removed maxKeys limit in octree key generation method 
-* Added range checks for integer keys in octree classes, extended octree key class 
-* Fixed bug #620 (octree search fails if point cloud with indices is given) in octree pointcloud class 
+* Fixed OSX compiler warnings
+* Fixed bug #683 - octree depth changes during stream compression
+* Added new octree key class
+* Added bounding box checks in method isVoxelOccupiedAtPoint (octree pointcloud class)
+* Removed maxKeys limit in octree key generation method
+* Added range checks for integer keys in octree classes, extended octree key class
+* Fixed bug #620 (octree search fails if point cloud with indices is given) in octree pointcloud class
 
 ### `libpcl_io:`
 
@@ -3695,10 +3695,10 @@ The most notable overall changes are:
 * Implemented and tested a fix for feature request #558: Implement IO for PointCloud<MatrixXf>
 * Adding missing openni_device files from install
 * Fixed a bug in ply reader
-* Fixed bug #683 - dropping empty point clouds during stream compression 
-* Add functions to convert between PCL and VTK data structures. 
-* Handle red_diffuse, blue_diffuse and green_diffuse vertex properties 
-* Fix bug where normals were written before RGB 
+* Fixed bug #683 - dropping empty point clouds during stream compression
+* Add functions to convert between PCL and VTK data structures.
+* Handle red_diffuse, blue_diffuse and green_diffuse vertex properties
+* Fix bug where normals were written before RGB
 * Bugfix for #627 - Wrong include path for ply header
 
 ### `libpcl_features:`
@@ -3706,23 +3706,23 @@ The most notable overall changes are:
 * Fixed bug #676 in PCL Feature Search (thanks Adam!)
 * Fixes compilation problem on Windows due to size_t variable in omp loop.
 * Implemented feature request #661: border management in integral image normal estimation
-* Fixed PFHRGBEstimation bug, thanks Luis 
-* Bug fix in SHOT feature, thanks wack 
-* Fixed a bug which caused some normals to point in the wrong direction 
+* Fixed PFHRGBEstimation bug, thanks Luis
+* Bug fix in SHOT feature, thanks wack
+* Fixed a bug which caused some normals to point in the wrong direction
 * Added Camera Roll histogram
-* Fix bug in index used for normal selection 
-* Added esf feature 
-* Added setViewPoint functionality and useSensorOriginAsViewPoint method to reset the viewpoint 
-* Fixed bug #576 - CVFH respect setIndices now  
+* Fix bug in index used for normal selection
+* Added esf feature
+* Added setViewPoint functionality and useSensorOriginAsViewPoint method to reset the viewpoint
+* Fixed bug #576 - CVFH respect setIndices now
 * Fixed issue #550: Uninformative error in VFHEstimation (thanks David!)
 * Fix #527: Bug in IntegralImageNormalEstimation (thanks Christoph!)
 * Fixed #544: overflow in implicit constant conversion warnings (thanks David!)
 * Modified SHOT omp so that the default computation of the reference frames
 * SHOT: Fixed invalid access when keypoints have increased from the previous call.
-* Setting sensor origin and orientation correctly for normal point cloud 
-* Fixed a bug in estimating the orientation of the normal (view point wasn't initialized in the constructor) 
-* Bug fix: if the cloud is not dense search for neighbours could raise an excpetion 
-* Bug fix: SHOT accepts only radius search 
+* Setting sensor origin and orientation correctly for normal point cloud
+* Fixed a bug in estimating the orientation of the normal (view point wasn't initialized in the constructor)
+* Bug fix: if the cloud is not dense search for neighbours could raise an excpetion
+* Bug fix: SHOT accepts only radius search
 
 ### `libpcl_segmentation:`
 
@@ -3731,22 +3731,22 @@ The most notable overall changes are:
 * Added a missing "setDistanceFromOrigin" to "SACSegmentationFromNormals" for "SACMODEL_NORMAL_PARALLEL_PLANE" (thanks A. Barral)
 * Fix for #134 (Prism Extraction on Table top (flipping normal fails))
 * Fixed a segmentation fault in "SACSegmentationFromNormals" caused by calling "segment" without passing the input XYZ or normal data
-* Fixed a bug in organized connected component segmentation. Previously would crash if the first pixel had a valid depth (doesn't occur on kinect data). 
-* Bugfix of issue # 675: Euclidean cluster extraction access violation. Thanks to Icy for helping find the solution 
-* Fixed bug #673 in EuclideanClusterExtraction 
-* Added new code for min cut segmentation 
-* Fixed bug #681: member variable was not set in constructor (thanks Bhaskara!) 
-* Added a threshold to MultiPlaneSegmentation for curvature, allowing us to discard smooth (but non-planar) regions. 
-* Added optional projection for multi_plane_segmentation. 
-* Added some new comparators for use with OrganizedConnectedComponents including RGB and edge aware 
-* Added additional fucnction call for segmentAndRefine. 
-* Added a comparator for doing euclidean clustering on organized point clouds. 
-* Added fast SeededHueSegmentation implementations 
-* Fixed segfault in multi plane refinement and functorized the comparison. 
-* Improved MultiPlaneSegmentation to allow refinement of regions, and support different comparators. 
-* New classes AutomatedSegmentation, AutomatedTreeSegmentation 
-* Added OrganizedConnectedComponentSegmentation, which is a general class for use with organized point clouds  and can take user specified comparators. 
-* Added OrganizedMultiPlaneSegmentation which returns all planes in an organized cloud, along with the PlaneCoefficientComparator needed to do this. 
+* Fixed a bug in organized connected component segmentation. Previously would crash if the first pixel had a valid depth (doesn't occur on kinect data).
+* Bugfix of issue # 675: Euclidean cluster extraction access violation. Thanks to Icy for helping find the solution
+* Fixed bug #673 in EuclideanClusterExtraction
+* Added new code for min cut segmentation
+* Fixed bug #681: member variable was not set in constructor (thanks Bhaskara!)
+* Added a threshold to MultiPlaneSegmentation for curvature, allowing us to discard smooth (but non-planar) regions.
+* Added optional projection for multi_plane_segmentation.
+* Added some new comparators for use with OrganizedConnectedComponents including RGB and edge aware
+* Added additional fucnction call for segmentAndRefine.
+* Added a comparator for doing euclidean clustering on organized point clouds.
+* Added fast SeededHueSegmentation implementations
+* Fixed segfault in multi plane refinement and functorized the comparison.
+* Improved MultiPlaneSegmentation to allow refinement of regions, and support different comparators.
+* New classes AutomatedSegmentation, AutomatedTreeSegmentation
+* Added OrganizedConnectedComponentSegmentation, which is a general class for use with organized point clouds  and can take user specified comparators.
+* Added OrganizedMultiPlaneSegmentation which returns all planes in an organized cloud, along with the PlaneCoefficientComparator needed to do this.
 
 ### `libpcl_surface:`
 
@@ -3757,36 +3757,36 @@ The most notable overall changes are:
 * Added a setDimension function to concave hull, so users can specify desired dimensionality of the resulting hull. If no dimension is specified, one will be automatically determined.
 * Fixed bug #692 - MovingLeastSquares indices issues
 * Added curve fitting and trimming of surfaces to examples/surface/example_nurbs_fitting_surface.cpp
-* Added iterative fitting routines for curve fitting surface::on_nurbs::Triangulation - added conversion functions for nurbs curve to line-polygon - added conversion functions for nurbs surface and curve to PolyMesh 
-* Added flag to enable/disable usage of UmfPack for fast solving of sparse systems of equations - added triangulation functions to convert ON_NurbsSurface to pcl::PolygonMesh 
+* Added iterative fitting routines for curve fitting surface::on_nurbs::Triangulation - added conversion functions for nurbs curve to line-polygon - added conversion functions for nurbs surface and curve to PolyMesh
+* Added flag to enable/disable usage of UmfPack for fast solving of sparse systems of equations - added triangulation functions to convert ON_NurbsSurface to pcl::PolygonMesh
 * Added bug fix in ConcaveHull, thanks to summer.icecream
 * Added marching cubes using RBF and Hoppe SDF
 * Pushed new functions that perform texture-mapping on meshes.
 * Fix: issue #646 (vtk_smoothing not copied)
 * Added new functionalities to TextureMapping: Find occlusions based on raytracing in octrees, UV mapping based on Texture resolution and camera focal length.
-* Relaxing dimensionality check threshold on concave_hull, so that 3D hulls should no longer be calculated on 2D input. 
+* Relaxing dimensionality check threshold on concave_hull, so that 3D hulls should no longer be calculated on 2D input.
 * Added poisson filter
 
 ### `libpcl_keypoints:`
 
 * Added combined Harris keypoint detector to detect corners in image, in 3D and combined ones
 * Fix bug #691 (Compiler error: undefined reference for setMinimalDistance in pcl/keypoints/harris_keypoint2D)
-* Fixed the #637 pitfall in harris3D and harris6D 
-* Added implementation of 2D corner detectors 
+* Fixed the #637 pitfall in harris3D and harris6D
+* Added implementation of 2D corner detectors
 
 ### `libpcl_geometry:`
 
 * Added a new PCL library for computational geometry
-* Added bugfix to remove self intersecting polygons 
-* Fixed some refinement corner cases for polygon approximation 
+* Added bugfix to remove self intersecting polygons
+* Fixed some refinement corner cases for polygon approximation
 * Added line iterator class for iterating over e.g. an image/organized cloud in the pixel space.
 
 
 ### `libpcl_search:`
 
-* Added NaN checks in "pcl::search::FlannSearch" 
-* Skip infinite neighbor candidates in pcl::search::OrganizedNeighbor::radiusSearch 
-* Added point projection method for organized search 
+* Added NaN checks in "pcl::search::FlannSearch"
+* Skip infinite neighbor candidates in pcl::search::OrganizedNeighbor::radiusSearch
+* Added point projection method for organized search
 
 ### `libpcl_tracking:`
 
@@ -3798,8 +3798,8 @@ The most notable overall changes are:
 * Implemented feature #589: Add sac_model_cone and sac_model_normal_sphere (contributed by Stefan Schrandt. Thanks!)
 * Fix for #616: pcl::ProgressiveSampleConsensus<PointT>::getRandomSamples unimplemented (thanks Mourad!)
 * Fix for #498: Bug in setOptimizeCoefficients for pcl::SACMODEL_SPHERE.
-* Fixed bug #648: code was checking for plane perpendicular to given axis instead of parallel 
-* Applied patch for feature request #649: Locally constrained model generation for Sample Consensus 
+* Fixed bug #648: code was checking for plane perpendicular to given axis instead of parallel
+* Applied patch for feature request #649: Locally constrained model generation for Sample Consensus
 
 ### `libpcl_registration:`
 
@@ -4147,7 +4147,7 @@ fixed bug #420: in `OrganizedNeighbor` where one of the `radiusSearch` signature
 * fixed bug #430: an infinite loop in SAC methods if no valid model could be found
 * fixed bug #433: `CropBox` did not update width and height member of output point cloud
 * added missing using declarations for shot
-* added a missing include file to transformation_estimation_point_to_plane.h; 
+* added a missing include file to transformation_estimation_point_to_plane.h;
 * added transformation_estimation_point_to_plane_lls.h/hpp to the CMakeLists file
 * fixed an issue where the `is_dense` flag was not set appropriately when reading data from a binary file (thanks Updog!)
 * fixed a bug in the `PLYWriter` class where the element camera was not correctly set thus leading to crashes in Meshlab (thanks Bruno!)
@@ -4166,7 +4166,7 @@ fixed bug in `PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>` where y_
 
 ## *= 1.3 (2011-10-31) = :: "Gaudi" =*
 
-From 1.3 we are constructing the Changelist for each library separately, as they can in theory be mixed and matched with older versions (though we officially do not support this yet). The 
+From 1.3 we are constructing the Changelist for each library separately, as they can in theory be mixed and matched with older versions (though we officially do not support this yet). The
 most notable overall changes are:
 
 * **removed wxWidgets as a dependency from PCL** and implemented the Image visualization classes using VTK
@@ -4194,7 +4194,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 
 ### `libpcl_common`
 
-* add overriding for operator[] to shorten code 
+* add overriding for operator[] to shorten code
 * add a `setIndices` method that computes indices of points in a region of interest
 * add `demeanPointCloud` with indices as `PointIndices` as well
 * added eigen allocator to correspondence vectors (`pcl::Correspondences`) and adapted all registration modules => be sure to use `pcl::Correspondences` instead of `std::vector<pcl::Correspondence>`
@@ -4251,7 +4251,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * added Shape Context 3D feature descriptor
 * fixed a bug in the normalization factor of VFH for the distance component (only affecting if set distance component is true)
 * fixed a few bugs regarding Windows build introduced in earlier commits
-* BIG changes introduced - migration from `KdTree` to `pcl::Search` 
+* BIG changes introduced - migration from `KdTree` to `pcl::Search`
 * merged libpcl_range_image_border_extractor into libpcl_features. There's absolutely no reason why we should have 2 libraries generated from the features module.
 
 ### `libpcl_filters`
@@ -4307,7 +4307,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 
 ### `libpcl_surface`
 
-* fixed bug in surface/mls: when no search interface and no tree is given, mls creates its' own tree, but didn'tupdate the search method to use 
+* fixed bug in surface/mls: when no search interface and no tree is given, mls creates its' own tree, but didn'tupdate the search method to use
 * added citation for Rosie's work (http://dl.acm.org/citation.cfm?id=1839808)
 * added some error checking for missing/ill formed inputs for `MarchingCubes`
 * don't delete smart pointers (thanks Chytu: http://www.pcl-users.org/Seg-fault-while-using-VTK-Smoother-tp3380114p3381648.html)
@@ -4321,7 +4321,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 
 * fixed an issue where `saveScreenshot` was not correctly initialized with the proper renderer, thus not saving the data
 * supporting fontsize in addText (per feature #365)
-* fixing the interactor style by ignoring all combinations in `OnChar` that we cover in `OnKeyDown` 
+* fixing the interactor style by ignoring all combinations in `OnChar` that we cover in `OnKeyDown`
 * added `removeAllShapes` and `removeAllPointClouds` per #353
 * renamed `deleteText3D` to `removeText3D` to consolidate the API
 * fixing the API: a few left inconsistencies between `vector<Correspondence>` and `Correspondences`. The latter is to be preferred as it contains the Eigen aligned allocator.
@@ -4378,7 +4378,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
   * all registration code now uses `TransformEstimation` objects (`TransformEstimationSVD` and `TransformEstimationLM` in particular) rather than the older `estimateRigidTransformationSVD` code. Each class inheriting from `pcl::Registration` can pass in a different estimator via `setTransformationEstimation`
   * simplified `TransformEstimationSVD` code
   * implemented `TransformEstimationLM` by moving away code from `IterativeClosestPointNonLinear` (which now uses the transformation object)
- 
+
 * replaced the `io/io.h` header file with `common/io.h` (for backwards compatibility, `io/io.h` will remain, but its use is deprecated)
 * added unit test for `lineWithLineIntersection` (r2514)
 * improved the VTK installation from source documentation for MacOS (r2589)
@@ -4389,7 +4389,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * added an internal `estimateRigidTransformationSVD` method to `SampleConsensusModelRegistration` (r2502)
 * added a `PCL_VISUALIZER_REPRESENTATION` property for `setShapeRenderingProperties` with three possible values:
 
-  * `PCL_VISUALIZER_REPRESENTATION_POINTS` for representing data as points on screen 
+  * `PCL_VISUALIZER_REPRESENTATION_POINTS` for representing data as points on screen
   * `PCL_VISUALIZER_REPRESENTATION_WIREFRAME` for representing data as a surface wireframe on screen
   * `PCL_VISUALIZER_REPRESENTATION_SURFACE` for representing data as a filled surface on screen
     (r2500)
@@ -4425,11 +4425,11 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * added a new `IOException` class for read/write exceptions (r2068)
 * added missing `set/getAngleThreshold` for `BoundaryEstimation`. Made class parameter protected. (r2067)
 * added functions in `pcl::console` for parsing CSV arguments of arbitrary length (r2052)
-* added new functionality to `OrganizedFastMesh` (r1996); Now support for modes: 
+* added new functionality to `OrganizedFastMesh` (r1996); Now support for modes:
 
-  * fixed triangle meshing (left and right) that create quads and always cut them in a fixed direction, 
-  * adaptive meshing that cuts where possible and prefers larger differences in 'z' direction, as well as 
-  * quad meshing 
+  * fixed triangle meshing (left and right) that create quads and always cut them in a fixed direction,
+  * adaptive meshing that cuts where possible and prefers larger differences in 'z' direction, as well as
+  * quad meshing
 
 * improved `OrganizedFastMesh`'s removal of unused points (r1996)
 
@@ -4473,7 +4473,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * corrected the headers included by `sample_consensus/sac_model.h` (r2550)
 * removed duplicate content of NSIS.template.in (r2601)
 * fixed various casting related compiler warnings (r2532)
-* corrected typos in 
+* corrected typos in
 
   * Windows tutorial (CMAKE_INSTALL_DIR => CMAKE_INSTALL_PREFIX) (r2595)
   * registration/icp.h documentation (reg => icp) (r2515)
@@ -4499,31 +4499,31 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 
 ## *= 1.1.0 (2011-07-18) = :: "Deathly Hallows" =*
 
-* new 3D features: 
+* new 3D features:
 
   * SHOT (Signature of Histograms of Orientations)
   * PPF (Point-Pair Features)
   * StatisticalMultiscaleInterestRegionExtraction
   * MultiscaleFeaturePersistence
 
-* improved documentation: 
+* improved documentation:
 
   * sample consensus model coefficients better explained
   * new tutorials (RadiusOutlierRemoval, ConditionalRemovalFilter, ConcatenateClouds, IterativeClosestPoint, KdTreeSearch, NARF Descriptor visualization, NARF keypoint extraction, ConcaveHull, PCLVisualizer demo)
 
-* new surface triangulation methods: 
+* new surface triangulation methods:
 
    * MarchingCubes, MarchingCubesGreedy
    * OrganizedFastMesh
    * SurfelSmoothing
    * SimplificationRemoveUnusedVertices
 
-* new registration methods: 
+* new registration methods:
 
    * PyramindFeatureMatching
    * CorrespondenceRejectorSampleConsensus
 
-* new general purpose classes/methods: 
+* new general purpose classes/methods:
 
    * Synchronizer
    * distance norms
@@ -4536,21 +4536,21 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
    * ONIGrabber, DeviceONI
    * ImageRGB24, IRImage
    * generic FileReader + FileWriter
-    
-* optimizations: 
+
+* optimizations:
 
   * faster pipelinening by not recreating a fake set of indices everytime
   * rendering optimizations for PCLVisualizer
   * copyPointCloud is now faster and can copy the intersections of the fields in both input datasets
   * VoxelGrid is now ~20Hz for Kinect data
 
-* new applications: 
+* new applications:
 
   * VFH NN classification
   * 3D concave hulls
   * 3D convex hulls
   * ICP registration
-  * Planar segmentation 
+  * Planar segmentation
   * Stream compression
   * Range image viewer
   * Voxel Grid
@@ -4570,7 +4570,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * fixed a bug in `ConditionalRemovalFilter` where the `keep_organized` condition was reversed
 * removed `BorderDescription` and `Histogram<2>` from the list of explicit template instantiations
 * added `PointXY` point registration macros
-* added `ExtractIndicesSelf` unit test 
+* added `ExtractIndicesSelf` unit test
 * fixed a lot of alignment issues on 32bit architectures
 * PCD ascii files now have each individual line trimmed for trailing spaces
 * internal changes for PCDReader/PCDWriter, where NAN data is represented as "nan"
@@ -4602,7 +4602,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * new CVFH feature, with higher performance than VFH for object recognition
 
 
-# Pre 1.0 (copied from http://pcl.ros.org/ChangeList) - for historical purposes. 
+# Pre 1.0 (copied from http://pcl.ros.org/ChangeList) - for historical purposes.
 
 The version numbers below belong to the *perception_pcl* stack in ROS, which coordinated both the release of PCL, as well as the release of the ROS PCL wrappers. From 1.0 onwards PCL got separated from ROS, and the release process of *perception_pcl* and PCL diverged.
 
@@ -4659,12 +4659,12 @@ The version numbers below belong to the *perception_pcl* stack in ROS, which coo
 * [[pcl_ros]]
 
   * _MovingLeastSquares_ nodelet improvements
-  * Changed serialization of point clouds to ship the data as-is over the wire, padding included (#4754). Implemented subscriber-side optimizations to minimize memcpys. Will do one memcpy for the whole point cloud if the data layout is an exact match. 
+  * Changed serialization of point clouds to ship the data as-is over the wire, padding included (#4754). Implemented subscriber-side optimizations to minimize memcpys. Will do one memcpy for the whole point cloud if the data layout is an exact match.
 
 ## *= 0.9.0 (2011-02-08) :: "Darn the torpedoes" Edition =*
 
 * [[pcl]]
- 
+
  * optimizations for _dense_ dataset (no checking for _isfinite_ inside the loop unless _is_dense_ is false)
  * improved eigen decomposition _pcl::eigen33_ by better handling degenerate cases. Normal estimation should work better now.
  * more 32bit alignment fixes
