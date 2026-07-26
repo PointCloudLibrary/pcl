@@ -361,6 +361,18 @@ TEST(PCL, ColorHandlerGenericField_datatypes)
   }
 }
 
+TEST(PCL, PCLVisualizer_addCorrespondences)
+{
+  pcl::Correspondences corrs;
+  corrs.emplace_back(0, cloud->size()-3, 0.0f);
+  corrs.emplace_back(1, cloud->size()-2, 0.0f);
+  corrs.emplace_back(2, cloud->size()-1, 0.0f);
+
+  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
+  viewer->addCorrespondences<pcl::PointXYZ>(cloud, cloud, corrs, 1);
+  viewer->spinOnce(100);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
