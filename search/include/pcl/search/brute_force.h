@@ -37,12 +37,39 @@
 
 #pragma once
 
+#include <pcl/point_representation.h>
 #include <pcl/search/search.h>
+
+#include <type_traits>
 
 namespace pcl
 {
   namespace search
   {
+    namespace detail
+    {
+      template <typename PointT, typename = void>
+      struct has_descriptor_size : std::false_type
+      {
+      };
+
+      template <typename PointT>
+      struct has_descriptor_size<PointT, std::void_t<decltype (pcl::detail::traits::descriptorSize<PointT>::value)>>
+      : std::true_type
+      {
+      };
+
+      template <typename PointT>
+      typename PointRepresentation<PointT>::ConstPtr
+      makeDefaultPointRepresentation ()
+      {
+        if constexpr (!pcl::traits::has_xyz_v<PointT> && has_descriptor_size<PointT>::value)
+          return (pcl::make_shared<DefaultFeatureRepresentation<PointT>> ());
+        else
+          return (pcl::make_shared<DefaultPointRepresentation<PointT>> ());
+      }
+    } // namespace detail
+
     /** \brief Implementation of a simple brute force search algorithm.
       * \author Suat Gedikli
       * \ingroup search
@@ -52,6 +79,7 @@ namespace pcl
     {
       using PointCloud = typename Search<PointT>::PointCloud;
       using PointCloudConstPtr = typename Search<PointT>::PointCloudConstPtr;
+      using PointRepresentationConstPtr = typename PointRepresentation<PointT>::ConstPtr;
 
       using IndicesPtr = pcl::IndicesPtr;
       using IndicesConstPtr = pcl::IndicesConstPtr;
@@ -83,15 +111,37 @@ namespace pcl
 
       // replace by some metric functor
       float getDistSqr (const PointT& point1, const PointT& point2) const;
+
+      bool
+      isValidPoint (const PointT& point) const;
+
       public:
         BruteForce (bool sorted_results = false)
         : Search<PointT> ("BruteForce", sorted_results)
+        , point_representation_ (detail::makeDefaultPointRepresentation<PointT> ())
         {
         }
 
         /** \brief Destructor for KdTree. */
         
         ~BruteForce () override = default;
+
+        /** \brief Provide a pointer to the point representation used for converting
+          * points into k-D vectors.
+          * \param[in] point_representation the const shared pointer to a PointRepresentation
+          */
+        inline void
+        setPointRepresentation (const PointRepresentationConstPtr &point_representation)
+        {
+          point_representation_ = point_representation;
+        }
+
+        /** \brief Get the point representation used for converting points into k-D vectors. */
+        inline PointRepresentationConstPtr
+        getPointRepresentation () const
+        {
+          return (point_representation_);
+        }
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] point the given query point
@@ -135,6 +185,8 @@ namespace pcl
         sparseRadiusSearch (const PointT& point, double radius,
                             Indices &k_indices, std::vector<float> &k_sqr_distances,
                             unsigned int max_nn = 0) const;
+
+        PointRepresentationConstPtr point_representation_;
     };
   }
 }

@@ -14,6 +14,10 @@ PCL_ADD_TEST(kdtree_search test_kdtree_search
              FILES test_kdtree.cpp
              LINK_WITH pcl_gtest pcl_search pcl_kdtree)
 
+PCL_ADD_TEST(brute_force_search test_brute_force_search
+             FILES test_brute_force.cpp
+             LINK_WITH pcl_gtest pcl_search pcl_common)
+
 PCL_ADD_TEST(flann_search test_flann_search
              FILES test_flann_search.cpp
              LINK_WITH pcl_gtest pcl_search pcl_kdtree)
