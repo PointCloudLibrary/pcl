@@ -347,6 +347,12 @@ public:
   inline double
   getCorrespondenceScore(int index) override
   {
+    // Check correspondence is valid
+    if ((size_t) index >= (*input_).size())
+    {
+      return (std::numeric_limits<double>::max ());
+    }
+
     if (target_cloud_updated_ && !force_no_recompute_) {
       tree_->setInputCloud(target_);
     }
@@ -363,6 +369,12 @@ public:
   inline double
   getCorrespondenceScore(const pcl::Correspondence& corr) override
   {
+    // Check correspondence is valid
+    if ((size_t) corr.index_query >= (*input_).size() || (size_t) corr.index_match >= (*target_).size())
+    {
+      return (std::numeric_limits<double>::max ());
+    }
+
     // Get the source and the target feature from the list
     const PointT& src = (*input_)[corr.index_query];
     const PointT& tgt = (*target_)[corr.index_match];
@@ -377,6 +389,12 @@ public:
   inline double
   getCorrespondenceScoreFromNormals(const pcl::Correspondence& corr) override
   {
+    // Check correspondence is valid
+    if ((size_t) corr.index_query >= (*input_normals_).size() || (size_t) corr.index_match >= (*target_normals_).size())
+    {
+      return (std::numeric_limits<double>::max ());
+    }
+
     // assert ( (input_normals_->size () != 0) && (target_normals_->size () != 0) &&
     // "Normals are not set for the input and target point clouds");
     assert(input_normals_ && target_normals_ &&
