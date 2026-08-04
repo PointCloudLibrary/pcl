@@ -66,6 +66,8 @@
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/visualization/common/shapes.h>
 
+#include <cmath>
+
 // Support for VTK 7.1 upwards
 #ifdef vtkGenericDataArray_h
 #define SetTupleValue SetTypedTuple
@@ -1234,7 +1236,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   target_transformation.linear () = target_points->sensor_orientation_.matrix ();
   target_transformation.translation () = target_points->sensor_origin_.template head<3> ();
 
-  int n_corr = static_cast<int>(std::ceil(static_cast<float>(correspondences.size ()) / nth));
+  const int n_corr = static_cast<int>(std::ceil(static_cast<float>(correspondences.size ()) / nth));
   vtkSmartPointer<vtkPolyData> line_data = vtkSmartPointer<vtkPolyData>::New ();
 
   // Prepare colors
@@ -1281,7 +1283,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
     line_colors->InsertTuple (j, rgb);
     ++j;
   }
-
+  line_colors->SetNumberOfTuples (j);
   line_data->SetPoints (line_points);
   line_data->SetLines (line_cells);
   line_data->GetCellData ()->SetScalars (line_colors);
@@ -1336,7 +1338,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   }
   line_colors->SetNumberOfTuples (j);
   line_cells_id->SetNumberOfTuples (j);
-  line_cells->SetCells (n_corr, line_cells_id);
+  line_cells->SetCells (j, line_cells_id);
   line_points->SetNumberOfPoints (j*2);
   line_tcoords->SetNumberOfTuples (j*2);
  

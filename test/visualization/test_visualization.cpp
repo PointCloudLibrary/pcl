@@ -219,7 +219,7 @@ TEST(PCL, PCLVisualizer_updateColorHandlerIndex) {
   viewer_ptr->addPointCloud(rgb_cloud2_ptr,
                             color_handler_ptr,
                             Eigen::Vector4f::Zero(),
-                            Eigen::Quaternionf(),
+                            Eigen::Quaternionf::Identity(),
                             cloud_name,
                             0);
   EXPECT_TRUE(viewer_ptr->updateColorHandlerIndex(cloud_name, 0));
