@@ -82,7 +82,17 @@ Registration<PointSource, PointTarget, Scalar>::initCompute()
 
   // Only update target kd-tree if a new target cloud was set
   if (target_cloud_updated_ && !force_no_recompute_) {
-    tree_->setInputCloud(target_);
+    if (point_representation_) {
+      tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
+          target_,
+          pcl::IndicesConstPtr(),
+          point_representation_,
+          false,
+          pcl::search::Purpose::one_knn_search));
+    }
+    else if (!tree_ || !tree_->setInputCloud(target_))
+      tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
+          target_, false, pcl::search::Purpose::one_knn_search));
     target_cloud_updated_ = false;
   }
 
@@ -111,7 +121,8 @@ Registration<PointSource, PointTarget, Scalar>::initComputeReciprocal()
   }
 
   if (source_cloud_updated_ && !force_no_recompute_reciprocal_) {
-    tree_reciprocal_->setInputCloud(input_);
+    if (!tree_reciprocal_ || !tree_reciprocal_->setInputCloud(input_))
+      tree_reciprocal_.reset(pcl::search::autoSelectMethod<PointSource>(input_, false));
     source_cloud_updated_ = false;
   }
   return (true);
@@ -200,10 +211,6 @@ Registration<PointSource, PointTarget, Scalar>::align(PointCloudSource& output,
   // Copy the point data to output
   for (std::size_t i = 0; i < indices_->size(); ++i)
     output[i] = (*input_)[(*indices_)[i]];
-
-  // Set the internal point representation of choice unless otherwise noted
-  if (point_representation_ && !force_no_recompute_)
-    tree_->setPointRepresentation(point_representation_);
 
   // Perform the actual transformation computation
   converged_ = false;

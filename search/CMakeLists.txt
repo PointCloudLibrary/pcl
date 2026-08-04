@@ -1,9 +1,17 @@
 set(SUBSYS_NAME search)
 set(SUBSYS_DESC "Point cloud generic search library")
 set(SUBSYS_DEPS common kdtree octree)
+set(SUBSYS_OPT_DEPS OpenMP)
+set(SUBSYS_EXT_DEPS "")
+if(FLANN_FOUND)
+  list(APPEND SUBSYS_EXT_DEPS flann)
+else()
+  list(REMOVE_ITEM SUBSYS_DEPS kdtree)
+  list(APPEND SUBSYS_OPT_DEPS flann)
+endif()
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP EXT_DEPS flann)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${SUBSYS_OPT_DEPS} EXT_DEPS ${SUBSYS_EXT_DEPS})
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -19,16 +27,9 @@ set(srcs
   src/octree.cpp
 )
 
-if(FLANN_FOUND)
-  list(APPEND srcs
-    src/kdtree.cpp
-  )
-endif()
-
 set(incs
   "include/pcl/${SUBSYS_NAME}/auto.h"
   "include/pcl/${SUBSYS_NAME}/search.h"
-  "include/pcl/${SUBSYS_NAME}/kdtree.h"
   "include/pcl/${SUBSYS_NAME}/kdtree_nanoflann.h"
   "include/pcl/${SUBSYS_NAME}/brute_force.h"
   "include/pcl/${SUBSYS_NAME}/organized.h"
@@ -40,18 +41,22 @@ set(incs
 set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/auto.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/search.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/flann_search.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/brute_force.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/organized.hpp"
 )
 
+if(FLANN_FOUND)
+  list(APPEND srcs src/kdtree.cpp)
+  list(APPEND incs "include/pcl/${SUBSYS_NAME}/kdtree.h")
+  list(APPEND impl_incs "include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp")
+endif()
+
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
-target_link_libraries("${LIB_NAME}" pcl_common pcl_octree pcl_kdtree)
+target_link_libraries("${LIB_NAME}" pcl_common pcl_octree)
 if(FLANN_FOUND)
-  target_link_libraries("${LIB_NAME}" FLANN::FLANN)
-  list(APPEND EXT_DEPS flann)
+  target_link_libraries("${LIB_NAME}" FLANN::FLANN pcl_kdtree)
 endif()
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 
