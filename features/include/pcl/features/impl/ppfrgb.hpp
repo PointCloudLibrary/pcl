@@ -40,7 +40,7 @@
 
 #include <pcl/features/ppfrgb.h>
 #include <pcl/features/pfhrgb.h>
-#include <pcl/search/kdtree.h> // for KdTree
+//#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
@@ -49,7 +49,7 @@ pcl::PPFRGBEstimation<PointInT, PointNT, PointOutT>::PPFRGBEstimation ()
 {
   feature_name_ = "PPFRGBEstimation";
   // Slight hack in order to pass the check for the presence of a search method in Feature::initCompute ()
-  Feature<PointInT, PointOutT>::tree_.reset (new pcl::search::KdTree <PointInT> ());
+  //Feature<PointInT, PointOutT>::tree_.reset (new pcl::search::KdTree <PointInT> ());
   Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
 }
 

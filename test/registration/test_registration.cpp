@@ -58,6 +58,7 @@
 #include <pcl/features/ppf.h>
 #include <pcl/registration/ppf_registration.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/search/kdtree.h>
 // We need Histogram<2> to function, so we'll explicitly add kdtree_flann.hpp here
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 //(pcl::Histogram<2>)

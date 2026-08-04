@@ -43,8 +43,10 @@
 #include <pcl/console/print.h>
 #include <pcl/registration/correspondence_sorting.h>
 #include <pcl/registration/correspondence_types.h>
-#include <pcl/search/kdtree.h>
+#include <pcl/search/auto.h>
+#include <pcl/search/search.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h> // for PointNormal
 
 namespace pcl {
 namespace registration {
@@ -236,7 +238,7 @@ class DataContainer : public DataContainerInterface {
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-  using KdTreePtr = typename pcl::search::KdTree<PointT>::Ptr;
+  using KdTreePtr = typename pcl::search::Search<PointT>::Ptr;
 
   using Normals = pcl::PointCloud<NormalT>;
   using NormalsPtr = typename Normals::Ptr;
@@ -251,7 +253,6 @@ public:
   , input_normals_()
   , input_normals_transformed_()
   , target_normals_()
-  , tree_(new pcl::search::KdTree<PointT>)
   , class_name_("DataContainer")
   , needs_normals_(needs_normals)
   {}
@@ -348,7 +349,12 @@ public:
   getCorrespondenceScore(int index) override
   {
     if (target_cloud_updated_ && !force_no_recompute_) {
-      tree_->setInputCloud(target_);
+      if (tree_)
+        tree_->setInputCloud(target_);
+      else
+        tree_.reset(pcl::search::autoSelectMethod<PointT>(
+            target_, false, pcl::search::Purpose::one_knn_search));
+      target_cloud_updated_ = false;
     }
     pcl::Indices indices(1);
     std::vector<float> distances(1);

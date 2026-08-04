@@ -42,6 +42,7 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/search/auto.h>
 #include <pcl/segmentation/extract_clusters.h>
 #define PCL_NO_PRECOMPILE // ConditionalEuclideanClustering is not always instantiated with PointNormal
 #include <pcl/segmentation/conditional_euclidean_clustering.h>
@@ -74,9 +75,8 @@ main (int argc, char **argv)
   ne.compute (*cloud_normals);
   std::cout << "Estimated the normals" << std::endl;
 
-  // Creating the kdtree object for the search method of the extraction
-  pcl::KdTree<pcl::PointXYZ>::Ptr tree_ec  (new pcl::KdTreeFLANN<pcl::PointXYZ> ());
-  tree_ec->setInputCloud (cloud_ptr);
+  // Creating the search method of the extraction
+  pcl::search::Search<pcl::PointXYZ>::Ptr tree_ec(pcl::search::autoSelectMethod<pcl::PointXYZ>(cloud_ptr, false));
   
   // Extracting Euclidean clusters using cloud and its normals
   std::vector<pcl::PointIndices> cluster_indices;

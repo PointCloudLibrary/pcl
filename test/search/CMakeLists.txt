@@ -1,6 +1,7 @@
 set(SUBSYS_NAME tests_search)
 set(SUBSYS_DESC "Point cloud library search module unit tests")
 PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS search)
+list(APPEND SUBSYS_DEPS kdtree)
 set(OPT_DEPS io)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)

@@ -269,7 +269,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 
   // set up tree structures
   if (target_cloud_updated_) {
-    tree_->setInputCloud(target_, target_indices_);
+    tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
+        target_, target_indices_, false, pcl::search::Purpose::one_knn_search));
     target_cloud_updated_ = false;
   }
 
