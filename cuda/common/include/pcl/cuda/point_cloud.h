@@ -40,6 +40,7 @@
 #include <pcl/cuda/point_types.h>
 #include <pcl/cuda/thrust.h>
 #include <pcl/memory.h>
+#include <thrust/tuple.h>
 
 namespace pcl
 {
