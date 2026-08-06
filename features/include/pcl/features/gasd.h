@@ -39,7 +39,7 @@
 #pragma once
 
 #include <pcl/features/feature.h>
-#include <pcl/point_types.h>       // for GASDSignature512, GASDSignature984
+#include <pcl/feature_types.h>        // for GASDSignature512, GASDSignature984
 
 namespace pcl
 {
