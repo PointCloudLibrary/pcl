@@ -339,9 +339,6 @@ add_definitions(${VTK_DEFINES})
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
 
 target_link_libraries("${LIB_NAME}" Boost::boost Boost::iostreams pcl_common pcl_io_ply pcl_octree)
-if(TARGET Boost::filesystem)
-  target_link_libraries("${LIB_NAME}" Boost::filesystem)
-endif()
 
 if(VTK_FOUND)
   if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)

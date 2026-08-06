@@ -231,7 +231,7 @@ public:
     std::vector<std::string> files;
     std::string start;
     std::string ext = std::string("ply");
-    bf::path dir = path_;
+    pcl_fs::path dir = path_;
     getModelsInDirectory(dir, start, files, ext);
 
     models_.reset(new std::vector<ModelT>);
