@@ -219,7 +219,7 @@ TEST(PCL, PCLVisualizer_updateColorHandlerIndex) {
   viewer_ptr->addPointCloud(rgb_cloud2_ptr,
                             color_handler_ptr,
                             Eigen::Vector4f::Zero(),
-                            Eigen::Quaternionf(),
+                            Eigen::Quaternionf::Identity(),
                             cloud_name,
                             0);
   EXPECT_TRUE(viewer_ptr->updateColorHandlerIndex(cloud_name, 0));
@@ -359,6 +359,18 @@ TEST(PCL, ColorHandlerGenericField_datatypes)
       EXPECT_NEAR(*(colors_d->GetTuple(i)), static_cast<double>(ds[i]), max_error);
     }
   }
+}
+
+TEST(PCL, PCLVisualizer_addCorrespondences)
+{
+  pcl::Correspondences corrs;
+  corrs.emplace_back(0, cloud->size()-3, 0.0f);
+  corrs.emplace_back(1, cloud->size()-2, 0.0f);
+  corrs.emplace_back(2, cloud->size()-1, 0.0f);
+
+  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
+  viewer->addCorrespondences<pcl::PointXYZ>(cloud, cloud, corrs, 1);
+  viewer->spinOnce(100);
 }
 
 /* ---[ */

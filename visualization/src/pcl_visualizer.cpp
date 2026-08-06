@@ -126,6 +126,9 @@
 vtkIdType
 pcl::visualization::details::fillCells(std::vector<int>& lookup, const std::vector<pcl::Vertices>& vertices, vtkSmartPointer<vtkCellArray> cell_array, int max_size_of_polygon)
 {
+  const auto idx = vertices.size() + std::accumulate(vertices.begin(), vertices.end(), static_cast<vtkIdType>(0),
+    [](const auto& sum, const auto& vertex) { return sum + vertex.vertices.size(); });
+
 #ifdef VTK_CELL_ARRAY_V2
   pcl::utils::ignore(max_size_of_polygon);
 
@@ -172,10 +175,8 @@ pcl::visualization::details::fillCells(std::vector<int>& lookup, const std::vect
         *cell++ = vertj;
     }
   }
+  cell_array->GetData ()->SetNumberOfValues (idx);
 #endif
-
-  const auto idx = vertices.size() + std::accumulate(vertices.begin(), vertices.end(), static_cast<vtkIdType>(0),
-    [](const auto& sum, const auto& vertex) { return sum + vertex.vertices.size(); });
 
   return idx;
 }
@@ -3178,9 +3179,8 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   // Update the cells
   cells = vtkSmartPointer<vtkCellArray>::New ();
 
-  const auto idx = details::fillCells(lookup, verts, cells, max_size_of_polygon);
+  details::fillCells(lookup, verts, cells, max_size_of_polygon);
 
-  cells->GetData ()->SetNumberOfValues (idx);
   cells->Squeeze ();
   // Set the the vertices
   polydata->SetStrips (cells);
@@ -4075,7 +4075,12 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   // Save the pointer/ID pair to the global actor map
   CloudActor& cloud_actor = (*cloud_actor_map_)[id];
   cloud_actor.actor = actor;
+#if VTK_MAJOR_VERSION > 9 || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 6)
+  cloud_actor.cells = vtkSmartPointer<vtkIdTypeArray>::New ();
+  reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->ExportLegacyFormat (cloud_actor.cells);
+#else
   cloud_actor.cells = reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
+#endif
   cloud_actor.geometry_handlers.push_back (geometry_handler);
   cloud_actor.color_handlers.push_back (color_handler);
 
