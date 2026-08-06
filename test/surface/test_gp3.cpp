@@ -239,6 +239,111 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
   }
 }
 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, computeTriangleMeshArea)
+{
+  // Init objects
+  PolygonMesh triangles;
+  GreedyProjectionTriangulation<PointNormal> gp3;
+
+  // Set parameters
+  gp3.setInputCloud(cloud_with_normals);
+  gp3.setSearchMethod(tree2);
+  gp3.setSearchRadius(0.025);
+  gp3.setMu(2.5);
+  gp3.setMaximumNearestNeighbors(100);
+  gp3.setMaximumSurfaceAngle(M_PI / 4); // 45 degrees
+  gp3.setMinimumAngle(M_PI / 18); // 10 degrees
+  gp3.setMaximumAngle(2 * M_PI / 3); // 120 degrees
+  gp3.setNormalConsistency(false);
+
+  // Reconstruct
+  gp3.reconstruct(triangles);
+
+  float functArea = pcl::computeTriangleMeshArea(cloud_with_normals, triangles.polygons);
+  EXPECT_NEAR((functArea), 0.021, 0.001);
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ (new pcl::PointCloud<pcl::PointXYZ> ());
+  pcl::PointXYZ p;
+  p.x = p.y = p.z = 0.f;
+  cloud_->push_back (p);
+
+  p.x = 1.f;
+  p.y = 0.f;
+  p.z = 0.f;
+  cloud_->push_back (p);
+
+  p.x = 0.f;
+  p.y = 1.f;
+  p.z = 0.f;
+  cloud_->push_back (p);
+
+  p.x = 1.f;
+  p.y = 1.f;
+  p.z = 0.f;
+  cloud_->push_back (p);
+
+  p.x = 0.f;
+  p.y = 1.5f;
+  p.z = 0.5f;
+  cloud_->push_back (p);
+
+  p.x = 1.f;
+  p.y = 1.5f;
+  p.z = 0.5f;
+  cloud_->push_back (p);
+
+  cloud_->height = 1;
+  cloud_->width = cloud_->size ();
+
+  search::KdTree<PointXYZ>::Ptr treeLoc;
+    // Create search tree
+  treeLoc.reset (new search::KdTree<PointXYZ> (false));
+  treeLoc->setInputCloud (cloud_);
+
+    // Normal estimation
+  NormalEstimation<PointXYZ, Normal> nLoc;
+  PointCloud<Normal>::Ptr normalsLoc (new PointCloud<Normal> ());
+  nLoc.setInputCloud (cloud_);
+  //nLoc.setIndices (indices[B);
+  nLoc.setSearchMethod (treeLoc);
+  nLoc.setKSearch (20);
+  nLoc.compute (*normalsLoc);
+
+  // Concatenate XYZ and normal information
+  PointCloud<PointNormal>::Ptr cloud_with_normalsLoc (new PointCloud<PointNormal>);
+  pcl::concatenateFields (*cloud_, *normalsLoc, *cloud_with_normalsLoc);
+      
+  // Create search tree
+  tree2.reset (new search::KdTree<PointNormal>);
+  tree2->setInputCloud (cloud_with_normalsLoc);
+
+    // Init objects
+  PolygonMesh trianglesLoc;
+  GreedyProjectionTriangulation<PointNormal> gpLoc;
+
+  // Set parameters
+  gpLoc.setInputCloud(cloud_with_normalsLoc);
+  gpLoc.setSearchMethod(tree2);
+  gpLoc.setSearchRadius(2.0);
+  gpLoc.setMu(2.5);
+  gpLoc.setMaximumNearestNeighbors(100);
+  gpLoc.setMaximumSurfaceAngle(M_PI / 4); // 45 degrees
+  gpLoc.setMinimumAngle(M_PI / 18); // 10 degrees
+  gpLoc.setMaximumAngle(2 * M_PI / 3); // 120 degrees
+  gpLoc.setNormalConsistency(false);
+
+  // Reconstruct
+  gpLoc.reconstruct(trianglesLoc);
+
+  functArea = pcl::computeTriangleMeshArea(cloud_with_normalsLoc, trianglesLoc.polygons);
+  EXPECT_NEAR((functArea), 1.70710678, 0.1);//1+1*sqrt(0.5^2+0.5^2) Pythagoras th.
+
+}
+
+
 /* ---[ */
 int
 main (int argc, char** argv)
