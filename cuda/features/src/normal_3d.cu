@@ -36,6 +36,7 @@
  */
 
 #include "pcl/cuda/features/normal_3d_kernels.h"
+#include <thrust/tuple.h>
 
 namespace pcl
 {
