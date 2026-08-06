@@ -58,6 +58,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_weighted.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_lls.h"
+  "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_dcreg.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_lls_weighted.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_symmetric_point_to_plane_lls.h"
   "include/pcl/${SUBSYS_NAME}/transformation_validation.h"
@@ -107,6 +108,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_dual_quaternion.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_lm.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_lls.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_dcreg.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_lls_weighted.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_weighted.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_symmetric_point_to_plane_lls.hpp"
@@ -156,6 +158,7 @@ set(srcs
   src/transformation_estimation_lm.cpp
   src/transformation_estimation_point_to_plane_weighted.cpp
   src/transformation_estimation_point_to_plane_lls.cpp
+  src/transformation_estimation_point_to_plane_dcreg.cpp
   src/transformation_estimation_point_to_plane_lls_weighted.cpp
   src/transformation_validation_euclidean.cpp
   src/sample_consensus_prerejective.cpp
