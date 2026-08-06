@@ -269,6 +269,39 @@ TEST (PCL, IterativeClosestPoint)
   EXPECT_EQ (transformation (3, 3), 1);
 }
 
+template <typename Scalar> void
+runICPWithNormals ()
+{
+  using PointT = PointNormal;
+  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
+  copyPointCloud (cloud_source, *src);
+  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
+  copyPointCloud (cloud_target, *tgt);
+  PointCloud<PointT> output;
+
+  // IterativeClosestPointWithNormals needs normals on both clouds
+  NormalEstimation<PointT, PointT> norm_est;
+  norm_est.setSearchMethod (search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+  norm_est.setKSearch (10);
+  norm_est.setInputCloud (src);
+  norm_est.compute (*src);
+  norm_est.setInputCloud (tgt);
+  norm_est.compute (*tgt);
+
+  IterativeClosestPointWithNormals<PointT, PointT, Scalar> reg;
+  reg.setInputSource (src);
+  reg.setInputTarget (tgt);
+  reg.setMaximumIterations (50);
+  reg.setTransformationEpsilon (1e-8);
+  reg.setMaxCorrespondenceDistance (0.05);
+
+  // Register and check that the alignment succeeded
+  reg.align (output);
+  EXPECT_EQ (output.size (), cloud_source.size ());
+  EXPECT_TRUE (reg.hasConverged ());
+  EXPECT_LT (reg.getFitnessScore (), 0.001);
+}
+
 TEST (PCL, IterativeClosestPointWithNormals)
 {
   IterativeClosestPointWithNormals<PointNormal, PointNormal, float> reg_float;
@@ -278,6 +311,10 @@ TEST (PCL, IterativeClosestPointWithNormals)
   IterativeClosestPointWithNormals<PointNormal, PointNormal, double> reg_double;
   reg_double.setUseSymmetricObjective(true);
   EXPECT_TRUE(reg_double.getUseSymmetricObjective());
+
+  // Test the actual alignment for both float and double precision
+  runICPWithNormals<float> ();
+  runICPWithNormals<double> ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
