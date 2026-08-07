@@ -50,7 +50,11 @@
 #include <vtkVersion.h>
 #include <vtkPolyDataReader.h>
 #include <vtkRenderWindow.h>
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+#include <vtkTransformFilter.h>
+#else
 #include <vtkTransformPolyDataFilter.h>
+#endif
 #include <vtkDoubleArray.h>
 #include <vtkDataArray.h>
 #include <vtkPointData.h>
@@ -321,7 +325,11 @@ update (CallbackParameters* params)
     vtkSmartPointer<vtkTransform> vtk_transform = vtkSmartPointer<vtkTransform>::New ();
     vtk_transform->SetMatrix (vtk_mat);
     // Setup the transformator
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+    vtkSmartPointer<vtkTransformFilter> vtk_transformator = vtkSmartPointer<vtkTransformFilter>::New ();
+#else
     vtkSmartPointer<vtkTransformPolyDataFilter> vtk_transformator = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+#endif
     vtk_transformator->SetTransform (vtk_transform);
     vtk_transformator->SetInputData (vtk_model);
     vtk_transformator->Update ();
@@ -329,7 +337,11 @@ update (CallbackParameters* params)
     // Visualize
     vtkSmartPointer<vtkActor> vtk_actor = vtkSmartPointer<vtkActor>::New();
     vtkSmartPointer<vtkPolyDataMapper> vtk_mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+    vtk_mapper->SetInputData (vtk_transformator->GetPolyDataOutput ());
+#else
     vtk_mapper->SetInputData (vtk_transformator->GetOutput ());
+#endif
     vtk_actor->SetMapper(vtk_mapper);
     // Set the appearance & add to the renderer
     vtk_actor->GetProperty ()->SetColor (0.6, 0.7, 0.9);

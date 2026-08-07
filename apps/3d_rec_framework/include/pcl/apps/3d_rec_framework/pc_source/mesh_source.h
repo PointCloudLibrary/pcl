@@ -12,7 +12,12 @@
 #include <pcl/apps/render_views_tesselated_sphere.h>
 #include <pcl/io/pcd_io.h>
 
+#include <vtkVersion.h>
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+#include <vtkTransformFilter.h>
+#else
 #include <vtkTransformPolyDataFilter.h>
+#endif
 
 #include <functional>
 
@@ -153,13 +158,22 @@ public:
       trans->Modified();
       trans->Update();
 
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+      vtkSmartPointer<vtkTransformFilter> filter_scale =
+          vtkSmartPointer<vtkTransformFilter>::New();
+#else
       vtkSmartPointer<vtkTransformPolyDataFilter> filter_scale =
           vtkSmartPointer<vtkTransformPolyDataFilter>::New();
+#endif
       filter_scale->SetTransform(trans);
       filter_scale->SetInputConnection(reader->GetOutputPort());
       filter_scale->Update();
 
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+      vtkSmartPointer<vtkPolyData> mapper = filter_scale->GetPolyDataOutput();
+#else
       vtkSmartPointer<vtkPolyData> mapper = filter_scale->GetOutput();
+#endif
 
       // generate views
       pcl::apps::RenderViewsTesselatedSphere render_views;
