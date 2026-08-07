@@ -38,6 +38,5 @@
 #include <pcl/search/brute_force.h>
 #include <pcl/search/impl/brute_force.hpp>
 
-// Instantiations of specific point types
-PCL_INSTANTIATE (BruteForce, PCL_XYZ_POINT_TYPES)
-PCL_INSTANTIATE (BruteForce, PCL_DESCRIPTOR_FEATURE_POINT_TYPES)
+// Keep the precompiled BruteForce types in sync with AutoSelectMethod.
+PCL_INSTANTIATE (BruteForce, PCL_POINT_TYPES)
