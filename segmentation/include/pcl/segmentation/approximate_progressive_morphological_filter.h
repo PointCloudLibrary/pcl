@@ -72,11 +72,15 @@ namespace pcl
       
       ~ApproximateProgressiveMorphologicalFilter () override;
 
-      /** \brief Get the maximum window size to be used in filtering ground returns. */
+      /** \brief Get the maximum window size to be used in filtering ground returns.
+        * \return the maximum window size in number of grid cells
+        */
       inline int
       getMaxWindowSize () const { return (max_window_size_); }
 
-      /** \brief Set the maximum window size to be used in filtering ground returns. */
+      /** \brief Set the maximum window size to be used in filtering ground returns.
+        * \param[in] max_window_size the maximum window size in number of grid cells
+        */
       inline void
       setMaxWindowSize (int max_window_size) { max_window_size_ = max_window_size; }
 
@@ -143,7 +147,8 @@ namespace pcl
 
     protected:
 
-      /** \brief Maximum window size to be used in filtering ground returns. */
+      /** \brief Maximum window size to be used in filtering ground returns, in
+        * number of grid cells. */
       int max_window_size_{33};
 
       /** \brief Slope value to be used in computing the height threshold. */
