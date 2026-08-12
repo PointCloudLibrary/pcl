@@ -37,6 +37,7 @@
  */
 #include <pcl/io/obj_io.h>
 #include <fstream>
+#include <exception>
 #include <pcl/common/io.h>
 #include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/time.h>
@@ -654,6 +655,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
 
           int v = std::stoi(f_st[0]);
           v = (v < 0) ? point_idx + v : v - 1;
+          if (v < 0 || static_cast<std::size_t> (v) >= cloud.width)
+          {
+            PCL_ERROR ("[pcl::OBJReader::read] Vertex index out of bounds in line %s\n", line.c_str ());
+            fs.close ();
+            return (-1);
+          }
           face_vertices.vertices[i - 1] = v;
 
           //handle normals
@@ -661,7 +668,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
           {
             int n = std::stoi(n_st);
             n = (n < 0) ? normal_idx + n : n - 1;
-
+            if (normal_mapping.empty() || n < 0 || static_cast<std::size_t> (n) >= normals.size())
+            {
+              PCL_ERROR ("[pcl::OBJReader::read] Normal index out of bounds in line %s\n", line.c_str ());
+              fs.close ();
+              return (-1);
+            }
             normal_mapping[v] += normals[n];
             normal_mapping_used = true;
           }
@@ -673,6 +685,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   catch (const char *exception)
   {
     PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
+    fs.close ();
+    return (-1);
+  }
+  catch (const std::exception &exception)
+  {
+    PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception.what ());
     fs.close ();
     return (-1);
   }
@@ -899,6 +917,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
 
           int v = std::stoi(f_st[0]);
           v = (v < 0) ? v_idx + v : v - 1;
+          if (v < 0 || static_cast<std::size_t> (v) >= mesh.cloud.width)
+          {
+            PCL_ERROR ("[pcl::OBJReader::read] Vertex index out of bounds in line %s\n", line.c_str ());
+            fs.close ();
+            return (-1);
+          }
           face_vertices.vertices[i - 1] = v;
 
           //handle normals
@@ -906,7 +930,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
           {
             int n = std::stoi(n_st);
             n = (n < 0) ? vn_idx + n : n - 1;
-
+            if (normal_mapping.empty() || n < 0 || static_cast<std::size_t> (n) >= normals.size())
+            {
+              PCL_ERROR ("[pcl::OBJReader::read] Normal index out of bounds in line %s\n", line.c_str ());
+              fs.close ();
+              return (-1);
+            }
             normal_mapping[v] += normals[n];
           }
 
@@ -914,7 +943,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
           {
             int vt = std::stoi(vt_st);
             vt = (vt < 0) ? vt_idx + vt : vt - 1;
-
+            if (vt < 0 || static_cast<std::size_t> (vt) >= vt_idx)
+            {
+              PCL_ERROR ("[pcl::OBJReader::read] Texture coordinate index out of bounds in line %s\n", line.c_str ());
+              fs.close ();
+              return (-1);
+            }
             tex_indices.vertices.push_back(vt);
           }
         }
@@ -928,6 +962,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
   catch (const char *exception)
   {
     PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
+    fs.close ();
+    return (-1);
+  }
+  catch (const std::exception &exception)
+  {
+    PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception.what ());
     fs.close ();
     return (-1);
   }
@@ -1097,6 +1137,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
 
           int v = std::stoi(f_st[0]);
           v = (v < 0) ? v_idx + v : v - 1;
+          if (v < 0 || static_cast<std::size_t> (v) >= mesh.cloud.width)
+          {
+            PCL_ERROR ("[pcl::OBJReader::read] Vertex index out of bounds in line %s\n", line.c_str ());
+            fs.close ();
+            return (-1);
+          }
           face_vertices.vertices[i - 1] = v;
 
           //handle normals
@@ -1104,7 +1150,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
           {
             int n = std::stoi(n_st);
             n = (n < 0) ? vn_idx + n : n - 1;
-              
+            if (normal_mapping.empty() || n < 0 || static_cast<std::size_t> (n) >= normals.size())
+            {
+              PCL_ERROR ("[pcl::OBJReader::read] Normal index out of bounds in line %s\n", line.c_str ());
+              fs.close ();
+              return (-1);
+            }
             normal_mapping[v] += normals[n];
             normal_mapping_used = true;
           }
@@ -1117,6 +1168,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
   catch (const char *exception)
   {
     PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
+    fs.close ();
+    return (-1);
+  }
+  catch (const std::exception &exception)
+  {
+    PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception.what ());
     fs.close ();
     return (-1);
   }
