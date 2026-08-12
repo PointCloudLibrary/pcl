@@ -8,7 +8,7 @@ jobs:
     container:
       image: 'pointcloudlibrary/env:24.04'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run clang-tidy
         run: >
           bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
