@@ -77,7 +77,7 @@ RUN apt-get update \
  && if [ "$(lsb_release -sr)" = "18.04" ]; then \
        apt-get -V install -y nvidia-cuda-toolkit g++-6 ; \
      else \
-       apt-get -V install -y nvidia-cuda-toolkit-gcc ; \
+       apt-get -V --no-install-recommends install -y nvidia-cuda-toolkit-gcc ; \
      fi \
  && rm -rf /var/lib/apt/lists/*
 
