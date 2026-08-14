@@ -40,33 +40,17 @@
 #include <pcl/point_representation.h>
 #include <pcl/search/search.h>
 
-#include <type_traits>
-
 namespace pcl
 {
   namespace search
   {
     namespace detail
     {
-      template <typename PointT, typename = void>
-      struct has_descriptor_size : std::false_type
-      {
-      };
-
-      template <typename PointT>
-      struct has_descriptor_size<PointT, std::void_t<decltype (pcl::detail::traits::descriptorSize<PointT>::value)>>
-      : std::true_type
-      {
-      };
-
       template <typename PointT>
       typename PointRepresentation<PointT>::ConstPtr
       makeDefaultPointRepresentation ()
       {
-        if constexpr (!pcl::traits::has_xyz_v<PointT> && has_descriptor_size<PointT>::value)
-          return (pcl::make_shared<DefaultFeatureRepresentation<PointT>> ());
-        else
-          return (pcl::make_shared<DefaultPointRepresentation<PointT>> ());
+        return (pcl::make_shared<DefaultPointRepresentation<PointT>> ());
       }
     } // namespace detail
 
