@@ -42,6 +42,8 @@
 #include <limits>
 
 #include <pcl/point_types.h>
+#include <pcl/common/io.h>
+#include <pcl/common/transforms.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection_distance.h>
@@ -58,6 +60,9 @@
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
 #include <pcl/registration/transformation_estimation_symmetric_point_to_plane_lls.h>
+#include <pcl/registration/fricp.h>
+#include <Eigen/Geometry>
+#include <random>
 #include <pcl/features/normal_3d.h>
 
 #include "test_registration_api_data.h"
@@ -705,6 +710,70 @@ TEST (PCL, TransformationEstimationSymmetricPointToPlaneLLS)
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       EXPECT_NEAR (estimated_transform (i, j), ground_truth_tform (i, j), 1e-2);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, FastRobustIterativeClosestPoint)
+{
+  using PointT = PointXYZ;
+  CloudXYZ::Ptr src (new CloudXYZ);
+  copyPointCloud (cloud_source, *src);
+  CloudXYZ::Ptr tgt (new CloudXYZ);
+  copyPointCloud (cloud_target, *tgt);
+  CloudXYZ output;
+
+  pcl::FastRobustIterativeClosestPoint<PointT, PointT> reg;
+  reg.setInputSource (src);
+  reg.setInputTarget (tgt);
+  reg.setMaximumIterations (60);
+  reg.setTransformationEpsilon (1e-8);
+
+  reg.align (output);
+  ASSERT_TRUE (reg.hasConverged ());
+  EXPECT_EQ (output.size (), cloud_source.size ());
+  EXPECT_LT (reg.getFitnessScore (), 5e-4);
+
+  Eigen::Isometry3f transform =
+      Eigen::Isometry3f (Eigen::AngleAxisf (-0.15f, Eigen::Vector3f::UnitX ()) *
+                         Eigen::AngleAxisf (0.25f, Eigen::Vector3f::UnitY ()) *
+                         Eigen::AngleAxisf (-0.30f, Eigen::Vector3f::UnitZ ()));
+  transform.translation () = Eigen::Vector3f (0.08f, -0.05f, 0.12f);
+  CloudXYZ::Ptr transformed_tgt (new CloudXYZ);
+  pcl::transformPointCloud (*tgt, *transformed_tgt, transform.matrix ());
+
+  std::mt19937 rng (1337u);
+  std::normal_distribution<float> gaussian (0.0f, 0.004f);
+  for (auto& p : *transformed_tgt)
+  {
+    p.x += gaussian (rng);
+    p.y += gaussian (rng);
+    p.z += gaussian (rng);
+  }
+
+  std::uniform_real_distribution<float> uniform (-0.4f, 0.4f);
+  for (int i = 0; i < 20; ++i)
+  {
+    PointT outlier;
+    outlier.x = uniform (rng);
+    outlier.y = uniform (rng);
+    outlier.z = uniform (rng) + 0.4f;
+    transformed_tgt->push_back (outlier);
+  }
+  transformed_tgt->width = static_cast<std::uint32_t>(transformed_tgt->size ());
+  transformed_tgt->height = 1;
+  transformed_tgt->is_dense = false;
+
+  pcl::FastRobustIterativeClosestPoint<PointT, PointT> reg_guess;
+  reg_guess.setInputSource (src);
+  reg_guess.setInputTarget (transformed_tgt);
+  reg_guess.setMaximumIterations (60);
+  reg_guess.setTransformationEpsilon (1e-8);
+
+  reg_guess.align (output, transform.matrix ());
+  ASSERT_TRUE (reg_guess.hasConverged ());
+  EXPECT_EQ (output.size (), cloud_source.size ());
+  EXPECT_LT (reg_guess.getFitnessScore (), 5e-4);
 }
 
 
