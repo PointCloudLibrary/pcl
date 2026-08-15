@@ -44,6 +44,7 @@
 #include <random>
 #include <list>
 
+#include <pcl/pcl_macros.h> // for PCL_DEPRECATED
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>     // for pcl::PointXYZ
@@ -53,6 +54,8 @@
 #include <pcl/outofcore/outofcore_node_data.h>
 
 #include <pcl/octree/octree_nodes.h>
+
+#include <boost/filesystem/path.hpp> // for deprecated boost::filesystem overloads
 
 namespace pcl
 {
@@ -127,6 +130,13 @@ namespace pcl
 
         /** \brief Create root node and directory */
         OutofcoreOctreeBaseNode (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const pcl_fs::path &root_name);
+
+        /** \brief Create root node and directory
+         *  \deprecated Use the constructor taking pcl_fs::path instead. */
+        PCL_DEPRECATED(1, 16, "use the constructor taking pcl_fs::path instead")
+        OutofcoreOctreeBaseNode (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &root_name)
+          : OutofcoreOctreeBaseNode (bb_min, bb_max, tree, pcl_fs::path (root_name.native ())) {}
+
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
         
@@ -575,5 +585,25 @@ namespace pcl
 
         OutofcoreOctreeNodeMetadata::Ptr node_metadata_;
     };
+
+    /** \brief Non-class function which creates a single child leaf; used with \ref queryBBIntersects_noload to avoid loading the data from disk
+     *  \deprecated Use the overload taking pcl_fs::path instead. */
+    template<typename ContainerT, typename PointT>
+    PCL_DEPRECATED(1, 16, "use the overload taking pcl_fs::path instead")
+    OutofcoreOctreeBaseNode<ContainerT, PointT>*
+    makenode_norec (const boost::filesystem::path &path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super)
+    {
+      return (makenode_norec<ContainerT, PointT> (pcl_fs::path (path.native ()), super));
+    }
+
+    /** \brief Non-class method which performs a bounding box query without loading any of the point cloud data from disk
+     *  \deprecated Use the overload taking pcl_fs::path instead. */
+    template<typename ContainerT, typename PointT>
+    PCL_DEPRECATED(1, 16, "use the overload taking pcl_fs::path instead")
+    void
+    queryBBIntersects_noload (const boost::filesystem::path &root_node, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const std::uint32_t query_depth, std::list<std::string> &bin_name)
+    {
+      queryBBIntersects_noload<ContainerT, PointT> (pcl_fs::path (root_node.native ()), min, max, query_depth, bin_name);
+    }
   }//namespace outofcore
 }//namespace pcl

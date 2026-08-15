@@ -51,6 +51,8 @@
 
 #include <pcl/common/pcl_filesystem.h>
 
+#include <boost/filesystem/path.hpp> // for deprecated boost::filesystem overloads
+
 #include <ostream>
 
 namespace pcl
@@ -125,15 +127,35 @@ namespace pcl
         const pcl_fs::path&
         getDirectoryPathname () const;
         /** \brief Set the directory path name */
-        void 
+        void
         setDirectoryPathname (const pcl_fs::path& directory_pathname);
+
+        /** \brief Set the directory path name
+         *  \deprecated Use setDirectoryPathname(const pcl_fs::path&) instead. */
+        PCL_DEPRECATED(1, 16, "use setDirectoryPathname(const pcl_fs::path&) instead")
+        void
+        setDirectoryPathname (const boost::filesystem::path& directory_pathname)
+        {
+          setDirectoryPathname (pcl_fs::path (directory_pathname.native ()));
+        }
+
 
         /** \brief Get the path to the PCD file */
         const pcl_fs::path&
         getPCDFilename () const;
         /** \brief Set the point filename; extension .pcd */
-        void 
+        void
         setPCDFilename (const pcl_fs::path& point_filename);
+
+        /** \brief Set the point filename; extension .pcd
+         *  \deprecated Use setPCDFilename(const pcl_fs::path&) instead. */
+        PCL_DEPRECATED(1, 16, "use setPCDFilename(const pcl_fs::path&) instead")
+        void
+        setPCDFilename (const boost::filesystem::path& point_filename)
+        {
+          setPCDFilename (pcl_fs::path (point_filename.native ()));
+        }
+
 
         /** \brief et the outofcore version read from the "version" field of the JSON object */
         int 
@@ -146,8 +168,18 @@ namespace pcl
         const pcl_fs::path&
         getMetadataFilename () const;
         /** \brief Gets the name of the JSON file */
-        void 
+        void
         setMetadataFilename (const pcl_fs::path& path_to_metadata);
+
+        /** \brief Gets the name of the JSON file
+         *  \deprecated Use setMetadataFilename(const pcl_fs::path&) instead. */
+        PCL_DEPRECATED(1, 16, "use setMetadataFilename(const pcl_fs::path&) instead")
+        void
+        setMetadataFilename (const boost::filesystem::path& path_to_metadata)
+        {
+          setMetadataFilename (pcl_fs::path (path_to_metadata.native ()));
+        }
+
         
         /** \brief Get the midpoint of this node's bounding box */
         const Eigen::Vector3d&
@@ -161,8 +193,18 @@ namespace pcl
         int 
         loadMetadataFromDisk ();
         /** \brief Loads the data from a JSON file located at \ref metadata_filename_ */
-        int 
+        int
         loadMetadataFromDisk (const pcl_fs::path& path_to_metadata);
+
+        /** \brief Loads the data from a JSON file located at \ref metadata_filename_
+         *  \deprecated Use loadMetadataFromDisk(const pcl_fs::path&) instead. */
+        PCL_DEPRECATED(1, 16, "use loadMetadataFromDisk(const pcl_fs::path&) instead")
+        int
+        loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata)
+        {
+          return (loadMetadataFromDisk (pcl_fs::path (path_to_metadata.native ())));
+        }
+
 
         friend
         std::ostream& operator<<(std::ostream& os, const OutofcoreOctreeNodeMetadata& metadata_arg);

@@ -38,6 +38,8 @@
 
 #pragma once
 
+#define PCL_USING_STD_FILESYSTEM
+
 #include <filesystem>
 
 namespace pcl_fs = std::filesystem;

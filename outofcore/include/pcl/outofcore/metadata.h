@@ -38,7 +38,11 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h> // for PCL_DEPRECATED
 #include <pcl/common/pcl_filesystem.h>
+
+#include <boost/filesystem/path.hpp> // for deprecated boost::filesystem overloads
+
 #include <vector>
 #include <ostream>
 
@@ -73,7 +77,17 @@ namespace pcl
        *  it in variables that have public getters and setters*/
       virtual int
       loadMetadataFromDisk (const pcl_fs::path& path_to_metadata) = 0;
-      
+
+      /** \brief Method which should read and parse metadata and store
+       *  it in variables that have public getters and setters
+       *  \deprecated Use loadMetadataFromDisk(const pcl_fs::path&) instead. */
+      PCL_DEPRECATED(1, 16, "use loadMetadataFromDisk(const pcl_fs::path&) instead")
+      int
+      loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata)
+      {
+        return (loadMetadataFromDisk (pcl_fs::path (path_to_metadata.native ())));
+      }
+
       /** \brief Should write the same ascii metadata that is saved on
        *   disk, or a human readable format of the metadata in case a binary format is being used */
       friend std::ostream& 

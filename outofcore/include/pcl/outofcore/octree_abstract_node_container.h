@@ -38,7 +38,10 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h> // for PCL_DEPRECATED
 #include <pcl/common/pcl_filesystem.h>
+
+#include <boost/filesystem/path.hpp> // for deprecated boost::filesystem overloads
 
 #include <mutex>
 #include <vector>
@@ -59,6 +62,11 @@ namespace pcl
         {}
 
         OutofcoreAbstractNodeContainer (const pcl_fs::path&) {}
+
+        /** \deprecated Use the constructor taking pcl_fs::path instead. */
+        PCL_DEPRECATED(1, 16, "use the constructor taking pcl_fs::path instead")
+        OutofcoreAbstractNodeContainer (const boost::filesystem::path&) {}
+
 
         virtual 
         ~OutofcoreAbstractNodeContainer () = default;        
@@ -86,6 +94,16 @@ namespace pcl
 
         virtual void
         convertToXYZ (const pcl_fs::path& path)=0;
+
+        /** \brief Saves the data to an XYZ file
+         *  \deprecated Use convertToXYZ(const pcl_fs::path&) instead. */
+        PCL_DEPRECATED(1, 16, "use convertToXYZ(const pcl_fs::path&) instead")
+        void
+        convertToXYZ (const boost::filesystem::path& path)
+        {
+          convertToXYZ (pcl_fs::path (path.native ()));
+        }
+
 
         virtual PointT
         operator[] (std::uint64_t idx) const=0;
