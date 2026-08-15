@@ -166,7 +166,7 @@ namespace pcl
       template<> struct descriptorSize<FPFHSignature33> { static constexpr const int value = 33; };
       template<> struct descriptorSize<VFHSignature308> { static constexpr const int value = 308; };
       template<> struct descriptorSize<GRSDSignature21> { static constexpr const int value = 21; };
-      template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 512; };
+      template<> struct descriptorSize<BRISKSignature512> { static constexpr const int value = 66; };
       template<> struct descriptorSize<ESFSignature640> { static constexpr const int value = 640; };
       template<> struct descriptorSize<GASDSignature512> { static constexpr const int value = 512; };
       template<> struct descriptorSize<GASDSignature984> { static constexpr const int value = 984; };
