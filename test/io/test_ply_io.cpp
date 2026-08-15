@@ -44,6 +44,21 @@
 #include <pcl/test/gtest.h>
 #include <fstream> // for ofstream
 
+namespace {
+std::string
+readPLYHeader(const std::string& file_name)
+{
+  std::ifstream fs(file_name, std::ios::binary);
+  std::string header;
+  for (std::string line; std::getline(fs, line);) {
+    header += line + '\n';
+    if (line == "end_header")
+      break;
+  }
+  return header;
+}
+} // namespace
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PLYReaderWriter)
 {
@@ -118,6 +133,77 @@ TEST (PCL, PLYReaderWriter)
     EXPECT_FLOAT_EQ (cloud[counter].intensity, cloud2[counter].intensity);  // test for fromPCLPointCloud2 ()
   }
   remove ("test_pcl_io.ply");
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, PLYPolygonMeshFaceListSize)
+{
+  const std::string small_ascii_file = "test_small_polygon_ascii.ply";
+  const std::string small_binary_file = "test_small_polygon_binary.ply";
+  const std::string large_ascii_file = "test_large_polygon_ascii.ply";
+  const std::string large_binary_file = "test_large_polygon_binary.ply";
+  struct FilesCleanup {
+    const std::string& small_ascii;
+    const std::string& small_binary;
+    const std::string& large_ascii;
+    const std::string& large_binary;
+
+    ~FilesCleanup()
+    {
+      remove(small_ascii.c_str());
+      remove(small_binary.c_str());
+      remove(large_ascii.c_str());
+      remove(large_binary.c_str());
+    }
+  } cleanup{small_ascii_file, small_binary_file, large_ascii_file, large_binary_file};
+
+  pcl::PointCloud<pcl::PointXYZ> vertices;
+  vertices.resize(256);
+  for (std::size_t i = 0; i < vertices.size(); ++i) {
+    vertices[i].x = static_cast<float>(i);
+    vertices[i].y = static_cast<float>(i % 7);
+    vertices[i].z = 0.0f;
+  }
+
+  pcl::PolygonMesh mesh;
+  pcl::toPCLPointCloud2(vertices, mesh.cloud);
+  pcl::Vertices small_polygon;
+  small_polygon.vertices.reserve(255);
+  for (std::uint32_t i = 0; i < 255; ++i)
+    small_polygon.vertices.push_back(i);
+  mesh.polygons = {small_polygon};
+
+  ASSERT_EQ(pcl::io::savePLYFile(small_ascii_file, mesh), 0);
+  ASSERT_EQ(pcl::io::savePLYFileBinary(small_binary_file, mesh), 0);
+  const std::string uchar_property = "property list uchar int vertex_indices";
+  EXPECT_NE(readPLYHeader(small_ascii_file).find(uchar_property), std::string::npos);
+  EXPECT_NE(readPLYHeader(small_binary_file).find(uchar_property), std::string::npos);
+  for (const std::string& file_name : {small_ascii_file, small_binary_file}) {
+    pcl::PolygonMesh loaded;
+    ASSERT_EQ(pcl::io::loadPLYFile(file_name, loaded), 0);
+    ASSERT_EQ(loaded.polygons.size(), mesh.polygons.size());
+    EXPECT_EQ(loaded.polygons[0].vertices, small_polygon.vertices);
+  }
+
+  pcl::Vertices large_polygon;
+  large_polygon.vertices.reserve(vertices.size());
+  for (std::size_t i = 0; i < vertices.size(); ++i)
+    large_polygon.vertices.push_back(static_cast<std::uint32_t>(i));
+  mesh.polygons.push_back(large_polygon);
+
+  ASSERT_EQ(pcl::io::savePLYFile(large_ascii_file, mesh), 0);
+  ASSERT_EQ(pcl::io::savePLYFileBinary(large_binary_file, mesh), 0);
+  const std::string uint_property = "property list uint int vertex_indices";
+  EXPECT_NE(readPLYHeader(large_ascii_file).find(uint_property), std::string::npos);
+  EXPECT_NE(readPLYHeader(large_binary_file).find(uint_property), std::string::npos);
+
+  for (const std::string& file_name : {large_ascii_file, large_binary_file}) {
+    pcl::PolygonMesh loaded;
+    ASSERT_EQ(pcl::io::loadPLYFile(file_name, loaded), 0);
+    ASSERT_EQ(loaded.polygons.size(), mesh.polygons.size());
+    EXPECT_EQ(loaded.polygons[0].vertices, small_polygon.vertices);
+    EXPECT_EQ(loaded.polygons[1].vertices, large_polygon.vertices);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

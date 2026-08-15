@@ -49,6 +49,17 @@
 
 #include <boost/algorithm/string.hpp> // for split
 
+namespace {
+bool
+requiresUint32FaceListSize(const pcl::PolygonMesh& mesh)
+{
+  return std::any_of(
+      mesh.polygons.cbegin(), mesh.polygons.cend(), [](const pcl::Vertices& polygon) {
+        return polygon.vertices.size() > std::numeric_limits<std::uint8_t>::max();
+      });
+}
+} // namespace
+
 std::tuple<std::function<void ()>, std::function<void ()> >
 pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std::size_t count)
 {
@@ -1525,7 +1536,8 @@ void writePLYHeader (std::ostream& fs, const pcl::PolygonMesh& mesh, const std::
   }
   // Faces
   fs << "\nelement face "<< mesh.polygons.size ();
-  fs << "\nproperty list uchar int vertex_indices";
+  fs << "\nproperty list " << (requiresUint32FaceListSize(mesh) ? "uint" : "uchar")
+     << " int vertex_indices";
   fs << "\nend_header\n";
 }
 } // namespace io
@@ -1710,10 +1722,17 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   }
 
   // Write down faces
+  const bool use_uint32_face_list_size = requiresUint32FaceListSize(mesh);
   for (const pcl::Vertices& polygon : mesh.polygons)
   {
-    auto value = static_cast<unsigned char> (polygon.vertices.size ());
-    fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));
+    if (use_uint32_face_list_size) {
+      const auto value = static_cast<std::uint32_t>(polygon.vertices.size());
+      fpout.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    }
+    else {
+      const auto value = static_cast<std::uint8_t>(polygon.vertices.size());
+      fpout.write(reinterpret_cast<const char*>(&value), sizeof(value));
+    }
     for (const int value : polygon.vertices)
     {
       //fs << mesh.polygons[i].vertices[j] << " ";
