@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/search/brute_force.h>
 #include <queue>
 #include <vector>
@@ -70,21 +69,11 @@ pcl::search::BruteForce<PointT>::getDistSqr (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool
-pcl::search::BruteForce<PointT>::isValidPoint (const PointT& point) const
-{
-  if constexpr (pcl::traits::has_xyz_v<PointT>)
-    return (pcl::isFinite (point));
-
-  return (point_representation_->isValid (point));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::search::BruteForce<PointT>::nearestKSearch (
     const PointT& point, int k, Indices& k_indices, std::vector<float>& k_distances) const
 {
-  assert (isValidPoint (point) && "Invalid (NaN, Inf) point given to nearestKSearch!");
+  assert (point_representation_->isValid (point) && "Invalid (NaN, Inf) point given to nearestKSearch!");
   
   k_indices.clear ();
   k_distances.clear ();
@@ -179,7 +168,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
     auto iIt =indices_->cbegin ();
     for (; iIt != indices_->cend () && result.size () < static_cast<unsigned> (k); ++iIt)
     {
-      if (isValidPoint ((*input_)[*iIt]))
+      if (point_representation_->isValid ((*input_)[*iIt]))
         result.push_back (Entry (*iIt, getDistSqr ((*input_)[*iIt], point)));
     }
     
@@ -192,7 +181,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
     Entry entry;
     for (; iIt != indices_->cend (); ++iIt)
     {
-      if (!isValidPoint ((*input_)[*iIt]))
+      if (!point_representation_->isValid ((*input_)[*iIt]))
         continue;
 
       entry.distance = getDistSqr ((*input_)[*iIt], point);
@@ -209,7 +198,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
     Entry entry;
     for (entry.index = 0; (entry.index < static_cast<pcl::index_t>(input_->size ())) && (result.size () < static_cast<std::size_t> (k)); ++entry.index)
     {
-      if (isValidPoint ((*input_)[entry.index]))
+      if (point_representation_->isValid ((*input_)[entry.index]))
       {
         entry.distance = getDistSqr ((*input_)[entry.index], point);
         result.push_back (entry);
@@ -222,7 +211,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
     // add the rest
     for (; entry.index < static_cast<pcl::index_t>(input_->size ()); ++entry.index)
     {
-      if (!isValidPoint ((*input_)[entry.index]))
+      if (!point_representation_->isValid ((*input_)[entry.index]))
         continue;
 
       entry.distance = getDistSqr ((*input_)[entry.index], point);
@@ -327,7 +316,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   {
     for (const auto& idx : *indices_)
     {
-      if (!isValidPoint ((*input_)[idx]))
+      if (!point_representation_->isValid ((*input_)[idx]))
         continue;
 
       distance = getDistSqr ((*input_)[idx], point);
@@ -344,7 +333,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   {
     for (std::size_t index = 0; index < input_->size (); ++index)
     {
-      if (!isValidPoint ((*input_)[index]))
+      if (!point_representation_->isValid ((*input_)[index]))
         continue;
       distance = getDistSqr ((*input_)[index], point);
       if (distance <= radius)
@@ -369,7 +358,7 @@ pcl::search::BruteForce<PointT>::radiusSearch (
     const PointT& point, double radius, Indices &k_indices,
     std::vector<float> &k_sqr_distances, unsigned int max_nn) const
 {
-  assert (isValidPoint (point) && "Invalid (NaN, Inf) point given to radiusSearch!");
+  assert (point_representation_->isValid (point) && "Invalid (NaN, Inf) point given to radiusSearch!");
   
   k_indices.clear ();
   k_sqr_distances.clear ();

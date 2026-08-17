@@ -44,16 +44,6 @@ namespace pcl
 {
   namespace search
   {
-    namespace detail
-    {
-      template <typename PointT>
-      typename PointRepresentation<PointT>::ConstPtr
-      makeDefaultPointRepresentation ()
-      {
-        return (pcl::make_shared<DefaultPointRepresentation<PointT>> ());
-      }
-    } // namespace detail
-
     /** \brief Implementation of a simple brute force search algorithm.
       * \author Suat Gedikli
       * \ingroup search
@@ -96,13 +86,10 @@ namespace pcl
       // replace by some metric functor
       float getDistSqr (const PointT& point1, const PointT& point2) const;
 
-      bool
-      isValidPoint (const PointT& point) const;
-
       public:
         BruteForce (bool sorted_results = false)
         : Search<PointT> ("BruteForce", sorted_results)
-        , point_representation_ (detail::makeDefaultPointRepresentation<PointT> ())
+        , point_representation_ (new DefaultPointRepresentation<PointT>)
         {
         }
 

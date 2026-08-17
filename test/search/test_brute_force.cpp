@@ -78,6 +78,27 @@ TEST (PCL, BruteForce_setPointRepresentation)
   EXPECT_FLOAT_EQ (10000.0f, distances[2]);
 }
 
+TEST (PCL, BruteForce_representationControlsValidity)
+{
+  auto cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
+  cloud->is_dense = false;
+  cloud->emplace_back (0.0f, 0.0f, std::numeric_limits<float>::quiet_NaN ());
+  cloud->emplace_back (2.0f, 0.0f, 0.0f);
+
+  pcl::search::BruteForce<pcl::PointXYZ> search (true);
+  search.setInputCloud (cloud);
+  search.setPointRepresentation (pcl::make_shared<PointXYRepresentation> ());
+
+  pcl::Indices indices;
+  std::vector<float> distances;
+  const pcl::PointXYZ query (0.0f, 0.0f, std::numeric_limits<float>::quiet_NaN ());
+  EXPECT_EQ (1, search.nearestKSearch (query, 1, indices, distances));
+  ASSERT_EQ (1, indices.size ());
+  ASSERT_EQ (1, distances.size ());
+  EXPECT_EQ (0, indices[0]);
+  EXPECT_FLOAT_EQ (0.0f, distances[0]);
+}
+
 TEST (PCL, BruteForce_featurePointRepresentation)
 {
   using FeatureT = pcl::FPFHSignature33;
@@ -119,6 +140,34 @@ TEST (PCL, BruteForce_featurePointRepresentation)
     EXPECT_EQ (expected[i].second, indices[i]);
     EXPECT_FLOAT_EQ (expected[i].first, distances[i]);
   }
+}
+
+TEST (PCL, BruteForce_briskUsesDescriptorOnly)
+{
+  using FeatureT = pcl::BRISKSignature512;
+
+  auto cloud = pcl::make_shared<pcl::PointCloud<FeatureT>> ();
+  cloud->resize (2);
+  (*cloud)[0].scale = 100.0f;
+  (*cloud)[0].orientation = 100.0f;
+  (*cloud)[1].descriptor[0] = 1;
+
+  FeatureT query;
+  query.scale = -100.0f;
+  query.orientation = -100.0f;
+
+  pcl::search::BruteForce<FeatureT> search (true);
+  search.setInputCloud (cloud);
+
+  EXPECT_EQ (64, search.getPointRepresentation ()->getNumberOfDimensions ());
+
+  pcl::Indices indices;
+  std::vector<float> distances;
+  EXPECT_EQ (1, search.nearestKSearch (query, 1, indices, distances));
+  ASSERT_EQ (1, indices.size ());
+  ASSERT_EQ (1, distances.size ());
+  EXPECT_EQ (0, indices[0]);
+  EXPECT_FLOAT_EQ (0.0f, distances[0]);
 }
 
 TEST (PCL, BruteForce_sparseFeatureCloudSkipsInvalidDescriptors)

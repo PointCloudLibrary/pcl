@@ -492,8 +492,24 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
-  class DefaultPointRepresentation<BRISKSignature512> : public DefaultFeatureRepresentation <BRISKSignature512>
-  {};
+  class DefaultPointRepresentation <BRISKSignature512> : public PointRepresentation <BRISKSignature512>
+  {
+    public:
+      static constexpr const std::int32_t NR_DIMS = 64;
+
+      DefaultPointRepresentation ()
+      {
+        nr_dimensions_ = NR_DIMS;
+        trivial_ = false;
+      }
+
+      void
+      copyToFloatArray (const BRISKSignature512 &p, float * out) const override
+      {
+        for (int i = 0; i < nr_dimensions_; ++i)
+          out[i] = p.descriptor[i];
+      }
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
