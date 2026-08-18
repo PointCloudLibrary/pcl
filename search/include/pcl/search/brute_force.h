@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/point_representation.h>
 #include <pcl/search/search.h>
 
 namespace pcl
@@ -52,6 +53,7 @@ namespace pcl
     {
       using PointCloud = typename Search<PointT>::PointCloud;
       using PointCloudConstPtr = typename Search<PointT>::PointCloudConstPtr;
+      using PointRepresentationConstPtr = typename PointRepresentation<PointT>::ConstPtr;
 
       using IndicesPtr = pcl::IndicesPtr;
       using IndicesConstPtr = pcl::IndicesConstPtr;
@@ -83,15 +85,34 @@ namespace pcl
 
       // replace by some metric functor
       float getDistSqr (const PointT& point1, const PointT& point2) const;
+
       public:
         BruteForce (bool sorted_results = false)
         : Search<PointT> ("BruteForce", sorted_results)
+        , point_representation_ (new DefaultPointRepresentation<PointT>)
         {
         }
 
         /** \brief Destructor for KdTree. */
         
         ~BruteForce () override = default;
+
+        /** \brief Provide a pointer to the point representation used for converting
+          * points into k-D vectors.
+          * \param[in] point_representation the const shared pointer to a PointRepresentation
+          */
+        inline void
+        setPointRepresentation (const PointRepresentationConstPtr &point_representation)
+        {
+          point_representation_ = point_representation;
+        }
+
+        /** \brief Get the point representation used for converting points into k-D vectors. */
+        inline PointRepresentationConstPtr
+        getPointRepresentation () const
+        {
+          return (point_representation_);
+        }
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] point the given query point
@@ -135,6 +156,8 @@ namespace pcl
         sparseRadiusSearch (const PointT& point, double radius,
                             Indices &k_indices, std::vector<float> &k_sqr_distances,
                             unsigned int max_nn = 0) const;
+
+        PointRepresentationConstPtr point_representation_;
     };
   }
 }

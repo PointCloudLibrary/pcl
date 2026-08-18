@@ -487,6 +487,42 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
+  class DefaultPointRepresentation<GRSDSignature21> : public DefaultFeatureRepresentation <GRSDSignature21>
+  {};
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation <BRISKSignature512> : public PointRepresentation <BRISKSignature512>
+  {
+    public:
+      static constexpr const std::int32_t NR_DIMS = 64;
+
+      DefaultPointRepresentation ()
+      {
+        nr_dimensions_ = NR_DIMS;
+        trivial_ = false;
+      }
+
+      void
+      copyToFloatArray (const BRISKSignature512 &p, float * out) const override
+      {
+        for (int i = 0; i < nr_dimensions_; ++i)
+          out[i] = p.descriptor[i];
+      }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation<ESFSignature640> : public DefaultFeatureRepresentation <ESFSignature640>
+  {};
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation<GFPFHSignature16> : public DefaultFeatureRepresentation <GFPFHSignature16>
+  {};
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
   class DefaultPointRepresentation<ShapeContext1980> : public PointRepresentation<ShapeContext1980>
   {
     public:
