@@ -32,6 +32,7 @@ set(range_image_srcs
 
 set(srcs
   src/point_types.cpp
+  src/feature_types.cpp
   src/pcl_base.cpp
   src/PCLPointCloud2.cpp
   src/io.cpp
@@ -63,7 +64,9 @@ set(incs
   include/pcl/type_traits.h
   include/pcl/point_types_conversion.h
   include/pcl/point_representation.h
+  include/pcl/descriptor_size.h
   include/pcl/point_types.h
+  include/pcl/feature_types.h
   include/pcl/for_each_type.h
   include/pcl/pcl_tests.h
   include/pcl/cloud_iterator.h
@@ -150,6 +153,7 @@ set(impl_incs
   include/pcl/impl/pcl_base.hpp
   include/pcl/impl/instantiate.hpp
   include/pcl/impl/point_types.hpp
+  include/pcl/impl/feature_types.hpp
   include/pcl/impl/cloud_iterator.hpp
 )
 
