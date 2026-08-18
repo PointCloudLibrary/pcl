@@ -405,12 +405,19 @@ namespace pcl
                                  static_cast<int> (std::floor (z * inverse_leaf_size_[2]))};
       }
 
-      /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
-        * \param[in] ijk the coordinates (i,j,k) in the grid (-1 if empty)
-        */
+      /** \brief Returns the index in the downsampled cloud corresponding to a given set
+       * of coordinates, or -1 if the cell is empty, outside the grid bounds, or the
+       * leaf layout is unavailable.
+       *
+       * \param[in] ijk the coordinates (i,j,k) in the grid
+       */
       inline int
       getCentroidIndexAt (const Eigen::Vector3i &ijk) const
       {
+        if (ijk[0] < min_b_[0] || ijk[0] > max_b_[0] || ijk[1] < min_b_[1] ||
+            ijk[1] > max_b_[1] || ijk[2] < min_b_[2] || ijk[2] > max_b_[2])
+          return (-1);
+
         int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (divb_mul_);
         if (idx < 0 || idx >= static_cast<int> (leaf_layout_.size ())) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
         {
@@ -747,12 +754,19 @@ namespace pcl
                                  static_cast<int> (std::floor (z * inverse_leaf_size_[2]))};
       }
 
-      /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
-        * \param[in] ijk the coordinates (i,j,k) in the grid (-1 if empty)
-        */
+      /** \brief Returns the index in the downsampled cloud corresponding to a given set
+       * of coordinates, or -1 if the cell is empty, outside the grid bounds, or the
+       * leaf layout is unavailable.
+       *
+       * \param[in] ijk the coordinates (i,j,k) in the grid
+       */
       inline int
       getCentroidIndexAt (const Eigen::Vector3i &ijk) const
       {
+        if (ijk[0] < min_b_[0] || ijk[0] > max_b_[0] || ijk[1] < min_b_[1] ||
+            ijk[1] > max_b_[1] || ijk[2] < min_b_[2] || ijk[2] > max_b_[2])
+          return (-1);
+
         int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (divb_mul_);
         if (idx < 0 || idx >= static_cast<int> (leaf_layout_.size ())) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
         {

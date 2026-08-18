@@ -563,6 +563,53 @@ TEST (PassThrough, Filters)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(VoxelGrid, CentroidIndexAtBounds)
+{
+  auto input = pcl::make_shared<PointCloud<PointXYZ>>();
+  input->emplace_back(0.5f, 0.5f, 0.5f);
+  input->emplace_back(1.5f, 0.5f, 0.5f);
+  input->emplace_back(0.5f, 1.5f, 0.5f);
+  input->emplace_back(1.5f, 1.5f, 0.5f);
+  input->emplace_back(0.5f, 0.5f, 1.5f);
+  input->emplace_back(1.5f, 0.5f, 1.5f);
+  input->emplace_back(0.5f, 1.5f, 1.5f);
+  input->emplace_back(1.5f, 1.5f, 1.5f);
+
+  VoxelGrid<PointXYZ> grid;
+  grid.setInputCloud(input);
+  grid.setLeafSize(1.0f, 1.0f, 1.0f);
+  grid.setSaveLeafLayout(true);
+  PointCloud<PointXYZ> output;
+  grid.filter(output);
+  ASSERT_EQ(output.size(), 8);
+  ASSERT_EQ(grid.getLeafLayout().size(), 8);
+
+  auto input_blob = pcl::make_shared<PCLPointCloud2>();
+  toPCLPointCloud2(*input, *input_blob);
+  VoxelGrid<PCLPointCloud2> grid2;
+  grid2.setInputCloud(input_blob);
+  grid2.setLeafSize(1.0f, 1.0f, 1.0f);
+  grid2.setSaveLeafLayout(true);
+  PCLPointCloud2 output_blob;
+  grid2.filter(output_blob);
+  ASSERT_EQ(output_blob.width * output_blob.height, 8);
+  ASSERT_EQ(grid2.getLeafLayout().size(), 8);
+
+  const auto expect_outside_grid = [](const auto& voxel_grid) {
+    EXPECT_NE(voxel_grid.getCentroidIndexAt(Eigen::Vector3i(0, 0, 0)), -1);
+    EXPECT_NE(voxel_grid.getCentroidIndexAt(Eigen::Vector3i(1, 1, 1)), -1);
+    EXPECT_EQ(voxel_grid.getCentroidIndexAt(Eigen::Vector3i(2, 0, 0)), -1);
+    EXPECT_EQ(voxel_grid.getCentroidIndexAt(Eigen::Vector3i(-1, 1, 0)), -1);
+    EXPECT_EQ(voxel_grid.getCentroidIndexAt(Eigen::Vector3i(0, 2, 0)), -1);
+    EXPECT_EQ(voxel_grid.getCentroidIndexAt(Eigen::Vector3i(0, -1, 1)), -1);
+    EXPECT_EQ(voxel_grid.getCentroidIndexAt(Eigen::Vector3i(0, -2, 2)), -1);
+    EXPECT_EQ(voxel_grid.getCentroidIndexAt(Eigen::Vector3i(0, 2, -1)), -1);
+  };
+  expect_outside_grid(grid);
+  expect_outside_grid(grid2);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (VoxelGrid, Filters)
 {
   // Test the PointCloud<PointT> method
