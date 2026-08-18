@@ -38,10 +38,15 @@
 #include <pcl/ModelCoefficients.h>
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/common/angles.h>
+#include <vtkVersion.h>
 #include <vtkLineSource.h>
 #include <vtkTubeFilter.h>
 #include <vtkConeSource.h>
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+#include <vtkTransformFilter.h>
+#else
 #include <vtkTransformPolyDataFilter.h>
+#endif
 #include <vtkTransform.h>
 #include <vtkSphereSource.h>
 #include <vtkDiskSource.h>
@@ -81,7 +86,11 @@ pcl::visualization::createSphere (const pcl::ModelCoefficients &coefficients, in
   s_sphere->SetThetaResolution (res);
   s_sphere->LatLongTessellationOff ();
   
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+  vtkSmartPointer<vtkTransformFilter> tf = vtkSmartPointer<vtkTransformFilter>::New ();
+#else
   vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+#endif
   tf->SetTransform (t);
   tf->SetInputConnection (s_sphere->GetOutputPort ());
   tf->Update ();
@@ -107,7 +116,11 @@ pcl::visualization::createCube (const pcl::ModelCoefficients &coefficients)
   cube->SetYLength (coefficients.values[8]);
   cube->SetZLength (coefficients.values[9]);
   
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+  vtkSmartPointer<vtkTransformFilter> tf = vtkSmartPointer<vtkTransformFilter>::New ();
+#else
   vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+#endif
   tf->SetTransform (t);
   tf->SetInputConnection (cube->GetOutputPort ());
   tf->Update ();
@@ -133,7 +146,11 @@ pcl::visualization::createCube (const Eigen::Vector3f &translation, const Eigen:
   cube->SetYLength (height);
   cube->SetZLength (depth);
   
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+  vtkSmartPointer<vtkTransformFilter> tf = vtkSmartPointer<vtkTransformFilter>::New ();
+#else
   vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+#endif
   tf->SetTransform (t);
   tf->SetInputConnection (cube->GetOutputPort ());
   tf->Update ();
@@ -243,7 +260,11 @@ pcl::visualization::create2DCircle (const pcl::ModelCoefficients &coefficients, 
   t->Identity (); 
   t->Translate (coefficients.values[0], coefficients.values[1], z);
 
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+  vtkSmartPointer<vtkTransformFilter> tf = vtkSmartPointer<vtkTransformFilter>::New ();
+#else
   vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+#endif
   tf->SetTransform (t);
   tf->SetInputConnection (disk->GetOutputPort ());
   tf->Update ();
@@ -287,7 +308,11 @@ pcl::visualization::createSphere (const Eigen::Vector4f &center, double radius, 
   s_sphere->SetThetaResolution (res);
   s_sphere->LatLongTessellationOff ();
   
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+  vtkSmartPointer<vtkTransformFilter> tf = vtkSmartPointer<vtkTransformFilter>::New ();
+#else
   vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+#endif
   tf->SetTransform (t);
   tf->SetInputConnection (s_sphere->GetOutputPort ());
   tf->Update ();
@@ -323,7 +348,11 @@ pcl::visualization::createEllipsoid (const Eigen::Isometry3d &transform,
   vtkSmartPointer<vtkParametricFunctionSource> s_ellipsoid = vtkSmartPointer<vtkParametricFunctionSource>::New ();
   s_ellipsoid->SetParametricFunction (ellipsoid);
 
+#if (VTK_MAJOR_VERSION > 9) || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 7)
+  vtkSmartPointer<vtkTransformFilter> tf = vtkSmartPointer<vtkTransformFilter>::New ();
+#else
   vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+#endif
   tf->SetTransform (t);
   tf->SetInputConnection (s_ellipsoid->GetOutputPort ());
   tf->Update ();

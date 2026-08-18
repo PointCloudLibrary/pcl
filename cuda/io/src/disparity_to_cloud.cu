@@ -222,14 +222,14 @@ DisparityToCloud::compute (const std::uint16_t* depth_image,
 
     for (int iter = 0; iter < smoothing_nr_iterations; iter++)
     {
-      transform (
+      thrust::transform (
           thrust::make_zip_iterator (make_tuple (depth.begin (), thrust::counting_iterator<int>(0))),
           thrust::make_zip_iterator (make_tuple (depth.begin (), thrust::counting_iterator<int>(0))) + output_size,
           depth.begin (), DisparityClampedSmoothing (thrust::raw_pointer_cast(&depth[0]), thrust::raw_pointer_cast(&disp_helper_map[0]), width, height, smoothing_filter_size));
     }
 
     // Send the data to the device
-    transform (
+    thrust::transform (
         thrust::make_zip_iterator (make_tuple (depth.begin (), rgb.begin(), thrust::counting_iterator<int>(0))),
         thrust::make_zip_iterator (make_tuple (depth.begin (), rgb.begin(), thrust::counting_iterator<int>(0))) + output_size,
         output->points.begin (), 
@@ -238,7 +238,7 @@ DisparityToCloud::compute (const std::uint16_t* depth_image,
   }
   else
   {
-    transform (
+    thrust::transform (
         thrust::make_zip_iterator (make_tuple (depth.begin(), rgb.begin(), thrust::counting_iterator<int>(0))),
         thrust::make_zip_iterator (make_tuple (depth.begin(), rgb.begin(), thrust::counting_iterator<int>(0))) + output_size,
         output->points.begin (), 
@@ -356,14 +356,14 @@ DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
 
     for (int iter = 0; iter < smoothing_nr_iterations; iter++)
     {
-      transform (
+      thrust::transform (
           thrust::make_zip_iterator (make_tuple (depth.begin (), thrust::counting_iterator<int>(0))),
           thrust::make_zip_iterator (make_tuple (depth.begin (), thrust::counting_iterator<int>(0))) + output_size,
           depth.begin (), DisparityClampedSmoothing (thrust::raw_pointer_cast(&depth[0]), thrust::raw_pointer_cast(&disp_helper_map[0]), output->width, output->height, smoothing_filter_size));
     }
 
     // Send the data to the device
-    transform (
+    thrust::transform (
         thrust::make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), thrust::counting_iterator<int>(0))),
         thrust::make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), thrust::counting_iterator<int>(0))) + output_size,
         output->points.begin (), 
@@ -404,7 +404,7 @@ DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
     else
     {
       // Send the data to the device
-      transform (
+      thrust::transform (
           thrust::make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), thrust::counting_iterator<int>(0))),
           thrust::make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), thrust::counting_iterator<int>(0))) + output_size,
           output->points.begin (), 
@@ -415,7 +415,7 @@ DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
   else
   {
     // Send the data to the device
-    transform (
+    thrust::transform (
         thrust::make_zip_iterator (make_tuple (depth.begin (), thrust::counting_iterator<int>(0))),
         thrust::make_zip_iterator (make_tuple (depth.begin (), thrust::counting_iterator<int>(0))) + 
                            output->width * output->height,
