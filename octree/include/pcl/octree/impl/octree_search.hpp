@@ -45,6 +45,39 @@ namespace pcl {
 
 namespace octree {
 
+namespace detail {
+template <class T, class = void>
+struct has_getPointIndicesVector : std::false_type {};
+
+template <class T>
+struct has_getPointIndicesVector<
+    T,
+    std::void_t<decltype(std::declval<const T&>().getPointIndicesVector())>>
+: std::true_type {};
+
+/** If leaf has function getPointIndicesVector(), call it. Otherwise call
+ * leaf.getPointIndices().
+ */
+template <class T, std::enable_if_t<has_getPointIndicesVector<T>::value, int> = 0>
+auto
+getPointIndices(const T& leaf)
+{
+  return leaf.getPointIndicesVector();
+}
+
+/** If leaf has function getPointIndicesVector(), call it. Otherwise call
+ * leaf.getPointIndices().
+ */
+template <class T, std::enable_if_t<!has_getPointIndicesVector<T>::value, int> = 0>
+pcl::Indices
+getPointIndices(const T& leaf)
+{
+  pcl::Indices decoded_point_vector;
+  leaf.getPointIndices(decoded_point_vector);
+  return decoded_point_vector;
+}
+} // namespace detail
+
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
 bool
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::voxelSearch(
@@ -400,7 +433,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
         const auto* child_leaf = static_cast<const LeafNode*>(child_node);
 
         // Linearly iterate over all points in the leaf
-        for (const auto& index : (*child_leaf)->getPointIndicesVector()) {
+        for (const auto& index : detail::getPointIndices(*(*child_leaf))) {
           const PointT& candidate_point = this->getPointByIndex(index);
 
           // calculate point distance to search point
