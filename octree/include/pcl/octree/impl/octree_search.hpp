@@ -40,6 +40,8 @@
 #define PCL_OCTREE_SEARCH_IMPL_H_
 
 #include <cassert>
+#include <type_traits> // for std::false_type, std::true_type, std::void_t
+#include <utility>     // for std::declval
 
 namespace pcl {
 
@@ -59,7 +61,7 @@ struct has_getPointIndicesVector<
  * leaf.getPointIndices().
  */
 template <class T, std::enable_if_t<has_getPointIndicesVector<T>::value, int> = 0>
-auto
+decltype(auto)
 getPointIndices(const T& leaf)
 {
   return leaf.getPointIndicesVector();
