@@ -57,7 +57,7 @@ namespace pcl
     std::mt19937 OutofcoreOctreeRamContainer<PointT>::rng_ ([] {std::random_device rd; return rd(); } ());
 
     template<typename PointT> void
-    OutofcoreOctreeRamContainer<PointT>::convertToXYZ (const boost::filesystem::path& path)
+    OutofcoreOctreeRamContainer<PointT>::convertToXYZ (const pcl_fs::path& path)
     {
       if (!container_.empty ())
       {
