@@ -64,6 +64,7 @@
 #include <Eigen/Geometry>
 #include <random>
 #include <pcl/features/normal_3d.h>
+#include <pcl/search/kdtree.h>
 
 #include "test_registration_api_data.h"
 

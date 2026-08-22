@@ -42,7 +42,7 @@
 #define PCL_FEATURES_IMPL_CPPF_H_
 
 #include <pcl/features/cppf.h>
-#include <pcl/search/kdtree.h> // for KdTree
+//#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
@@ -51,7 +51,7 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::CPPFEstimation ()
 {
   feature_name_ = "CPPFEstimation";
   // Slight hack in order to pass the check for the presence of a search method in Feature::initCompute ()
-  Feature<PointInT, PointOutT>::tree_.reset (new pcl::search::KdTree <PointInT> ());
+  //Feature<PointInT, PointOutT>::tree_.reset (new pcl::search::KdTree <PointInT> ());
   Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
 }
 

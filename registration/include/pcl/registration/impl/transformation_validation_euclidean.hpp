@@ -74,8 +74,14 @@ TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::
 
   typename MyPointRepresentation::ConstPtr point_rep(new MyPointRepresentation);
   if (!force_no_recompute_) {
-    tree_->setPointRepresentation(point_rep);
-    tree_->setInputCloud(cloud_tgt);
+    // tree_->setPointRepresentation(point_rep); // TODO?
+    // tree_->setInputCloud(cloud_tgt);
+    tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
+        cloud_tgt,
+        pcl::IndicesConstPtr(),
+        point_rep,
+        false,
+        pcl::search::Purpose::one_knn_search));
   }
 
   pcl::Indices nn_indices(1);

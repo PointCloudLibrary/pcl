@@ -1,6 +1,6 @@
 #include <pcl/features/rops_estimation.h>
 #include <pcl/io/pcd_io.h>
-
+#include <pcl/search/kdtree.h>
 int main (int argc, char** argv)
 {
   if (argc != 4)

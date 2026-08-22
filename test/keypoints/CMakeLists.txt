@@ -1,6 +1,7 @@
 set(SUBSYS_NAME tests_keypoints)
 set(SUBSYS_DESC "Point cloud library keypoints module unit tests")
 PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS keypoints)
+list(APPEND SUBSYS_DEPS kdtree)
 set(OPT_DEPS io) # module does not depend on these
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)

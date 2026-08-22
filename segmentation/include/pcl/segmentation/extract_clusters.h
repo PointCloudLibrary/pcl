@@ -43,7 +43,9 @@
 #include <pcl/pcl_base.h>
 
 #include <pcl/search/search.h> // for Search
-#include <pcl/search/kdtree.h> // for KdTree
+#if PCL_HAS_FLANN
+#include <pcl/kdtree/kdtree.h>
+#endif
 
 namespace pcl
 {
@@ -82,6 +84,7 @@ namespace pcl
       const typename search::Search<PointT>::Ptr &tree, float tolerance, std::vector<PointIndices> &clusters,
       unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
+#if PCL_HAS_FLANN
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the euclidean distance between points, and the normal
     * angular deviation between points. Each point added to the cluster is origin to another radius search. Each point
@@ -99,7 +102,9 @@ namespace pcl
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
     * \ingroup segmentation
     */
-  template <typename PointT, typename Normal> void 
+  template <typename PointT, typename Normal>
+  PCL_DEPRECATED(1, 19, "use a search method inheriting from pcl::search::Search instead")
+  void
   extractEuclideanClusters (
       const PointCloud<PointT> &cloud, const PointCloud<Normal> &normals,
       float tolerance, const typename KdTree<PointT>::Ptr &tree,
@@ -215,9 +220,248 @@ namespace pcl
     * \ingroup segmentation
     */
   template <typename PointT, typename Normal> 
-  void extractEuclideanClusters (
+  PCL_DEPRECATED(1, 19, "use a search method inheriting from pcl::search::Search instead")
+  void
+  extractEuclideanClusters (
       const PointCloud<PointT> &cloud, const PointCloud<Normal> &normals,
       const Indices &indices, const typename KdTree<PointT>::Ptr &tree,
+      float tolerance, std::vector<PointIndices> &clusters, double eps_angle,
+      unsigned int min_pts_per_cluster = 1,
+      unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())
+  {
+    // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
+    //and indices[i]
+    if (tree->getInputCloud()->size() != cloud.size()) {
+      PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different point "
+                "cloud dataset (%zu) than the input cloud (%zu)!\n",
+                static_cast<std::size_t>(tree->getInputCloud()->size()),
+                static_cast<std::size_t>(cloud.size()));
+      return;
+    }
+    if (tree->getIndices()->size() != indices.size()) {
+      PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different set of "
+                "indices (%zu) than the input set (%zu)!\n",
+                static_cast<std::size_t>(tree->getIndices()->size()),
+                indices.size());
+      return;
+    }
+    if (cloud.size() != normals.size()) {
+      PCL_ERROR("[pcl::extractEuclideanClusters] Number of points in the input point "
+                "cloud (%zu) different than normals (%zu)!\n",
+                static_cast<std::size_t>(cloud.size()),
+                static_cast<std::size_t>(normals.size()));
+      return;
+    }
+    // If tree gives sorted results, we can skip the first one because it is the query point itself
+    const std::size_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
+    const double cos_eps_angle = std::cos (eps_angle); // compute this once instead of acos many times (faster)
+    // Create a bool vector of processed point indices, and initialize it to false
+    std::vector<bool> processed (cloud.size (), false);
+
+    Indices nn_indices;
+    std::vector<float> nn_distances;
+    // Process all points in the indices vector
+    for (const auto& point_idx : indices)
+    {
+      if (processed[point_idx])
+        continue;
+
+      Indices seed_queue;
+      int sq_idx = 0;
+      seed_queue.push_back (point_idx);
+
+      processed[point_idx] = true;
+
+      while (sq_idx < static_cast<int> (seed_queue.size ()))
+      {
+        // Search for sq_idx
+        if (!tree->radiusSearch (cloud[seed_queue[sq_idx]], tolerance, nn_indices, nn_distances))
+        {
+          sq_idx++;
+          continue;
+        }
+
+        for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)
+        {
+          if (processed[nn_indices[j]])                             // Has this point been processed before ?
+            continue;
+
+          //processed[nn_indices[j]] = true;
+          // [-1;1]
+          double dot_p = normals[seed_queue[sq_idx]].normal[0] * normals[nn_indices[j]].normal[0] +
+                         normals[seed_queue[sq_idx]].normal[1] * normals[nn_indices[j]].normal[1] +
+                         normals[seed_queue[sq_idx]].normal[2] * normals[nn_indices[j]].normal[2];
+          if ( std::abs (dot_p) > cos_eps_angle )
+          {
+            processed[nn_indices[j]] = true;
+            seed_queue.push_back (nn_indices[j]);
+          }
+        }
+
+        sq_idx++;
+      }
+
+      // If this queue is satisfactory, add to the clusters
+      if (seed_queue.size () >= min_pts_per_cluster && seed_queue.size () <= max_pts_per_cluster)
+      {
+        pcl::PointIndices r;
+        r.indices.resize (seed_queue.size ());
+        for (std::size_t j = 0; j < seed_queue.size (); ++j)
+          r.indices[j] = seed_queue[j];
+
+        // After clustering, indices are out of order, so sort them
+        std::sort (r.indices.begin (), r.indices.end ());
+
+        r.header = cloud.header;
+        clusters.push_back (r);
+      }
+      else
+      {
+        PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is not between %u and %u points, so it is not a final cluster\n",
+                  seed_queue.size (), min_pts_per_cluster, max_pts_per_cluster);
+      }
+    }
+  }
+#endif // PCL_HAS_FLANN
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Decompose a region of space into clusters based on the euclidean distance between points, and the normal
+    * angular deviation between points. Each point added to the cluster is origin to another radius search. Each point
+    * within radius range will be compared to the origin in respect to normal angle and euclidean distance. If both
+    * are under their respective threshold the point will be added to the cluster. Generally speaking the cluster 
+    * algorithm will not stop on smooth surfaces but on surfaces with sharp edges.
+    * \param cloud the point cloud message
+    * \param normals the point cloud message containing normal information
+    * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
+    * \note the tree has to be created as a spatial locator on \a cloud
+    * \param tolerance the spatial cluster tolerance as a measure in the L2 Euclidean space
+    * \param clusters the resultant clusters containing point indices (as a vector of PointIndices)
+    * \param eps_angle the maximum allowed difference between normals in radians for cluster/region growing
+    * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
+    * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+    * \ingroup segmentation
+    */
+  template <typename PointT, typename Normal>
+  void 
+  extractEuclideanClusters (
+      const PointCloud<PointT> &cloud, const PointCloud<Normal> &normals,
+      float tolerance, const typename search::Search<PointT>::Ptr &tree,
+      std::vector<PointIndices> &clusters, double eps_angle,
+      unsigned int min_pts_per_cluster = 1,
+      unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())
+  {
+    if (tree->getInputCloud ()->size () != cloud.size ())
+    {
+      PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different point "
+                "cloud dataset (%zu) than the input cloud (%zu)!\n",
+                static_cast<std::size_t>(tree->getInputCloud()->size()),
+                static_cast<std::size_t>(cloud.size()));
+      return;
+    }
+    if (cloud.size () != normals.size ())
+    {
+      PCL_ERROR("[pcl::extractEuclideanClusters] Number of points in the input point "
+                "cloud (%zu) different than normals (%zu)!\n",
+                static_cast<std::size_t>(cloud.size()),
+                static_cast<std::size_t>(normals.size()));
+      return;
+    }
+    // If tree gives sorted results, we can skip the first one because it is the query point itself
+    const std::size_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
+    const double cos_eps_angle = std::cos (eps_angle); // compute this once instead of acos many times (faster)
+
+    // Create a bool vector of processed point indices, and initialize it to false
+    std::vector<bool> processed (cloud.size (), false);
+
+    Indices nn_indices;
+    std::vector<float> nn_distances;
+    // Process all points in the indices vector
+    for (std::size_t i = 0; i < cloud.size (); ++i)
+    {
+      if (processed[i])
+        continue;
+
+      Indices seed_queue;
+      int sq_idx = 0;
+      seed_queue.push_back (static_cast<index_t> (i));
+
+      processed[i] = true;
+
+      while (sq_idx < static_cast<int> (seed_queue.size ()))
+      {
+        // Search for sq_idx
+        if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))
+        {
+          sq_idx++;
+          continue;
+        }
+
+        for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)
+        {
+          if (processed[nn_indices[j]])                         // Has this point been processed before ?
+            continue;
+
+          //processed[nn_indices[j]] = true;
+          // [-1;1]
+          double dot_p = normals[seed_queue[sq_idx]].normal[0] * normals[nn_indices[j]].normal[0] +
+                         normals[seed_queue[sq_idx]].normal[1] * normals[nn_indices[j]].normal[1] +
+                         normals[seed_queue[sq_idx]].normal[2] * normals[nn_indices[j]].normal[2];
+          if ( std::abs (dot_p) > cos_eps_angle )
+          {
+            processed[nn_indices[j]] = true;
+            seed_queue.push_back (nn_indices[j]);
+          }
+        }
+
+        sq_idx++;
+      }
+
+      // If this queue is satisfactory, add to the clusters
+      if (seed_queue.size () >= min_pts_per_cluster && seed_queue.size () <= max_pts_per_cluster)
+      {
+        pcl::PointIndices r;
+        r.indices.resize (seed_queue.size ());
+        for (std::size_t j = 0; j < seed_queue.size (); ++j)
+          r.indices[j] = seed_queue[j];
+
+        // After clustering, indices are out of order, so sort them
+        std::sort (r.indices.begin (), r.indices.end ());
+
+        r.header = cloud.header;
+        clusters.push_back (r);   // We could avoid a copy by working directly in the vector
+      }
+      else
+      {
+        PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is not between %u and %u points, so it is not a final cluster\n",
+                  seed_queue.size (), min_pts_per_cluster, max_pts_per_cluster);
+      }
+    }
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Decompose a region of space into clusters based on the euclidean distance between points, and the normal
+    * angular deviation between points. Each point added to the cluster is origin to another radius search. Each point
+    * within radius range will be compared to the origin in respect to normal angle and euclidean distance. If both
+    * are under their respective threshold the point will be added to the cluster. Generally speaking the cluster 
+    * algorithm will not stop on smooth surfaces but on surfaces with sharp edges.
+    * \param cloud the point cloud message
+    * \param normals the point cloud message containing normal information
+    * \param indices a list of point indices to use from \a cloud
+    * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
+    * \note the tree has to be created as a spatial locator on \a cloud
+    * \param tolerance the spatial cluster tolerance as a measure in the L2 Euclidean space
+    * \param clusters the resultant clusters containing point indices (as PointIndices)
+    * \param eps_angle the maximum allowed difference between normals in radians for cluster/region growing
+    * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
+    * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+    * \ingroup segmentation
+    */
+  template <typename PointT, typename Normal> 
+  void
+  extractEuclideanClusters (
+      const PointCloud<PointT> &cloud, const PointCloud<Normal> &normals,
+      const Indices &indices, const typename search::Search<PointT>::Ptr &tree,
       float tolerance, std::vector<PointIndices> &clusters, double eps_angle,
       unsigned int min_pts_per_cluster = 1,
       unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())

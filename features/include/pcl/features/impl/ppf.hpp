@@ -43,7 +43,7 @@
 #include <pcl/features/ppf.h>
 #include <pcl/features/pfh.h>
 #include <pcl/features/pfh_tools.h> // for computePairFeatures
-#include <pcl/search/kdtree.h> // for KdTree
+//#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
@@ -52,7 +52,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::PPFEstimation ()
 {
   feature_name_ = "PPFEstimation";
   // Slight hack in order to pass the check for the presence of a search method in Feature::initCompute ()
-  Feature<PointInT, PointOutT>::tree_.reset (new pcl::search::KdTree <PointInT> ());
+  //Feature<PointInT, PointOutT>::tree_.reset (new pcl::search::KdTree <PointInT> ());
   Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
 }
 

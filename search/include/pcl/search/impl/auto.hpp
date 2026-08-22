@@ -10,10 +10,13 @@
 #ifndef PCL_SEARCH_AUTO_IMPL_HPP_
 #define PCL_SEARCH_AUTO_IMPL_HPP_
 
+#include <pcl/pcl_config.h>
 #include <pcl/common/utils.h> // for ignore
 #include <pcl/search/auto.h>
 #include <pcl/search/brute_force.h>
+#if PCL_HAS_FLANN
 #include <pcl/search/kdtree.h>
+#endif
 #include <pcl/search/kdtree_nanoflann.h>
 #include <pcl/search/octree.h>
 #include <pcl/search/organized.h>
@@ -69,6 +72,47 @@ pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::
   return nullptr;
 }
 
+template<typename PointT>
+pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::PointCloud<PointT>::ConstPtr& cloud, const pcl::IndicesConstPtr& indices, const pcl::shared_ptr<const pcl::PointRepresentation<PointT> >& point_representation, bool sorted_results, pcl::search::Purpose purpose) {
+#if PCL_HAS_NANOFLANN
+  // we get the number of search dimensions from the given point_representation, but we can only get it a run-time. Often, this is the same as when DefaultPointRepresentation is used, in this case we use the fast option of KdTreeNanoflann with a static number of dimensions (second template parameter). Otherwise, we use a KdTreeNanoflann with a dynamic number of dimensions (-1 as template parameter, slightly slower).
+  if(point_representation->getNumberOfDimensions() == pcl::DefaultPointRepresentation<PointT>::NR_DIMS) {
+    auto searcher = new pcl::search::KdTreeNanoflann<PointT, pcl::DefaultPointRepresentation<PointT>::NR_DIMS> (sorted_results, (purpose == pcl::search::Purpose::one_knn_search ? 10 : 20));
+    searcher->setPointRepresentation (point_representation);
+    if(searcher->setInputCloud (cloud, indices)) {
+      return searcher;
+    }
+    delete searcher;
+  }
+  {
+    auto searcher = new pcl::search::KdTreeNanoflann<PointT, -1> (sorted_results, (purpose == pcl::search::Purpose::one_knn_search ? 10 : 20));
+    searcher->setPointRepresentation (point_representation);
+    if(searcher->setInputCloud (cloud, indices)) {
+      return searcher;
+    }
+    delete searcher;
+  }
+#else
+  pcl::utils::ignore(purpose);
+#endif
+
+#if PCL_HAS_FLANN
+  {
+    auto searcher = new pcl::search::KdTree<PointT> (sorted_results);
+    searcher->setPointRepresentation (point_representation);
+    if(searcher->setInputCloud (cloud, indices)) {
+      return searcher;
+    }
+    delete searcher;
+  }
+#endif
+
+  PCL_ERROR("[pcl::search::autoSelectMethod] No suitable method found. Make sure you have nanoflann and/or FLANN installed.\n");
+  return nullptr;
+}
+
 #define PCL_INSTANTIATE_AutoSelectMethod(T) template PCL_EXPORTS pcl::search::Search<T> * pcl::search::autoSelectMethod<T>(const typename pcl::PointCloud<T>::ConstPtr& cloud, const pcl::IndicesConstPtr& indices, bool sorted_results, pcl::search::Purpose purpose);
+
+#define PCL_INSTANTIATE_AutoSelectMethod2(T) template PCL_EXPORTS pcl::search::Search<T> * pcl::search::autoSelectMethod<T>(const typename pcl::PointCloud<T>::ConstPtr& cloud, const pcl::IndicesConstPtr& indices, const pcl::shared_ptr<const pcl::PointRepresentation<T> >& point_representation, bool sorted_results, pcl::search::Purpose purpose);
 
 #endif  //#ifndef PCL_SEARCH_AUTO_IMPL_HPP_

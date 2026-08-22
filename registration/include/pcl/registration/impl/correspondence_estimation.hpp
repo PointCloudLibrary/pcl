@@ -44,6 +44,7 @@
 #include <pcl/common/copy_point.h>
 #include <pcl/common/io.h>
 #include <pcl/common/point_tests.h> // for isXYZFinite
+#include <pcl/search/auto.h>
 
 namespace pcl {
 
@@ -63,8 +64,8 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::setInputTarget(
   target_ = cloud;
 
   // Set the internal point representation of choice
-  if (point_representation_)
-    tree_->setPointRepresentation(point_representation_);
+  // if (point_representation_)
+  //  tree_->setPointRepresentation(point_representation_); // TODO
 
   target_cloud_updated_ = true;
 }
@@ -82,10 +83,28 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute()
   // Only update target kd-tree if a new target cloud was set
   if (target_cloud_updated_ && !force_no_recompute_) {
     // If the target indices have been given via setIndicesTarget
-    if (target_indices_)
-      tree_->setInputCloud(target_, target_indices_);
-    else
-      tree_->setInputCloud(target_);
+    if (point_representation_) {
+      tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
+          target_,
+          (target_indices_ ? target_indices_ : pcl::IndicesConstPtr()),
+          false,
+          pcl::search::Purpose::one_knn_search));
+    }
+    else if (target_indices_) {
+      tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
+          target_,
+          target_indices_,
+          false,
+          pcl::search::Purpose::one_knn_search)); // tree_->setInputCloud(target_,
+                                                  // target_indices_);
+    }
+    else {
+      if (!tree_ || !tree_->setInputCloud(target_))
+        tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
+            target_,
+            false,
+            pcl::search::Purpose::one_knn_search)); // tree_->setInputCloud(target_);
+    }
 
     target_cloud_updated_ = false;
   }
@@ -99,13 +118,29 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
 {
   // Only update source kd-tree if a new target cloud was set
   if (source_cloud_updated_ && !force_no_recompute_reciprocal_) {
+    // if (point_representation_reciprocal_)
+    //   tree_reciprocal_->setPointRepresentation(point_representation_reciprocal_);
+    //  If the target indices have been given via setIndicesTarget
+    // if (indices_)
+    //   tree_reciprocal_->setInputCloud(getInputSource(), getIndicesSource());
+    // else
+    //   tree_reciprocal_->setInputCloud(getInputSource());
     if (point_representation_reciprocal_)
-      tree_reciprocal_->setPointRepresentation(point_representation_reciprocal_);
-    // If the target indices have been given via setIndicesTarget
-    if (indices_)
-      tree_reciprocal_->setInputCloud(getInputSource(), getIndicesSource());
+      tree_reciprocal_.reset(pcl::search::autoSelectMethod<PointSource>(
+          getInputSource(),
+          (indices_ ? getIndicesSource() : pcl::IndicesConstPtr()),
+          point_representation_reciprocal_,
+          true,
+          pcl::search::Purpose::one_knn_search));
+    else if (indices_)
+      tree_reciprocal_.reset(pcl::search::autoSelectMethod<PointSource>(
+          getInputSource(),
+          getIndicesSource(),
+          true,
+          pcl::search::Purpose::one_knn_search));
     else
-      tree_reciprocal_->setInputCloud(getInputSource());
+      tree_reciprocal_.reset(pcl::search::autoSelectMethod<PointSource>(
+          getInputSource(), true, pcl::search::Purpose::one_knn_search));
 
     source_cloud_updated_ = false;
   }

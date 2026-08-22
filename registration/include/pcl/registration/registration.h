@@ -44,7 +44,7 @@
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/registration/transformation_estimation.h>
-#include <pcl/search/kdtree.h>
+#include <pcl/search/search.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
@@ -67,10 +67,10 @@ public:
   using ConstPtr = shared_ptr<const Registration<PointSource, PointTarget, Scalar>>;
 
   using CorrespondenceRejectorPtr = pcl::registration::CorrespondenceRejector::Ptr;
-  using KdTree = pcl::search::KdTree<PointTarget>;
+  using KdTree = pcl::search::Search<PointTarget>;
   using KdTreePtr = typename KdTree::Ptr;
 
-  using KdTreeReciprocal = pcl::search::KdTree<PointSource>;
+  using KdTreeReciprocal = pcl::search::Search<PointSource>;
   using KdTreeReciprocalPtr = typename KdTreeReciprocal::Ptr;
 
   using PointCloudSource = pcl::PointCloud<PointSource>;
@@ -81,7 +81,8 @@ public:
   using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
   using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
-  using PointRepresentationConstPtr = typename KdTree::PointRepresentationConstPtr;
+  using PointRepresentationConstPtr = typename PointRepresentation<
+      PointTarget>::ConstPtr; // typename KdTree::PointRepresentationConstPtr;
 
   using TransformationEstimation = typename pcl::registration::
       TransformationEstimation<PointSource, PointTarget, Scalar>;
@@ -107,9 +108,10 @@ public:
 
   /** \brief Empty constructor. */
   Registration()
-  : tree_(new KdTree)
-  , tree_reciprocal_(new KdTreeReciprocal)
-  , target_()
+  : // tree_(new KdTree)
+    //, tree_reciprocal_(new KdTreeReciprocal)
+    //,
+      target_()
   , final_transformation_(Matrix4::Identity())
   , transformation_(Matrix4::Identity())
   , previous_transformation_(Matrix4::Identity())
