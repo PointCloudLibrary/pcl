@@ -1,6 +1,7 @@
 set(SUBSYS_NAME tests_filters)
 set(SUBSYS_DESC "Point cloud library filters module unit tests")
 PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS filters)
+list(APPEND SUBSYS_DEPS kdtree)
 set(OPT_DEPS io features segmentation)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)

@@ -36,6 +36,7 @@
  */
 
 #include <pcl/PCLPointCloud2.h>
+#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_plane.h>

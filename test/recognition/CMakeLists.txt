@@ -1,6 +1,7 @@
 set(SUBSYS_NAME tests_recognition)
 set(SUBSYS_DESC "Point cloud library recognition module unit tests")
 PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS recognition)
+list(APPEND SUBSYS_DEPS kdtree)
 set(OPT_DEPS keypoints) # module does not depend on these
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)

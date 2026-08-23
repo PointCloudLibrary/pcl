@@ -48,6 +48,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
+#include <pcl/search/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/segmentation/sac_segmentation.h>

@@ -46,6 +46,7 @@
 #include <pcl/features/fpfh.h>
 #include <pcl/registration/ia_ransac.h>
 #include <pcl/registration/sample_consensus_prerejective.h>
+#include <pcl/search/kdtree.h>
 
 using namespace pcl;
 using namespace pcl::io;

@@ -8,7 +8,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/parse.h>
-
+#include <pcl/search/kdtree.h>
 using namespace std::chrono_literals;
 
 // --------------

@@ -43,6 +43,7 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/ndt.h>
+#include <pcl/search/kdtree.h>
 
 using namespace pcl;
 using namespace pcl::io;
