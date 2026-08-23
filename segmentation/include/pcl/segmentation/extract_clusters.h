@@ -390,7 +390,7 @@ namespace pcl
       while (sq_idx < static_cast<int> (seed_queue.size ()))
       {
         // Search for sq_idx
-        if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))
+        if (!tree->radiusSearch (cloud[seed_queue[sq_idx]], tolerance, nn_indices, nn_distances))
         {
           sq_idx++;
           continue;
@@ -475,10 +475,15 @@ namespace pcl
                 static_cast<std::size_t>(cloud.size()));
       return;
     }
-    if (tree->getIndices()->size() != indices.size()) {
+    const auto tree_indices = tree->getIndices();
+    if (!tree_indices) {
+      PCL_ERROR("[pcl::extractEuclideanClusters] Tree was built without indices, but an indices set was provided!\n");
+      return;
+    }
+    if (tree_indices->size() != indices.size()) {
       PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different set of "
                 "indices (%zu) than the input set (%zu)!\n",
-                static_cast<std::size_t>(tree->getIndices()->size()),
+                static_cast<std::size_t>(tree_indices->size()),
                 indices.size());
       return;
     }

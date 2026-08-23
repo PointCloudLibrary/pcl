@@ -88,16 +88,17 @@ GeneralizedIterativeClosestPoint6D::setInputTarget(
 #if PCL_HAS_NANOFLANN
   // 6 search dimensions for MyPointRepresentation; max. 10 points per leaf is a good
   // choice for one-nearest-neighbor search
-  auto tree = new pcl::search::KdTreeNanoflann<pcl::PointXYZLAB, 6>(false, 10);
+  auto tree =
+      pcl::make_shared<pcl::search::KdTreeNanoflann<pcl::PointXYZLAB, 6>>(false, 10);
   tree->setPointRepresentation(pcl::make_shared<MyPointRepresentation>(point_rep_));
   tree->setInputCloud(target_lab_);
-  target_tree_lab_.reset(tree);
+  target_tree_lab_ = tree;
 #else
 #if PCL_HAS_FLANN
-  auto tree = new pcl::search::KdTree<pcl::PointXYZLAB>(false);
+  auto tree = pcl::make_shared<pcl::search::KdTree<pcl::PointXYZLAB>>(false);
   tree->setPointRepresentation(pcl::make_shared<MyPointRepresentation>(point_rep_));
   tree->setInputCloud(target_lab_);
-  target_tree_lab_.reset(tree);
+  target_tree_lab_ = tree;
 #else
 #error "GeneralizedIterativeClosestPoint6D needs nanoflann or FLANN!"
 #endif
