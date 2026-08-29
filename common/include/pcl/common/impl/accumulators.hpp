@@ -72,13 +72,19 @@ namespace pcl
       using IsCompatible = pcl::traits::has_xyz<boost::mpl::_1>;
 
       // Storage
-      Eigen::Vector3f xyz = Eigen::Vector3f::Zero ();
+      Eigen::Vector4f xyz = Eigen::Vector4f::Zero ();
 
       template <typename PointT> void
-      add (const PointT& t) { xyz += t.getVector3fMap (); }
+      add (const PointT& t) { xyz += t.getVector4fMap (); }
 
       template <typename PointT> void
-      get (PointT& t, std::size_t n) const { t.getVector3fMap () = xyz / n; }
+      get (PointT& t, std::size_t n) const { t.getVector3fMap () = xyz.head<3>() / n; }
+
+      void
+      clear()
+      {
+        xyz.setZero();
+      }
 
       PCL_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -111,6 +117,12 @@ namespace pcl
 #endif
       }
 
+      void
+      clear()
+      {
+        normal.setZero();
+      }
+
       PCL_MAKE_ALIGNED_OPERATOR_NEW
 
     };
@@ -130,6 +142,11 @@ namespace pcl
       template <typename PointT> void
       get (PointT& t, std::size_t n) const { t.curvature = curvature / n; }
 
+      void
+      clear()
+      {
+        curvature = 0;
+      }
     };
 
     struct AccumulatorRGBA
@@ -159,6 +176,14 @@ namespace pcl
                  static_cast<std::uint32_t> (b / n);
       }
 
+      void
+      clear()
+      {
+        r = 0;
+        g = 0;
+        b = 0;
+        a = 0;
+      }
     };
 
     struct AccumulatorIntensity
@@ -176,6 +201,11 @@ namespace pcl
       template <typename PointT> void
       get (PointT& t, std::size_t n) const { t.intensity = intensity / n; }
 
+      void
+      clear()
+      {
+        intensity = 0;
+      }
     };
 
     struct AccumulatorLabel
@@ -210,6 +240,11 @@ namespace pcl
           }
       }
 
+      void
+      clear()
+      {
+        labels.clear();
+      }
     };
 
     /* Meta-function that checks if an accumulator is compatible with given
@@ -282,6 +317,16 @@ namespace pcl
 
     };
 
+    /* Fusion function object to invoke clear data on every accumulator in a
+     * fusion sequence. */
+    struct Clear {
+      template <typename AccumulatorT>
+      void
+      operator()(AccumulatorT& accumulator) const
+      {
+        accumulator.clear();
+      }
+    };
   }
 
 }
