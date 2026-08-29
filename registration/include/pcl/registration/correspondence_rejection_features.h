@@ -257,6 +257,12 @@ protected:
     inline double
     getCorrespondenceScore(int index) override
     {
+      // Check correspondence is valid
+      if (index >= (*source_features_).size() || index >= (*target_features_).size())
+      {
+        return (std::numeric_limits<double>::max ());
+      }
+
       // If no feature representation was given, reset to the default implementation for
       // FeatureT
       if (!feature_representation_)

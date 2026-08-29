@@ -55,16 +55,18 @@ pcl::registration::CorrespondenceRejectorMedianDistance::getRemainingCorresponde
       dists[i] = original_correspondences[i].distance;
   }
 
-  std::vector<double> nth(dists);
-  nth_element(nth.begin(), nth.begin() + (nth.size() / 2), nth.end());
-  median_distance_ = nth[nth.size() / 2];
-
   unsigned int number_valid_correspondences = 0;
-  remaining_correspondences.resize(original_correspondences.size());
+  std::vector<double> nth(dists);
+  if (!nth.empty()) {
+    nth_element(nth.begin(), nth.begin() + (nth.size() / 2), nth.end());
+    median_distance_ = nth[nth.size() / 2];
 
-  for (std::size_t i = 0; i < original_correspondences.size(); ++i)
-    if (dists[i] <= median_distance_ * factor_)
-      remaining_correspondences[number_valid_correspondences++] =
-          original_correspondences[i];
+    remaining_correspondences.resize(original_correspondences.size());
+
+    for (std::size_t i = 0; i < original_correspondences.size(); ++i)
+      if (dists[i] <= median_distance_ * factor_)
+        remaining_correspondences[number_valid_correspondences++] =
+            original_correspondences[i];
+  }
   remaining_correspondences.resize(number_valid_correspondences);
 }
