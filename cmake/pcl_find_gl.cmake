@@ -7,7 +7,7 @@ if(POLICY CMP0072)
   cmake_policy(SET CMP0072 NEW)
 endif()
 
-find_package(OpenGL QUIET REQUIRED)
+find_package(OpenGL QUIET COMPONENTS OpenGL)
 
 if(APPLE AND OPENGL_FOUND)
   if("${OPENGL_INCLUDE_DIR}" MATCHES "\\.framework")
