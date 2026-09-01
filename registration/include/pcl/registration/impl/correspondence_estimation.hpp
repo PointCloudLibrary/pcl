@@ -82,6 +82,7 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute()
       tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
           target_,
           (target_indices_ ? target_indices_ : pcl::IndicesConstPtr()),
+          point_representation_,
           false,
           pcl::search::Purpose::one_knn_search));
     }
@@ -113,7 +114,7 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
           getInputSource(),
           (indices_ ? getIndicesSource() : pcl::IndicesConstPtr()),
           point_representation_reciprocal_,
-          true,
+          false,
           pcl::search::Purpose::one_knn_search));
     }
     else if (indices_) {
@@ -122,13 +123,13 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
         tree_reciprocal_.reset(pcl::search::autoSelectMethod<PointSource>(
             getInputSource(),
             getIndicesSource(),
-            true,
+            false,
             pcl::search::Purpose::one_knn_search));
     }
     else {
       if (!tree_reciprocal_ || !tree_reciprocal_->setInputCloud(getInputSource()))
         tree_reciprocal_.reset(pcl::search::autoSelectMethod<PointSource>(
-            getInputSource(), true, pcl::search::Purpose::one_knn_search));
+            getInputSource(), false, pcl::search::Purpose::one_knn_search));
     }
     source_cloud_updated_ = false;
   }

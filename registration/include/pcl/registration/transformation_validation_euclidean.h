@@ -244,10 +244,10 @@ protected:
     }
 
     /** \brief Empty destructor */
-    virtual ~MyPointRepresentation() = default;
+    ~MyPointRepresentation() override = default;
 
-    virtual void
-    copyToFloatArray(const PointTarget& p, float* out) const
+    void
+    copyToFloatArray(const PointTarget& p, float* out) const override
     {
       out[0] = p.x;
       out[1] = p.y;

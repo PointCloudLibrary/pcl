@@ -69,7 +69,7 @@ public:
   using KdTreePtr = typename KdTree::Ptr;
 
   using KdTreeReciprocal = pcl::search::Search<PointSource>;
-  using KdTreeReciprocalPtr = typename KdTree::Ptr;
+  using KdTreeReciprocalPtr = typename KdTreeReciprocal::Ptr;
 
   using PointIndicesPtr = PointIndices::Ptr;
   using PointIndicesConstPtr = PointIndices::ConstPtr;

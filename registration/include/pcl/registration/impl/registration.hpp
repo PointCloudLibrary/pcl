@@ -40,6 +40,8 @@
 
 #pragma once
 
+#include <pcl/search/auto.h>
+
 namespace pcl {
 
 template <typename PointSource, typename PointTarget, typename Scalar>

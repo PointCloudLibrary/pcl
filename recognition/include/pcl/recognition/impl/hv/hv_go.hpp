@@ -41,6 +41,7 @@
 #include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/time.h>
 #include <pcl/point_types.h>
+#include <pcl/search/auto.h>
 
 #include <memory>
 #include <numeric>

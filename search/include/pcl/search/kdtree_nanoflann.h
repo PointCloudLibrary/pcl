@@ -350,7 +350,8 @@ public:
       return;
     }
     point_representation_ = point_representation;
-    setUpTree();
+    if (input_)
+      setUpTree();
   }
 
   /** @brief Get a pointer to the point representation used when converting points into

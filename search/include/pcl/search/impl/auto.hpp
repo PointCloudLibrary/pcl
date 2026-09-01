@@ -102,8 +102,12 @@ pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::
   }
 #endif
 
-  PCL_ERROR("[pcl::search::autoSelectMethod] No suitable method found. Make sure you have nanoflann and/or FLANN installed.\n");
-  return nullptr;
+  {
+    auto searcher = new pcl::search::BruteForce<PointT> (sorted_results);
+    searcher->setPointRepresentation (point_representation);
+    searcher->setInputCloud (cloud, indices);
+    return searcher;
+  }
 }
 
 #define PCL_INSTANTIATE_AutoSelectMethod(T) template PCL_EXPORTS pcl::search::Search<T> * pcl::search::autoSelectMethod<T>(const typename pcl::PointCloud<T>::ConstPtr& cloud, const pcl::IndicesConstPtr& indices, bool sorted_results, pcl::search::Purpose purpose);
