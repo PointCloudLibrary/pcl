@@ -131,7 +131,8 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
   default(none) \
   shared(angle_threshold, boundary_estimator, border_radius, edge_points, input) \
   firstprivate(u, v) \
-  num_threads(threads_)
+  num_threads(threads_) \
+  schedule(dynamic, 64)
   for (int index = 0; index < static_cast<int>(input.size ()); index++)
   {
     edge_points[index] = false;
@@ -313,7 +314,8 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 #pragma omp parallel for \
   default(none) \
   shared(borders) \
-  num_threads(threads_)
+  num_threads(threads_) \
+  schedule(dynamic, 64)
   for (int index = 0; index < static_cast<int>(input_->size ()); index++)
   {
     borders[index] = false;
@@ -357,7 +359,8 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 #pragma omp parallel for \
   default(none) \
   shared(borders, omp_mem, prg_mem) \
-  num_threads(threads_)
+  num_threads(threads_) \
+  schedule(dynamic, 64)
   for (int index = 0; index < static_cast<int> (input_->size ()); index++)
   {
 #ifdef _OPENMP
@@ -412,7 +415,8 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 #pragma omp parallel for \
   default(none) \
   shared(feat_max) \
-  num_threads(threads_)
+  num_threads(threads_) \
+  schedule(dynamic, 64)
   for (int index = 0; index < static_cast<int>(input_->size ()); index++)
   {
     feat_max [index] = false;
