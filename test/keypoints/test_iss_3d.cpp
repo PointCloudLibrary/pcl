@@ -41,6 +41,10 @@
 #include <pcl/keypoints/iss_3d.h>
 #include <pcl/search/kdtree.h>
 
+#include <algorithm>
+#include <array>
+#include <vector>
+
 using namespace pcl;
 using namespace pcl::io;
 
@@ -51,6 +55,60 @@ double cloud_resolution (0.0058329);
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
 search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ> ());
 
+using KeypointCoordinates = std::array<float, 3>;
+
+std::vector<KeypointCoordinates>
+canonicalizeKeypoints (const PointCloud<PointXYZ>& keypoints)
+{
+  std::vector<KeypointCoordinates> coordinates;
+  coordinates.reserve (keypoints.size ());
+
+  for (const auto& keypoint : keypoints)
+    coordinates.push_back ({keypoint.x, keypoint.y, keypoint.z});
+
+  std::sort (coordinates.begin (), coordinates.end ());
+  return (coordinates);
+}
+
+void
+expectKeypointsMatch (const PointCloud<PointXYZ>& keypoints,
+                      const std::vector<KeypointCoordinates>& expected_keypoints)
+{
+  const auto actual_keypoints = canonicalizeKeypoints (keypoints);
+
+  ASSERT_EQ (actual_keypoints.size (), expected_keypoints.size ());
+
+  for (std::size_t i = 0; i < expected_keypoints.size (); ++i)
+  {
+    EXPECT_NEAR (actual_keypoints[i][0], expected_keypoints[i][0], 1e-6);
+    EXPECT_NEAR (actual_keypoints[i][1], expected_keypoints[i][1], 1e-6);
+    EXPECT_NEAR (actual_keypoints[i][2], expected_keypoints[i][2], 1e-6);
+  }
+}
+
+PointCloud<PointXYZ>
+computeBoundaryEstimatedKeypoints (unsigned int threads)
+{
+  ISSKeypoint3D<PointXYZ, PointXYZ> iss_detector;
+  PointCloud<PointXYZ> keypoints;
+
+  iss_detector.setSearchMethod (tree);
+  iss_detector.setSalientRadius (6 * cloud_resolution);
+  iss_detector.setNonMaxRadius (4 * cloud_resolution);
+
+  iss_detector.setNormalRadius (4 * cloud_resolution);
+  iss_detector.setBorderRadius (4 * cloud_resolution);
+
+  iss_detector.setThreshold21 (0.975);
+  iss_detector.setThreshold32 (0.975);
+  iss_detector.setMinNeighbors (5);
+  iss_detector.setAngleThreshold (static_cast<float> (M_PI) / 3.0);
+  iss_detector.setNumberOfThreads (threads);
+
+  iss_detector.setInputCloud (cloud);
+  iss_detector.compute (keypoints);
+  return (keypoints);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ISSKeypoint3D_WBE)
@@ -75,10 +133,8 @@ TEST (PCL, ISSKeypoint3D_WBE)
   //
   // Compare to previously validated output
   //
-  constexpr std::size_t correct_nr_keypoints = 6;
-  const float correct_keypoints[correct_nr_keypoints][3] =
+  const std::vector<KeypointCoordinates> correct_keypoints =
     {
-      // { x,  y,  z}
       {-0.071112f,  0.137670f,  0.047518f},
       {-0.041733f,  0.127960f,  0.016650f},
       {-0.011943f,  0.086771f,  0.057009f},
@@ -87,15 +143,7 @@ TEST (PCL, ISSKeypoint3D_WBE)
       {-0.048250f,  0.167480f, -0.000152f}
     };
 
-
-  ASSERT_EQ (keypoints.size (), correct_nr_keypoints);
-
-  for (std::size_t i = 0; i < correct_nr_keypoints; ++i)
-  {
-    EXPECT_NEAR (keypoints[i].x, correct_keypoints[i][0], 1e-6);
-    EXPECT_NEAR (keypoints[i].y, correct_keypoints[i][1], 1e-6);
-    EXPECT_NEAR (keypoints[i].z, correct_keypoints[i][2], 1e-6);
-  }
+  expectKeypointsMatch (keypoints, correct_keypoints);
 
   tree.reset (new search::KdTree<PointXYZ> ());
 }
@@ -103,38 +151,11 @@ TEST (PCL, ISSKeypoint3D_WBE)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ISSKeypoint3D_BE)
 {
-  PointCloud<PointXYZ> keypoints;
-
-  //
-  // Compute the ISS 3D keypoints - By first performing the Boundary Estimation
-  //
-
-  ISSKeypoint3D<PointXYZ, PointXYZ> iss_detector;
-
-  iss_detector.setSearchMethod (tree);
-  iss_detector.setSalientRadius (6 * cloud_resolution);
-  iss_detector.setNonMaxRadius (4 * cloud_resolution);
-
-  iss_detector.setNormalRadius (4 * cloud_resolution);
-  iss_detector.setBorderRadius (4 * cloud_resolution);
-
-  iss_detector.setThreshold21 (0.975);
-  iss_detector.setThreshold32 (0.975);
-  iss_detector.setMinNeighbors (5);
-  iss_detector.setAngleThreshold (static_cast<float> (M_PI) / 3.0);
-  iss_detector.setNumberOfThreads (1);
-
-  iss_detector.setInputCloud (cloud);
-  iss_detector.compute (keypoints);
-
-
   //
   // Compare to previously validated output
   //
-  constexpr std::size_t correct_nr_keypoints = 5;
-  const float correct_keypoints[correct_nr_keypoints][3] =
+  const std::vector<KeypointCoordinates> correct_keypoints =
     {
-      // { x,  y,  z}
       {-0.052037f,  0.116800f,  0.034582f},
       { 0.027420f,  0.096386f,  0.043312f},
       {-0.011943f,  0.086771f,  0.057009f},
@@ -142,14 +163,8 @@ TEST (PCL, ISSKeypoint3D_BE)
       {-0.030035f,  0.066130f,  0.038942f}
     };
 
-  ASSERT_EQ (keypoints.size (), correct_nr_keypoints);
-
-  for (std::size_t i = 0; i < correct_nr_keypoints; ++i)
-  {
-    EXPECT_NEAR (keypoints[i].x, correct_keypoints[i][0], 1e-6);
-    EXPECT_NEAR (keypoints[i].y, correct_keypoints[i][1], 1e-6);
-    EXPECT_NEAR (keypoints[i].z, correct_keypoints[i][2], 1e-6);
-  }
+  const auto keypoints = computeBoundaryEstimatedKeypoints (1);
+  expectKeypointsMatch (keypoints, correct_keypoints);
 
   tree.reset (new search::KdTree<PointXYZ> ());
 }
@@ -157,28 +172,7 @@ TEST (PCL, ISSKeypoint3D_BE)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ISSKeypoint3D_BE_parallel)
 {
-  PointCloud<PointXYZ> keypoints;
-
-  ISSKeypoint3D<PointXYZ, PointXYZ> iss_detector;
-
-  iss_detector.setSearchMethod (tree);
-  iss_detector.setSalientRadius (6 * cloud_resolution);
-  iss_detector.setNonMaxRadius (4 * cloud_resolution);
-
-  iss_detector.setNormalRadius (4 * cloud_resolution);
-  iss_detector.setBorderRadius (4 * cloud_resolution);
-
-  iss_detector.setThreshold21 (0.975);
-  iss_detector.setThreshold32 (0.975);
-  iss_detector.setMinNeighbors (5);
-  iss_detector.setAngleThreshold (static_cast<float> (M_PI) / 3.0);
-  iss_detector.setNumberOfThreads (2);
-
-  iss_detector.setInputCloud (cloud);
-  iss_detector.compute (keypoints);
-
-  constexpr std::size_t correct_nr_keypoints = 5;
-  const float correct_keypoints[correct_nr_keypoints][3] =
+  const std::vector<KeypointCoordinates> correct_keypoints =
     {
       {-0.052037f,  0.116800f,  0.034582f},
       { 0.027420f,  0.096386f,  0.043312f},
@@ -187,13 +181,12 @@ TEST (PCL, ISSKeypoint3D_BE_parallel)
       {-0.030035f,  0.066130f,  0.038942f}
     };
 
-  ASSERT_EQ (keypoints.size (), correct_nr_keypoints);
-
-  for (std::size_t i = 0; i < correct_nr_keypoints; ++i)
+  constexpr int repeated_runs = 12;
+  for (int run = 0; run < repeated_runs; ++run)
   {
-    EXPECT_NEAR (keypoints[i].x, correct_keypoints[i][0], 1e-6);
-    EXPECT_NEAR (keypoints[i].y, correct_keypoints[i][1], 1e-6);
-    EXPECT_NEAR (keypoints[i].z, correct_keypoints[i][2], 1e-6);
+    SCOPED_TRACE (::testing::Message () << "parallel run " << run);
+    const auto keypoints = computeBoundaryEstimatedKeypoints (2);
+    expectKeypointsMatch (keypoints, correct_keypoints);
   }
 
   tree.reset (new search::KdTree<PointXYZ> ());
