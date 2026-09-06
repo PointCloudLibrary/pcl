@@ -6,6 +6,7 @@ set(SUBSYS_EXT_DEPS "")
 if(FLANN_FOUND)
   list(APPEND SUBSYS_EXT_DEPS flann)
 else()
+  # kdtree has to initially appear in the SUBSYS_DEPS list because that determines the order in which modules are processed (and kdtree must be processed before search). If kdtree is not available, we remove it here so search can still be built:
   list(REMOVE_ITEM SUBSYS_DEPS kdtree)
   list(APPEND SUBSYS_OPT_DEPS flann)
 endif()

@@ -65,7 +65,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/transformation_validation.h"
   "include/pcl/${SUBSYS_NAME}/transformation_validation_euclidean.h"
   "include/pcl/${SUBSYS_NAME}/gicp.h"
-  "include/pcl/${SUBSYS_NAME}/gicp6d.h"
   "include/pcl/${SUBSYS_NAME}/fricp.h"
   "include/pcl/${SUBSYS_NAME}/bfgs.h"
   "include/pcl/${SUBSYS_NAME}/warp_point_rigid.h"
@@ -148,7 +147,6 @@ set(srcs
   src/icp.cpp
   src/joint_icp.cpp
   src/gicp.cpp
-  src/gicp6d.cpp
   src/icp_nl.cpp
   src/elch.cpp
   src/lum.cpp
@@ -165,6 +163,11 @@ set(srcs
   src/transformation_validation_euclidean.cpp
   src/sample_consensus_prerejective.cpp
 )
+
+if(PCL_HAS_FLANN OR PCL_HAS_NANOFLANN)
+  list(APPEND incs "include/pcl/${SUBSYS_NAME}/gicp6d.h")
+  list(APPEND srcs src/gicp6d.cpp)
+endif()
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})

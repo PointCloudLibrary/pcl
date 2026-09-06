@@ -74,16 +74,13 @@ TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::
         transformation_matrix(2, 2) * src.z + transformation_matrix(2, 3));
   }
 
-  KdTreePtr tree;
   typename MyPointRepresentation::ConstPtr point_rep(new MyPointRepresentation);
-  if (!force_no_recompute_) {
-    tree.reset(pcl::search::autoSelectMethod<PointTarget>(
-        cloud_tgt,
-        pcl::IndicesConstPtr(),
-        point_rep,
-        false,
-        pcl::search::Purpose::one_knn_search));
-  }
+  KdTreePtr tree(
+      pcl::search::autoSelectMethod<PointTarget>(cloud_tgt,
+                                                 pcl::IndicesConstPtr(),
+                                                 point_rep,
+                                                 false,
+                                                 pcl::search::Purpose::one_knn_search));
 
   pcl::Indices nn_indices(1);
   std::vector<float> nn_dists(1);
