@@ -85,12 +85,14 @@ Registration<PointSource, PointTarget, Scalar>::initCompute()
   // Only update target kd-tree if a new target cloud was set
   if (target_cloud_updated_ && !force_no_recompute_) {
     if (point_representation_) {
-      tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
-          target_,
-          pcl::IndicesConstPtr(),
-          point_representation_,
-          false,
-          pcl::search::Purpose::one_knn_search));
+      if (!tree_ || !tree_->setPointRepresentation(point_representation_) ||
+          !tree_->setInputCloud(target_))
+        tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
+            target_,
+            pcl::IndicesConstPtr(),
+            point_representation_,
+            false,
+            pcl::search::Purpose::one_knn_search));
     }
     else if (!tree_ || !tree_->setInputCloud(target_))
       tree_.reset(pcl::search::autoSelectMethod<PointTarget>(

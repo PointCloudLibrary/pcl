@@ -101,10 +101,11 @@ namespace pcl
           * points into k-D vectors.
           * \param[in] point_representation the const shared pointer to a PointRepresentation
           */
-        inline void
-        setPointRepresentation (const PointRepresentationConstPtr &point_representation)
+        bool
+        setPointRepresentation (const PointRepresentationConstPtr &point_representation) override
         {
           point_representation_ = point_representation;
+          return true;
         }
 
         /** \brief Get the point representation used for converting points into k-D vectors. */

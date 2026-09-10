@@ -312,13 +312,14 @@ namespace pcl
         /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors.
           * \param[in] point_representation the const boost shared pointer to a PointRepresentation
           */
-        inline void
-        setPointRepresentation (const PointRepresentationConstPtr &point_representation)
+        bool
+        setPointRepresentation (const PointRepresentationConstPtr &point_representation) override
         {
           point_representation_ = point_representation;
           dim_ = point_representation->getNumberOfDimensions ();
           if (input_) // re-create the tree, since point_representation might change things such as the scaling of the point clouds.
             setInputCloud (input_, indices_);
+          return true;
         }
 
         /** \brief Get a pointer to the point representation used when converting points into k-D vectors. */

@@ -79,12 +79,15 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute()
   if (target_cloud_updated_ && !force_no_recompute_) {
     // If the target indices have been given via setIndicesTarget
     if (point_representation_) {
-      tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
-          target_,
-          (target_indices_ ? target_indices_ : pcl::IndicesConstPtr()),
-          point_representation_,
-          false,
-          pcl::search::Purpose::one_knn_search));
+      if (!tree_ || !tree_->setPointRepresentation(point_representation_) ||
+          (target_indices_ ? !tree_->setInputCloud(target_, target_indices_)
+                           : !tree_->setInputCloud(target_)))
+        tree_.reset(pcl::search::autoSelectMethod<PointTarget>(
+            target_,
+            (target_indices_ ? target_indices_ : pcl::IndicesConstPtr()),
+            point_representation_,
+            false,
+            pcl::search::Purpose::one_knn_search));
     }
     else if (target_indices_) {
       if (!tree_ || !tree_->setInputCloud(target_, target_indices_))
@@ -110,12 +113,17 @@ CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeRecip
   // Only update source kd-tree if a new target cloud was set
   if (source_cloud_updated_ && !force_no_recompute_reciprocal_) {
     if (point_representation_reciprocal_) {
-      tree_reciprocal_.reset(pcl::search::autoSelectMethod<PointSource>(
-          getInputSource(),
-          (indices_ ? getIndicesSource() : pcl::IndicesConstPtr()),
-          point_representation_reciprocal_,
-          false,
-          pcl::search::Purpose::one_knn_search));
+      if (!tree_reciprocal_ ||
+          !tree_reciprocal_->setPointRepresentation(point_representation_reciprocal_) ||
+          (indices_
+               ? !tree_reciprocal_->setInputCloud(getInputSource(), getIndicesSource())
+               : !tree_reciprocal_->setInputCloud(getInputSource())))
+        tree_reciprocal_.reset(pcl::search::autoSelectMethod<PointSource>(
+            getInputSource(),
+            (indices_ ? getIndicesSource() : pcl::IndicesConstPtr()),
+            point_representation_reciprocal_,
+            false,
+            pcl::search::Purpose::one_knn_search));
     }
     else if (indices_) {
       if (!tree_reciprocal_ ||

@@ -332,8 +332,8 @@ public:
    * calling setInputCloud, to avoid setting up the kd-tree twice.
    * @param[in] point_representation the const shared pointer to a PointRepresentation
    */
-  void
-  setPointRepresentation(const PointRepresentationConstPtr& point_representation)
+  bool
+  setPointRepresentation(const PointRepresentationConstPtr& point_representation) override
   {
     PCL_DEBUG("[KdTreeNanoflann::setPointRepresentation] "
               "KdTreeNanoflann::setPointRepresentation called, "
@@ -347,11 +347,12 @@ public:
                 "template parameter to KdTreeNanoflann is %i.\n",
                 point_representation->getNumberOfDimensions(),
                 Dim);
-      return;
+      return false;
     }
     point_representation_ = point_representation;
     if (input_)
       setUpTree();
+    return true;
   }
 
   /** @brief Get a pointer to the point representation used when converting points into
