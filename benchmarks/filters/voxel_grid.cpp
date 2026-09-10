@@ -61,7 +61,8 @@ main(int argc, char** argv)
       ->Unit(benchmark::kMillisecond);
   benchmark::RegisterBenchmark("BM_VoxelGrid_milk_2Threads", &BM_VoxelGrid, argv[2], 2)
       ->Unit(benchmark::kMillisecond);
-  benchmark::RegisterBenchmark("BM_VoxelGrid_milk_MaxThreads", &BM_VoxelGrid, argv[2], 0)
+  benchmark::RegisterBenchmark(
+      "BM_VoxelGrid_milk_MaxThreads", &BM_VoxelGrid, argv[2], 0)
       ->Unit(benchmark::kMillisecond);
   benchmark::RegisterBenchmark(
       "BM_ApproximateVoxelGrid_milk", &BM_ApproxVoxelGrid, argv[2])
