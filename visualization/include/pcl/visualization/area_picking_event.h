@@ -54,10 +54,6 @@ namespace pcl
         : cloud_indices_ (std::move(cloud_indices))
         {}
 
-        PCL_DEPRECATED(1,16,"This constructor is deprecated!")
-        AreaPickingEvent(int /*nb_points*/, const pcl::Indices& indices)
-          : AreaPickingEvent ({{"",indices}}) {}
-
         /** \brief For situations where a whole area is selected, return the points indices.
           * \param[out] indices indices of the points under the area selected by user.
           * \return true, if the area selected by the user contains points, false otherwise

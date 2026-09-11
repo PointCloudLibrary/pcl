@@ -57,7 +57,6 @@ if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
 endif()
 
 set(incs
-  "include/pcl/${SUBSYS_NAME}/boost.h"
   "include/pcl/${SUBSYS_NAME}/cloud_viewer.h"
   "include/pcl/${SUBSYS_NAME}/histogram_visualizer.h"
   "include/pcl/${SUBSYS_NAME}/image_viewer.h"

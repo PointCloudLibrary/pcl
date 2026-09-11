@@ -34,7 +34,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/outofcore_iterator_base.h"
   "include/pcl/${SUBSYS_NAME}/outofcore_breadth_first_iterator.h"
   "include/pcl/${SUBSYS_NAME}/outofcore_depth_first_iterator.h"
-  "include/pcl/${SUBSYS_NAME}/boost.h"
   "include/pcl/${SUBSYS_NAME}/octree_base.h"
   "include/pcl/${SUBSYS_NAME}/octree_base_node.h"
   "include/pcl/${SUBSYS_NAME}/octree_abstract_node_container.h"
