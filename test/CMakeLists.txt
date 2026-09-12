@@ -8,11 +8,11 @@ if(NOT build)
   return()
 endif()
 
-find_package(GTestSource REQUIRED)
-include_directories(SYSTEM ${GTEST_INCLUDE_DIRS} ${GTEST_SRC_DIR})
+find_package(GTest REQUIRED)
 
-add_library(pcl_gtest STATIC ${GTEST_SRC_DIR}/src/gtest-all.cc)
-target_include_directories(pcl_gtest PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+add_library(pcl_gtest INTERFACE)
+target_link_libraries(pcl_gtest INTERFACE GTest::gtest)
+target_include_directories(pcl_gtest INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 enable_testing()
 
