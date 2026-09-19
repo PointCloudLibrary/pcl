@@ -36,6 +36,7 @@
  */
 
 #include <pcl/test/gtest.h>
+#include <pcl/point_types.h>
 #include <pcl/registration/correspondence_estimation_normal_shooting.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/kdtree/kdtree.h>
@@ -64,22 +65,14 @@ pcl::PointXYZI makeRandomPoint()
   return {static_cast<float>(rand()), static_cast<float>(rand()), static_cast<float>(rand()), static_cast<float>(rand())};
 }
 
-template <typename PointT, typename... Args>
-PointT makePointWithParams(Args... args)
+template <typename PointT>
+PointT makePointWithXYZ(float x, float y, float z)
 {
-  return PointT{ args... };
-}
-
-template <>
-pcl::PointXYZ makePointWithParams(float x, float y, float z)
-{
-  return {x, y, z};
-}
-
-template <>
-pcl::PointXYZI makePointWithParams(float x, float y, float z)
-{
-  return {x, y, z, static_cast<float>(rand())};
+  PointT point{};
+  point.x = x;
+  point.y = y;
+  point.z = z;
+  return point;
 }
 
 }
@@ -90,7 +83,41 @@ class CorrespondenceEstimationTestSuite : public ::testing::Test { };
 using PointTypesForCorrespondenceEstimationTest = 
   ::testing::Types<std::pair<pcl::PointXYZ, pcl::PointXYZ>, std::pair<pcl::PointXYZ, pcl::PointXYZI>>;
 
+using PointTypesForCorrespondenceEstimationMatrixTest =
+  ::testing::Types<
+    std::pair<pcl::PointXYZ, pcl::PointXYZ>,
+    std::pair<pcl::PointXYZ, pcl::PointXYZI>,
+    std::pair<pcl::PointXYZ, pcl::PointNormal>,
+    std::pair<pcl::PointXYZ, pcl::PointXYZRGB>,
+    std::pair<pcl::PointXYZ, pcl::PointXYZRGBNormal>,
+    std::pair<pcl::PointXYZI, pcl::PointXYZ>,
+    std::pair<pcl::PointXYZI, pcl::PointXYZI>,
+    std::pair<pcl::PointXYZI, pcl::PointNormal>,
+    std::pair<pcl::PointXYZI, pcl::PointXYZRGB>,
+    std::pair<pcl::PointXYZI, pcl::PointXYZRGBNormal>,
+    std::pair<pcl::PointNormal, pcl::PointXYZ>,
+    std::pair<pcl::PointNormal, pcl::PointXYZI>,
+    std::pair<pcl::PointNormal, pcl::PointNormal>,
+    std::pair<pcl::PointNormal, pcl::PointXYZRGB>,
+    std::pair<pcl::PointNormal, pcl::PointXYZRGBNormal>,
+    std::pair<pcl::PointXYZRGB, pcl::PointXYZ>,
+    std::pair<pcl::PointXYZRGB, pcl::PointXYZI>,
+    std::pair<pcl::PointXYZRGB, pcl::PointNormal>,
+    std::pair<pcl::PointXYZRGB, pcl::PointXYZRGB>,
+    std::pair<pcl::PointXYZRGB, pcl::PointXYZRGBNormal>,
+    std::pair<pcl::PointXYZRGBNormal, pcl::PointXYZ>,
+    std::pair<pcl::PointXYZRGBNormal, pcl::PointXYZI>,
+    std::pair<pcl::PointXYZRGBNormal, pcl::PointNormal>,
+    std::pair<pcl::PointXYZRGBNormal, pcl::PointXYZRGB>,
+    std::pair<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>>;
+
 TYPED_TEST_SUITE(CorrespondenceEstimationTestSuite, PointTypesForCorrespondenceEstimationTest);
+
+template <typename T>
+class CorrespondenceEstimationMatrixTest : public ::testing::Test { };
+
+TYPED_TEST_SUITE(CorrespondenceEstimationMatrixTest,
+                 PointTypesForCorrespondenceEstimationMatrixTest);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TYPED_TEST(CorrespondenceEstimationTestSuite, CorrespondenceEstimationNormalShooting)
@@ -106,8 +133,8 @@ TYPED_TEST(CorrespondenceEstimationTestSuite, CorrespondenceEstimationNormalShoo
   {
     for (std::size_t j = 0; j < 25; ++j)
     {
-      cloud1->push_back(makePointWithParams<PointSource>(i * 0.2f, 0.f, j * 0.2f));
-      cloud2->push_back(makePointWithParams<PointTarget>(i * 0.2f, 2.f, j * 0.2f)); // Ideally this should be the corresponding point to the point defined in the previous line
+      cloud1->push_back(makePointWithXYZ<PointSource>(i * 0.2f, 0.f, j * 0.2f));
+      cloud2->push_back(makePointWithXYZ<PointTarget>(i * 0.2f, 2.f, j * 0.2f)); // Ideally this should be the corresponding point to the point defined in the previous line
     }
   }
         
@@ -133,6 +160,41 @@ TYPED_TEST(CorrespondenceEstimationTestSuite, CorrespondenceEstimationNormalShoo
   for (std::size_t i = 0; i < corr->size (); i++)
   {
     EXPECT_EQ ((*corr)[i].index_query, (*corr)[i].index_match);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+TYPED_TEST(CorrespondenceEstimationMatrixTest, DifferentPointTypes)
+{
+  using PointSource = typename TypeParam::first_type;
+  using PointTarget = typename TypeParam::second_type;
+
+  auto source = pcl::make_shared<pcl::PointCloud<PointSource>>();
+  auto target = pcl::make_shared<pcl::PointCloud<PointTarget>>();
+  for (std::size_t i = 0; i < 4; ++i) {
+    const float coordinate = static_cast<float>(i);
+    source->push_back(makePointWithXYZ<PointSource>(coordinate, 0.f, 0.f));
+    target->push_back(makePointWithXYZ<PointTarget>(coordinate, 0.f, 0.f));
+  }
+
+  pcl::registration::CorrespondenceEstimation<PointSource, PointTarget> ce;
+  ce.setInputSource(source);
+  ce.setInputTarget(target);
+
+  pcl::Correspondences correspondences;
+  ce.determineCorrespondences(correspondences);
+  ASSERT_EQ(correspondences.size(), source->size());
+  for (std::size_t i = 0; i < correspondences.size(); ++i) {
+    EXPECT_EQ(correspondences[i].index_query, static_cast<int>(i));
+    EXPECT_EQ(correspondences[i].index_match, static_cast<int>(i));
+  }
+
+  pcl::Correspondences reciprocal_correspondences;
+  ce.determineReciprocalCorrespondences(reciprocal_correspondences);
+  ASSERT_EQ(reciprocal_correspondences.size(), source->size());
+  for (std::size_t i = 0; i < reciprocal_correspondences.size(); ++i) {
+    EXPECT_EQ(reciprocal_correspondences[i].index_query, static_cast<int>(i));
+    EXPECT_EQ(reciprocal_correspondences[i].index_match, static_cast<int>(i));
   }
 }
 
