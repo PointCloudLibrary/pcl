@@ -43,7 +43,7 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/features/feature.h>
-#include <pcl/point_types.h>       // for Histogram
+#include <pcl/feature_types.h>       // for Histogram
 
 namespace pcl
 {

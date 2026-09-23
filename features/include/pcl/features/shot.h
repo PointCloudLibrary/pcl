@@ -39,7 +39,7 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
+#include <pcl/feature_types.h>
 #include <pcl/features/feature.h>
 
 #include <array>  // for sRGB_LUT, sXYZ_LUT

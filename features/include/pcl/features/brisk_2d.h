@@ -40,6 +40,7 @@
 #pragma once
 
 // PCL includes
+#include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/intensity.h>

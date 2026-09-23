@@ -38,7 +38,7 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
+#include <pcl/feature_types.h>
 #include <pcl/features/feature.h>
 #include <pcl/features/normal_3d.h>
 

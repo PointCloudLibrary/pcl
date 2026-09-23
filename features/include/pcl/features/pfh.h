@@ -40,7 +40,7 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
+#include <pcl/feature_types.h>
 #include <pcl/features/feature.h>
 #include <map>
 #include <queue> // for std::queue

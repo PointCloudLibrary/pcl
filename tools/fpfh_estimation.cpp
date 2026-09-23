@@ -38,6 +38,7 @@
  */
 
 #include <pcl/PCLPointCloud2.h>
+#include <pcl/point_types.h>          // for pcl::PointNormal
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/fpfh.h>
 #include <pcl/console/print.h>
