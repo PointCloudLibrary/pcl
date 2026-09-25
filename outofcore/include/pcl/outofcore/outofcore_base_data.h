@@ -49,6 +49,8 @@
 
 #include <pcl/outofcore/metadata.h>
 
+#include <boost/filesystem/path.hpp> // for deprecated boost::filesystem overloads
+
 //standard library
 #include <string>
 
@@ -108,7 +110,16 @@ namespace pcl
          *
          *  \param[in] path_arg Location of JSON metadata file to load from disk
          */
-        OutofcoreOctreeBaseMetadata (const boost::filesystem::path& path_arg);
+        OutofcoreOctreeBaseMetadata (const pcl_fs::path& path_arg);
+
+        /** \brief Load metadata from disk
+         *
+         *  \param[in] path_arg Location of JSON metadata file to load from disk
+         *  \deprecated Use the constructor taking pcl_fs::path instead. */
+        PCL_DEPRECATED(1, 16, "use the constructor taking pcl_fs::path instead")
+        OutofcoreOctreeBaseMetadata (const boost::filesystem::path& path_arg)
+          : OutofcoreOctreeBaseMetadata (pcl_fs::path (path_arg.native ())) {}
+
         /** \brief Default destructor*/
         ~OutofcoreOctreeBaseMetadata () override;
 
@@ -123,12 +134,21 @@ namespace pcl
         setOutofcoreVersion (const int version);
 
         /** \brief Gets the name of the JSON file */
-        boost::filesystem::path 
+        pcl_fs::path 
         getMetadataFilename () const;
         /** \brief Sets the name of the JSON file */
-        void 
-        setMetadataFilename (const boost::filesystem::path& path_to_metadata);
-                
+        void
+        setMetadataFilename (const pcl_fs::path& path_to_metadata);
+
+        /** \brief Sets the name of the JSON file
+         *  \deprecated Use setMetadataFilename(const pcl_fs::path&) instead. */
+        PCL_DEPRECATED(1, 16, "use setMetadataFilename(const pcl_fs::path&) instead")
+        void
+        setMetadataFilename (const boost::filesystem::path& path_to_metadata)
+        {
+          setMetadataFilename (pcl_fs::path (path_to_metadata.native ()));
+        }
+
         /** \brief Writes the data to a JSON file located at \ref metadata_filename_ */
         void 
         serializeMetadataToDisk () override;
@@ -137,9 +157,19 @@ namespace pcl
         virtual int
         loadMetadataFromDisk ();
         /** \brief Loads the data from a JSON file located at \ref metadata_filename_ */
-        
+
         int
-        loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata) override;
+        loadMetadataFromDisk (const pcl_fs::path& path_to_metadata) override;
+
+        /** \brief Loads the data from a JSON file located at \ref metadata_filename_
+         *  \deprecated Use loadMetadataFromDisk(const pcl_fs::path&) instead. */
+        PCL_DEPRECATED(1, 16, "use loadMetadataFromDisk(const pcl_fs::path&) instead")
+        int
+        loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata)
+        {
+          return (loadMetadataFromDisk (pcl_fs::path (path_to_metadata.native ())));
+        }
+
 
         /** \brief Returns the name of the tree; this is not the same as the filename */
         virtual std::string
@@ -196,7 +226,7 @@ namespace pcl
 
       protected:
         /** \brief Metadata (JSON) file pathname (octree extension JSON file) */
-        boost::filesystem::path metadata_filename_;
+        pcl_fs::path metadata_filename_;
 
         /** \brief Outofcore library version identifier; maps to JSON "version":int */
         int outofcore_version_;

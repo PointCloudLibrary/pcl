@@ -72,13 +72,13 @@ constexpr std::uint64_t numPts (10000);
 
 constexpr std::uint32_t rngseed = 0xAAFF33DD;
 
-const static boost::filesystem::path filename_otreeA = "treeA/tree_test.oct_idx";
-const static boost::filesystem::path filename_otreeB = "treeB/tree_test.oct_idx";
+const static pcl_fs::path filename_otreeA = "treeA/tree_test.oct_idx";
+const static pcl_fs::path filename_otreeB = "treeB/tree_test.oct_idx";
 
-const static boost::filesystem::path filename_otreeA_LOD = "treeA_LOD/tree_test.oct_idx";
-const static boost::filesystem::path filename_otreeB_LOD = "treeB_LOD/tree_test.oct_idx";
+const static pcl_fs::path filename_otreeA_LOD = "treeA_LOD/tree_test.oct_idx";
+const static pcl_fs::path filename_otreeB_LOD = "treeB_LOD/tree_test.oct_idx";
 
-const static  boost::filesystem::path outofcore_path ("point_cloud_octree/tree_test.oct_idx");
+const static  pcl_fs::path outofcore_path ("point_cloud_octree/tree_test.oct_idx");
 
 
 using PointT = pcl::PointXYZ;
@@ -105,8 +105,8 @@ compPt (const PointT &p1, const PointT &p2)
 TEST (PCL, Outofcore_Octree_Build)
 {
 
-  boost::filesystem::remove_all (filename_otreeA.parent_path ());
-  boost::filesystem::remove_all (filename_otreeB.parent_path ());
+  pcl_fs::remove_all (filename_otreeA.parent_path ());
+  pcl_fs::remove_all (filename_otreeB.parent_path ());
 
   Eigen::Vector3d min (-32.0, -32.0, -32.0);
   Eigen::Vector3d max (32.0, 32.0, 32.0);
@@ -158,8 +158,8 @@ TEST (PCL, Outofcore_Octree_Build)
 TEST (PCL, Outofcore_Octree_Build_LOD)
 {
 
-  boost::filesystem::remove_all (filename_otreeA_LOD.parent_path ());
-  boost::filesystem::remove_all (filename_otreeB_LOD.parent_path ());
+  pcl_fs::remove_all (filename_otreeA_LOD.parent_path ());
+  pcl_fs::remove_all (filename_otreeB_LOD.parent_path ());
 
   Eigen::Vector3d min (0.0, 0.0, 0.0);
   Eigen::Vector3d max (1.0, 1.0, 1.0);
@@ -411,13 +411,13 @@ class OutofcoreTest : public testing::Test
     {
       //clear existing trees from test path
 
-      boost::filesystem::remove_all (filename_otreeA.parent_path ());
-      boost::filesystem::remove_all (filename_otreeB.parent_path ());
+      pcl_fs::remove_all (filename_otreeA.parent_path ());
+      pcl_fs::remove_all (filename_otreeB.parent_path ());
 
-      boost::filesystem::remove_all (filename_otreeA_LOD.parent_path ());
-      boost::filesystem::remove_all (filename_otreeB_LOD.parent_path ());
+      pcl_fs::remove_all (filename_otreeA_LOD.parent_path ());
+      pcl_fs::remove_all (filename_otreeB_LOD.parent_path ());
 
-      boost::filesystem::remove_all (outofcore_path.parent_path ());
+      pcl_fs::remove_all (outofcore_path.parent_path ());
 
     }
 
@@ -476,8 +476,8 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
   
   //(Case 3) Constructor Safety. These should throw OCT_CHILD_EXISTS exceptions and write an error
   //message of conflicting file path
-  ASSERT_TRUE (boost::filesystem::exists (filename_otreeA)) << "No tree detected on disk. This test will fail. Perhaps this test was run out of order.\n";
-  ASSERT_TRUE (boost::filesystem::exists (filename_otreeB)) << "No tree detected on disk. This test will fail. Perhaps this test was run out of order.\n";
+  ASSERT_TRUE (pcl_fs::exists (filename_otreeA)) << "No tree detected on disk. This test will fail. Perhaps this test was run out of order.\n";
+  ASSERT_TRUE (pcl_fs::exists (filename_otreeB)) << "No tree detected on disk. This test will fail. Perhaps this test was run out of order.\n";
 
   EXPECT_ANY_THROW ({ octree_disk octreeC (min, max, smallest_voxel_dim, filename_otreeA, "ECEF"); }) << "Failure to detect existing tree on disk with the same name. Data may be overwritten.\n";
   EXPECT_ANY_THROW ({ octree_disk octreeD (depth, min, max, filename_otreeB, "ECEF"); }) << "Failure to detect existing tree on disk with the same name. Data may be overwritten.\n";
@@ -492,13 +492,13 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorBadPaths)
   //(Case 5): Try to load non-existent tree from disk
   //root node should be created at this point
   /// \todo Shouldn't these throw an exception for bad path?
-  boost::filesystem::path non_existent_path_name ("treeBogus/tree_bogus.oct_idx");
-  boost::filesystem::path bad_extension_path ("treeBadExtension/tree_bogus.bad_extension");
+  pcl_fs::path non_existent_path_name ("treeBogus/tree_bogus.oct_idx");
+  pcl_fs::path bad_extension_path ("treeBadExtension/tree_bogus.bad_extension");
 
-  EXPECT_FALSE (boost::filesystem::exists (non_existent_path_name));
+  EXPECT_FALSE (pcl_fs::exists (non_existent_path_name));
   EXPECT_ANY_THROW ({octree_disk octree_bogus_path (non_existent_path_name, true);});
 
-  EXPECT_FALSE (boost::filesystem::exists (bad_extension_path));
+  EXPECT_FALSE (pcl_fs::exists (bad_extension_path));
   EXPECT_ANY_THROW ({octree_disk octree_bad_extension (bad_extension_path, true);});
 
 }

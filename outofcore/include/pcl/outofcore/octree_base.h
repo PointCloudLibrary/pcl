@@ -39,7 +39,10 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h> // for PCL_DEPRECATED
 #include <pcl/common/io.h>
+
+#include <boost/filesystem/path.hpp> // for deprecated boost::filesystem overloads
 
 //outofcore classes
 #include <pcl/outofcore/octree_base_node.h>
@@ -201,7 +204,14 @@ namespace pcl
          * \param load_all Load entire tree metadata (does not load any points from disk)
          * \throws PCLException for bad extension (root node metadata must be .oct_idx extension)
          */
-        OutofcoreOctreeBase (const boost::filesystem::path &root_node_name, const bool load_all);
+        OutofcoreOctreeBase (const pcl_fs::path &root_node_name, const bool load_all);
+
+        /** \brief Load an existing tree
+         *  \deprecated Use the constructor taking pcl_fs::path instead. */
+        PCL_DEPRECATED(1, 16, "use the constructor taking pcl_fs::path instead")
+        OutofcoreOctreeBase (const boost::filesystem::path &root_node_name, const bool load_all)
+          : OutofcoreOctreeBase (pcl_fs::path (root_node_name.native ()), load_all) {}
+
 
         /** \brief Create a new tree
          *
@@ -216,7 +226,14 @@ namespace pcl
          * \param coord_sys Coordinate system which is stored in the JSON metadata
          * \throws PCLException if root file extension does not match \ref pcl::outofcore::OutofcoreOctreeBaseNode::node_index_extension
          */
-        OutofcoreOctreeBase (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double resolution_arg, const boost::filesystem::path &root_node_name, const std::string &coord_sys);
+        OutofcoreOctreeBase (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double resolution_arg, const pcl_fs::path &root_node_name, const std::string &coord_sys);
+
+        /** \brief Create a new tree
+         *  \deprecated Use the constructor taking pcl_fs::path instead. */
+        PCL_DEPRECATED(1, 16, "use the constructor taking pcl_fs::path instead")
+        OutofcoreOctreeBase (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double resolution_arg, const boost::filesystem::path &root_node_name, const std::string &coord_sys)
+          : OutofcoreOctreeBase (min, max, resolution_arg, pcl_fs::path (root_node_name.native ()), coord_sys) {}
+
 
         /** \brief Create a new tree; will not overwrite existing tree of same name
          *
@@ -231,7 +248,14 @@ namespace pcl
          * \throws PCLException if the parent directory has existing children (detects an existing tree)
          * \throws PCLException if file extension is not ".oct_idx"
          */
-        OutofcoreOctreeBase (const std::uint64_t max_depth, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const boost::filesystem::path &root_node_name, const std::string &coord_sys);
+        OutofcoreOctreeBase (const std::uint64_t max_depth, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const pcl_fs::path &root_node_name, const std::string &coord_sys);
+
+        /** \brief Create a new tree; will not overwrite existing tree of same name
+         *  \deprecated Use the constructor taking pcl_fs::path instead. */
+        PCL_DEPRECATED(1, 16, "use the constructor taking pcl_fs::path instead")
+        OutofcoreOctreeBase (const std::uint64_t max_depth, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const boost::filesystem::path &root_node_name, const std::string &coord_sys)
+          : OutofcoreOctreeBase (max_depth, min, max, pcl_fs::path (root_node_name.native ()), coord_sys) {}
+
 
         virtual
         ~OutofcoreOctreeBase ();
@@ -537,7 +561,18 @@ namespace pcl
         /** \brief Write a python script using the vpython module containing all
          * the bounding boxes */
         void
-        writeVPythonVisual (const boost::filesystem::path& filename);
+        writeVPythonVisual (const pcl_fs::path& filename);
+
+        /** \brief Write a python script using the vpython module containing all
+         * the bounding boxes
+         *  \deprecated Use writeVPythonVisual(const pcl_fs::path&) instead. */
+        PCL_DEPRECATED(1, 16, "use writeVPythonVisual(const pcl_fs::path&) instead")
+        void
+        writeVPythonVisual (const boost::filesystem::path& filename)
+        {
+          writeVPythonVisual (pcl_fs::path (filename.native ()));
+        }
+
 
         OutofcoreNodeType*
         getBranchChildPtr (const BranchNode& branch_arg, unsigned char childIdx_arg) const;
@@ -569,7 +604,7 @@ namespace pcl
 	
       protected:
         void
-        init (const std::uint64_t& depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys);
+        init (const std::uint64_t& depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const pcl_fs::path& root_name, const std::string& coord_sys);
 
         OutofcoreOctreeBase (OutofcoreOctreeBase &rval);
 
@@ -609,7 +644,7 @@ namespace pcl
          *  \return 0 if bad; 1 if extension is .oct_idx
          */
         bool
-        checkExtension (const boost::filesystem::path& path_name);
+        checkExtension (const pcl_fs::path& path_name);
 
         /** \brief Flush all nodes' cache */
         void
