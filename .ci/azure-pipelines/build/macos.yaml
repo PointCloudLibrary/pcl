@@ -5,7 +5,6 @@ steps:
   - script: |
       brew install cmake
       brew install pkg-config boost eigen flann nanoflann glew libusb qhull vtk glew freeglut qt libpcap libomp suite-sparse zlib google-benchmark cjson googletest
-      brew install brewsci/science/openni
     displayName: 'Install Dependencies'
   - script: |
       mkdir $BUILD_DIR && cd $BUILD_DIR
