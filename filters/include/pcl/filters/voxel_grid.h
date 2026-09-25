@@ -487,6 +487,21 @@ namespace pcl
         return (filter_limit_negative_);
       }
 
+      /** \brief Set the number of threads to use
+       * \param[in] threads the number of threads to use (0 sets the value to automatic)
+       */
+      void setNumberOfThreads (size_t threads = 0)
+      {
+        #ifdef _OPENMP
+        num_threads_ = (threads == 0) ? static_cast<size_t> (omp_get_max_threads()) : threads;
+        #else
+        if (threads != 1) {
+          PCL_WARN("OpenMP is not available. Keeping number of threads at 1\n");
+        }
+        num_threads_ = 1;
+        #endif
+      }
+
     protected:
       /** \brief The size of a leaf. */
       Eigen::Vector4f leaf_size_;
@@ -528,6 +543,10 @@ namespace pcl
         */
       void
       applyFilter (PointCloud &output) override;
+
+      private:
+      /** \brief Number of threads used during filtering */
+      size_t num_threads_{1};
   };
 
   /** \brief VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
