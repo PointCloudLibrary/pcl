@@ -95,8 +95,8 @@ namespace pcl
         /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors. 
           * \param[in] point_representation the const boost shared pointer to a PointRepresentation
           */
-        virtual void
-        setPointRepresentation (const PointRepresentationConstPtr &point_representation);
+        bool
+        setPointRepresentation (const PointRepresentationConstPtr &point_representation) override;
 
         /** \brief Get a pointer to the point representation used when converting points into k-D vectors. */
         virtual inline PointRepresentationConstPtr

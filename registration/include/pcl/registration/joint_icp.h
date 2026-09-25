@@ -65,11 +65,11 @@ public:
   using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
   using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
-  using KdTree = pcl::search::KdTree<PointTarget>;
+  using KdTree = pcl::search::Search<PointTarget>;
   using KdTreePtr = typename KdTree::Ptr;
 
-  using KdTreeReciprocal = pcl::search::KdTree<PointSource>;
-  using KdTreeReciprocalPtr = typename KdTree::Ptr;
+  using KdTreeReciprocal = pcl::search::Search<PointSource>;
+  using KdTreeReciprocalPtr = typename KdTreeReciprocal::Ptr;
 
   using PointIndicesPtr = PointIndices::Ptr;
   using PointIndicesConstPtr = PointIndices::ConstPtr;

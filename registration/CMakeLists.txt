@@ -1,9 +1,9 @@
 set(SUBSYS_NAME registration)
 set(SUBSYS_DESC "Point cloud registration library")
-set(SUBSYS_DEPS common octree kdtree search sample_consensus features filters)
+set(SUBSYS_DEPS common octree search sample_consensus features filters)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP kdtree)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -65,7 +65,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/transformation_validation.h"
   "include/pcl/${SUBSYS_NAME}/transformation_validation_euclidean.h"
   "include/pcl/${SUBSYS_NAME}/gicp.h"
-  "include/pcl/${SUBSYS_NAME}/gicp6d.h"
   "include/pcl/${SUBSYS_NAME}/fricp.h"
   "include/pcl/${SUBSYS_NAME}/bfgs.h"
   "include/pcl/${SUBSYS_NAME}/warp_point_rigid.h"
@@ -148,7 +147,6 @@ set(srcs
   src/icp.cpp
   src/joint_icp.cpp
   src/gicp.cpp
-  src/gicp6d.cpp
   src/icp_nl.cpp
   src/elch.cpp
   src/lum.cpp
@@ -166,9 +164,14 @@ set(srcs
   src/sample_consensus_prerejective.cpp
 )
 
+if(PCL_HAS_FLANN OR PCL_HAS_NANOFLANN)
+  list(APPEND incs "include/pcl/${SUBSYS_NAME}/gicp6d.h")
+  list(APPEND srcs src/gicp6d.cpp)
+endif()
+
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
-target_link_libraries("${LIB_NAME}" pcl_kdtree pcl_search pcl_sample_consensus pcl_features pcl_filters)
+target_link_libraries("${LIB_NAME}" pcl_search pcl_sample_consensus pcl_features pcl_filters)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})

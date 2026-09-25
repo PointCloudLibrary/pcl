@@ -11,6 +11,7 @@
 
 #include <pcl/common/common.h>
 #include <pcl/common/transforms.h>
+#include <pcl/search/auto.h>
 #include <pcl/types.h>
 
 #include <Eigen/Eigenvalues>
@@ -218,9 +219,8 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     (*target_centered)[i].z = static_cast<float>(target_mat(2, i));
   }
 
-  pcl::search::KdTree<pcl::PointXYZ> tree_data;
-  pcl::search::Search<pcl::PointXYZ>& tree = tree_data;
-  tree.setInputCloud(target_centered);
+  pcl::search::Search<pcl::PointXYZ>::Ptr tree(
+      pcl::search::autoSelectMethod<pcl::PointXYZ>(target_centered, true));
 
   Matrix4d transform_centered = convertGuessToCentered(guess, source_mean, target_mean);
   Matrix4d svd_transform = transform_centered;
@@ -231,7 +231,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   if (!updateCorrespondences(transform_centered,
                              source_mat,
                              target_mat,
-                             tree,
+                             *tree,
                              matched_targets,
                              residuals,
                              this->correspondences_.get())) {
@@ -250,7 +250,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   double nu_limit = 1.0;
   double nu_current = 1.0;
   if (use_welsch) {
-    const double neighbor_med = findKNearestMedian(*target_centered, tree_data, 7);
+    const double neighbor_med = findKNearestMedian(*target_centered, *tree, 7);
     std::vector<double> residual_values(static_cast<std::size_t>(residuals.size()));
     for (Eigen::Index i = 0; i < residuals.size(); ++i)
       residual_values[static_cast<std::size_t>(i)] = std::sqrt(residuals(i));
@@ -287,7 +287,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
           if (!updateCorrespondences(transform_centered,
                                      source_mat,
                                      target_mat,
-                                     tree,
+                                     *tree,
                                      matched_targets,
                                      residuals,
                                      this->correspondences_.get())) {
@@ -329,7 +329,7 @@ FastRobustIterativeClosestPoint<PointSource, PointTarget, Scalar>::
       if (!updateCorrespondences(transform_centered,
                                  source_mat,
                                  target_mat,
-                                 tree,
+                                 *tree,
                                  matched_targets,
                                  residuals,
                                  this->correspondences_.get())) {

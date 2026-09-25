@@ -60,6 +60,7 @@
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
 #include <pcl/registration/transformation_estimation_symmetric_point_to_plane_lls.h>
+#include <pcl/registration/transformation_validation_euclidean.h>
 #include <pcl/registration/fricp.h>
 #include <Eigen/Geometry>
 #include <random>
@@ -777,6 +778,21 @@ TEST (PCL, FastRobustIterativeClosestPoint)
   EXPECT_LT (reg_guess.getFitnessScore (), 5e-4);
 }
 
+TEST (PCL, TransformationValidationEuclidean)
+{
+  CloudXYZConstPtr source (new CloudXYZ (cloud_source));
+  CloudXYZConstPtr target (new CloudXYZ (cloud_target));
+  Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
+  ground_truth_tform.row (0) <<  0.825336f, 0.000000f, -0.564642f, 0.037267f;
+  ground_truth_tform.row (1) <<  0.000000f, 1.000000f,  0.000000f, 0.000000f;
+  ground_truth_tform.row (2) <<  0.564642f, 0.000000f,  0.825336f, 0.038325f;
+  ground_truth_tform.row (3) <<  0.000000f, 0.000000f,  0.000000f, 1.000000f;
+  pcl::registration::TransformationValidationEuclidean<pcl::PointXYZ, pcl::PointXYZ> tve;
+  tve.setMaxRange (0.01);  // 1cm
+  EXPECT_LT (tve.validateTransformation (source, target, ground_truth_tform), 1e-3);
+  ground_truth_tform (0, 3) = 10.0f; // Bad transformation
+  EXPECT_GT (tve.validateTransformation (source, target, ground_truth_tform), 1e-3);
+}
 
 /* ---[ */
 int
