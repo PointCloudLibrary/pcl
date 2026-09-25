@@ -39,3 +39,7 @@ PCL_ADD_BENCHMARK(sample_consensus_sac_model_cylinder FILES sample_consensus/sac
 PCL_ADD_BENCHMARK(search_radius_search FILES search/radius_search.cpp
                   LINK_WITH pcl_io pcl_search pcl_filters
                   ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd")
+
+PCL_ADD_BENCHMARK(search_kdtree_flann_vs_nanoflann FILES search/bench_kdtree.cpp
+                  LINK_WITH pcl_io pcl_search pcl_kdtree
+                  ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd")
