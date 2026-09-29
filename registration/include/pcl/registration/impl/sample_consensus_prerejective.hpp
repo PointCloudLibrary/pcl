@@ -333,7 +333,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
   // Initialize variables
   inliers.clear();
   inliers.resize(input_->size());
-  fitness_score = 0.0f;
+  float fitness_score_tmp = 0.0f;
 
   // Use squared distance for comparison with NN search results
   const float max_range = corr_dist_threshold_ * corr_dist_threshold_;
@@ -345,7 +345,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
 
   // For each point in the source dataset
 #pragma omp parallel for default(none) shared(input_transformed, max_range, inliers)   \
-    reduction(+ : fitness_score) num_threads(num_threads_) schedule(dynamic, 64)
+    reduction(+ : fitness_score_tmp) num_threads(num_threads_) schedule(dynamic, 64)
   for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(input_transformed.size());
        ++i) {
     // Find its nearest neighbor in the target
@@ -358,7 +358,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
       inliers[i] = i;
 
       // Update fitness score
-      fitness_score += nn_dists[0];
+      fitness_score_tmp += nn_dists[0];
     }
     else {
       inliers[i] = UNAVAILABLE;
@@ -370,7 +370,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
 
   // Calculate MSE
   if (!inliers.empty())
-    fitness_score /= static_cast<float>(inliers.size());
+    fitness_score = fitness_score_tmp / static_cast<float>(inliers.size());
   else
     fitness_score = std::numeric_limits<float>::max();
 }
