@@ -45,6 +45,10 @@
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/registration/transformation_validation.h>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 namespace pcl {
 /** \brief Pose estimation and alignment class using a prerejective RANSAC routine.
  *
@@ -128,6 +132,7 @@ public:
     max_iterations_ = 5000;
     transformation_estimation_.reset(
         new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
+    setNumberOfThreads(0);
   };
 
   /** \brief Destructor */
@@ -242,6 +247,30 @@ public:
     return inliers_;
   }
 
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
+   */
+  void
+  setNumberOfThreads(unsigned int nr_threads = 0)
+  {
+#ifdef _OPENMP
+    if (nr_threads == 0)
+      num_threads_ = omp_get_num_procs();
+    else
+      num_threads_ = nr_threads;
+    PCL_DEBUG("[pcl::SampleConsensusPrerejective::setNumberOfThreads] Setting number "
+              "of threads to %u.\n",
+              num_threads_);
+#else
+    num_threads_ = 1;
+    if (nr_threads != 1)
+      PCL_WARN("[pcl::SampleConsensusPrerejective::setNumberOfThreads] Parallelization "
+               "is requested, but OpenMP is not available! Continuing without "
+               "parallelization.\n");
+#endif // _OPENMP
+  }
+
 protected:
   /** \brief Choose a random index between 0 and n-1
    * \param n the number of possible indices to choose from
@@ -319,6 +348,9 @@ protected:
 
   /** \brief Inlier points of final transformation as indices into source */
   pcl::Indices inliers_;
+
+  /** \brief The number of threads the scheduler should use. */
+  unsigned int num_threads_{1};
 };
 } // namespace pcl
 

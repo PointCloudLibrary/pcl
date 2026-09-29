@@ -244,12 +244,30 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
 
   // Feature correspondence cache
   std::vector<pcl::Indices> similar_features(input_->size());
+  // Either we pre-compute all similar features here (parallel but some results may not
+  // be used), or we compute them on-demand in findSimilarFeatures(). We try to estimate
+  // which is faster, based on the probability of each search result being used during
+  // the registration:
+  if ((1.0 - std::pow(1.0 - nr_samples_ / static_cast<double>(input_->size()),
+                      max_iterations_)) *
+          num_threads_ >=
+      1.0) {
+    std::vector<float> nn_distances(k_correspondences_);
+#pragma omp parallel for default(none) shared(similar_features)                        \
+    firstprivate(nn_distances) num_threads(num_threads_) schedule(dynamic, 64)
+    for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(input_->size()); ++i) {
+      nn_distances.clear();
+      feature_tree_->nearestKSearch(
+          (*input_features_)[i], k_correspondences_, similar_features[i], nn_distances);
+    }
+  }
+
+  // Temporary containers
+  pcl::Indices sample_indices;
+  pcl::Indices corresponding_indices;
 
   // Start
   for (int i = 0; i < max_iterations_; ++i) {
-    // Temporary containers
-    pcl::Indices sample_indices;
-    pcl::Indices corresponding_indices;
 
     // Draw nr_samples_ random samples
     selectSamples(*input_, nr_samples_, sample_indices);
@@ -312,7 +330,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
 {
   // Initialize variables
   inliers.clear();
-  inliers.reserve(input_->size());
+  inliers.resize(input_->size());
   fitness_score = 0.0f;
 
   // Use squared distance for comparison with NN search results
@@ -324,7 +342,10 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
   transformPointCloud(*input_, input_transformed, final_transformation_);
 
   // For each point in the source dataset
-  for (std::size_t i = 0; i < input_transformed.size(); ++i) {
+#pragma omp parallel for default(none) shared(input_transformed, max_range, inliers)   \
+    reduction(+ : fitness_score) num_threads(num_threads_) schedule(dynamic, 64)
+  for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(input_transformed.size());
+       ++i) {
     // Find its nearest neighbor in the target
     pcl::Indices nn_indices(1);
     std::vector<float> nn_dists(1);
@@ -332,13 +353,18 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
 
     // Check if point is an inlier
     if (nn_dists[0] < max_range) {
-      // Update inliers
-      inliers.push_back(i);
+      inliers[i] = i;
 
       // Update fitness score
       fitness_score += nn_dists[0];
     }
+    else {
+      inliers[i] = UNAVAILABLE;
+    }
   }
+  // finally we remove all that are not inliers:
+  inliers.erase(std::remove(inliers.begin(), inliers.end(), UNAVAILABLE),
+                inliers.end());
 
   // Calculate MSE
   if (!inliers.empty())
