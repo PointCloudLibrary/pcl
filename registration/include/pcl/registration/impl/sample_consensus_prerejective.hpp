@@ -43,6 +43,8 @@
 
 #include <pcl/search/auto.h> // for autoSelectMethod
 
+#include <algorithm> // for std::remove
+
 namespace pcl {
 
 template <typename PointSource, typename PointTarget, typename FeatureT>
