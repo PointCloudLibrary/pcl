@@ -20,7 +20,7 @@ still showing the error by compiling it with and without the problematic line
 Method 2: Start from scratch
 ============================
 
-If your program is to big to strip it down, it's maybe easier to start from
+If your program is to big to strip it down, it's might be easier to start from
 scratch by building a small project that only includes the problematic code. 
 Again make sure that it actually compiles without the erroneous code and emits
 the same error with it.
