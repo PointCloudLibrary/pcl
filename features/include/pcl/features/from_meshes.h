@@ -2,6 +2,10 @@
 
 #include "pcl/features/normal_3d.h"
 #include "pcl/Vertices.h"
+#include "pcl/point_types.h"
+#include "pcl/PolygonMesh.h"
+
+#include <Eigen/Core>
 
 namespace pcl
 {
@@ -51,6 +55,91 @@ namespace pcl
       }
     }
 
+    /** \brief Compute the surface normals on a mesh.
+     * \param[in] cloud Point cloud containing the XYZ coordinates.
+     * \param[in] polygons Polygons from the mesh.
+     * \param[out] normals Point cloud with computed surface normals
+     */
+    template <typename PointT, typename PointNT> inline void
+    computeNormals(const pcl::PointCloud<PointT>& cloud, const std::vector<pcl::Vertices>& polygons, pcl::PointCloud<PointNT>& normals)
+    {
+      const auto nr_points = cloud.points.size();
+
+      normals.header = cloud.header;
+      normals.width = cloud.width;
+      normals.height = cloud.height;
+      normals.points.resize(nr_points);
+
+      for (auto &point : normals.points)
+        point.getNormalVector3fMap() = Eigen::Vector3f::Zero();
+
+      // NOTE: for efficiency the weight is computed implicitly by using the
+      // cross product, this causes inaccurate normals for meshes containing
+      // non-triangle polygons (quads or other types)
+      for (const auto &polygon : polygons) 
+      {
+        if (polygon.vertices.size() < 3) continue;
+
+        // compute normal for triangle
+        Eigen::Vector3f vec_a_b = cloud.points[polygon.vertices[0]].getVector3fMap() - cloud.points[polygon.vertices[1]].getVector3fMap();
+        Eigen::Vector3f vec_a_c = cloud.points[polygon.vertices[0]].getVector3fMap() - cloud.points[polygon.vertices[2]].getVector3fMap();
+        Eigen::Vector3f normal = vec_a_b.cross(vec_a_c).normalized();
+
+        // add normal to all points in polygon
+        for (const auto &vertex : polygon.vertices)
+          normals.points[vertex].getNormalVector3fMap() += normal;
+      }
+
+      for (std::size_t i = 0; i < nr_points; ++i)
+      {
+        normals.points[i].getNormalVector3fMap().normalize();
+      }
+    }
+
+    /** \brief Compute approximate surface normals on a mesh.
+     * \param[in] the polygon mesh to compute and hold vertices normal.
+     */
+    template <typename PointNT> inline void
+    computeNormals(pcl::PolygonMesh &mesh) 
+    {
+      // Create a cloud using the typename provided.
+      // It should be a PointT that preserves the original data and includes normals.
+      pcl::PointCloud<PointNT> cloud;
+      // Copies the point cloud from the mesh.
+      pcl::fromPCLPointCloud2(mesh.cloud, cloud);
+
+      // For each point intialize the normal as zeros.
+      for (auto &point : cloud.points) 
+      {
+        point.getNormalVector3fMap() = Eigen::Vector3f::Zero();
+      }
+
+      // For each polygon we compute the face normal.
+      for (auto &polygon : mesh.polygons) 
+      {
+        if (polygon.vertices.size() < 3ul)
+          continue;
+
+        Eigen::Vector3f vab = cloud.points[polygon.vertices[0]].getVector3fMap() - cloud.points[polygon.vertices[1]].getVector3fMap();
+        Eigen::Vector3f vac = cloud.points[polygon.vertices[0]].getVector3fMap() - cloud.points[polygon.vertices[2]].getVector3fMap();
+        Eigen::Vector3f normal = vab.cross(vac).normalized();
+
+        // We add the normalized normal to each vertex.
+        for (const auto &vertex : polygon.vertices) 
+        {
+          cloud.points[vertex].getNormalVector3fMap() += normal;
+        }
+      }
+
+      // For each point (vertex) we normalize its normal.
+      for (auto &point : cloud.points) 
+      {
+        point.getNormalVector3fMap().normalize();
+      }
+
+      // Finally, we copy the point cloud with normals back to the polygon mesh.
+      pcl::toPCLPointCloud2(cloud, mesh.cloud);
+    }
 
     /** \brief Compute GICP-style covariance matrices given a point cloud and
      * the corresponding surface normals.
