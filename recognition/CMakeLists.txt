@@ -1,11 +1,11 @@
 set(SUBSYS_NAME recognition)
 set(SUBSYS_DESC "Point cloud recognition library")
-set(SUBSYS_DEPS common io search kdtree octree features filters registration sample_consensus ml)
+set(SUBSYS_DEPS common io search octree features filters registration sample_consensus ml)
 
 set(DEFAULT ON)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS kdtree)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -134,7 +134,7 @@ set(metslib_incs
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs} ${face_detection_incs} ${ransac_based_incs} ${ransac_based_impl_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs} ${metslib_incs})
-target_link_libraries("${LIB_NAME}" pcl_common pcl_kdtree pcl_octree pcl_search pcl_features pcl_registration pcl_sample_consensus pcl_filters pcl_ml pcl_io)
+target_link_libraries("${LIB_NAME}" pcl_common pcl_octree pcl_search pcl_features pcl_registration pcl_sample_consensus pcl_filters pcl_ml pcl_io)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})

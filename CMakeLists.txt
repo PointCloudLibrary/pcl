@@ -353,13 +353,14 @@ if(NOT EIGEN3_FOUND AND Eigen3_FOUND)
 endif()
 
 # FLANN
-find_package(FLANN 1.9.1)
-if(NOT FLANN_FOUND)
-  message(WARNING "Flann was not found, so many PCL modules will not be built!")
-else()
-  set(PCL_HAS_FLANN 1)
-  if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
-    message(FATAL_ERROR "Flann was selected with ${PCL_FLANN_REQUIRED_TYPE} but found as ${FLANN_LIBRARY_TYPE}")
+option(WITH_FLANN "Use FLANN library (if available)" TRUE)
+if(WITH_FLANN)
+  find_package(FLANN 1.9.1)
+  if(FLANN_FOUND)
+    set(PCL_HAS_FLANN 1)
+    if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
+      message(FATAL_ERROR "Flann was selected with ${PCL_FLANN_REQUIRED_TYPE} but found as ${FLANN_LIBRARY_TYPE}")
+    endif()
   endif()
 endif()
 
@@ -369,6 +370,10 @@ if(TARGET nanoflann::nanoflann)
   message(STATUS "Found nanoflann")
 else()
   message(STATUS "nanoflann was not found, so some PCL classes will not be available.")
+endif()
+
+if(NOT PCL_HAS_NANOFLANN AND NOT PCL_HAS_FLANN)
+  message(WARNING "Neither FLANN nor nanoflann have been found. It is highly recommended to install at least one of the two, otherwise parts of PCL may be very slow.")
 endif()
 
 # libusb
