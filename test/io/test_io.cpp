@@ -1832,6 +1832,61 @@ TEST(PCL, IFS)
   remove("test.ifs");
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, IFSUnterminatedStrings)
+{
+  // The strings in an IFS header are length prefixed and the prefix comes straight from
+  // the file, so it need not account for the terminating null character that
+  // pcl::IFSWriter appends. Reading such a header must not run past the end of the
+  // buffer the string was read into.
+  std::vector<char> data;
+  const auto append_bytes = [&data] (const void* bytes, const std::size_t size)
+  {
+    const char* begin = reinterpret_cast<const char*> (bytes);
+    data.insert (data.end (), begin, begin + size);
+  };
+  const auto append_uint32 = [&append_bytes] (const std::uint32_t value)
+  {
+    append_bytes (&value, sizeof (value));
+  };
+  // Write the string without the terminating null character a writer would add
+  const auto append_unterminated = [&data, &append_bytes, &append_uint32] (const std::string& str)
+  {
+    append_uint32 (static_cast<std::uint32_t> (str.size ()));
+    append_bytes (str.data (), str.size ());
+  };
+
+  append_unterminated ("IFS");
+  const float version = 1.0f;
+  append_bytes (&version, sizeof (version));
+  append_unterminated ("");                  // cloud name
+  append_unterminated ("VERTICES");
+  append_uint32 (1);                         // number of vertices
+  for (const float coordinate : {1.0f, 2.0f, 3.0f})
+    append_bytes (&coordinate, sizeof (coordinate));
+  append_unterminated ("TRIANGLES");
+  append_uint32 (1);                         // number of facets
+  for (int i = 0; i < 3; ++i)
+    append_uint32 (0);
+
+  std::ofstream fs ("test_ifs_unterminated.ifs", std::ios::binary);
+  fs.write (data.data (), data.size ());
+  fs.close ();
+
+  PointCloud<PointXYZ> cloud;
+  ASSERT_EQ (loadIFSFile ("test_ifs_unterminated.ifs", cloud), 0);
+  ASSERT_EQ (cloud.size (), 1);
+  EXPECT_EQ (cloud[0].x, 1.0f);
+  EXPECT_EQ (cloud[0].y, 2.0f);
+  EXPECT_EQ (cloud[0].z, 3.0f);
+
+  PolygonMesh mesh;
+  ASSERT_EQ (loadIFSFile ("test_ifs_unterminated.ifs", mesh), 0);
+  ASSERT_EQ (mesh.polygons.size (), 1);
+
+  remove ("test_ifs_unterminated.ifs");
+}
+
 /* ---[ */
 int
   main (int argc, char** argv)
