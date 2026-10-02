@@ -137,7 +137,7 @@ pcl::ASCIIReader::read (
   unsigned int data_idx;
   if (this->readHeader (file_name, cloud, origin, orientation, file_version, data_type, data_idx, offset) < 0) 
     return (-1);
-  cloud.data.resize (cloud.height * cloud.width * cloud.point_step);
+  cloud.data.resize (static_cast<std::size_t>(cloud.height) * cloud.width * cloud.point_step);
 
   std::string line;
   std::fstream ifile (file_name.c_str (), std::fstream::in);
@@ -170,7 +170,7 @@ pcl::ASCIIReader::read (
    data += offset;
    total++;
   }
-  cloud.data.resize (total * cloud.point_step);
+  cloud.data.resize (static_cast<std::size_t>(total) * cloud.point_step);
   return (cloud.width * cloud.height);
 }
 
