@@ -42,7 +42,7 @@
 #include <pcl/recognition/cg/correspondence_grouping.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/point_types.h>
+#include <pcl/feature_types.h>
 
 #include <unordered_map>
 

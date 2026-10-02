@@ -41,7 +41,7 @@
 #pragma once
 
 #include <pcl/features/feature.h>
-#include <pcl/point_types.h>       // for pcl::Histogram
+#include <pcl/feature_types.h>        // for pcl::Histogram
 
 namespace pcl
 {
