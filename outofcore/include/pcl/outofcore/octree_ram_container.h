@@ -43,7 +43,10 @@
 #include <mutex>
 #include <random>
 
+#include <pcl/pcl_macros.h> // for PCL_DEPRECATED
 #include <pcl/outofcore/octree_abstract_node_container.h>
+
+#include <boost/filesystem/path.hpp> // for deprecated boost::filesystem overloads
 
 namespace pcl
 {
@@ -66,7 +69,13 @@ namespace pcl
 
         /** \brief empty constructor (with a path parameter?)
           */
+        OutofcoreOctreeRamContainer (const pcl_fs::path&) : container_ () { }
+
+        /** \brief empty constructor (with a path parameter?)
+          * \deprecated Use the constructor taking pcl_fs::path instead. */
+        PCL_DEPRECATED(1, 16, "use the constructor taking pcl_fs::path instead")
         OutofcoreOctreeRamContainer (const boost::filesystem::path&) : container_ () { }
+
         
         /** \brief inserts count number of points into container; uses the container_ type's insert function
           * \param[in] start - address of first point in array
@@ -141,7 +150,18 @@ namespace pcl
           *  \param path The path/filename destination of the ascii xyz data
           */
         void
-        convertToXYZ (const boost::filesystem::path &path);
+        convertToXYZ (const pcl_fs::path &path);
+
+        /** \brief Writes ascii x,y,z point data to path.string().c_str()
+          *  \param path The path/filename destination of the ascii xyz data
+          *  \deprecated Use convertToXYZ(const pcl_fs::path&) instead. */
+        PCL_DEPRECATED(1, 16, "use convertToXYZ(const pcl_fs::path&) instead")
+        void
+        convertToXYZ (const boost::filesystem::path &path)
+        {
+          convertToXYZ (pcl_fs::path (path.native ()));
+        }
+
 
         inline PointT
         operator[] (std::uint64_t index) const
