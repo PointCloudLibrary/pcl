@@ -6,7 +6,7 @@
 #include <benchmark/benchmark.h>
 
 static void
-BM_VoxelGrid(benchmark::State& state, const std::string& file)
+BM_VoxelGrid(benchmark::State& state, const std::string& file, size_t num_threads = 1)
 {
   // Perform setup here
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -16,6 +16,7 @@ BM_VoxelGrid(benchmark::State& state, const std::string& file)
   pcl::VoxelGrid<pcl::PointXYZ> vg;
   vg.setLeafSize(0.01, 0.01, 0.01);
   vg.setInputCloud(cloud);
+  vg.setNumberOfThreads(num_threads);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_voxelized(
       new pcl::PointCloud<pcl::PointXYZ>);
@@ -56,13 +57,22 @@ main(int argc, char** argv)
     return (-1);
   }
 
-  benchmark::RegisterBenchmark("BM_VoxelGrid_milk", &BM_VoxelGrid, argv[2])
+  benchmark::RegisterBenchmark("BM_VoxelGrid_milk", &BM_VoxelGrid, argv[2], 1)
+      ->Unit(benchmark::kMillisecond);
+  benchmark::RegisterBenchmark("BM_VoxelGrid_milk_2Threads", &BM_VoxelGrid, argv[2], 2)
+      ->Unit(benchmark::kMillisecond);
+  benchmark::RegisterBenchmark(
+      "BM_VoxelGrid_milk_MaxThreads", &BM_VoxelGrid, argv[2], 0)
       ->Unit(benchmark::kMillisecond);
   benchmark::RegisterBenchmark(
       "BM_ApproximateVoxelGrid_milk", &BM_ApproxVoxelGrid, argv[2])
       ->Unit(benchmark::kMillisecond);
 
-  benchmark::RegisterBenchmark("BM_VoxelGrid_mug", &BM_VoxelGrid, argv[1])
+  benchmark::RegisterBenchmark("BM_VoxelGrid_mug", &BM_VoxelGrid, argv[1], 1)
+      ->Unit(benchmark::kMillisecond);
+  benchmark::RegisterBenchmark("BM_VoxelGrid_mug_2Threads", &BM_VoxelGrid, argv[1], 2)
+      ->Unit(benchmark::kMillisecond);
+  benchmark::RegisterBenchmark("BM_VoxelGrid_mug_MaxThreads", &BM_VoxelGrid, argv[1], 0)
       ->Unit(benchmark::kMillisecond);
   benchmark::RegisterBenchmark(
       "BM_ApproximateVoxelGrid_mug", &BM_ApproxVoxelGrid, argv[1])
