@@ -16,6 +16,13 @@ target_include_directories(pcl_gtest PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 enable_testing()
 
+add_test(NAME pcl_pkgconfig_prefix
+         COMMAND ${CMAKE_COMMAND}
+                 "-DPCL_BINARY_DIR=${PCL_BINARY_DIR}"
+                 "-DPKGCFG_INSTALL_DIR=${PKGCFG_INSTALL_DIR}"
+                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+                 -P "${PCL_SOURCE_DIR}/test/cmake/test_pkgconfig_prefix.cmake")
+
 # VS needs -C config to run correct
 if(MSVC)
   set(PCL_CTEST_ARGUMENTS ${PCL_CTEST_ARGUMENTS} -C $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>)
