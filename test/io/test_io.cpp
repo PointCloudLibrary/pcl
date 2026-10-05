@@ -49,6 +49,7 @@
 #include <pcl/io/ascii_io.h>
 #include <pcl/io/obj_io.h>
 #include <pcl/PolygonMesh.h>
+#include <cstdint>
 #include <fstream>
 #include <iomanip> // for setprecision
 #include <limits>
@@ -1037,11 +1038,9 @@ TEST (PCL, ASCIIRead)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#if SIZE_MAX == UINT64_MAX
 TEST (PCL, ASCIIReadLargeCloud)
 {
-  if (sizeof (std::size_t) <= sizeof (std::uint32_t))
-    GTEST_SKIP () << "Requires a size_t wider than uint32_t";
-
   // Supply a synthetic header so the test does not need a huge input file.
   // The byte count exceeds vector::max_size(), so resize must reject it
   // without attempting an allocation. A 32-bit multiplication wraps to 1.
@@ -1071,6 +1070,7 @@ TEST (PCL, ASCIIReadLargeCloud)
                             orientation, file_version), std::length_error);
   remove ("test_ascii_large_cloud.txt");
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST(PCL, OBJRead)
