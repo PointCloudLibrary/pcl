@@ -49,8 +49,10 @@
 #include <pcl/io/ascii_io.h>
 #include <pcl/io/obj_io.h>
 #include <pcl/PolygonMesh.h>
+#include <cstdint>
 #include <fstream>
 #include <iomanip> // for setprecision
+#include <limits>
 #include <locale>
 #include <stdexcept>
 
@@ -1034,6 +1036,41 @@ TEST (PCL, ASCIIRead)
 
   remove ("test_pcd.txt");
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#if SIZE_MAX == UINT64_MAX
+TEST (PCL, ASCIIReadLargeCloud)
+{
+  // Supply a synthetic header so the test does not need a huge input file.
+  // The byte count exceeds vector::max_size(), so resize must reject it
+  // without attempting an allocation. A 32-bit multiplication wraps to 1.
+  class LargeCloudReader : public ASCIIReader
+  {
+    int
+    readHeader (const std::string&, PCLPointCloud2& cloud,
+                Eigen::Vector4f&, Eigen::Quaternionf&, int&, int&,
+                unsigned int&, const int) override
+    {
+      cloud.height = 1;
+      cloud.width = std::numeric_limits<std::uint32_t>::max ();
+      cloud.point_step = std::numeric_limits<std::uint32_t>::max ();
+      return 0;
+    }
+  };
+
+  std::ofstream file ("test_ascii_large_cloud.txt");
+  file.close ();
+  LargeCloudReader reader;
+  PCLPointCloud2 cloud;
+  Eigen::Vector4f origin;
+  Eigen::Quaternionf orientation;
+  int file_version;
+
+  EXPECT_THROW (reader.read ("test_ascii_large_cloud.txt", cloud, origin,
+                            orientation, file_version), std::length_error);
+  remove ("test_ascii_large_cloud.txt");
+}
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST(PCL, OBJRead)
