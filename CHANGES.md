@@ -56,6 +56,7 @@
 
 #### libpcl_registration:
 
+* **[new feature]** Add DCReg degeneracy-aware point-to-plane transformation estimation.
 * add explicit instantiations to transformation estimation LM and one to ICP [[#6258](https://github.com/PointCloudLibrary/pcl/pull/6258)]
 * Make GICP use CorrespondenceEstimation [[#6278](https://github.com/PointCloudLibrary/pcl/pull/6278)]
 
