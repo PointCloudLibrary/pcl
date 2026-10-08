@@ -114,13 +114,16 @@ main(int argc, char** argv)
   const std::pair<std::string, std::string> clouds[] = {{"mug", argv[1]},
                                                         {"milk", argv[2]}};
   for (const auto& [name, file] : clouds) {
-    benchmark::RegisterBenchmark(("BM_VoxelGridCpu_" + name).c_str(), &BM_VoxelGridCpu, file)
+    benchmark::RegisterBenchmark(
+        ("BM_VoxelGridCpu_" + name).c_str(), &BM_VoxelGridCpu, file)
         ->Unit(benchmark::kMillisecond);
     if (has_gpu) {
-      benchmark::RegisterBenchmark(("BM_VoxelGridGpu_" + name).c_str(), &BM_VoxelGridGpu, file)
-          ->Unit(benchmark::kMillisecond);
       benchmark::RegisterBenchmark(
-          ("BM_VoxelGridGpuWithDownload_" + name).c_str(), &BM_VoxelGridGpuWithDownload, file)
+          ("BM_VoxelGridGpu_" + name).c_str(), &BM_VoxelGridGpu, file)
+          ->Unit(benchmark::kMillisecond);
+      benchmark::RegisterBenchmark(("BM_VoxelGridGpuWithDownload_" + name).c_str(),
+                                   &BM_VoxelGridGpuWithDownload,
+                                   file)
           ->Unit(benchmark::kMillisecond);
     }
   }
