@@ -1850,7 +1850,7 @@ TEST (PCL, IFSUnterminatedStrings)
     append_bytes (&value, sizeof (value));
   };
   // Write the string without the terminating null character a writer would add
-  const auto append_unterminated = [&data, &append_bytes, &append_uint32] (const std::string& str)
+  const auto append_unterminated = [&append_bytes, &append_uint32] (const std::string& str)
   {
     append_uint32 (static_cast<std::uint32_t> (str.size ()));
     append_bytes (str.data (), str.size ());
