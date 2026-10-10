@@ -41,6 +41,7 @@
 #include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/time.h>
 #include <pcl/point_types.h>
+#include <pcl/search/auto.h>
 
 #include <memory>
 #include <numeric>
@@ -242,8 +243,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
   if (detect_clutter_)
   {
     //initialize kdtree for search
-    scene_downsampled_tree_.reset (new pcl::search::KdTree<SceneT>);
-    scene_downsampled_tree_->setInputCloud (scene_cloud_downsampled_);
+    scene_downsampled_tree_.reset (pcl::search::autoSelectMethod<SceneT>(scene_cloud_downsampled_, true, pcl::search::Purpose::radius_search));
 
     std::vector<pcl::PointIndices> clusters;
     double eps_angle_threshold = 0.2;

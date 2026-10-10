@@ -37,9 +37,10 @@
 #pragma once
 
 #include <pcl/pcl_macros.h>
+#include <pcl/point_types.h> // for pcl::Normal
 #include "pcl/recognition/hv/occlusion_reasoning.h"
 #include "pcl/recognition/impl/hv/occlusion_reasoning.hpp"
-#include <pcl/search/kdtree.h>
+#include <pcl/search/auto.h>
 #include <pcl/filters/voxel_grid.h>
 
 namespace pcl
@@ -79,7 +80,7 @@ namespace pcl
     /*
      * \brief Scene tree of the downsampled cloud
      */
-    typename pcl::search::KdTree<SceneT>::Ptr scene_downsampled_tree_;
+    typename pcl::search::Search<SceneT>::Ptr scene_downsampled_tree_;
 
     /*
      * \brief Vector of point clouds representing the 3D models after occlusion reasoning
@@ -307,8 +308,7 @@ namespace pcl
       voxel_grid.filter (*scene_cloud_downsampled_);
 
       //initialize kdtree for search
-      scene_downsampled_tree_.reset (new pcl::search::KdTree<SceneT>);
-      scene_downsampled_tree_->setInputCloud(scene_cloud_downsampled_);
+      scene_downsampled_tree_.reset (pcl::search::autoSelectMethod<SceneT>(scene_cloud_downsampled_, true));
     }
 
     void setOcclusionCloud (const typename pcl::PointCloud<SceneT>::Ptr & occ_cloud)

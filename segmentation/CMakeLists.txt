@@ -1,9 +1,9 @@
 set(SUBSYS_NAME segmentation)
 set(SUBSYS_DESC "Point cloud segmentation library")
-set(SUBSYS_DEPS common geometry search sample_consensus kdtree octree features filters ml)
+set(SUBSYS_DEPS common geometry search sample_consensus octree features filters ml)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP kdtree)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 

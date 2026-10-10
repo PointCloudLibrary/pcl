@@ -11,7 +11,6 @@
 
 #include <pcl/registration/anderson_acceleration.h>
 #include <pcl/registration/icp.h>
-#include <pcl/search/kdtree.h>
 #include <pcl/search/search.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
