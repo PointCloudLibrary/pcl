@@ -106,7 +106,7 @@ namespace pcl
   getMaxSegment (const pcl::PointCloud<PointT> &cloud, 
                  PointT &pmin, PointT &pmax)
   {
-    double max_dist = std::numeric_limits<double>::min ();
+    double max_dist = -1.0;
     const auto token = std::numeric_limits<std::size_t>::max();
     std::size_t i_min = token, i_max = token;
 
@@ -146,7 +146,7 @@ namespace pcl
   getMaxSegment (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                  PointT &pmin, PointT &pmax)
   {
-    double max_dist = std::numeric_limits<double>::min ();
+    double max_dist = -1.0;
     const auto token = std::numeric_limits<std::size_t>::max();
     std::size_t i_min = token, i_max = token;
 

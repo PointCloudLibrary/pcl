@@ -498,6 +498,63 @@ TEST (PCL, GetMaxDistance)
   test::EXPECT_EQ_VECTORS (max_exp_pt, max_pt);
 }
 
+TEST (PCL, GetMaxSegmentZeroLength)
+{
+  const PointXYZ point (1.f, 2.f, 3.f);
+  for (const auto count : {1, 3})
+  {
+    SCOPED_TRACE (count);
+    PointCloud<PointXYZ> cloud;
+    cloud.assign (count, point);
+    PointXYZ pmin (-10.f, -20.f, -30.f), pmax (-40.f, -50.f, -60.f);
+
+    EXPECT_DOUBLE_EQ (getMaxSegment (cloud, pmin, pmax), 0.0);
+    EXPECT_XYZ_EQ (point, pmin);
+    EXPECT_XYZ_EQ (point, pmax);
+  }
+}
+
+TEST (PCL, GetMaxSegmentZeroLengthIndexed)
+{
+  const PointXYZ point (1.f, 2.f, 3.f);
+  PointCloud<PointXYZ> cloud;
+  cloud.assign ({point, PointXYZ (100.f, 200.f, 300.f), point});
+  for (const auto& indices : {Indices {2}, Indices {2, 0}, Indices {2, 2}})
+  {
+    SCOPED_TRACE (testing::PrintToString (indices));
+    PointXYZ pmin (-10.f, -20.f, -30.f), pmax (-40.f, -50.f, -60.f);
+
+    EXPECT_DOUBLE_EQ (getMaxSegment (cloud, indices, pmin, pmax), 0.0);
+    EXPECT_XYZ_EQ (point, pmin);
+    EXPECT_XYZ_EQ (point, pmax);
+  }
+}
+
+TEST (PCL, GetMaxSegmentNonzeroAndEmpty)
+{
+  const PointXYZ first (0.f, 0.f, 0.f), second (3.f, 4.f, 0.f);
+  PointCloud<PointXYZ> cloud;
+  cloud.assign ({first, second});
+  PointXYZ pmin, pmax;
+
+  EXPECT_DOUBLE_EQ (getMaxSegment (cloud, pmin, pmax), 5.0);
+  EXPECT_XYZ_EQ (first, pmin);
+  EXPECT_XYZ_EQ (second, pmax);
+  EXPECT_DOUBLE_EQ (getMaxSegment (cloud, Indices {1, 0}, pmin, pmax), 5.0);
+  EXPECT_XYZ_EQ (second, pmin);
+  EXPECT_XYZ_EQ (first, pmax);
+
+  const PointXYZ min_before = pmin, max_before = pmax;
+  EXPECT_EQ (getMaxSegment (cloud, Indices {}, pmin, pmax),
+             std::numeric_limits<double>::min ());
+  EXPECT_XYZ_EQ (min_before, pmin);
+  EXPECT_XYZ_EQ (max_before, pmax);
+  cloud.clear ();
+  EXPECT_EQ (getMaxSegment (cloud, pmin, pmax), std::numeric_limits<double>::min ());
+  EXPECT_XYZ_EQ (min_before, pmin);
+  EXPECT_XYZ_EQ (max_before, pmax);
+}
+
 TEST (PCL, computeMedian)
 {
   std::vector<float> vector1{4.0f, 2.0f, 1.0f, 5.0f, 3.0f, 6.0f};
