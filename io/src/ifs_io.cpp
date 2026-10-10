@@ -42,7 +42,42 @@
 
 #include <cstring>
 #include <cerrno>
+#include <string>
 #include <boost/iostreams/device/mapped_file.hpp> // for mapped_file_source
+
+namespace
+{
+  /** \brief Read a length prefixed string from \a fs and tell whether it equals \a expected.
+    *
+    * The length prefix is taken from the file as is, so it cannot be relied upon to
+    * cover the terminating null character that pcl::IFSWriter appends. The string is
+    * therefore compared over the characters that were actually read instead of with
+    * strcmp. The field is consumed in either case so that the stream stays aligned
+    * with the next element.
+    */
+  bool
+  readAndMatchString (std::istream &fs, const std::string &expected)
+  {
+    std::uint32_t length = 0;
+    if (!fs.read (reinterpret_cast<char*> (&length), sizeof (length)))
+      return (false);
+
+    // Only the keyword with or without its terminating null character can match, any
+    // other length just needs to be skipped
+    if ((length != expected.size ()) && (length != expected.size () + 1))
+    {
+      fs.ignore (length);
+      return (false);
+    }
+
+    std::string actual (length, '\0');
+    if (!fs.read (&actual.front (), length))
+      return (false);
+
+    return ((actual.compare (0, expected.size (), expected) == 0) &&
+            ((actual.size () == expected.size ()) || (actual.back () == '\0')));
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 int
@@ -83,13 +118,7 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   }
 
   //Read the magic
-  std::uint32_t length_of_magic;
-  fs.read (reinterpret_cast<char*>(&length_of_magic), sizeof (std::uint32_t));
-  char *magic = new char [length_of_magic];
-  fs.read (magic, sizeof (char) * length_of_magic);
-  const bool file_is_ifs_file = (strcmp (magic, "IFS") == 0);
-  delete[] magic;
-  if (!file_is_ifs_file)
+  if (!readAndMatchString (fs, "IFS"))
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] File %s is not an IFS file!\n", file_name.c_str ());
     fs.close ();
@@ -111,12 +140,10 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       return (-1);
     }
 
-  //Read the name
-  std::uint32_t length_of_name;
+  //Read the name, its content is not used
+  std::uint32_t length_of_name = 0;
   fs.read (reinterpret_cast<char*>(&length_of_name), sizeof (std::uint32_t));
-  char *name = new char [length_of_name];
-  fs.read (name, sizeof (char) * length_of_name);
-  delete[] name;
+  fs.ignore (length_of_name);
 
   // Read the header and fill it in with wonderful values
   try
@@ -124,14 +151,7 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     while (!fs.eof ())
     {
       //Read the keyword
-      std::uint32_t length_of_keyword;
-      fs.read (reinterpret_cast<char*>(&length_of_keyword), sizeof (std::uint32_t));
-      char *keyword = new char [length_of_keyword];
-      fs.read (keyword, sizeof (char) * length_of_keyword);
-
-      const bool keyword_is_vertices = (strcmp (keyword, "VERTICES") == 0);
-      delete[] keyword;
-      if (keyword_is_vertices)
+      if (readAndMatchString (fs, "VERTICES"))
       {
         fs.read (reinterpret_cast<char*>(&nr_points), sizeof (std::uint32_t));
         if ((nr_points == 0) || (nr_points > 10000000))
@@ -286,13 +306,7 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   // Jump to the end of cloud data
   fs.seekg (data_size);
   // Read the TRIANGLES keyword
-  std::uint32_t length_of_keyword;
-  fs.read (reinterpret_cast<char*>(&length_of_keyword), sizeof (std::uint32_t));
-  char *keyword = new char [length_of_keyword];
-  fs.read (keyword, sizeof (char) * length_of_keyword);
-  const bool keyword_is_triangles = (strcmp (keyword, "TRIANGLES") == 0);
-  delete[] keyword;
-  if (!keyword_is_triangles)
+  if (!readAndMatchString (fs, "TRIANGLES"))
   {
     PCL_ERROR ("[pcl::IFSReader::read] File %s is does not contain facets!\n", file_name.c_str ());
     fs.close ();
