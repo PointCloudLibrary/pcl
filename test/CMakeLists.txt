@@ -11,7 +11,11 @@ endif()
 find_package(GTest REQUIRED)
 
 add_library(pcl_gtest INTERFACE)
-target_link_libraries(pcl_gtest INTERFACE GTest::gtest)
+if(TARGET GTest::gtest)
+  target_link_libraries(pcl_gtest INTERFACE GTest::gtest)
+else()
+  target_link_libraries(pcl_gtest INTERFACE GTest::GTest)
+endif()
 target_include_directories(pcl_gtest INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 enable_testing()
