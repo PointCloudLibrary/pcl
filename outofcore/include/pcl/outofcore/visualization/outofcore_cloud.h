@@ -16,6 +16,8 @@
 #include <pcl/outofcore/outofcore_impl.h>
 #include <pcl/outofcore/impl/lru_cache.hpp>
 
+#include <boost/filesystem/path.hpp> // for deprecated boost::filesystem overloads
+
 // PCL
 #include "camera.h"
 
@@ -112,7 +114,12 @@ class OutofcoreCloud : public Object
 
     // Operators
     // -----------------------------------------------------------------------------
-    OutofcoreCloud (std::string name, boost::filesystem::path& tree_root);
+    OutofcoreCloud (std::string name, const pcl_fs::path& tree_root);
+
+    /** \deprecated Use the constructor taking pcl_fs::path instead. */
+    PCL_DEPRECATED(1, 16, "use the constructor taking pcl_fs::path instead")
+    OutofcoreCloud (std::string name, boost::filesystem::path& tree_root)
+      : OutofcoreCloud (std::move (name), pcl_fs::path (tree_root.native ())) {}
 
     // Methods
     // -----------------------------------------------------------------------------

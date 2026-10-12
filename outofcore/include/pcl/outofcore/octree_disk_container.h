@@ -44,9 +44,11 @@
 #include <string>
 
 // Boost
+#include <boost/filesystem/path.hpp> // for deprecated boost::filesystem overloads
 #include <boost/random/mersenne_twister.hpp> // for boost::mt19937
 #include <boost/uuid/random_generator.hpp>
 
+#include <pcl/pcl_macros.h> // for PCL_DEPRECATED
 #include <pcl/outofcore/octree_abstract_node_container.h>
 #include <pcl/common/utils.h>    // pcl::utils::ignore
 #include <pcl/io/pcd_io.h>
@@ -92,7 +94,15 @@ namespace pcl
          * \param[in] dir Path to the tree. If it is a directory, it
          * will create the metadata. If it is a file, it will load the metadata into memory.
          */
-        OutofcoreOctreeDiskContainer (const boost::filesystem::path &dir);
+        OutofcoreOctreeDiskContainer (const pcl_fs::path &dir);
+
+        /** \brief Creates uuid named file or loads existing file
+         *
+         * \deprecated Use the constructor taking pcl_fs::path instead. */
+        PCL_DEPRECATED(1, 16, "use the constructor taking pcl_fs::path instead")
+        OutofcoreOctreeDiskContainer (const boost::filesystem::path &dir)
+          : OutofcoreOctreeDiskContainer (pcl_fs::path (dir.native ())) {}
+
 
         /** \brief flushes write buffer, then frees memory */
         ~OutofcoreOctreeDiskContainer () override;
@@ -212,7 +222,7 @@ namespace pcl
           writebuff_.clear ();
           //remove the binary data in the directory
           PCL_DEBUG ("[Octree Disk Container] Removing the point data from disk, in file %s\n", disk_storage_filename_.c_str ());
-          boost::filesystem::remove (static_cast<boost::filesystem::path> (disk_storage_filename_.c_str ()));
+          pcl_fs::remove (static_cast<pcl_fs::path> (disk_storage_filename_.c_str ()));
           //reset the size-of-file counter
           filelen_ = 0;
         }
@@ -222,9 +232,9 @@ namespace pcl
          * \param[in] path
          */
         void
-        convertToXYZ (const boost::filesystem::path &path) override
+        convertToXYZ (const pcl_fs::path &path) override
         {
-          if (boost::filesystem::exists (disk_storage_filename_))
+          if (pcl_fs::exists (disk_storage_filename_))
           {
             FILE* fxyz = fopen (path.string ().c_str (), "we");
 
@@ -258,6 +268,17 @@ namespace pcl
             res = fclose (fxyz);
             assert (res == 0);
           }
+        }
+
+        /** \brief write points to disk as ascii
+         *
+         * \param[in] path
+         *  \deprecated Use convertToXYZ(const pcl_fs::path&) instead. */
+        PCL_DEPRECATED(1, 16, "use convertToXYZ(const pcl_fs::path&) instead")
+        void
+        convertToXYZ (const boost::filesystem::path &path)
+        {
+          convertToXYZ (pcl_fs::path (path.native ()));
         }
 
         /** \brief Generate a universally unique identifier (UUID)
