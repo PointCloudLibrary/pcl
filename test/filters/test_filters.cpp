@@ -1581,20 +1581,20 @@ TEST (RadiusOutlierRemoval, Filters)
   //EXPECT_TRUE(cloud_out_rgb_neg.is_dense);
 
   // Test the pcl::PCLPointCloud2 method
-  //PCLPointCloud2 cloud_out2;
-  //RadiusOutlierRemoval<PCLPointCloud2> outrem2;
-  //outrem2.setInputCloud (cloud_blob);
-  //outrem2.setRadiusSearch (0.02);
-  //outrem2.setMinNeighborsInRadius (15);
-  //outrem2.filter (cloud_out2);
+  PCLPointCloud2 cloud_out2;
+  RadiusOutlierRemoval<PCLPointCloud2> outrem2;
+  outrem2.setInputCloud (cloud_blob);
+  outrem2.setRadiusSearch (0.02);
+  outrem2.setMinNeighborsInRadius (14);
+  outrem2.filter (cloud_out2);
 
-  //fromPCLPointCloud2 (cloud_out2, cloud_out);
-  //EXPECT_EQ (cloud_out.size (), 307);
-  //EXPECT_EQ (cloud_out.width, 307);
-  //EXPECT_TRUE (cloud_out.is_dense);
-  //EXPECT_NEAR (cloud_out[cloud_out.size () - 1].x, -0.077893, 1e-4);
-  //EXPECT_NEAR (cloud_out[cloud_out.size () - 1].y, 0.16039, 1e-4);
-  //EXPECT_NEAR (cloud_out[cloud_out.size () - 1].z, -0.021299, 1e-4);
+  fromPCLPointCloud2 (cloud_out2, cloud_out);
+  EXPECT_EQ (cloud_out.size (), 307);
+  EXPECT_EQ (cloud_out.width, 307);
+  EXPECT_TRUE (cloud_out.is_dense);
+  EXPECT_NEAR (cloud_out[cloud_out.size () - 1].x, -0.077893, 1e-4);
+  EXPECT_NEAR (cloud_out[cloud_out.size () - 1].y, 0.16039, 1e-4);
+  EXPECT_NEAR (cloud_out[cloud_out.size () - 1].z, -0.021299, 1e-4);
 
   // Remove outliers using a spherical density criterion
   RadiusOutlierRemoval<PointXYZ> outrem_(true);
@@ -1613,21 +1613,21 @@ TEST (RadiusOutlierRemoval, Filters)
   EXPECT_NEAR (cloud_out[cloud_out.size () - 1].z, -0.021299, 1e-4);
 
   // Test the pcl::PCLPointCloud2 method
-  //RadiusOutlierRemoval<PCLPointCloud2> outrem2_(true);
-  //outrem2_.setInputCloud (cloud_blob);
-  //outrem2_.setRadiusSearch (0.02);
-  //outrem2_.setMinNeighborsInRadius (15);
-  //outrem2_.filter (cloud_out2);
+  RadiusOutlierRemoval<PCLPointCloud2> outrem2_(true);
+  outrem2_.setInputCloud (cloud_blob);
+  outrem2_.setRadiusSearch (0.02);
+  outrem2_.setMinNeighborsInRadius (14);
+  outrem2_.filter (cloud_out2);
 
-  //fromPCLPointCloud2 (cloud_out2, cloud_out);
-  //EXPECT_EQ (cloud_out.size (), 307);
-  //EXPECT_EQ (cloud_out.width, 307);
-  //EXPECT_TRUE (cloud_out.is_dense);
-  //EXPECT_EQ (cloud_out.size (), cloud_blob->width*cloud_blob->height-outrem2_.getRemovedIndices()->size());
+  fromPCLPointCloud2 (cloud_out2, cloud_out);
+  EXPECT_EQ (cloud_out.size (), 307);
+  EXPECT_EQ (cloud_out.width, 307);
+  EXPECT_TRUE (cloud_out.is_dense);
+  EXPECT_EQ (cloud_out.size (), cloud_blob->width*cloud_blob->height-outrem2_.getRemovedIndices()->size());
 
-  //EXPECT_NEAR (cloud_out[cloud_out.size () - 1].x, -0.077893, 1e-4);
-  //EXPECT_NEAR (cloud_out[cloud_out.size () - 1].y, 0.16039, 1e-4);
-  //EXPECT_NEAR (cloud_out[cloud_out.size () - 1].z, -0.021299, 1e-4);
+  EXPECT_NEAR (cloud_out[cloud_out.size () - 1].x, -0.077893, 1e-4);
+  EXPECT_NEAR (cloud_out[cloud_out.size () - 1].y, 0.16039, 1e-4);
+  EXPECT_NEAR (cloud_out[cloud_out.size () - 1].z, -0.021299, 1e-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
