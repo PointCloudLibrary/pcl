@@ -611,6 +611,19 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     fields.resize (nri);
     fields_sizes.resize (nri);
 
+    // The unpack loop below reads fsize * width * height bytes from buf and writes
+    // the same number of bytes into cloud.data, both sized from the file-supplied
+    // uncompressed_size. A file that advertises a smaller size makes the planar
+    // pointers run past buf and the copy run past cloud.data, so reject any size
+    // that does not match the geometry before touching either buffer.
+    const std::size_t expected_size = static_cast<std::size_t> (fsize) * cloud.width * cloud.height;
+    if (static_cast<std::size_t> (uncompressed_size) != expected_size)
+    {
+      PCL_ERROR ("[pcl::PCDReader::read] Uncompressed data size (%u) does not match the expected size from the header fields (%zu)!\n",
+                 uncompressed_size, expected_size);
+      return (-1);
+    }
+
     // Unpack the xxyyzz to xyz
     std::vector<char*> pters (fields.size ());
     std::size_t toff = 0;
