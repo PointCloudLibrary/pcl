@@ -53,6 +53,7 @@ template<typename PointT> void
 pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
 {
   voxel_centroids_leaf_indices_.clear ();
+  leaves_.clear ();
 
   // Has the input dataset been set already?
   if (!input_)
@@ -112,9 +113,6 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   // Compute the number of divisions needed along all axis
   div_b_ = max_b_ - min_b_ + Eigen::Vector4i::Ones ();
   div_b_[3] = 0;
-
-  // Clear the leaves
-  leaves_.clear ();
 
   // Set up the division multiplier
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);

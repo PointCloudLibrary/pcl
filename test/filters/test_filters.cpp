@@ -659,6 +659,43 @@ TEST (VoxelGrid, VoxelIndicesBeyondIntRange)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (VoxelGrid, VoxelIndicesAtIntRangeBounds)
+{
+  // With leaf size 1, the voxel index of a coordinate is the coordinate itself. Two points 0.25 apart fall into the same
+  // voxel, so they are merged into one point if the input is accepted and returned as they are if the input is rejected.
+  // The number of voxels is 1 in both cases, so only the voxel indices decide.
+  const auto filter_size = [] (const int axis, const float coordinate) {
+    auto input = pcl::make_shared<PointCloud<PointXYZ>> ();
+    for (const float shift : {0.0f, 0.25f})
+    {
+      PointXYZ point (0.0f, 0.0f, 0.0f);
+      point.data[axis] = coordinate;
+      point.data[(axis + 1) % 3] = shift;
+      input->push_back (point);
+    }
+
+    VoxelGrid<PointXYZ> grid;
+    grid.setInputCloud (input);
+    grid.setLeafSize (1.0f, 1.0f, 1.0f);
+    PointCloud<PointXYZ> output;
+    grid.filter (output);
+    return output.size ();
+  };
+
+  for (int axis = 0; axis < 3; ++axis)
+  {
+    // largest float below 2^31, still fits into an int
+    EXPECT_EQ (filter_size (axis, 2147483520.0f), 1);
+    // 2^31 does not fit into an int
+    EXPECT_EQ (filter_size (axis, 2147483648.0f), 2);
+    // -2^31 is the smallest int
+    EXPECT_EQ (filter_size (axis, -2147483648.0f), 1);
+    // largest float below -2^31 does not fit into an int
+    EXPECT_EQ (filter_size (axis, -2147483904.0f), 2);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (VoxelGrid, Filters)
 {
   // Test the PointCloud<PointT> method
@@ -1491,6 +1528,34 @@ TEST (VoxelGridCovariance, VoxelIndicesBeyondIntRange)
     // only the voxel index of the smallest coordinate does not fit into an int
     EXPECT_EQ (count_leaves (axis, {-2.2e6f, -2.0e6f}), 0);
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (VoxelGridCovariance, RejectedInputClearsLeaves)
+{
+  const auto ten_points_from = [] (const float offset) {
+    auto input = pcl::make_shared<PointCloud<PointXYZ>> ();
+    for (int i = 0; i < 10; ++i)
+      input->emplace_back (offset + static_cast<float> (i), 0.0f, 0.0f);
+    return input;
+  };
+
+  // Reuse one object: the second input is rejected because its voxel indices do not fit into an int, so the leaves of the
+  // first input must not stay behind.
+  VoxelGridCovariance<PointXYZ> grid;
+  grid.setLeafSize (1e-3f, 1.0f, 1.0f);
+  PointCloud<PointXYZ> output;
+  PointXYZ origin (0.0f, 0.0f, 0.0f);
+
+  grid.setInputCloud (ten_points_from (0.0f));
+  grid.filter (output);
+  EXPECT_EQ (grid.getLeaves ().size (), 10);
+  EXPECT_NE (grid.getLeaf (origin), nullptr);
+
+  grid.setInputCloud (ten_points_from (1e7f));
+  grid.filter (output);
+  EXPECT_EQ (grid.getLeaves ().size (), 0);
+  EXPECT_EQ (grid.getLeaf (origin), nullptr);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
