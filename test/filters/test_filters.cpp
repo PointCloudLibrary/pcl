@@ -1400,6 +1400,51 @@ TEST (VoxelGridCovariance, Filters)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (VoxelGridCovariance, VoxelIndicesBeyondIntRange)
+{
+  // The points lie 1 apart along one axis, the leaf size is 1e-3 along that axis. Each point therefore belongs to its
+  // own leaf, but its voxel index (coordinate / leaf size) only fits into an int if the cloud is close enough to the origin.
+  const auto count_leaves = [] (const int axis, const std::vector<float>& coordinates) {
+    auto input = pcl::make_shared<PointCloud<PointXYZ>> ();
+    for (const float coordinate : coordinates)
+    {
+      PointXYZ point (0.0f, 0.0f, 0.0f);
+      point.data[axis] = coordinate;
+      input->push_back (point);
+    }
+
+    VoxelGridCovariance<PointXYZ> grid;
+    grid.setInputCloud (input);
+    grid.setLeafSize (axis == 0 ? 1e-3f : 1.0f, axis == 1 ? 1e-3f : 1.0f, axis == 2 ? 1e-3f : 1.0f);
+    PointCloud<PointXYZ> output;
+    grid.filter (output);
+    return grid.getLeaves ().size ();
+  };
+
+  const auto ten_points_from = [] (const float offset) {
+    std::vector<float> coordinates;
+    for (int i = 0; i < 10; ++i)
+      coordinates.push_back (offset + static_cast<float> (i));
+    return coordinates;
+  };
+
+  for (int axis = 0; axis < 3; ++axis)
+  {
+    // voxel indices fit into an int
+    EXPECT_EQ (count_leaves (axis, ten_points_from (0.0f)), 10);
+    EXPECT_EQ (count_leaves (axis, ten_points_from (1e6f)), 10);
+    EXPECT_EQ (count_leaves (axis, ten_points_from (-1e6f)), 10);
+    // voxel indices do not fit into an int, so the input is rejected like for a too small leaf size
+    EXPECT_EQ (count_leaves (axis, ten_points_from (1e7f)), 0);
+    EXPECT_EQ (count_leaves (axis, ten_points_from (-1e7f)), 0);
+    // only the voxel index of the largest coordinate does not fit into an int
+    EXPECT_EQ (count_leaves (axis, {2.0e6f, 2.2e6f}), 0);
+    // only the voxel index of the smallest coordinate does not fit into an int
+    EXPECT_EQ (count_leaves (axis, {-2.2e6f, -2.0e6f}), 0);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (VoxelGridMinPoints, Filters)
 {
   // Setup input with 4 clusters, single point at 0,0,0 and 1,1,1 with 5 point cluster around 0.11,0.11,0.11 and 6 point cluster around 0.31,0.31,0.31
