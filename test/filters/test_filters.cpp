@@ -610,6 +610,55 @@ TEST(VoxelGrid, CentroidIndexAtBounds)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (VoxelGrid, VoxelIndicesBeyondIntRange)
+{
+  // For every coordinate, two points are added that are 1e-4 apart. The leaf size is 1e-3 along one axis, so both points
+  // belong to the same leaf, as long as the cloud is close enough to the origin for the voxel indices to fit into an int.
+  // Otherwise, the input is returned unfiltered, like for a too small leaf size.
+  const auto filter_size = [] (const int axis, const std::vector<float>& coordinates) {
+    auto input = pcl::make_shared<PointCloud<PointXYZ>> ();
+    for (const float coordinate : coordinates)
+    {
+      for (const float shift : {2.5e-4f, 3.5e-4f})
+      {
+        PointXYZ point (0.0f, 0.0f, 0.0f);
+        point.data[axis] = coordinate + shift;
+        input->push_back (point);
+      }
+    }
+
+    VoxelGrid<PointXYZ> grid;
+    grid.setInputCloud (input);
+    grid.setLeafSize (axis == 0 ? 1e-3f : 1.0f, axis == 1 ? 1e-3f : 1.0f, axis == 2 ? 1e-3f : 1.0f);
+    PointCloud<PointXYZ> output;
+    grid.filter (output);
+    return output.size ();
+  };
+
+  const auto ten_points_from = [] (const float offset) {
+    std::vector<float> coordinates;
+    for (int i = 0; i < 10; ++i)
+      coordinates.push_back (offset + static_cast<float> (i));
+    return coordinates;
+  };
+
+  for (int axis = 0; axis < 3; ++axis)
+  {
+    // voxel indices fit into an int
+    EXPECT_EQ (filter_size (axis, ten_points_from (0.0f)), 10);
+    EXPECT_EQ (filter_size (axis, ten_points_from (1e6f)), 10);
+    EXPECT_EQ (filter_size (axis, ten_points_from (-1e6f)), 10);
+    // voxel indices do not fit into an int
+    EXPECT_EQ (filter_size (axis, ten_points_from (1e7f)), 20);
+    EXPECT_EQ (filter_size (axis, ten_points_from (-1e7f)), 20);
+    // only the voxel index of the largest coordinate does not fit into an int
+    EXPECT_EQ (filter_size (axis, {2.0e6f, 2.2e6f}), 4);
+    // only the voxel index of the smallest coordinate does not fit into an int
+    EXPECT_EQ (filter_size (axis, {-2.2e6f, -2.0e6f}), 4);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (VoxelGrid, Filters)
 {
   // Test the PointCloud<PointT> method

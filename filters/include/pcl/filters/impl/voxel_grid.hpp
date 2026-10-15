@@ -621,7 +621,21 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   std::int64_t dy = static_cast<std::int64_t>((max_p[1] - min_p[1]) * inverse_leaf_size_[1])+1;
   std::int64_t dz = static_cast<std::int64_t>((max_p[2] - min_p[2]) * inverse_leaf_size_[2])+1;
 
-  if ((dx*dy*dz) > static_cast<std::int64_t>(std::numeric_limits<std::int32_t>::max()))
+  // The number of voxels can be small even though the voxel indices are large, if the data is far from the origin.
+  // Check that the indices of the first and last voxel along each axis fit into an int (2^31 is exactly representable as float).
+  bool indices_fit = true;
+  for (int i = 0; i < 3; ++i)
+  {
+    // min_p > max_p if there is no valid point, so there are no indices to check
+    if (min_p[i] > max_p[i])
+      continue;
+    const float min_index = std::floor (min_p[i] * inverse_leaf_size_[i]);
+    const float max_index = std::floor (max_p[i] * inverse_leaf_size_[i]);
+    indices_fit = indices_fit && min_index >= -2147483648.0f && min_index < 2147483648.0f &&
+                  max_index >= -2147483648.0f && max_index < 2147483648.0f;
+  }
+
+  if ((dx*dy*dz) > static_cast<std::int64_t>(std::numeric_limits<std::int32_t>::max()) || !indices_fit)
   {
     PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.\n", getClassName().c_str());
     output = *input_;
