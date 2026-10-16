@@ -637,6 +637,7 @@ TEST (VoxelGrid, VoxelIndicesBeyondIntRange)
 
   const auto ten_points_from = [] (const float offset) {
     std::vector<float> coordinates;
+    coordinates.reserve (10);
     for (int i = 0; i < 10; ++i)
       coordinates.push_back (offset + static_cast<float> (i));
     return coordinates;
@@ -1509,6 +1510,7 @@ TEST (VoxelGridCovariance, VoxelIndicesBeyondIntRange)
 
   const auto ten_points_from = [] (const float offset) {
     std::vector<float> coordinates;
+    coordinates.reserve (10);
     for (int i = 0; i < 10; ++i)
       coordinates.push_back (offset + static_cast<float> (i));
     return coordinates;
