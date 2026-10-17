@@ -133,20 +133,14 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
         cov(l, k) = cov(k, l);
       }
 
-    // Compute the SVD (covariance matrix is symmetric so U = V')
-    Eigen::JacobiSVD<Eigen::Matrix3d> svd(cov, Eigen::ComputeFullU);
-    cov.setZero();
-    Eigen::Matrix3d U = svd.matrixU();
-    // Reconstitute the covariance matrix with modified singular values using the column
-    // // vectors in V.
-    for (int k = 0; k < 3; k++) {
-      Eigen::Vector3d col = U.col(k);
-      double v = 1.; // biggest 2 singular values replaced by 1
-      if (k == 2)    // smallest singular value replaced by gicp_epsilon
-        v = gicp_epsilon_;
-      cov.noalias() += v * col * col.transpose();
-    }
-    cloud_covariances[i] = cov;
+    // We know that cov is symmetric (self-adjoint), so SelfAdjointEigenSolver is the
+    // best choice. The smallest eigenvalue is replaced with gicp_epsilon_, the other
+    // two eigenvalues with 1.
+    Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver_M;
+    solver_M.computeDirect(cov);
+    cloud_covariances[i] = solver_M.eigenvectors() *
+                           Eigen::Vector3d(gicp_epsilon_, 1.0, 1.0).asDiagonal() *
+                           solver_M.eigenvectors().transpose();
   }
 }
 
