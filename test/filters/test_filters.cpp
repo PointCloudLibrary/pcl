@@ -1585,7 +1585,7 @@ TEST (RadiusOutlierRemoval, Filters)
   RadiusOutlierRemoval<PCLPointCloud2> outrem2;
   outrem2.setInputCloud (cloud_blob);
   outrem2.setRadiusSearch (0.02);
-  outrem2.setMinNeighborsInRadius (15);
+  outrem2.setMinNeighborsInRadius (14);
   outrem2.filter (cloud_out2);
 
   fromPCLPointCloud2 (cloud_out2, cloud_out);
@@ -1616,7 +1616,7 @@ TEST (RadiusOutlierRemoval, Filters)
   RadiusOutlierRemoval<PCLPointCloud2> outrem2_(true);
   outrem2_.setInputCloud (cloud_blob);
   outrem2_.setRadiusSearch (0.02);
-  outrem2_.setMinNeighborsInRadius (15);
+  outrem2_.setMinNeighborsInRadius (14);
   outrem2_.filter (cloud_out2);
 
   fromPCLPointCloud2 (cloud_out2, cloud_out);
@@ -2576,6 +2576,49 @@ TEST (VoxelGridOcclusionEstimation, Filters)
       Eigen::Vector3i cell(9, y, z);
       EXPECT_NE(std::find(occluded_voxels.begin(), occluded_voxels.end(), cell), occluded_voxels.end()); // not equal means it was found
     }
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(RadiusOutlierRemovalPCLPointCloud2, Filters)
+{
+  // Test for the issue #2816. Both implementations must be true
+  PointCloud<PointXYZ>::Ptr pc_in(new PointCloud<PointXYZ>);
+  pc_in->push_back(PointXYZ(1.f, 0.f, 0.f));
+  pc_in->push_back(PointXYZ(2.f, 0.f, 0.f));
+  pc_in->push_back(PointXYZ(3.f, 0.f, 0.f));
+
+  PCLPointCloud2::Ptr pc2_in(new PCLPointCloud2);
+  toPCLPointCloud2(*pc_in, *pc2_in);
+
+  // Template implementation
+  {
+    RadiusOutlierRemoval<PointXYZ> filter;
+    filter.setInputCloud(pc_in);
+    filter.setRadiusSearch(1.1);
+    filter.setMinNeighborsInRadius(2);
+    PointCloud<PointXYZ> pc_out;
+    filter.filter(pc_out);
+    ASSERT_EQ(pc_out.size(), 1);
+    EXPECT_NEAR(pc_out[0].x, 2.f, 1e-4f);
+    EXPECT_NEAR(pc_out[0].y, 0.f, 1e-4f);
+    EXPECT_NEAR(pc_out[0].z, 0.f, 1e-4f);
+  }
+
+  // PCLPointCloud2 implementation should give the same result
+  {
+    RadiusOutlierRemoval<PCLPointCloud2> filter;
+    filter.setInputCloud(pc2_in);
+    filter.setRadiusSearch(1.1);
+    filter.setMinNeighborsInRadius(2);
+    PCLPointCloud2 pc2_out;
+    filter.filter(pc2_out);
+    PointCloud<PointXYZ> pc_out;
+    fromPCLPointCloud2(pc2_out, pc_out);
+    ASSERT_EQ(pc_out.size(), 1);
+    EXPECT_NEAR(pc_out[0].x, 2.f, 1e-4f);
+    EXPECT_NEAR(pc_out[0].y, 0.f, 1e-4f);
+    EXPECT_NEAR(pc_out[0].z, 0.f, 1e-4f);
   }
 }
 

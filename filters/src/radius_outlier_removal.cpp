@@ -106,9 +106,10 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
   {
     //if(cp%log_step == 0)
     //  PCL_DEBUG ("[pcl::%s::applyFilter] Iteration %i of %lu\n", getClassName ().c_str (), cp, indices_->size());
-    int k = searcher_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_dists);
+    int k = searcher_->radiusSearch(
+        (*indices_)[cp], search_radius_, nn_indices, nn_dists, min_pts_radius_ + 1);
     // Check if the number of neighbors is larger than the user imposed limit
-    if (k < min_pts_radius_)
+    if (k <= min_pts_radius_)
     {
       if (extract_removed_indices_)
       {
@@ -215,7 +216,8 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
     {
       // Perform the radius search
       // Note: k includes the query point, so is always at least 1
-      int k = searcher_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
+      int k = searcher_->radiusSearch(
+          idx, search_radius_, nn_indices, nn_dists, min_pts_radius_ + 1);
 
       // Points having too few neighbors are outliers and are passed to removed indices
       // Unless negative was set, then it's the opposite condition
