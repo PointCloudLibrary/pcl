@@ -39,6 +39,7 @@
 #define PCL_FILTERS_IMPL_VOXEL_GRID_H_
 
 #include <limits>
+#include <vector>
 
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
@@ -73,52 +74,49 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
 
   const std::uint8_t* data_ptr = cloud->data.data();
 
-  T x, y, z;
-
-  auto update_min_max = [&](const T& x, const T& y, const T& z) {
-    if (x < min_x)
-      min_x = x;
-    if (y < min_y)
-      min_y = y;
-    if (z < min_z)
-      min_z = z;
-    if (x > max_x)
-      max_x = x;
-    if (y > max_y)
-      max_y = y;
-    if (z > max_z)
-      max_z = z;
-  };
-
   // If dense, no need to check for NaNs
   if (cloud->is_dense)
   {
+    #pragma omp parallel for \
+    reduction(min: min_x, min_y, min_z) \
+    reduction(max: max_x, max_y, max_z)
     for (std::size_t i = 0; i < nr_points; ++i)
     {
-      std::memcpy(&x, data_ptr + x_off, sizeof(T));
-      std::memcpy(&y, data_ptr + y_off, sizeof(T));
-      std::memcpy(&z, data_ptr + z_off, sizeof(T));
+      T x, y, z;
+      std::memcpy(&x, data_ptr + i * pt_step + x_off, sizeof(T));
+      std::memcpy(&y, data_ptr + i * pt_step + y_off, sizeof(T));
+      std::memcpy(&z, data_ptr + i * pt_step + z_off, sizeof(T));
 
-      data_ptr += pt_step;
-
-      update_min_max(x, y, z);
+      if (x < min_x) min_x = x;
+      if (x > max_x) max_x = x;
+      if (y < min_y) min_y = y;
+      if (y > max_y) max_y = y;
+      if (z < min_z) min_z = z;
+      if (z > max_z) max_z = z;
     }
   }
   else
   {
+    #pragma omp parallel for \
+    reduction(min: min_x, min_y, min_z) \
+    reduction(max: max_x, max_y, max_z)
     for (std::size_t i = 0; i < nr_points; ++i)
     {
-      std::memcpy(&x, data_ptr + x_off, sizeof(T));
-      std::memcpy(&y, data_ptr + y_off, sizeof(T));
-      std::memcpy(&z, data_ptr + z_off, sizeof(T));
-
-      data_ptr += pt_step;
+      T x, y, z;
+      std::memcpy(&x, data_ptr + i * pt_step + x_off, sizeof(T));
+      std::memcpy(&y, data_ptr + i * pt_step + y_off, sizeof(T));
+      std::memcpy(&z, data_ptr + i * pt_step + z_off, sizeof(T));
 
       // Check if the point is invalid
       if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
         continue;
 
-      update_min_max(x, y, z);
+      if (x < min_x) min_x = x;
+      if (x > max_x) max_x = x;
+      if (y < min_y) min_y = y;
+      if (y > max_y) max_y = y;
+      if (z < min_z) min_z = z;
+      if (z > max_z) max_z = z;
     }
   }
 
@@ -577,15 +575,16 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
           continue;
       }
 
+      const auto& pt = (*cloud)[index];
       // Check if the point is invalid
-      if (!std::isfinite ((*cloud)[index].x) ||
-          !std::isfinite ((*cloud)[index].y) ||
-          !std::isfinite ((*cloud)[index].z))
+      if (!std::isfinite (pt.x) ||
+          !std::isfinite (pt.y) ||
+          !std::isfinite (pt.z))
         continue;
       // Create the point structure and get the min/max
-      pcl::Array4fMapConst pt = (*cloud)[index].getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
+      pcl::Array4fMapConst pt_array = pt.getArray4fMap ();
+      min_p = min_p.min (pt_array);
+      max_p = max_p.max (pt_array);
     }
   }
   min_pt = min_p;
@@ -662,11 +661,19 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     // First pass: go over all points and insert them into the index_vector vector
     // with calculated idx. Points with the same idx value will contribute to the
     // same point of resulting CloudPoint
-    for (const auto& index : (*indices_))
+    index_vector.resize(indices_->size());
+    std::vector<uint8_t> to_keep(indices_->size(), 0);
+    #pragma omp parallel for \
+    schedule(dynamic, 64) \
+    shared(index_vector, to_keep) \
+    num_threads(num_threads_)
+    for (size_t i = 0; i < indices_->size(); ++i)
     {
+      const auto& index = (*indices_)[i];
+      const auto& pt = (*input_)[index];
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!isXYZFinite ((*input_)[index]))
+        if (!isXYZFinite (pt))
           continue;
 
       // Get the distance value
@@ -687,14 +694,23 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
           continue;
       }
 
-      int ijk0 = static_cast<int> (std::floor ((*input_)[index].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
-      int ijk1 = static_cast<int> (std::floor ((*input_)[index].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
-      int ijk2 = static_cast<int> (std::floor ((*input_)[index].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
+      const int ijk0 = static_cast<int> (std::floor (pt.x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
+      const int ijk1 = static_cast<int> (std::floor (pt.y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
+      const int ijk2 = static_cast<int> (std::floor (pt.z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
 
       // Compute the centroid leaf index
-      int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.emplace_back(static_cast<unsigned int> (idx), index);
+      const int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
+      index_vector[i] = internal::cloud_point_index_idx(static_cast<unsigned int>(idx), index);
+      to_keep[i] = 1;
     }
+    // Remove points that are not finite
+    size_t kept_iter = 0;
+    for (size_t i = 0; i < to_keep.size(); ++i)
+    {
+      if (to_keep[i] == 0) continue;
+      index_vector[kept_iter++] = index_vector[i];
+    }
+    index_vector.resize(kept_iter);
   }
   // No distance filtering, process all data
   else
@@ -702,27 +718,99 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     // First pass: go over all points and insert them into the index_vector vector
     // with calculated idx. Points with the same idx value will contribute to the
     // same point of resulting CloudPoint
-    for (const auto& index : (*indices_))
+    index_vector.resize(indices_->size());
+    if (input_->is_dense)
     {
-      if (!input_->is_dense)
-        // Check if the point is invalid
-        if (!isXYZFinite ((*input_)[index]))
+      #pragma omp parallel for \
+      schedule(dynamic, 64) \
+      shared(index_vector) \
+      num_threads(num_threads_)
+      for (size_t i = 0; i < indices_->size(); ++i)
+      {
+        const auto& index = (*indices_)[i];
+        const auto& pt = (*input_)[index];
+        const int ijk0 = static_cast<int> (std::floor (pt.x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
+        const int ijk1 = static_cast<int> (std::floor (pt.y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
+        const int ijk2 = static_cast<int> (std::floor (pt.z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
+
+        // Compute the centroid leaf index
+        const int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
+        index_vector[i] = internal::cloud_point_index_idx(static_cast<unsigned int>(idx), index);
+      }
+    }
+    else
+    {
+      std::vector<uint8_t> to_keep(indices_->size(), 0);
+      #pragma omp parallel for \
+      schedule(dynamic, 64) \
+      shared(index_vector, to_keep) \
+      num_threads(num_threads_)
+      for (size_t i = 0; i < indices_->size(); ++i) {
+        const auto& index = (*indices_)[i];
+        const auto& pt = (*input_)[index];
+        if (!isXYZFinite (pt))
           continue;
+        
+        const int ijk0 = static_cast<int> (std::floor (pt.x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
+        const int ijk1 = static_cast<int> (std::floor (pt.y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
+        const int ijk2 = static_cast<int> (std::floor (pt.z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
 
-      int ijk0 = static_cast<int> (std::floor ((*input_)[index].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
-      int ijk1 = static_cast<int> (std::floor ((*input_)[index].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
-      int ijk2 = static_cast<int> (std::floor ((*input_)[index].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
+        // Compute the centroid leaf index
+        const int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
+        index_vector[i] = internal::cloud_point_index_idx(static_cast<unsigned int>(idx), index);
+        to_keep[i] = 1;
+      }
 
-      // Compute the centroid leaf index
-      int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.emplace_back(static_cast<unsigned int> (idx), index);
+      // Remove points that are not finite
+      size_t kept_iter = 0;
+      for (size_t i = 0; i < to_keep.size(); ++i) {
+        if (to_keep[i] == 0) 
+          continue;
+        index_vector[kept_iter++] = index_vector[i];
+      }
+      index_vector.resize(kept_iter);
     }
   }
 
   // Second pass: sort the index_vector vector using value representing target cell as index
   // in effect all points belonging to the same output cell will be next to each other
-  auto rightshift_func = [](const internal::cloud_point_index_idx &x, const unsigned offset) { return x.idx >> offset; };
-  boost::sort::spreadsort::integer_sort(index_vector.begin(), index_vector.end(), rightshift_func);
+  #ifdef _OPENMP
+  if (num_threads_ > 1) {
+    struct MergeSortOMP
+    {
+      using it = std::vector<internal::cloud_point_index_idx>::iterator;
+      static void sort(it begin, it end)
+      {
+        const std::ptrdiff_t n = end - begin;
+        if (n < 1024)
+        {
+          auto right_shift_func = [](const internal::cloud_point_index_idx& x, const unsigned offset) 
+          {
+            return x.idx >> offset;
+          };
+          boost::sort::spreadsort::integer_sort(begin, end, right_shift_func);
+          return;
+        }
+        auto mid = begin + n / 2;
+        #pragma omp task firstprivate(begin, mid)
+        sort(begin, mid);
+        #pragma omp task firstprivate(mid, end)
+        sort(mid, end);
+        #pragma omp taskwait
+        std::inplace_merge(begin, mid, end);
+      }
+    };
+
+    #pragma omp parallel num_threads(num_threads_)
+    #pragma omp single
+    MergeSortOMP::sort(index_vector.begin(), index_vector.end());
+  }
+  else
+  #endif
+  {
+    auto rightshift_func = [](const internal::cloud_point_index_idx &x, const unsigned offset) { return x.idx >> offset; };
+    boost::sort::spreadsort::integer_sort(index_vector.begin(), index_vector.end(), rightshift_func);
+  }
 
   // Third pass: count output cells
   // we need to skip all the same, adjacent idx values
@@ -775,16 +863,19 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     }
   }
 
-  index = 0;
-  for (const auto &cp : first_and_last_indices_vector)
+  #pragma omp parallel for \
+  schedule(dynamic, 64) \
+  num_threads(num_threads_)
+  for (size_t cp_idx = 0; cp_idx < first_and_last_indices_vector.size(); ++cp_idx)
   {
+    const auto& cp = first_and_last_indices_vector[cp_idx];
     // calculate centroid - sum values from all input points, that have the same idx value in index_vector array
-  	unsigned int first_index = cp.first;
-  	unsigned int last_index = cp.second;
+  	const unsigned int first_index = cp.first;
+  	const unsigned int last_index = cp.second;
 
     // index is centroid final position in resulting PointCloud
     if (save_leaf_layout_)
-      leaf_layout_[index_vector[first_index].idx] = index;
+      leaf_layout_[index_vector[first_index].idx] = cp_idx;
 
     //Limit downsampling to coords
     if (!downsample_all_data_)
@@ -795,7 +886,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
         centroid += (*input_)[index_vector[li].cloud_point_index].getVector4fMap ();
 
       centroid /= static_cast<float> (last_index - first_index);
-      output[index].getVector4fMap () = centroid;
+      output[cp_idx].getVector4fMap() = centroid;
     }
     else
     {
@@ -805,12 +896,10 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
       for (unsigned int li = first_index; li < last_index; ++li)
         centroid.add ((*input_)[index_vector[li].cloud_point_index]);
 
-      centroid.get (output[index]);
+      centroid.get (output[cp_idx]);
     }
-
-    ++index;
   }
-  output.width = output.size ();
+  output.width = output.size();
 }
 
 #define PCL_INSTANTIATE_VoxelGrid(T) template class PCL_EXPORTS pcl::VoxelGrid<T>;
