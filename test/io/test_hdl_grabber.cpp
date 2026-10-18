@@ -117,6 +117,31 @@ TEST (HDLGrabber, LoadCorrectionsFileWithoutPoints)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (HDLGrabber, LoadCorrectionsFileKeepsDefaultCorrections)
+{
+  // Lasers a calibration file has no correction for, and all of them when the
+  // file can't be read, keep the default HDL-32 corrections.
+  const std::string file_name = "test_hdl_corrections_one_laser.xml";
+  writeCorrectionsFile (file_name,
+                        "<points_ class_id=\"1\" tracking_level=\"0\" version=\"0\">"
+                        "<count>1</count><item_version>1</item_version>"
+                        + laserCorrection ("5", 2.5, 1.5)
+                        + "</points_>");
+
+  TestableHDLGrabber grabber (file_name, "");
+  EXPECT_DOUBLE_EQ (grabber.laser_corrections_[5].verticalCorrection, 1.5);
+  EXPECT_DOUBLE_EQ (grabber.laser_corrections_[0].verticalCorrection, -30.67);
+  EXPECT_DOUBLE_EQ (grabber.laser_corrections_[0].azimuthCorrection, 0.0);
+  EXPECT_DOUBLE_EQ (grabber.laser_corrections_[40].cosVertCorrection, 1.0);
+
+  remove (file_name.c_str ());
+
+  TestableHDLGrabber unreadable ("test_hdl_corrections_missing.xml", "");
+  EXPECT_DOUBLE_EQ (unreadable.laser_corrections_[0].verticalCorrection, -30.67);
+  EXPECT_DOUBLE_EQ (unreadable.laser_corrections_[40].cosVertCorrection, 1.0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (HDLGrabber, ComputeXYZIAzimuthAboveLookupTable)
 {
   // The azimuth of a firing comes from the packet and can be any 16-bit value.
