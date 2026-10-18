@@ -46,6 +46,9 @@ namespace pcl
       * This function returns an error if
       *   * the total number of non-skip fields is different
       *   * the non-skip field names are named differently (excluding "rbg{a}") in serial order
+      *   * the non-skip fields have a different size (datatype size and count) in serial order
+      *   * a field does not fit in the point_step, or the data of a cloud is smaller than
+      *     width * height * point_step
       *   * the endian-ness of both clouds is different
       * \param[in,out] cloud1 the first input and output point cloud dataset
       * \param[in] cloud2 the second input point cloud dataset
