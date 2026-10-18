@@ -51,14 +51,26 @@
 namespace 
 {
   using std::uint8_t;
+
+  // PNG input data with its size and the current read position
+  struct PNGInputBuffer
+  {
+    const std::uint8_t* data;
+    std::size_t size;
+    std::size_t offset;
+  };
+
   /////////////////////////////////////////////////////////////////////////////////////////
   void 
   user_read_data (png_structp png_ptr, png_bytep data, png_size_t length)
   {
-    auto** input_pointer = reinterpret_cast<std::uint8_t**>(png_get_io_ptr (png_ptr));
+    auto* input = reinterpret_cast<PNGInputBuffer*>(png_get_io_ptr (png_ptr));
 
-    memcpy (data, *input_pointer, sizeof (std::uint8_t) * length);
-    (*input_pointer) += length;
+    if (length > input->size - input->offset)
+      png_error (png_ptr, "Read past the end of the PNG data");
+
+    memcpy (data, input->data + input->offset, sizeof (std::uint8_t) * length);
+    input->offset += length;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +140,13 @@ namespace pcl
       assert (info_ptr && "Could not allocate info struct");
 
       // Setup Exception handling
-      setjmp(png_jmpbuf(png_ptr));
+      if (setjmp (png_jmpbuf (png_ptr)))
+      {
+        // libpng reported an error
+        png_destroy_write_struct (&png_ptr, &info_ptr);
+        pngData_arg.clear ();
+        return;
+      }
 
       // reserve memory for output data (300kB)
       pngData_arg.clear ();
@@ -166,10 +184,7 @@ namespace pcl
       // End write
       png_write_end (png_ptr, nullptr);
 
-      if (info_ptr)
-        png_free_data (png_ptr, info_ptr, PNG_FREE_ALL, -1);
-      if (png_ptr)
-        png_destroy_write_struct (&png_ptr, nullptr);
+      png_destroy_write_struct (&png_ptr, &info_ptr);
     }
     
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -186,7 +201,7 @@ namespace pcl
       png_uint_32 png_height;
       int png_bit_depth, png_color_type, png_interlace_type;
 
-      png_bytep * row_pointers;
+      png_bytep * volatile row_pointers = nullptr;
 
       if (pngData_arg.empty ())
         return;
@@ -199,18 +214,29 @@ namespace pcl
       assert(info_ptr && "Could not allocate info struct");
 
       // Setup Exception handling
-      setjmp (png_jmpbuf(png_ptr));
+      if (setjmp (png_jmpbuf (png_ptr)))
+      {
+        // libpng reported an error, e.g. truncated or corrupt PNG data
+        png_destroy_read_struct (&png_ptr, &info_ptr, nullptr);
+        free (row_pointers);
+        imageData_arg.clear ();
+        width_arg = 0;
+        height_arg = 0;
+        channels_arg = 0;
+        return;
+      }
 
-      std::uint8_t* input_pointer = pngData_arg.data();
-      png_set_read_fn (png_ptr, reinterpret_cast<void*> (&input_pointer), user_read_data);
+      PNGInputBuffer input {pngData_arg.data (), pngData_arg.size (), 0};
+      png_set_read_fn (png_ptr, reinterpret_cast<void*> (&input), user_read_data);
 
       png_read_info (png_ptr, info_ptr);
 
       png_get_IHDR (png_ptr, info_ptr, &png_width, &png_height, &png_bit_depth,
           &png_color_type, &png_interlace_type, nullptr, nullptr);
 
-      // ensure a color bit depth of 8
-      assert(png_bit_depth==sizeof(T)*8);
+      // ensure the color bit depth matches the output type
+      if (png_bit_depth != static_cast<int> (sizeof (T) * 8))
+        png_error (png_ptr, "PNG bit depth does not match the output image type");
 
       unsigned int png_channels;
       switch (png_color_type)
@@ -228,30 +254,31 @@ namespace pcl
           png_channels = 4;
           break;
         default:
-          png_channels = 0;
-          break;
+          png_error (png_ptr, "Unsupported PNG color type");
       }
+
+      const std::size_t row_size = static_cast<std::size_t> (png_width) * png_channels;
+      if (png_height > imageData_arg.max_size () / row_size)
+        png_error (png_ptr, "PNG image is too large");
 
       width_arg = png_width;
       height_arg = png_height;
       channels_arg = png_channels;
 
       imageData_arg.clear ();
-      imageData_arg.resize (png_height * png_width * png_channels);
+      imageData_arg.resize (png_height * row_size);
 
       row_pointers = reinterpret_cast<png_bytep*> (malloc (sizeof(png_bytep) * png_height));
+      if (!row_pointers)
+        png_error (png_ptr, "Could not allocate row pointers");
 
-      for (unsigned long y = 0; y < png_height; y++)
-        row_pointers[y] = reinterpret_cast<png_byte*> (&imageData_arg[y * png_width * png_channels]);
+      for (std::size_t y = 0; y < png_height; y++)
+        row_pointers[y] = reinterpret_cast<png_byte*> (&imageData_arg[y * row_size]);
 
       png_read_image (png_ptr, row_pointers);
 
-      if (info_ptr)
-        png_free_data (png_ptr, info_ptr, PNG_FREE_ALL, -1);
-      if (png_ptr)
-        png_destroy_read_struct (&png_ptr, nullptr, nullptr);
-      if (row_pointers)
-        free (row_pointers);
+      png_destroy_read_struct (&png_ptr, &info_ptr, nullptr);
+      free (row_pointers);
     }
   } // namespace io
 } // namespace pcl
