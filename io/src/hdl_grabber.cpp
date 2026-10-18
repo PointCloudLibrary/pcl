@@ -210,7 +210,14 @@ pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
     return;
   }
 
-  for (const auto& v : pt.get_child ("boost_serialization.DB.points_"))
+  const auto points_node = pt.get_child_optional ("boost_serialization.DB.points_");
+  if (!points_node)
+  {
+    PCL_ERROR ("[pcl::HDLGrabber::loadCorrectionsFile] Calibration file %s has no boost_serialization.DB.points_ element!\n", correctionsFile.c_str ());
+    return;
+  }
+
+  for (const auto& v : *points_node)
   {
     if (v.first == "item")
     {
@@ -238,7 +245,13 @@ pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
             if (item.first == "horizOffsetCorrection_")
               horiz_offset_correction = atof (item.second.data ().c_str ());
           }
-          if (index != -1)
+          if (index < 0 || index >= HDL_MAX_NUM_LASERS)
+          {
+            if (index != -1)
+              PCL_WARN ("[pcl::HDLGrabber::loadCorrectionsFile] Ignoring correction for laser id %d in %s, valid ids are 0 to %d.\n",
+                        index, correctionsFile.c_str (), HDL_MAX_NUM_LASERS - 1);
+          }
+          else
           {
             laser_corrections_[index].azimuthCorrection = azimuth;
             laser_corrections_[index].verticalCorrection = vert_correction;
@@ -688,6 +701,12 @@ pcl::HDLGrabber::readPacketsFromPcap ()
   std::int8_t errbuff[PCAP_ERRBUF_SIZE];
 
   pcap_t *pcap = pcap_open_offline (pcap_file_name_.c_str (), reinterpret_cast<char *> (errbuff));
+  if (pcap == nullptr)
+  {
+    PCL_ERROR ("[pcl::HDLGrabber::readPacketsFromPcap] Could not open pcap file %s: %s\n",
+               pcap_file_name_.c_str (), reinterpret_cast<char *> (errbuff));
+    return;
+  }
 
   struct bpf_program filter;
   std::ostringstream string_stream;
@@ -703,9 +722,13 @@ pcl::HDLGrabber::readPacketsFromPcap ()
   {
     PCL_WARN ("[pcl::HDLGrabber::readPacketsFromPcap] Issue compiling filter: %s.\n", pcap_geterr (pcap));
   }
-  else if (pcap_setfilter(pcap, &filter) == -1)
+  else
   {
-    PCL_WARN ("[pcl::HDLGrabber::readPacketsFromPcap] Issue setting filter: %s.\n", pcap_geterr (pcap));
+    if (pcap_setfilter(pcap, &filter) == -1)
+    {
+      PCL_WARN ("[pcl::HDLGrabber::readPacketsFromPcap] Issue setting filter: %s.\n", pcap_geterr (pcap));
+    }
+    pcap_freecode (&filter);
   }
 
   struct timeval lasttime;
@@ -734,11 +757,15 @@ pcl::HDLGrabber::readPacketsFromPcap ()
     lasttime.tv_sec = header->ts.tv_sec;
     lasttime.tv_usec = header->ts.tv_usec;
 
-    // The ETHERNET header is 42 bytes long; unnecessary
-    enqueueHDLPacket (data + 42, header->len - 42);
+    // The ETHERNET header is 42 bytes long; unnecessary. Only the first caplen
+    // bytes of the packet are in data, len is its length on the wire.
+    if (header->caplen >= 42)
+      enqueueHDLPacket (data + 42, header->caplen - 42);
 
     returnValue = pcap_next_ex (pcap, &header, &data);
   }
+
+  pcap_close (pcap);
 }
 #endif //#ifdef HAVE_PCAP
 
