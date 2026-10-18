@@ -8,14 +8,18 @@
  */
 
 #include <pcl/test/gtest.h>
+#include <pcl/common/angles.h>
 #include <pcl/io/hdl_grabber.h>
+#include <pcl/io/vlp_grabber.h>
 
-#include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <fstream>
+#include <functional>
+#include <mutex>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -24,6 +28,8 @@
 struct TestableHDLGrabber : public pcl::HDLGrabber
 {
   using HDLGrabber::HDLGrabber;
+  using HDLGrabber::HDLLaserReturn;
+  using HDLGrabber::computeXYZI;
   using HDLGrabber::laser_corrections_;
 
   // Join the reading threads before the members they use are destroyed
@@ -110,6 +116,29 @@ TEST (HDLGrabber, LoadCorrectionsFileWithoutPoints)
   remove (file_name.c_str ());
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (HDLGrabber, ComputeXYZIAzimuthAboveLookupTable)
+{
+  // The azimuth of a firing comes from the packet and can be any 16-bit value.
+  // Without an azimuth correction it is looked up in tables of 0 to 360 degrees:
+  // a larger one must be wrapped, as when it is computed with a correction.
+  TestableHDLGrabber grabber ("", "");
+  const auto& correction = grabber.laser_corrections_[0];
+  ASSERT_EQ (correction.azimuthCorrection, 0.0);
+  const TestableHDLGrabber::HDLLaserReturn laser_return{5000, 100};  // 10 m
+
+  const std::uint16_t azimuths[] = {36001, 45000, 65535};
+  for (const auto azimuth : azimuths)
+  {
+    pcl::PointXYZI point, wrapped_point;
+    grabber.computeXYZI (point, azimuth, laser_return, correction);
+    grabber.computeXYZI (wrapped_point, static_cast<std::uint16_t> (azimuth - 36000), laser_return, correction);
+    EXPECT_EQ (point.x, wrapped_point.x) << "azimuth " << azimuth;
+    EXPECT_EQ (point.y, wrapped_point.y) << "azimuth " << azimuth;
+    EXPECT_EQ (point.z, wrapped_point.z) << "azimuth " << azimuth;
+  }
+}
+
 #ifdef HAVE_PCAP
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -126,35 +155,39 @@ appendUInt32 (std::vector<std::uint8_t>& data, std::uint32_t value)
   appendUInt16 (data, static_cast<std::uint16_t> (value >> 16));
 }
 
-TEST (HDLGrabber, ReadPacketsFromPcapTruncatedPacket)
+// An Ethernet frame with a UDP datagram from the sensor to port 2368 carrying the payload
+std::vector<std::uint8_t>
+velodyneFrame (const std::vector<std::uint8_t>& payload)
 {
-  // A pcap record holds caplen bytes of a packet that was len bytes long on the
-  // wire. Only the captured bytes may be handed on: a packet captured with a
-  // snapshot length shorter than an HDL data packet must be dropped.
-  constexpr std::uint32_t hdl_packet_size = 1206;
-  constexpr std::uint32_t udp_header_size = 8;
-  constexpr std::uint32_t ip_header_size = 20;
-  constexpr std::uint32_t frame_size = 14 + ip_header_size + udp_header_size + hdl_packet_size;
-  constexpr std::uint32_t truncated_size = 90;
+  constexpr std::size_t udp_header_size = 8;
+  constexpr std::size_t ip_header_size = 20;
 
   std::vector<std::uint8_t> frame = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x08, 0x00};  // Ethernet, IPv4
-  const std::uint16_t ip_length = ip_header_size + udp_header_size + hdl_packet_size;
+  const auto ip_length = static_cast<std::uint16_t> (ip_header_size + udp_header_size + payload.size ());
   const std::uint8_t ip_header[] = {
     0x45, 0x00, static_cast<std::uint8_t> (ip_length >> 8), static_cast<std::uint8_t> (ip_length & 0xff),
     0x00, 0x00, 0x00, 0x00, 64, 17, 0x00, 0x00,                                           // UDP
     192, 168, 1, 201, 255, 255, 255, 255};
   frame.insert (frame.end (), ip_header, ip_header + sizeof (ip_header));
-  const std::uint16_t udp_length = udp_header_size + hdl_packet_size;
+  const auto udp_length = static_cast<std::uint16_t> (udp_header_size + payload.size ());
   const std::uint8_t udp_header[] = {
     0x09, 0x40, 0x09, 0x40,                                                               // port 2368
     static_cast<std::uint8_t> (udp_length >> 8), static_cast<std::uint8_t> (udp_length & 0xff), 0x00, 0x00};
   frame.insert (frame.end (), udp_header, udp_header + sizeof (udp_header));
-  frame.resize (frame_size, TestableHDLGrabber::complete_packet_marker);
-  // The captured part of the truncated packet ends in zeros, never in the marker
-  std::vector<std::uint8_t> truncated_frame (frame.begin (), frame.begin () + truncated_size);
-  std::fill (truncated_frame.begin () + 14 + ip_header_size + udp_header_size, truncated_frame.end (), 0);
+  frame.insert (frame.end (), payload.begin (), payload.end ());
+  return frame;
+}
 
+struct PcapRecord
+{
+  std::vector<std::uint8_t> captured;
+  std::uint32_t length;  // on the wire
+};
+
+void
+writePcapFile (const std::string& file_name, const std::vector<PcapRecord>& records)
+{
   std::vector<std::uint8_t> data;
   appendUInt32 (data, 0xa1b2c3d4);  // magic
   appendUInt16 (data, 2);           // version 2.4
@@ -163,20 +196,37 @@ TEST (HDLGrabber, ReadPacketsFromPcapTruncatedPacket)
   appendUInt32 (data, 0);           // timestamp accuracy
   appendUInt32 (data, 65535);       // snapshot length
   appendUInt32 (data, 1);           // Ethernet
-  // The truncated packet first, then a complete one
-  for (const auto& captured : {truncated_frame, frame})
+  for (const auto& record : records)
   {
     appendUInt32 (data, 0);         // timestamp
     appendUInt32 (data, 0);
-    appendUInt32 (data, static_cast<std::uint32_t> (captured.size ()));  // caplen
-    appendUInt32 (data, frame_size);                                    // len
-    data.insert (data.end (), captured.begin (), captured.end ());
+    appendUInt32 (data, static_cast<std::uint32_t> (record.captured.size ()));  // caplen
+    appendUInt32 (data, record.length);                                        // len
+    data.insert (data.end (), record.captured.begin (), record.captured.end ());
   }
 
-  const std::string file_name = "test_hdl_truncated_packet.pcap";
   std::ofstream fs (file_name, std::ios::binary);
   fs.write (reinterpret_cast<const char *> (data.data ()), data.size ());
-  fs.close ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (HDLGrabber, ReadPacketsFromPcapTruncatedPacket)
+{
+  // A pcap record holds caplen bytes of a packet that was len bytes long on the
+  // wire. Only the captured bytes may be handed on: a packet captured with a
+  // snapshot length shorter than an HDL data packet must be dropped.
+  constexpr std::size_t hdl_packet_size = 1206;
+  constexpr std::size_t truncated_size = 90;
+
+  const auto frame = velodyneFrame (std::vector<std::uint8_t> (hdl_packet_size, TestableHDLGrabber::complete_packet_marker));
+  // The captured part of the truncated packet ends in zeros, never in the marker
+  auto truncated_frame = velodyneFrame (std::vector<std::uint8_t> (hdl_packet_size, 0));
+  truncated_frame.resize (truncated_size);
+
+  const std::string file_name = "test_hdl_truncated_packet.pcap";
+  const auto frame_size = static_cast<std::uint32_t> (frame.size ());
+  // The truncated packet first, then a complete one
+  writePcapFile (file_name, {{truncated_frame, frame_size}, {frame, frame_size}});
 
   TestableHDLGrabber grabber ("", file_name);
   grabber.start ();
@@ -187,6 +237,66 @@ TEST (HDLGrabber, ReadPacketsFromPcapTruncatedPacket)
 
   EXPECT_TRUE (grabber.complete_packet_received.load ());
   EXPECT_EQ (grabber.packets_received.load (), 1);
+
+  remove (file_name.c_str ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (VLPGrabber, ToPointCloudsNegativeInterpolatedAzimuth)
+{
+  // Lasers 16 to 31 of a VLP-16 firing fire after lasers 0 to 15, at the azimuth
+  // of the firing plus half the step from firing 0 to firing 1. A firing 0
+  // azimuth above 36000 makes that step negative: the azimuth must still be
+  // wrapped to 0 to 360 degrees. Firing 0 is at 500 degrees, the others at 0, so
+  // laser 16 of firing 1 is at (0 + 360 - 500) / 2 = -70 degrees, or 290 degrees.
+  std::vector<std::uint8_t> packet;
+  for (int firing = 0; firing < 12; ++firing)
+  {
+    appendUInt16 (packet, 0xeeff);                                           // block identifier
+    appendUInt16 (packet, firing == 0 ? 50000 : 0);                          // azimuth
+    for (int laser = 0; laser < 32; ++laser)
+    {
+      appendUInt16 (packet, (firing == 1 && laser == 16) ? 5000 : 0);       // the only return, at 10 m
+      packet.push_back (100);                                                // intensity
+    }
+  }
+  appendUInt32 (packet, 0);  // GPS timestamp
+  packet.push_back (0x37);   // strongest return
+  packet.push_back (0x22);   // VLP-16
+
+  const std::string file_name = "test_vlp_negative_azimuth_step.pcap";
+  const auto frame = velodyneFrame (packet);
+  writePcapFile (file_name, {{frame, static_cast<std::uint32_t> (frame.size ())}});
+
+  // The sweep holding the point ends at firing 2, whose azimuth is lower
+  std::mutex sweep_mutex;
+  pcl::PointCloud<pcl::PointXYZI>::ConstPtr sweep;
+  std::function<pcl::VLPGrabber::sig_cb_velodyne_hdl_sweep_point_cloud_xyzi> sweep_callback =
+    [&] (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr& cloud)
+    {
+      std::lock_guard<std::mutex> lock (sweep_mutex);
+      if (!sweep)
+        sweep = cloud;
+    };
+  const auto sweep_received = [&]
+  {
+    std::lock_guard<std::mutex> lock (sweep_mutex);
+    return static_cast<bool> (sweep);
+  };
+
+  pcl::VLPGrabber grabber (file_name);
+  grabber.registerCallback (sweep_callback);
+  grabber.start ();
+  const auto deadline = std::chrono::steady_clock::now () + std::chrono::seconds (10);
+  while (!sweep_received () && std::chrono::steady_clock::now () < deadline)
+    std::this_thread::sleep_for (std::chrono::milliseconds (10));
+  grabber.stop ();
+
+  std::lock_guard<std::mutex> lock (sweep_mutex);
+  ASSERT_TRUE (sweep);
+  ASSERT_EQ (sweep->size (), 1u);
+  const auto& point = (*sweep)[0];
+  EXPECT_NEAR (pcl::rad2deg (std::atan2 (point.x, point.y)) + 360.0, 290.0, 0.01);
 
   remove (file_name.c_str ());
 }

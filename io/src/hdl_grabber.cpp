@@ -423,6 +423,10 @@ pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& point,
 
   if (correction.azimuthCorrection == 0)
   {
+    // The tables cover 0 to 360 degrees, but the azimuth read from the packet
+    // can be any 16-bit value: reduce it modulo 360 degrees
+    if (azimuth >= HDL_NUM_ROT_ANGLES)
+      azimuth = static_cast<std::uint16_t> (azimuth % 36000);
     cos_azimuth = cos_lookup_table_[azimuth];
     sin_azimuth = sin_lookup_table_[azimuth];
   }
