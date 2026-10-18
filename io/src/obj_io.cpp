@@ -414,7 +414,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       if (line[0] == 'v')
       {
         // Vertex (v)
-        if (line[1] == ' ') {
+        if (line[1] == ' ' || line[1] == '\t') {
           ++nr_point;
           continue;
         }
@@ -589,6 +589,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       // Vertex
       if (st[0] == "v")
       {
+        if (st.size () < 4 || point_idx >= cloud.width)
+        {
+          PCL_ERROR ("[pcl::OBJReader::read] Invalid vertex in line %s\n", line.c_str ());
+          fs.close ();
+          return (-1);
+        }
         try
         {
           for (int i = 1, f = 0; i < 4; ++i, ++f)
@@ -611,6 +617,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       // Vertex normal
       if (st[0] == "vn")
       {
+        if (st.size () < 4)
+        {
+          PCL_ERROR ("[pcl::OBJReader::read] Invalid vertex normal in line %s\n", line.c_str ());
+          fs.close ();
+          return (-1);
+        }
         try
         {
           normals.emplace_back(
@@ -805,6 +817,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       // Vertex
       if (st[0] == "v")
       {
+        if (st.size () < 4 || v_idx >= mesh.cloud.width)
+        {
+          PCL_ERROR ("[pcl::OBJReader::read] Invalid vertex in line %s\n", line.c_str ());
+          fs.close ();
+          return (-1);
+        }
         try
         {
           for (int i = 1, f = 0; i < 4; ++i, ++f)
@@ -826,6 +844,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       // Vertex normal
       if (st[0] == "vn")
       {
+        if (st.size () < 4)
+        {
+          PCL_ERROR ("[pcl::OBJReader::read] Invalid vertex normal in line %s\n", line.c_str ());
+          fs.close ();
+          return (-1);
+        }
         try
         {
           normals.emplace_back(
@@ -848,7 +872,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         try
         {
           Eigen::Vector3f c (0, 0, 0);
-          for (std::size_t i = 1; i < st.size (); ++i)
+          for (std::size_t i = 1; i < st.size () && i < 4; ++i)
             c[i-1] = boost::lexical_cast<float> (st[i]);
           if (c[2] == 0)
             coordinates.emplace_back(c[0], c[1]);
@@ -1071,6 +1095,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       // Vertex
       if (st[0] == "v")
       {
+        if (st.size () < 4 || v_idx >= mesh.cloud.width)
+        {
+          PCL_ERROR ("[pcl::OBJReader::read] Invalid vertex in line %s\n", line.c_str ());
+          fs.close ();
+          return (-1);
+        }
         try
         {
           for (int i = 1, f = 0; i < 4; ++i, ++f)
@@ -1093,6 +1123,12 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       // Vertex normal
       if (st[0] == "vn")
       {
+        if (st.size () < 4)
+        {
+          PCL_ERROR ("[pcl::OBJReader::read] Invalid vertex normal in line %s\n", line.c_str ());
+          fs.close ();
+          return (-1);
+        }
         try
         {
           normals.emplace_back(
