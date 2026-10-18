@@ -41,6 +41,7 @@
 #pragma once
 
 #include <pcl/compression/entropy_range_coder.h>
+#include <pcl/console/print.h>
 #include <iostream>
 #include <vector>
 #include <cstring>
@@ -356,8 +357,8 @@ pcl::StaticRangeCoder::decodeStreamToIntVector (std::istream& inputByteStream_ar
   constexpr std::uint64_t top = static_cast<std::uint64_t>(1) << 56;
   constexpr std::uint64_t bottom = static_cast<std::uint64_t>(1) << 48;
 
-  std::uint64_t frequencyTableSize;
-  unsigned char frequencyTableByteSize;
+  std::uint64_t frequencyTableSize = 0;
+  unsigned char frequencyTableByteSize = 0;
 
   unsigned int outputBufPos = 0;
   std::size_t output_size = outputIntVector_arg.size ();
@@ -367,6 +368,14 @@ pcl::StaticRangeCoder::decodeStreamToIntVector (std::istream& inputByteStream_ar
   inputByteStream_arg.read (reinterpret_cast<char*> (&frequencyTableByteSize), sizeof(frequencyTableByteSize));
 
   unsigned long streamByteCount = sizeof(frequencyTableSize) + sizeof(frequencyTableByteSize);
+
+  // the encoder writes at least two table entries, each with 1 to sizeof(std::uint64_t) bytes
+  if ((frequencyTableSize < 2) || (frequencyTableByteSize == 0) ||
+      (frequencyTableByteSize > sizeof (std::uint64_t)))
+  {
+    PCL_ERROR ("[pcl::StaticRangeCoder::decodeStreamToIntVector] Invalid frequency table header in input stream!\n");
+    return (streamByteCount);
+  }
 
   // check size of frequency table vector
   if (cFreqTable_.size () < frequencyTableSize)
@@ -382,6 +391,13 @@ pcl::StaticRangeCoder::decodeStreamToIntVector (std::istream& inputByteStream_ar
   {
     inputByteStream_arg.read (reinterpret_cast<char *> (&cFreqTable_[f]), frequencyTableByteSize);
     streamByteCount += frequencyTableByteSize;
+
+    // a cumulative frequency table is strictly increasing and the encoder keeps it below the minimum range
+    if ((cFreqTable_[f] <= cFreqTable_[f - 1]) || (cFreqTable_[f] >= bottom))
+    {
+      PCL_ERROR ("[pcl::StaticRangeCoder::decodeStreamToIntVector] Invalid frequency table in input stream!\n");
+      return (streamByteCount);
+    }
   }
 
   // initialize range & code
