@@ -38,6 +38,8 @@
  *
  */
 
+#include <functional> // for std::function
+
 #include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
@@ -52,9 +54,11 @@
 #include <pcl/filters/voxel_grid_covariance.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/project_inliers.h>
+#include <pcl/filters/random_sample.h>
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/conditional_removal.h>
+#include <pcl/filters/crop_box.h>
 #include <pcl/filters/median_filter.h>
 #include <pcl/filters/normal_refinement.h>
 #include <pcl/search/kdtree.h> // for KdTree
@@ -2620,6 +2624,333 @@ TEST(RadiusOutlierRemovalPCLPointCloud2, Filters)
     EXPECT_NEAR(pc_out[0].y, 0.f, 1e-4f);
     EXPECT_NEAR(pc_out[0].z, 0.f, 1e-4f);
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// A cloud of nr_points points whose fields are packed one after the other, in the given order.
+// Field f of point i holds value (i, f), converted to the datatype of the field.
+PCLPointCloud2::Ptr
+makeFieldLayoutCloud (const std::vector<std::pair<std::string, std::uint8_t>>& fields, uindex_t nr_points,
+                      const std::function<double (uindex_t, std::size_t)>& value =
+                        [] (uindex_t i, std::size_t) { return static_cast<double> (i); })
+{
+  PCLPointCloud2::Ptr cloud (new PCLPointCloud2);
+  cloud->fields.reserve (fields.size ());
+  uindex_t offset = 0;
+  for (const auto& name_type : fields)
+  {
+    PCLPointField field;
+    field.name = name_type.first;
+    field.datatype = name_type.second;
+    field.count = 1;
+    field.offset = offset;
+    offset += getFieldSize (field.datatype);
+    cloud->fields.push_back (field);
+  }
+  cloud->point_step = offset;
+  cloud->width = nr_points;
+  cloud->height = 1;
+  cloud->row_step = cloud->point_step * cloud->width;
+  cloud->data.resize (cloud->row_step);
+  for (uindex_t i = 0; i < nr_points; ++i)
+    for (std::size_t f = 0; f < fields.size (); ++f)
+    {
+      auto* dst = &cloud->data[i * cloud->point_step + cloud->fields[f].offset];
+      const double v = value (i, f);
+      switch (cloud->fields[f].datatype)
+      {
+        case PCLPointField::UINT8: { const auto t = static_cast<std::uint8_t> (v); memcpy (dst, &t, sizeof (t)); break; }
+        case PCLPointField::INT16: { const auto t = static_cast<std::int16_t> (v); memcpy (dst, &t, sizeof (t)); break; }
+        case PCLPointField::FLOAT32: { const auto t = static_cast<float> (v); memcpy (dst, &t, sizeof (t)); break; }
+        case PCLPointField::FLOAT64: { memcpy (dst, &v, sizeof (v)); break; }
+        default: break;
+      }
+    }
+  return (cloud);
+}
+
+float
+getFloatField (const PCLPointCloud2& cloud, uindex_t point, const std::string& name)
+{
+  const auto& field = cloud.fields[getFieldIndex (cloud, name)];
+  float value;
+  memcpy (&value, &cloud.data[point * cloud.point_step + field.offset], sizeof (float));
+  return (value);
+}
+
+const std::vector<std::pair<std::string, std::uint8_t>> xyz_float32 {
+  {"x", PCLPointField::FLOAT32}, {"y", PCLPointField::FLOAT32}, {"z", PCLPointField::FLOAT32}};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (VoxelGrid, FieldLayoutXYZNotFloat32)
+{
+  for (const std::uint8_t datatype : {PCLPointField::UINT8, PCLPointField::FLOAT64})
+  {
+    const auto input = makeFieldLayoutCloud ({{"x", datatype}, {"y", datatype}, {"z", datatype}}, 10);
+    VoxelGrid<PCLPointCloud2> grid;
+    grid.setInputCloud (input);
+    grid.setLeafSize (1.0f, 1.0f, 1.0f);
+    PCLPointCloud2 output;
+    grid.filter (output);
+    EXPECT_EQ (output.width * output.height, 0);
+    EXPECT_TRUE (output.data.empty ());
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (VoxelGrid, FieldLayoutFilterField)
+{
+  // The filter field is missing
+  const auto input = makeFieldLayoutCloud (xyz_float32, 10);
+  VoxelGrid<PCLPointCloud2> grid;
+  grid.setInputCloud (input);
+  grid.setLeafSize (1.0f, 1.0f, 1.0f);
+  grid.setFilterFieldName ("intensity");
+  grid.setFilterLimits (0.0, 5.0);
+  PCLPointCloud2 output;
+  grid.filter (output);
+  EXPECT_EQ (output.width * output.height, 0);
+  EXPECT_TRUE (output.data.empty ());
+
+  // The filter field has no values (COUNT 0 in a PCD file) and ends the point
+  auto fields = xyz_float32;
+  fields.emplace_back ("intensity", PCLPointField::FLOAT32);
+  const auto input_count0 = makeFieldLayoutCloud (fields, 10);
+  input_count0->fields.back ().count = 0;
+  input_count0->point_step = 12;
+  input_count0->row_step = input_count0->point_step * input_count0->width;
+  input_count0->data.resize (input_count0->row_step);
+  input_count0->data.shrink_to_fit ();
+  grid.setInputCloud (input_count0);
+  grid.filter (output);
+  EXPECT_EQ (output.width * output.height, 0);
+  EXPECT_TRUE (output.data.empty ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PassThrough, FieldLayoutXYZNotFloat32)
+{
+  const auto input = makeFieldLayoutCloud ({{"x", PCLPointField::UINT8}, {"y", PCLPointField::UINT8}, {"z", PCLPointField::UINT8}}, 10);
+  PassThrough<PCLPointCloud2> pass;
+  pass.setInputCloud (input);
+  PCLPointCloud2 output;
+  pass.filter (output);
+  EXPECT_EQ (output.width * output.height, 0);
+  EXPECT_TRUE (output.data.empty ());
+
+  Indices indices;
+  pass.filter (indices);
+  EXPECT_TRUE (indices.empty ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PassThrough, FieldLayoutFilterFieldNotFloat32)
+{
+  auto fields = xyz_float32;
+  fields.emplace_back ("intensity", PCLPointField::UINT8);
+  const auto input = makeFieldLayoutCloud (fields, 1);
+  PassThrough<PCLPointCloud2> pass;
+  pass.setInputCloud (input);
+  pass.setFilterFieldName ("intensity");
+  pass.setFilterLimits (-1.0, 1.0);
+  Indices indices;
+  pass.filter (indices);
+  EXPECT_TRUE (indices.empty ());
+
+  // A FLOAT32 filter field with no values (COUNT 0 in a PCD file) that ends the point
+  fields.back ().second = PCLPointField::FLOAT32;
+  const auto input_count0 = makeFieldLayoutCloud (fields, 1);
+  input_count0->fields.back ().count = 0;
+  input_count0->point_step = input_count0->row_step = 12;
+  input_count0->data.resize (12);
+  input_count0->data.shrink_to_fit ();
+  pass.setInputCloud (input_count0);
+  pass.filter (indices);
+  EXPECT_TRUE (indices.empty ());
+  PCLPointCloud2 output;
+  pass.filter (output);
+  EXPECT_EQ (output.width * output.height, 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (CropBox, FieldLayoutMissingX)
+{
+  const auto input = makeFieldLayoutCloud ({{"y", PCLPointField::FLOAT32}, {"z", PCLPointField::FLOAT32}}, 10);
+  CropBox<PCLPointCloud2> crop;
+  crop.setInputCloud (input);
+  crop.setMin (Eigen::Vector4f (-1.0f, -1.0f, -1.0f, 1.0f));
+  crop.setMax (Eigen::Vector4f (20.0f, 20.0f, 20.0f, 1.0f));
+  PCLPointCloud2 output;
+  crop.filter (output);
+  EXPECT_EQ (output.width * output.height, 0);
+  EXPECT_TRUE (output.data.empty ());
+
+  Indices indices;
+  crop.filter (indices);
+  EXPECT_TRUE (indices.empty ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (CropBox, FieldLayoutXYZNotContiguous)
+{
+  // y and z do not follow x: intensity lies between them. Point 2 lies outside the box,
+  // the intensity of every other point does too.
+  const auto input = makeFieldLayoutCloud (
+      {{"x", PCLPointField::FLOAT32}, {"intensity", PCLPointField::FLOAT32},
+       {"y", PCLPointField::FLOAT32}, {"z", PCLPointField::FLOAT32}}, 3,
+      [] (uindex_t i, std::size_t f) { return (f == 1) == (i == 2) ? 0.5 : 5.0; });
+  CropBox<PCLPointCloud2> crop;
+  crop.setInputCloud (input);
+  crop.setMin (Eigen::Vector4f (-1.0f, -1.0f, -1.0f, 1.0f));
+  crop.setMax (Eigen::Vector4f (1.0f, 1.0f, 1.0f, 1.0f));
+  Indices indices;
+  crop.filter (indices);
+  EXPECT_EQ (indices, Indices ({0, 1}));
+
+  crop.setKeepOrganized (true);
+  PCLPointCloud2 output;
+  crop.filter (output);
+  ASSERT_EQ (output.width * output.height, 3);
+  for (const auto& name : {"x", "y", "z"})
+  {
+    EXPECT_EQ (getFloatField (output, 0, name), 0.5f);
+    EXPECT_TRUE (std::isnan (getFloatField (output, 2, name)));
+  }
+  EXPECT_EQ (getFloatField (output, 0, "intensity"), 5.0f);
+  EXPECT_EQ (getFloatField (output, 2, "intensity"), 0.5f);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (ExtractIndices, FieldLayoutKeepOrganizedSmallField)
+{
+  // A one byte field cannot hold the user filter value: it is left as it is
+  auto fields = xyz_float32;
+  fields.emplace_back ("flag", PCLPointField::UINT8);
+  const auto input = makeFieldLayoutCloud (fields, 3, [] (uindex_t i, std::size_t) { return i + 1.0; });
+  for (const bool negative : {false, true})
+  {
+    ExtractIndices<PCLPointCloud2> extract;
+    extract.setInputCloud (input);
+    extract.setIndices (IndicesPtr (new Indices ({0})));
+    extract.setNegative (negative);
+    extract.setKeepOrganized (true);
+    PCLPointCloud2 output;
+    extract.filter (output);
+    ASSERT_EQ (output.data.size (), input->data.size ());
+    for (uindex_t i = 0; i < 3; ++i)
+    {
+      const bool removed = (i == 0) == negative;
+      for (const auto& name : {"x", "y", "z"})
+        EXPECT_EQ (std::isnan (getFloatField (output, i, name)), removed);
+      EXPECT_EQ (output.data[i * output.point_step + output.fields[3].offset], i + 1);
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (RadiusOutlierRemoval, FieldLayoutKeepOrganizedXYZOffsets)
+{
+  // x, y and z do not start the point; point 5 is the outlier
+  const auto input = makeFieldLayoutCloud (
+      {{"intensity", PCLPointField::FLOAT32}, {"x", PCLPointField::FLOAT32},
+       {"y", PCLPointField::FLOAT32}, {"z", PCLPointField::FLOAT32}}, 6,
+      [] (uindex_t i, std::size_t) { return i < 5 ? 0.1 * i : 10.0; });
+  RadiusOutlierRemoval<PCLPointCloud2> outrem;
+  outrem.setInputCloud (input);
+  outrem.setRadiusSearch (0.5);
+  outrem.setMinNeighborsInRadius (2);
+  outrem.setKeepOrganized (true);
+  PCLPointCloud2 output;
+  outrem.filter (output);
+  ASSERT_EQ (output.width * output.height, 6);
+  for (const auto& name : {"x", "y", "z"})
+  {
+    EXPECT_NEAR (getFloatField (output, 4, name), 0.4f, 1e-6f);
+    EXPECT_TRUE (std::isnan (getFloatField (output, 5, name)));
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (StatisticalOutlierRemoval, FieldLayoutKeepOrganizedXYZOffsets)
+{
+  // x, y and z do not start the point; point 5 is the outlier
+  const auto input = makeFieldLayoutCloud (
+      {{"intensity", PCLPointField::FLOAT32}, {"x", PCLPointField::FLOAT32},
+       {"y", PCLPointField::FLOAT32}, {"z", PCLPointField::FLOAT32}}, 6,
+      [] (uindex_t i, std::size_t) { return i < 5 ? 0.1 * i : 10.0; });
+  StatisticalOutlierRemoval<PCLPointCloud2> outrem;
+  outrem.setInputCloud (input);
+  outrem.setMeanK (2);
+  outrem.setStddevMulThresh (1.0);
+  outrem.setKeepOrganized (true);
+  PCLPointCloud2 output;
+  outrem.filter (output);
+  ASSERT_EQ (output.width * output.height, 6);
+  for (const auto& name : {"x", "y", "z"})
+  {
+    EXPECT_NEAR (getFloatField (output, 4, name), 0.4f, 1e-6f);
+    EXPECT_TRUE (std::isnan (getFloatField (output, 5, name)));
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (RandomSample, FieldLayoutKeepOrganizedXYZNotFloat32)
+{
+  // One byte x, y and z fields cannot hold the user filter value: they are left as they are
+  const auto input = makeFieldLayoutCloud ({{"x", PCLPointField::UINT8}, {"y", PCLPointField::UINT8}, {"z", PCLPointField::UINT8}}, 10);
+  RandomSample<PCLPointCloud2> sample;
+  sample.setInputCloud (input);
+  sample.setSample (1);
+  sample.setKeepOrganized (true);
+  PCLPointCloud2 output;
+  sample.filter (output);
+  EXPECT_EQ (output.data, input->data);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (ProjectInliers, FieldLayoutXYZNotFloat32)
+{
+  const auto input = makeFieldLayoutCloud ({{"x", PCLPointField::UINT8}, {"y", PCLPointField::UINT8}, {"z", PCLPointField::UINT8}}, 10);
+  ModelCoefficients::Ptr coefficients (new ModelCoefficients);
+  coefficients->values = {0.0f, 0.0f, 1.0f, 0.0f};
+  ProjectInliers<PCLPointCloud2> proj;
+  proj.setModelType (SACMODEL_PLANE);
+  proj.setModelCoefficients (coefficients);
+  proj.setCopyAllData (true);
+  proj.setInputCloud (input);
+  PCLPointCloud2 output;
+  proj.filter (output);
+  EXPECT_EQ (output.width * output.height, 0);
+  EXPECT_TRUE (output.data.empty ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCLBase, FieldLayoutSetInputCloudResetsXYZ)
+{
+  // The z field of the first cloud must not be used for the second one, which has none
+  PassThrough<PCLPointCloud2> pass;
+  pass.setInputCloud (makeFieldLayoutCloud (xyz_float32, 3));
+  PCLPointCloud2 output;
+  pass.filter (output);
+  EXPECT_EQ (output.width * output.height, 3);
+
+  pass.setInputCloud (makeFieldLayoutCloud ({{"x", PCLPointField::FLOAT32}, {"y", PCLPointField::FLOAT32}}, 3));
+  pass.filter (output);
+  EXPECT_EQ (output.width * output.height, 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCLBase, FieldLayoutDataSmallerThanPoints)
+{
+  const auto input = makeFieldLayoutCloud (xyz_float32, 10);
+  input->data.resize (5 * input->point_step);
+  VoxelGrid<PCLPointCloud2> grid;
+  grid.setInputCloud (input);
+  grid.setLeafSize (1.0f, 1.0f, 1.0f);
+  PCLPointCloud2 output;
+  grid.filter (output);
+  EXPECT_EQ (output.width * output.height, 0);
+  EXPECT_TRUE (output.data.empty ());
 }
 
 /* ---[ */
