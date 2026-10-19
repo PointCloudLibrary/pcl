@@ -119,9 +119,8 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
       if (keep_organized_)
       {
           /* Set the current point to the user filter value. */
-          *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step])+0) = user_filter_value_;
-          *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step])+1) = user_filter_value_;
-          *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step])+2) = user_filter_value_;
+          for (const auto field_idx : {x_idx_, y_idx_, z_idx_})
+            memcpy (&output.data[nr_p * output.point_step + input_->fields[field_idx].offset], &user_filter_value_, sizeof (float));
           nr_p++;
           output.is_dense = false;
       }
