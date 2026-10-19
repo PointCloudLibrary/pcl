@@ -37,7 +37,10 @@
 
 #pragma once
 
+#include <pcl/console/print.h>
+
 #include <iostream>
+#include <iterator>
 #include <vector>
 
 namespace pcl
@@ -279,6 +282,16 @@ public:
 
     // amount of points to be decoded
     const index_t pointCount = endIdx_arg - beginIdx_arg;
+
+    // each voxel is encoded by three bytes of averaged color information and,
+    // if it holds more than one point, three bytes of differential color information per point
+    if ((std::distance (pointAvgColorDataVector_Iterator_, pointAvgColorDataVector_.cend ()) < 3) ||
+        ((pointCount > 1) &&
+         (std::distance (pointDiffColorDataVector_Iterator_, pointDiffColorDataVector_.cend ()) / 3 < pointCount)))
+    {
+      PCL_ERROR ("[pcl::octree::ColorCoding::decodePoints] Not enough color information in input stream!\n");
+      return;
+    }
 
     // get averaged color information for current voxel
     unsigned char avgRed = *(pointAvgColorDataVector_Iterator_++);

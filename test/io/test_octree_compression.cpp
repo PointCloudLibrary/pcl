@@ -36,6 +36,7 @@
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/common/io.h> // for getFieldIndex
 #include <pcl/io/pcd_io.h>
 #include <pcl/compression/octree_pointcloud_compression.h>
 #include <pcl/compression/compression_profiles.h>
@@ -191,6 +192,106 @@ TEST(PCL, OctreeDeCompressionFile)
       total_runs++;
     }
   }
+}
+
+TEST (PCL, PointCoding_decodePoints_Not_Enough_Data)
+{
+  pcl::octree::PointCoding<pcl::PointXYZ> point_coder;
+  // differential information of a single point
+  point_coder.getDifferentialDataVector () = {1, 2, 3};
+  point_coder.initializeDecoding ();
+
+  const pcl::PointXYZ initial_point (-1.0f, -1.0f, -1.0f);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> (2, 1, initial_point));
+  const double reference_point[3] = {0.0, 0.0, 0.0};
+
+  // two points need more differential information than there is: no point is decoded
+  point_coder.decodePoints (cloud, reference_point, 0, 2);
+  for (const auto& point : *cloud)
+  {
+    EXPECT_EQ (point.x, initial_point.x);
+    EXPECT_EQ (point.y, initial_point.y);
+    EXPECT_EQ (point.z, initial_point.z);
+  }
+
+  // a single point is decoded from the information left untouched by the call above
+  point_coder.decodePoints (cloud, reference_point, 0, 1);
+  EXPECT_FLOAT_EQ ((*cloud)[0].x, 1.5f * point_coder.getPrecision ());
+  EXPECT_FLOAT_EQ ((*cloud)[0].y, 2.5f * point_coder.getPrecision ());
+  EXPECT_FLOAT_EQ ((*cloud)[0].z, 3.5f * point_coder.getPrecision ());
+  EXPECT_EQ ((*cloud)[1].x, initial_point.x);
+}
+
+TEST (PCL, ColorCoding_decodePoints_Not_Enough_Data)
+{
+  std::vector<pcl::PCLPointField> fields;
+  const int rgba_index = pcl::getFieldIndex<pcl::PointXYZRGBA> ("rgba", fields);
+  ASSERT_GE (rgba_index, 0);
+  const auto rgba_offset = static_cast<unsigned char> (fields[rgba_index].offset);
+
+  pcl::octree::ColorCoding<pcl::PointXYZRGBA> color_coder;
+  // averaged color of one voxel and differential color of a single point
+  color_coder.getAverageDataVector () = {10, 20, 30};
+  color_coder.getDifferentialDataVector () = {1, 2, 3};
+  color_coder.initializeDecoding ();
+
+  const pcl::PointXYZRGBA initial_point (0.0f, 0.0f, 0.0f, 255, 255, 255, 255);
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA> (2, 1, initial_point));
+
+  // a voxel with two points needs differential color information for both: no color is decoded
+  color_coder.decodePoints (cloud, 0, 2, rgba_offset);
+  for (const auto& point : *cloud)
+    EXPECT_EQ (point.rgba, initial_point.rgba);
+
+  // a voxel with a single point only needs the averaged color
+  color_coder.decodePoints (cloud, 0, 1, rgba_offset);
+  EXPECT_EQ ((*cloud)[0].rgba, 10u | (20u << 8) | (30u << 16));
+
+  // there is no averaged color for a further voxel
+  color_coder.decodePoints (cloud, 1, 2, rgba_offset);
+  EXPECT_EQ ((*cloud)[1].rgba, initial_point.rgba);
+}
+
+// Encoder that leaves out the point count of the first leaf, so that the stream holds
+// one point count less than the octree has leaves.
+class MissingPointCountEncoder : public pcl::io::OctreePointCloudCompression<pcl::PointXYZ>
+{
+  public:
+    MissingPointCountEncoder ()
+    : pcl::io::OctreePointCloudCompression<pcl::PointXYZ> (pcl::io::MANUAL_CONFIGURATION, false, 0.001, 0.01, false, 30, false)
+    {}
+
+  protected:
+    void
+    serializeTreeCallback (pcl::octree::OctreeContainerPointIndices& leaf_arg, const pcl::octree::OctreeKey& key_arg) override
+    {
+      pcl::io::OctreePointCloudCompression<pcl::PointXYZ>::serializeTreeCallback (leaf_arg, key_arg);
+      if (first_leaf_)
+      {
+        point_count_data_vector_.pop_back ();
+        first_leaf_ = false;
+      }
+    }
+
+    bool first_leaf_ = true;
+};
+
+TEST (PCL, OctreeDeCompression_deserializeTreeCallback_Missing_Point_Count)
+{
+  // one point in each of ten leaves
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  for (int i = 0; i < 10; ++i)
+    cloud->push_back (pcl::PointXYZ (0.1f * static_cast<float> (i), 0.0f, 0.0f));
+
+  MissingPointCountEncoder pointcloud_encoder;
+  std::stringstream compressed_data;
+  pointcloud_encoder.encodePointCloud (cloud, compressed_data);
+
+  // the point counts run out at the last leaf, which is not decoded
+  pcl::io::OctreePointCloudCompression<pcl::PointXYZ> pointcloud_decoder;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ>);
+  pointcloud_decoder.decodePointCloud (compressed_data, cloud_out);
+  EXPECT_EQ (cloud_out->size (), cloud->size () - 1);
 }
 
 /* ---[ */
