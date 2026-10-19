@@ -43,6 +43,7 @@
 #include <pcl/compression/impl/entropy_range_coder.hpp>
 
 #include <pcl/test/gtest.h>
+#include <cstdint>
 #include <vector>
 #include <sstream>
 
@@ -97,7 +98,7 @@ TEST (PCL, Adaptive_Range_Coder_Test)
 TEST (PCL, Static_Range_Coder_Test)
 {
   // Run test for different vector sizes
-  for (unsigned int vectorSize: { 253, 10000 })
+  for (unsigned int vectorSize: { 0, 1, 253, 10000 })
   {
     std::stringstream sstream;
     std::vector<char> inputCharData;
@@ -163,6 +164,56 @@ TEST (PCL, Static_Range_Coder_Test)
     {
       EXPECT_EQ (inputIntData[i], outputIntData[i]);
     }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, Static_Range_Coder_decodeStreamToIntVector_Invalid_Frequency_Table)
+{
+  constexpr unsigned long headerByteLen = sizeof (std::uint64_t) + sizeof (unsigned char);
+
+  // write a frequency table header and entries, followed by enough data for the decoder to never run out of input
+  const auto createStream = [] (std::uint64_t frequencyTableSize, unsigned char frequencyTableByteSize,
+                                const std::vector<char>& frequencyTable)
+  {
+    std::stringstream sstream;
+    sstream.write (reinterpret_cast<const char*> (&frequencyTableSize), sizeof (frequencyTableSize));
+    sstream.write (reinterpret_cast<const char*> (&frequencyTableByteSize), sizeof (frequencyTableByteSize));
+    sstream.write (frequencyTable.data (), frequencyTable.size ());
+    const std::vector<char> data (frequencyTableSize * frequencyTableByteSize + 64, 1);
+    sstream.write (data.data (), data.size ());
+    return sstream;
+  };
+
+  pcl::StaticRangeCoder rangeCoder;
+  std::vector<unsigned int> outputIntData (16, 7);
+
+  // more bytes per table entry than an entry has, for a table much larger than the preallocated one
+  std::stringstream sstream = createStream (1 << 18, static_cast<unsigned char> (sizeof (std::uint64_t) + 1), {});
+  EXPECT_EQ (headerByteLen, rangeCoder.decodeStreamToIntVector (sstream, outputIntData));
+
+  // no bytes per table entry
+  sstream = createStream (2, 0, {});
+  EXPECT_EQ (headerByteLen, rangeCoder.decodeStreamToIntVector (sstream, outputIntData));
+
+  // less than two table entries
+  sstream = createStream (0, 1, {});
+  EXPECT_EQ (headerByteLen, rangeCoder.decodeStreamToIntVector (sstream, outputIntData));
+  sstream = createStream (1, 1, {});
+  EXPECT_EQ (headerByteLen, rangeCoder.decodeStreamToIntVector (sstream, outputIntData));
+
+  // table that is not strictly increasing
+  sstream = createStream (3, 1, {2, 1});
+  EXPECT_EQ (headerByteLen + 2, rangeCoder.decodeStreamToIntVector (sstream, outputIntData));
+
+  // table with a total the encoder never writes (1 << 48)
+  sstream = createStream (2, 7, {0, 0, 0, 0, 0, 0, 1});
+  EXPECT_EQ (headerByteLen + 7, rangeCoder.decodeStreamToIntVector (sstream, outputIntData));
+
+  // nothing is decoded from an invalid stream
+  for (const auto& value : outputIntData)
+  {
+    EXPECT_EQ (7u, value);
   }
 }
 

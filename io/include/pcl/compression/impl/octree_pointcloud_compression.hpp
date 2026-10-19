@@ -40,6 +40,7 @@
 
 #include <pcl/common/io.h> // for getFieldIndex
 #include <pcl/compression/entropy_range_coder.h>
+#include <pcl/console/print.h>
 
 #include <iostream>
 #include <vector>
@@ -311,8 +312,8 @@ namespace pcl
     template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
     OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::entropyDecoding (std::istream& compressed_tree_data_in_arg)
     {
-      std::uint64_t binary_tree_data_vector_size;
-      std::uint64_t point_avg_color_data_vector_size;
+      std::uint64_t binary_tree_data_vector_size = 0;
+      std::uint64_t point_avg_color_data_vector_size = 0;
 
       compressed_point_data_len_ = 0;
       compressed_color_data_len_ = 0;
@@ -335,9 +336,9 @@ namespace pcl
 
       if (!do_voxel_grid_enDecoding_)
       {
-        std::uint64_t point_count_data_vector_size;
-        std::uint64_t point_diff_data_vector_size;
-        std::uint64_t point_diff_color_data_vector_size;
+        std::uint64_t point_count_data_vector_size = 0;
+        std::uint64_t point_diff_data_vector_size = 0;
+        std::uint64_t point_diff_color_data_vector_size = 0;
 
         // decode amount of points per voxel
         compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&point_count_data_vector_size), sizeof (point_count_data_vector_size));
@@ -515,6 +516,13 @@ namespace pcl
       {
         // get current cloud size
         const auto cloudSize = output_->size ();
+
+        // the stream holds the amount of points of each voxel
+        if (point_count_data_vector_iterator_ == point_count_data_vector_.cend ())
+        {
+          PCL_ERROR ("[pcl::io::OctreePointCloudCompression::deserializeTreeCallback] No point count for voxel in input stream!\n");
+          return;
+        }
 
         // get amount of point to be decoded
         pointCount = *point_count_data_vector_iterator_;

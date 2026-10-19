@@ -37,8 +37,11 @@
 
 #pragma once
 
+#include <pcl/console/print.h>
+
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <vector>
 
 namespace pcl
@@ -156,6 +159,13 @@ class PointCoding
       assert (beginIdx_arg <= endIdx_arg);
 
       const uindex_t pointCount = endIdx_arg - beginIdx_arg;
+
+      // each point is encoded by three bytes of differential point information
+      if (static_cast<std::size_t> (std::distance (pointDiffDataVectorIterator_, pointDiffDataVector_.cend ())) / 3 < pointCount)
+      {
+        PCL_ERROR ("[pcl::octree::PointCoding::decodePoints] Not enough differential point information in input stream!\n");
+        return;
+      }
 
       // iterate over points within current voxel
       for (uindex_t i = 0; i < pointCount; i++)
