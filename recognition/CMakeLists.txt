@@ -5,7 +5,7 @@ set(SUBSYS_DEPS common io search octree features filters registration sample_con
 set(DEFAULT ON)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS kdtree)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 

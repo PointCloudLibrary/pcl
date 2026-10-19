@@ -3,7 +3,7 @@ set(SUBSYS_DESC "Point cloud filters library")
 set(SUBSYS_DEPS common sample_consensus search octree)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP kdtree)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
