@@ -573,11 +573,15 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     memcpy (&uncompressed_size, &map[data_idx + 4], 4);
     PCL_DEBUG ("[pcl::PCDReader::read] Read a binary compressed file with %u bytes compressed and %u original.\n", compressed_size, uncompressed_size);
 
+    // The unpack loop below assumes the decompressed data holds exactly
+    // width * height points, which is what cloud.data was sized to from the
+    // header. A smaller uncompressed_size would make the planar pointers run
+    // past the decompressed buffer, so treat any mismatch as a corrupted file.
     if (uncompressed_size != cloud.data.size ())
     {
-      PCL_WARN ("[pcl::PCDReader::read] The estimated cloud.data size (%u) is different than the saved uncompressed value (%u)! Data corruption?\n", 
-                cloud.data.size (), uncompressed_size);
-      cloud.data.resize (uncompressed_size);
+      PCL_ERROR ("[pcl::PCDReader::read] The estimated cloud.data size (%zu) is different than the saved uncompressed value (%u)! Data corruption?\n",
+                 cloud.data.size (), uncompressed_size);
+      return (-1);
     }
 
     auto data_size = static_cast<unsigned int> (cloud.data.size ());
@@ -610,19 +614,6 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     }
     fields.resize (nri);
     fields_sizes.resize (nri);
-
-    // The unpack loop below reads fsize * width * height bytes from buf and writes
-    // the same number of bytes into cloud.data, both sized from the file-supplied
-    // uncompressed_size. A file that advertises a smaller size makes the planar
-    // pointers run past buf and the copy run past cloud.data, so reject any size
-    // that does not match the geometry before touching either buffer.
-    const std::size_t expected_size = static_cast<std::size_t> (fsize) * cloud.width * cloud.height;
-    if (static_cast<std::size_t> (uncompressed_size) != expected_size)
-    {
-      PCL_ERROR ("[pcl::PCDReader::read] Uncompressed data size (%u) does not match the expected size from the header fields (%zu)!\n",
-                 uncompressed_size, expected_size);
-      return (-1);
-    }
 
     // Unpack the xxyyzz to xyz
     std::vector<char*> pters (fields.size ());
