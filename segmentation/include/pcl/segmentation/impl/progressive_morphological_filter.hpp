@@ -84,7 +84,9 @@ pcl::ProgressiveMorphologicalFilter<PointT>::extract (Indices& ground)
     if (iteration == 0)
       height_threshold = initial_distance_;
     else
-      height_threshold = slope_ * (window_size - window_sizes[iteration-1]) * cell_size_ + initial_distance_;
+      // Exact PMF window sizes are already in input coordinate units.
+      height_threshold =
+          slope_ * (window_size - window_sizes[iteration - 1]) + initial_distance_;
 
     // Enforce max distance on height threshold
     if (height_threshold > max_distance_)
