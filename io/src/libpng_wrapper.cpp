@@ -36,6 +36,7 @@
  */
 
 #include <pcl/compression/libpng_wrapper.h>
+#include <pcl/console/print.h>
 
 #include <png.h>
 #include <zlib.h>
@@ -86,6 +87,22 @@ namespace
   user_flush_data (png_structp)
   {
   }
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  void
+  user_error_fn (png_structp png_ptr, png_const_charp error_msg)
+  {
+    PCL_ERROR ("[pcl::io::libpng_wrapper] %s\n", error_msg);
+    // Return to the caller's setjmp, libpng's default handler would print the message again
+    png_longjmp (png_ptr, 1);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  void
+  user_warning_fn (png_structp, png_const_charp warning_msg)
+  {
+    PCL_WARN ("[pcl::io::libpng_wrapper] %s\n", warning_msg);
+  }
 }
 
 namespace pcl
@@ -132,12 +149,24 @@ namespace pcl
       assert (image_arg.size () == width_arg*height_arg*channels);
 
       // Initialize write structure
-      png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-      assert (png_ptr && "creating png_create_write_structpng_create_write_struct failed");
+      png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, nullptr,
+                                         user_error_fn, user_warning_fn);
+      if (!png_ptr)
+      {
+        PCL_ERROR ("[pcl::io::libpng_wrapper] Could not create the PNG write struct\n");
+        pngData_arg.clear ();
+        return;
+      }
 
       // Initialize info structure
       info_ptr = png_create_info_struct (png_ptr);
-      assert (info_ptr && "Could not allocate info struct");
+      if (!info_ptr)
+      {
+        PCL_ERROR ("[pcl::io::libpng_wrapper] Could not allocate the PNG info struct\n");
+        png_destroy_write_struct (&png_ptr, nullptr);
+        pngData_arg.clear ();
+        return;
+      }
 
       // Setup Exception handling
       if (setjmp (png_jmpbuf (png_ptr)))
@@ -206,12 +235,32 @@ namespace pcl
       if (pngData_arg.empty ())
         return;
 
-      png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-      assert (png_ptr && "creating png_create_write_structpng_create_write_struct failed");
+      const auto clear_outputs = [&] ()
+      {
+        imageData_arg.clear ();
+        width_arg = 0;
+        height_arg = 0;
+        channels_arg = 0;
+      };
+
+      png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, nullptr,
+                                        user_error_fn, user_warning_fn);
+      if (!png_ptr)
+      {
+        PCL_ERROR ("[pcl::io::libpng_wrapper] Could not create the PNG read struct\n");
+        clear_outputs ();
+        return;
+      }
 
       // Initialize info structure
       info_ptr = png_create_info_struct (png_ptr);
-      assert(info_ptr && "Could not allocate info struct");
+      if (!info_ptr)
+      {
+        PCL_ERROR ("[pcl::io::libpng_wrapper] Could not allocate the PNG info struct\n");
+        png_destroy_read_struct (&png_ptr, nullptr, nullptr);
+        clear_outputs ();
+        return;
+      }
 
       // Setup Exception handling
       if (setjmp (png_jmpbuf (png_ptr)))
@@ -219,10 +268,7 @@ namespace pcl
         // libpng reported an error, e.g. truncated or corrupt PNG data
         png_destroy_read_struct (&png_ptr, &info_ptr, nullptr);
         free (row_pointers);
-        imageData_arg.clear ();
-        width_arg = 0;
-        height_arg = 0;
-        channels_arg = 0;
+        clear_outputs ();
         return;
       }
 
