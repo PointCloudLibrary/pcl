@@ -161,7 +161,7 @@ namespace pcl
 	  template<typename It, typename Unary>
       int transform_reduce_max_index(It beg, It end, Unary unop)
 	  {
-		thrust::tuple<float, int> max_tuple(std::numeric_limits<float>::min(), 0);
+		thrust::tuple<float, int> max_tuple(std::numeric_limits<float>::lowest(), 0);
 		return transform_reduce_index(beg, end, unop, max_tuple, IndOp<true>());
 	  }
   }
@@ -199,10 +199,10 @@ void pcl::device::PointStream::computeInitalSimplex()
   simplex.x1 = tr(p1);  simplex.x2 = tr(p2);  simplex.x3 = tr(p3);  simplex.x4 = tr(p4);
   simplex.i1 = minx;    simplex.i2 = maxx;    simplex.i3 = maxl;    simplex.i4 = maxp;
 
-  float maxy = thrust::transform_reduce(beg, end, Y(), std::numeric_limits<float>::min(), thrust::maximum<float>());
+  float maxy = thrust::transform_reduce(beg, end, Y(), std::numeric_limits<float>::lowest(), thrust::maximum<float>());
   float miny = thrust::transform_reduce(beg, end, Y(), std::numeric_limits<float>::max(), thrust::minimum<float>());
 
-  float maxz = thrust::transform_reduce(beg, end, Z(), std::numeric_limits<float>::min(), thrust::maximum<float>());
+  float maxz = thrust::transform_reduce(beg, end, Z(), std::numeric_limits<float>::lowest(), thrust::maximum<float>());
   float minz = thrust::transform_reduce(beg, end, Z(), std::numeric_limits<float>::max(), thrust::minimum<float>());
 
   float dx = (p2.x - p1.x);

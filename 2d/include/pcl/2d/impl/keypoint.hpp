@@ -146,7 +146,7 @@ Keypoint<ImageType>::hessianBlob(ImageType& output,
   const std::size_t height = input.size();
   const std::size_t width = input[0].size();
   float min = std::numeric_limits<float>::max();
-  float max = std::numeric_limits<float>::min();
+  float max = std::numeric_limits<float>::lowest();
   cornerness.resize(height);
   for (std::size_t i = 0; i < height; i++) {
     cornerness[i].resize(width);
