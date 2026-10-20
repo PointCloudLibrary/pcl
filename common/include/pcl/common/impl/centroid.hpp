@@ -703,7 +703,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   Scalar obb_min_pointx, obb_min_pointy, obb_min_pointz;
   Scalar obb_max_pointx, obb_max_pointy, obb_max_pointz;
   obb_min_pointx = obb_min_pointy = obb_min_pointz = std::numeric_limits<Scalar>::max();
-  obb_max_pointx = obb_max_pointy = obb_max_pointz = std::numeric_limits<Scalar>::min();
+  obb_max_pointx = obb_max_pointy = obb_max_pointz = std::numeric_limits<Scalar>::lowest();
 
   if (cloud.is_dense)
   {
@@ -837,7 +837,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   Scalar obb_min_pointx, obb_min_pointy, obb_min_pointz;
   Scalar obb_max_pointx, obb_max_pointy, obb_max_pointz;
   obb_min_pointx = obb_min_pointy = obb_min_pointz = std::numeric_limits<Scalar>::max();
-  obb_max_pointx = obb_max_pointy = obb_max_pointz = std::numeric_limits<Scalar>::min();
+  obb_max_pointx = obb_max_pointy = obb_max_pointz = std::numeric_limits<Scalar>::lowest();
 
   if (cloud.is_dense)
   {

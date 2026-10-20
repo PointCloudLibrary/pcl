@@ -223,9 +223,9 @@ pcl::MomentOfInertiaEstimation<PointT>::computeOBB ()
   obb_min_point_.y = std::numeric_limits <float>::max ();
   obb_min_point_.z = std::numeric_limits <float>::max ();
 
-  obb_max_point_.x = std::numeric_limits <float>::min ();
-  obb_max_point_.y = std::numeric_limits <float>::min ();
-  obb_max_point_.z = std::numeric_limits <float>::min ();
+  obb_max_point_.x = std::numeric_limits <float>::lowest ();
+  obb_max_point_.y = std::numeric_limits <float>::lowest ();
+  obb_max_point_.z = std::numeric_limits <float>::lowest ();
 
   auto number_of_points = static_cast <unsigned int> (indices_->size ());
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)

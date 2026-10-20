@@ -50,11 +50,11 @@ pcl::modeler::ICPRegistrationWorker::ICPRegistrationWorker(
 : AbstractWorker(cloud_mesh_items, parent)
 , cloud_(std::move(cloud))
 , x_min_(std::numeric_limits<double>::max())
-, x_max_(std::numeric_limits<double>::min())
+, x_max_(std::numeric_limits<double>::lowest())
 , y_min_(std::numeric_limits<double>::max())
-, y_max_(std::numeric_limits<double>::min())
+, y_max_(std::numeric_limits<double>::lowest())
 , z_min_(std::numeric_limits<double>::max())
-, z_max_(std::numeric_limits<double>::min())
+, z_max_(std::numeric_limits<double>::lowest())
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
