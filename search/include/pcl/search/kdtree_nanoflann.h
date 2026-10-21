@@ -123,6 +123,7 @@ using L2_Simple_Adaptor =
                                  pcl::search::internal::PointCloudAdaptor<float>,
                                  float,
                                  pcl::index_t>;
+#if NANOFLANN_VERSION < 0x020000
 using SO2_Adaptor =
     nanoflann::SO2_Adaptor<float,
                            pcl::search::internal::PointCloudAdaptor<float>,
@@ -133,6 +134,7 @@ using SO3_Adaptor =
                            pcl::search::internal::PointCloudAdaptor<float>,
                            float,
                            pcl::index_t>;
+#endif // NANOFLANN_VERSION < 0x020000
 // TODO maybe additional adaptor with simd?
 
 /** @brief @b pcl::search::KdTreeNanoflann is a faster and flexible alternative to
