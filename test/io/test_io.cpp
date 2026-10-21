@@ -1677,6 +1677,58 @@ TEST (PCL, LZFInMem)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, LZFBinaryCompressedCorruptedSize)
+{
+  // A binary_compressed PCD stores the uncompressed size in its body header. The
+  // reader must not trust that value against the geometry taken from the header
+  // fields: a file that decompresses to fewer bytes than width * height * point
+  // size used to make the planar unpack loop read past the decompressed buffer
+  // and write past cloud.data. The reader should reject it instead.
+  PointCloud<PointXYZ> cloud;
+  cloud.width  = 100;
+  cloud.height = 1;
+  cloud.resize (cloud.width * cloud.height);
+  cloud.is_dense = true;
+  for (auto &point : cloud)
+  {
+    point.x = 1.0f; point.y = 2.0f; point.z = 3.0f;
+  }
+
+  pcl::PCLPointCloud2 blob;
+  pcl::toPCLPointCloud2 (cloud, blob);
+
+  std::ostringstream oss;
+  PCDWriter writer;
+  ASSERT_EQ (writer.writeBinaryCompressed (oss, blob), 0);
+  const std::string pcd_str = oss.str ();
+
+  Eigen::Vector4f origin;
+  Eigen::Quaternionf orientation;
+  int pcd_version = -1;
+  int data_type = -1;
+  unsigned int data_idx = 0;
+  std::istringstream iss (pcd_str, std::ios::binary);
+  PCDReader reader;
+  pcl::PCLPointCloud2 blob2;
+  ASSERT_EQ (reader.readHeader (iss, blob2, origin, orientation, pcd_version, data_type, data_idx), 0);
+  ASSERT_EQ (data_type, 2);
+
+  // Keep the parsed header, but replace the body with a short, self-consistent
+  // compressed block: an lzf literal run of 12 bytes (one point) that advertises
+  // uncompressed_size = 12 while the header still describes 100 points.
+  std::string corrupted = pcd_str.substr (0, data_idx);
+  const std::uint32_t compressed_size = 13;   // 1 control byte + 12 literal bytes
+  const std::uint32_t uncompressed_size = 12; // one XYZ point, not 100
+  corrupted.append (reinterpret_cast<const char*> (&compressed_size), 4);
+  corrupted.append (reinterpret_cast<const char*> (&uncompressed_size), 4);
+  corrupted.push_back (static_cast<char> (0x0b)); // literal run of (0x0b + 1) = 12 bytes
+  corrupted.append (12, '\0');
+
+  const auto *data = reinterpret_cast<const unsigned char *> (corrupted.data ());
+  EXPECT_EQ (reader.readBodyBinary (data, blob2, pcd_version, true, data_idx), -1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Locale)
 {
 #ifndef __APPLE__

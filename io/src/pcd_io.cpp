@@ -573,11 +573,15 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     memcpy (&uncompressed_size, &map[data_idx + 4], 4);
     PCL_DEBUG ("[pcl::PCDReader::read] Read a binary compressed file with %u bytes compressed and %u original.\n", compressed_size, uncompressed_size);
 
+    // The unpack loop below assumes the decompressed data holds exactly
+    // width * height points, which is what cloud.data was sized to from the
+    // header. A smaller uncompressed_size would make the planar pointers run
+    // past the decompressed buffer, so treat any mismatch as a corrupted file.
     if (uncompressed_size != cloud.data.size ())
     {
-      PCL_WARN ("[pcl::PCDReader::read] The estimated cloud.data size (%u) is different than the saved uncompressed value (%u)! Data corruption?\n", 
-                cloud.data.size (), uncompressed_size);
-      cloud.data.resize (uncompressed_size);
+      PCL_ERROR ("[pcl::PCDReader::read] The estimated cloud.data size (%zu) is different than the saved uncompressed value (%u)! Data corruption?\n",
+                 cloud.data.size (), uncompressed_size);
+      return (-1);
     }
 
     auto data_size = static_cast<unsigned int> (cloud.data.size ());
