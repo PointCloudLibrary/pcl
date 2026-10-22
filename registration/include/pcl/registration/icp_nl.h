@@ -56,8 +56,9 @@ namespace pcl {
  *     (via \ref setMaximumIterations)</li>
  * <li>The epsilon (difference) between the previous transformation and the current
  * estimated transformation is smaller than an user imposed value (via \ref
- * setTransformationEpsilon)</li> <li>The sum of Euclidean squared errors is smaller
- * than a user defined threshold (via \ref setEuclideanFitnessEpsilon)</li>
+ * setTransformationEpsilon)</li> <li>The relative change of the mean squared error of
+ * the correspondences between two consecutive iterations is smaller than a user
+ * defined threshold (via \ref setEuclideanFitnessEpsilon)</li>
  * </ol>
  *
  * \author Radu B. Rusu, Michael Dixon
