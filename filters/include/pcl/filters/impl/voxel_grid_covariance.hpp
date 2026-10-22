@@ -53,6 +53,7 @@ template<typename PointT> void
 pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
 {
   voxel_centroids_leaf_indices_.clear ();
+  leaves_.clear ();
 
   // Has the input dataset been set already?
   if (!input_)
@@ -80,7 +81,23 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   std::int64_t dy = static_cast<std::int64_t>((max_p[1] - min_p[1]) * inverse_leaf_size_[1])+1;
   std::int64_t dz = static_cast<std::int64_t>((max_p[2] - min_p[2]) * inverse_leaf_size_[2])+1;
 
-  if((dx*dy*dz) > std::numeric_limits<std::int32_t>::max())
+  // The number of voxels can be small even though the voxel indices are large, if the data is far from the origin.
+  // Check that the indices of the first and last voxel along each axis fit into an int. The maximum int converts to 2^31 as a float, so the upper bound is exclusive.
+  const float int_min_f = static_cast<float> (std::numeric_limits<int>::lowest());
+  const float int_max_f = static_cast<float> (std::numeric_limits<int>::max());
+  bool indices_fit = true;
+  for (int i = 0; i < 3; ++i)
+  {
+    // min_p > max_p if there is no valid point, so there are no indices to check
+    if (min_p[i] > max_p[i])
+      continue;
+    const float min_index = std::floor (min_p[i] * inverse_leaf_size_[i]);
+    const float max_index = std::floor (max_p[i] * inverse_leaf_size_[i]);
+    indices_fit = indices_fit && min_index >= int_min_f && min_index < int_max_f &&
+                  max_index >= int_min_f && max_index < int_max_f;
+  }
+
+  if((dx*dy*dz) > std::numeric_limits<std::int32_t>::max() || !indices_fit)
   {
     PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.\n", getClassName().c_str());
     output.clear();
@@ -98,9 +115,6 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   // Compute the number of divisions needed along all axis
   div_b_ = max_b_ - min_b_ + Eigen::Vector4i::Ones ();
   div_b_[3] = 0;
-
-  // Clear the leaves
-  leaves_.clear ();
 
   // Set up the division multiplier
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
