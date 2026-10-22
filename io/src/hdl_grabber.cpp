@@ -735,7 +735,9 @@ pcl::HDLGrabber::readPacketsFromPcap ()
     lasttime.tv_usec = header->ts.tv_usec;
 
     // The ETHERNET header is 42 bytes long; unnecessary
-    enqueueHDLPacket (data + 42, header->len - 42);
+    // Only caplen bytes of data are valid, len is the original length on the wire
+    if (header->caplen > 42)
+      enqueueHDLPacket (data + 42, header->caplen - 42);
 
     returnValue = pcap_next_ex (pcap, &header, &data);
   }
