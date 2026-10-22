@@ -161,7 +161,7 @@ public:
    */
   template <typename PointT>
   inline void
-  setSearchMethodTarget(const typename pcl::search::KdTree<PointT>::Ptr& tree,
+  setSearchMethodTarget(const typename pcl::search::Search<PointT>::Ptr& tree,
                         bool force_no_recompute = false)
   {
     static_pointer_cast<DataContainer<PointT>>(data_container_)

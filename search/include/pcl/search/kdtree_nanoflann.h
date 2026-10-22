@@ -12,7 +12,7 @@
 #include <pcl/pcl_config.h>
 #if PCL_HAS_NANOFLANN || defined(DOXYGEN_ONLY)
 
-#include <pcl/search/kdtree.h>
+#include <pcl/search/search.h>
 #include <pcl/point_representation.h>
 
 #include <nanoflann.hpp>
@@ -183,7 +183,7 @@ template <typename PointT,
               pcl::search::internal::PointCloudAdaptor<float>,
               Dim,
               pcl::index_t>>
-class KdTreeNanoflann : public pcl::search::KdTree<PointT> {
+class KdTreeNanoflann : public pcl::search::Search<PointT> {
 private:
   /** The special thing here is that indices and distances are stored in _two_ vectors,
    * not as a pair in _one_ vector.
@@ -310,7 +310,7 @@ public:
   KdTreeNanoflann(bool sorted,
                   std::size_t leaf_max_size,
                   unsigned int n_thread_build = 1)
-  : pcl::search::KdTree<PointT>("KdTreeNanoflann", sorted)
+  : pcl::search::Search<PointT>("KdTreeNanoflann", sorted)
   , leaf_max_size_(leaf_max_size)
   , n_thread_build_(n_thread_build)
   {}
@@ -332,7 +332,7 @@ public:
    * calling setInputCloud, to avoid setting up the kd-tree twice.
    * @param[in] point_representation the const shared pointer to a PointRepresentation
    */
-  void
+  bool
   setPointRepresentation(const PointRepresentationConstPtr& point_representation) override
   {
     PCL_DEBUG("[KdTreeNanoflann::setPointRepresentation] "
@@ -347,16 +347,18 @@ public:
                 "template parameter to KdTreeNanoflann is %i.\n",
                 point_representation->getNumberOfDimensions(),
                 Dim);
-      return;
+      return false;
     }
     point_representation_ = point_representation;
-    setUpTree();
+    if (input_)
+      setUpTree();
+    return true;
   }
 
   /** @brief Get a pointer to the point representation used when converting points into
    * k-D vectors. */
   inline PointRepresentationConstPtr
-  getPointRepresentation() const override
+  getPointRepresentation() const
   {
     return point_representation_;
   }
@@ -375,7 +377,7 @@ public:
    * @param[in] eps precision (error bound) for nearest neighbors searches
    */
   void
-  setEpsilon(float eps) override
+  setEpsilon(float eps)
   {
     eps_ = eps;
   }
@@ -383,7 +385,7 @@ public:
   /** @brief Get the search epsilon precision (error bound) for nearest neighbors
    * searches. */
   inline float
-  getEpsilon() const override
+  getEpsilon() const
   {
     return eps_;
   }
@@ -759,9 +761,6 @@ private:
 };
 } // namespace search
 } // namespace pcl
-#ifdef PCL_NO_PRECOMPILE
-#include <pcl/search/impl/kdtree.hpp>
-#endif
 
 #else
 //#warning "KdTreeNanoflann is not available"

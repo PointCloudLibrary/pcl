@@ -13,6 +13,8 @@
 #include <pcl/search/search.h>
 
 namespace pcl {
+  template <typename T> class PointRepresentation;
+
   namespace search {
     enum class Purpose : std::uint32_t {
       undefined = 0, ///< Default value, for general-purpose search method
@@ -42,6 +44,17 @@ namespace pcl {
       */
     template<typename PointT>
     pcl::search::Search<PointT> * autoSelectMethod(const typename pcl::PointCloud<PointT>::ConstPtr& cloud, const pcl::IndicesConstPtr& indices, bool sorted_results, Purpose purpose = Purpose::undefined);
+
+    /**
+      * Automatically select the fastest search method for the given point cloud. Make sure to delete the returned object after use!
+      * \param[in] cloud Point cloud, this function will pass it to the search method via setInputCloud
+      * \param[in] indices Will be passed to the search method via setInputCloud, together with the point cloud
+      * \param[in] point_representation Determines which fields are used for searching
+      * \param[in] sorted_results Whether the search method should always return results sorted by distance (may be slower than unsorted)
+      * \param[in] purpose Optional, can be used to give more information about what this search method will be used for, to achieve optimal performance
+      */
+    template<typename PointT>
+    pcl::search::Search<PointT> * autoSelectMethod(const typename pcl::PointCloud<PointT>::ConstPtr& cloud, const pcl::IndicesConstPtr& indices, const pcl::shared_ptr<const pcl::PointRepresentation<PointT>>& point_representation, bool sorted_results, Purpose purpose = Purpose::undefined);
   } // namespace search
 } // namespace pcl
 

@@ -1,6 +1,6 @@
 set(SUBSYS_NAME visualization)
 set(SUBSYS_DESC "Point cloud visualization library")
-set(SUBSYS_DEPS common io kdtree geometry search octree)
+set(SUBSYS_DEPS common io geometry search octree)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
@@ -137,7 +137,7 @@ if(APPLE)
   target_link_libraries("${LIB_NAME}" "-framework Cocoa")
 endif()
 
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree pcl_geometry pcl_search ${OPENGL_LIBRARIES})
+target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_geometry pcl_search ${OPENGL_LIBRARIES})
 
 if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.6 AND UNIX AND NOT ANDROID AND NOT APPLE AND NOT APPLE_IOS)
   find_package(X11 REQUIRED)

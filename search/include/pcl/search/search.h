@@ -46,6 +46,9 @@
 
 namespace pcl
 {
+  // Forward declarations
+  template <typename T> class PointRepresentation;
+
   namespace search
   {
     /** \brief Generic search class. All search wrappers must inherit from this.
@@ -84,6 +87,8 @@ namespace pcl
         using IndicesPtr = pcl::IndicesPtr;
         using IndicesConstPtr = pcl::IndicesConstPtr;
 
+        using PointRepresentationConstPtr = shared_ptr<const PointRepresentation<PointT> >;
+
         /** Constructor. */
         Search (const std::string& name = "", bool sorted = false);
 
@@ -109,6 +114,17 @@ namespace pcl
         virtual bool 
         getSortedResults ();
 
+        /** \brief Provide a pointer to the point representation to use to convert points into
+         * k-D vectors. If you want to use this function, it is recommended to do so _before_
+         * calling setInputCloud. Some search methods will ignore this (e.g. octree or organized search).
+         * \param[in] point_representation the const shared pointer to a PointRepresentation
+         * \return True if success, false if a problem occurred or the search method will not use the point representation
+         */
+        virtual bool
+        setPointRepresentation (const PointRepresentationConstPtr&)
+        {
+          return (false);
+        }
         
         /** \brief Pass the input dataset that the search will be performed on.
           * \param[in] cloud a const pointer to the PointCloud data
