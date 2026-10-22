@@ -48,8 +48,11 @@
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ascii_io.h>
 #include <pcl/io/obj_io.h>
+#include <pcl/io/lzf.h>
+#include <pcl/io/lzf_image_io.h>
 #include <pcl/PolygonMesh.h>
 #include <cstdint>
+#include <cstring> // for memcpy
 #include <fstream>
 #include <iomanip> // for setprecision
 #include <limits>
@@ -1726,6 +1729,60 @@ TEST (PCL, LZFBinaryCompressedCorruptedSize)
 
   const auto *data = reinterpret_cast<const unsigned char *> (corrupted.data ());
   EXPECT_EQ (reader.readBodyBinary (data, blob2, pcd_version, true, data_idx), -1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, LZFImageWrappedDimensions)
+{
+  // The PCLZF header stores the image width and height as 32 bit values. Their
+  // product must not wrap when it is checked against the uncompressed size: with
+  // 65537 x 65536 the 32 bit product is 65536, so a payload sized for 65536 pixels
+  // used to pass the check while the readers walked the full width and height.
+  const std::uint32_t width = 65537, height = 65536;
+  const auto write_pclzf = [&] (const std::string &filename, const std::string &type,
+                                const std::uint32_t uncompressed_size)
+  {
+    std::vector<char> raw (uncompressed_size, 1);
+    std::vector<char> compressed (uncompressed_size * 2);
+    const std::uint32_t compressed_size = pcl::lzfCompress (
+        raw.data (), uncompressed_size, compressed.data (),
+        static_cast<std::uint32_t> (compressed.size ()));
+    ASSERT_GT (compressed_size, 0u);
+
+    char header[37] = {};
+    memcpy (&header[0], "PCLZF", 5);
+    memcpy (&header[5], &width, sizeof (width));
+    memcpy (&header[9], &height, sizeof (height));
+    memcpy (&header[13], type.data (), type.size ());
+    memcpy (&header[29], &compressed_size, sizeof (compressed_size));
+    memcpy (&header[33], &uncompressed_size, sizeof (uncompressed_size));
+
+    std::ofstream fs (filename, std::ios::binary);
+    fs.write (header, sizeof (header));
+    fs.write (compressed.data (), compressed_size);
+  };
+
+  write_pclzf ("test_lzf_depth.pclzf", "depth16", 65536 * 2);
+  write_pclzf ("test_lzf_rgb.pclzf", "rgb24", 65536 * 3);
+  write_pclzf ("test_lzf_yuv.pclzf", "yuv422", 65536 * 2);
+  write_pclzf ("test_lzf_bayer.pclzf", "bayer8", 65536);
+
+  PointCloud<PointXYZ> depth_cloud;
+  pcl::io::LZFDepth16ImageReader depth_reader;
+  EXPECT_FALSE (depth_reader.read ("test_lzf_depth.pclzf", depth_cloud));
+
+  PointCloud<PointXYZRGBA> cloud;
+  pcl::io::LZFRGB24ImageReader rgb_reader;
+  EXPECT_FALSE (rgb_reader.read ("test_lzf_rgb.pclzf", cloud));
+  pcl::io::LZFYUV422ImageReader yuv_reader;
+  EXPECT_FALSE (yuv_reader.read ("test_lzf_yuv.pclzf", cloud));
+  pcl::io::LZFBayer8ImageReader bayer_reader;
+  EXPECT_FALSE (bayer_reader.read ("test_lzf_bayer.pclzf", cloud));
+
+  remove ("test_lzf_depth.pclzf");
+  remove ("test_lzf_rgb.pclzf");
+  remove ("test_lzf_yuv.pclzf");
+  remove ("test_lzf_bayer.pclzf");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
