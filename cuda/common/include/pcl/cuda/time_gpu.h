@@ -39,6 +39,7 @@
 
 #include <cuda.h>
 #include <pcl/cuda/cutil_inline.h>
+#include <iostream> // for std::cerr
 
 namespace pcl
 {

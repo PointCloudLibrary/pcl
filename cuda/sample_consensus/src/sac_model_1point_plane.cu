@@ -48,6 +48,7 @@
 #include <vector_types.h>
 #include <stdio.h>
 #include <limits>
+#include <iostream> // for std::cerr
 
 // specify inlier computation method
 //#define KINECT_NORMALS
