@@ -1,6 +1,6 @@
 set(SUBSYS_NAME keypoints)
 set(SUBSYS_DESC "Point cloud keypoints library")
-set(SUBSYS_DEPS common search kdtree octree features filters)
+set(SUBSYS_DEPS common search octree features filters)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP)

@@ -41,6 +41,8 @@
 #ifndef PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_
 #define PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_
 
+#include <pcl/search/auto.h>
+
 namespace pcl {
 
 namespace registration {
@@ -73,10 +75,12 @@ TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::
   }
 
   typename MyPointRepresentation::ConstPtr point_rep(new MyPointRepresentation);
-  if (!force_no_recompute_) {
-    tree_->setPointRepresentation(point_rep);
-    tree_->setInputCloud(cloud_tgt);
-  }
+  KdTreePtr tree(
+      pcl::search::autoSelectMethod<PointTarget>(cloud_tgt,
+                                                 pcl::IndicesConstPtr(),
+                                                 point_rep,
+                                                 false,
+                                                 pcl::search::Purpose::one_knn_search));
 
   pcl::Indices nn_indices(1);
   std::vector<float> nn_dists(1);
@@ -85,7 +89,7 @@ TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::
   int nr = 0;
   for (const auto& point : input_transformed) {
     // Find its nearest neighbor in the target
-    tree_->nearestKSearch(point, 1, nn_indices, nn_dists);
+    tree->nearestKSearch(point, 1, nn_indices, nn_dists);
 
     // Deal with occlusions (incomplete targets)
     if (nn_dists[0] > max_range_)

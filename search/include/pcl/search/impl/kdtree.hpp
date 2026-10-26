@@ -55,14 +55,17 @@ pcl::search::KdTree<PointT,Tree>::KdTree (const std::string& name, bool sorted)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, class Tree> void
+template <typename PointT, class Tree> bool
 pcl::search::KdTree<PointT,Tree>::setPointRepresentation (
     const PointRepresentationConstPtr &point_representation)
 {
-  if(tree_)
+  if(tree_) {
     tree_->setPointRepresentation (point_representation);
-  else
+    return true;
+  } else {
     PCL_ERROR("Calling setPointRepresentation on KdTreeNanoflann that has been cast to KdTree is not possible in this PCL version. Call setPointRepresentation directly on the KdTreeNanoflann object.\n");
+    return false;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
