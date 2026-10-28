@@ -38,13 +38,88 @@
  *
  */
 
+#include <cmath>
 #include <limits>
+#include <type_traits>
 #include <pcl/common/io.h>
 #include <pcl/filters/impl/voxel_grid.hpp>
 #include <boost/sort/spreadsort/integer_sort.hpp>
 #include <array>
 
 using Array4size_t = Eigen::Array<std::size_t, 4, 1>;
+
+namespace
+{
+  /** \brief Load the value of type T at \a data as double. */
+  template <typename T> double
+  loadFieldValueAs (const std::uint8_t* data)
+  {
+    T value;
+    memcpy (&value, data, sizeof (T));
+    return static_cast<double> (value);
+  }
+
+  /** \brief Store \a value at \a data as a T. Integer types are rounded to the nearest
+    * value and saturated to the range of T (64 bit integers are not exact in double).
+    */
+  template <typename T> void
+  storeFieldValueAs (double value, std::uint8_t* data)
+  {
+    T result;
+    if constexpr (std::is_floating_point_v<T>)
+      result = static_cast<T> (value);
+    else if (!(value > static_cast<double> (std::numeric_limits<T>::lowest ())))
+      result = std::numeric_limits<T>::lowest ();
+    else if (value >= static_cast<double> (std::numeric_limits<T>::max ()))
+      result = std::numeric_limits<T>::max ();
+    else
+      result = static_cast<T> (std::round (value));
+    memcpy (data, &result, sizeof (T));
+  }
+
+  /** \brief Load the value at \a data, of point field type \a type, as double. */
+  double
+  loadFieldValue (const std::uint8_t* data, const std::uint8_t type)
+  {
+    switch (type)
+    {
+      case pcl::PCLPointField::BOOL:    return loadFieldValueAs<std::uint8_t> (data); // any byte value is valid
+      case pcl::PCLPointField::INT8:    return loadFieldValueAs<std::int8_t> (data);
+      case pcl::PCLPointField::UINT8:   return loadFieldValueAs<std::uint8_t> (data);
+      case pcl::PCLPointField::INT16:   return loadFieldValueAs<std::int16_t> (data);
+      case pcl::PCLPointField::UINT16:  return loadFieldValueAs<std::uint16_t> (data);
+      case pcl::PCLPointField::INT32:   return loadFieldValueAs<std::int32_t> (data);
+      case pcl::PCLPointField::UINT32:  return loadFieldValueAs<std::uint32_t> (data);
+      case pcl::PCLPointField::INT64:   return loadFieldValueAs<std::int64_t> (data);
+      case pcl::PCLPointField::UINT64:  return loadFieldValueAs<std::uint64_t> (data);
+      case pcl::PCLPointField::FLOAT32: return loadFieldValueAs<float> (data);
+      case pcl::PCLPointField::FLOAT64: return loadFieldValueAs<double> (data);
+      default: return 0.0;
+    }
+  }
+
+  /** \brief Store \a value at \a data, converted to the point field type \a type. */
+  void
+  storeFieldValue (double value, std::uint8_t* data, const std::uint8_t type)
+  {
+    switch (type)
+    {
+      case pcl::PCLPointField::BOOL:    storeFieldValueAs<bool> (value, data); break;
+      case pcl::PCLPointField::INT8:    storeFieldValueAs<std::int8_t> (value, data); break;
+      case pcl::PCLPointField::UINT8:   storeFieldValueAs<std::uint8_t> (value, data); break;
+      case pcl::PCLPointField::INT16:   storeFieldValueAs<std::int16_t> (value, data); break;
+      case pcl::PCLPointField::UINT16:  storeFieldValueAs<std::uint16_t> (value, data); break;
+      case pcl::PCLPointField::INT32:   storeFieldValueAs<std::int32_t> (value, data); break;
+      case pcl::PCLPointField::UINT32:  storeFieldValueAs<std::uint32_t> (value, data); break;
+      case pcl::PCLPointField::INT64:   storeFieldValueAs<std::int64_t> (value, data); break;
+      case pcl::PCLPointField::UINT64:  storeFieldValueAs<std::uint64_t> (value, data); break;
+      case pcl::PCLPointField::FLOAT32: storeFieldValueAs<float> (value, data); break;
+      case pcl::PCLPointField::FLOAT64: storeFieldValueAs<double> (value, data); break;
+      default: break;
+    }
+  }
+} // namespace
+
 // NOLINTBEGIN(readability-container-data-pointer)
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -138,10 +213,11 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     centroid_size = static_cast<int> (input_->fields.size ());
 
     // ---[ RGB special case
-    // if the data contains "rgba" or "rgb", add an extra field for r/g/b in centroid
+    // if the data contains a 4 byte "rgba" or "rgb", add an extra field for r/g/b in centroid
     for (int d = 0; d < centroid_size; ++d)
     {
-      if (input_->fields[d].name == std::string ("rgba") || input_->fields[d].name == std::string ("rgb"))
+      if ((input_->fields[d].name == std::string ("rgba") || input_->fields[d].name == std::string ("rgb")) &&
+          field_sizes_[d] == sizeof (pcl::RGB))
       {
         rgba_index = d;
         centroid_size += 4;
@@ -312,7 +388,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     xyz_offset = Array4size_t (0, 4, 8, 12);
 
   index=0;
-  Eigen::VectorXf temporary = Eigen::VectorXf::Zero (centroid_size);
+  Eigen::VectorXd temporary = Eigen::VectorXd::Zero (centroid_size);
   const std::array<index_t, 3> field_indices {x_idx_, y_idx_, z_idx_};
 
   for (const auto &cp : first_and_last_indices_vector)
@@ -350,7 +426,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     else
     {
 
-      Eigen::VectorXf centroid = Eigen::VectorXf::Zero (centroid_size);
+      Eigen::VectorXd centroid = Eigen::VectorXd::Zero (centroid_size);
       // fill in the accumulator with leaf points
       for (index_t li = first_index; li < last_index; ++li) {
         std::size_t point_offset = index_vector[li].cloud_point_index * input_->point_step;
@@ -365,24 +441,24 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
             temporary[centroid_size-2] = rgb.b;
             temporary[centroid_size-1] = rgb.a;
         }
-        // Copy all the fields
+        // Convert all the fields
         for (std::size_t d = 0; d < input_->fields.size (); ++d)
-          memcpy (&temporary[d], &input_->data[point_offset + input_->fields[d].offset], field_sizes_[d]);
+          temporary[d] = loadFieldValue (&input_->data[point_offset + input_->fields[d].offset], input_->fields[d].datatype);
         centroid += temporary;
       }
-      centroid /= static_cast<float> (last_index - first_index);
+      centroid /= static_cast<double> (last_index - first_index);
 
       std::size_t point_offset = index * output.point_step;
-      // Copy all the fields
+      // Convert all the fields back
       for (std::size_t d = 0; d < output.fields.size (); ++d)
-        memcpy (&output.data[point_offset + output.fields[d].offset], &centroid[d], field_sizes_[d]);
+        storeFieldValue (centroid[d], &output.data[point_offset + output.fields[d].offset], output.fields[d].datatype);
 
       // ---[ RGB special case
       // full extra r/g/b centroid field
       if (rgba_index >= 0)
       {
-        float r = centroid[centroid_size-4], g = centroid[centroid_size-3], b = centroid[centroid_size-2], a = centroid[centroid_size-1];
-        int rgb = (static_cast<int> (a) << 24) | (static_cast<int> (r) << 16) | (static_cast<int> (g) << 8) | static_cast<int> (b);
+        double r = centroid[centroid_size-4], g = centroid[centroid_size-3], b = centroid[centroid_size-2], a = centroid[centroid_size-1];
+        std::uint32_t rgb = (static_cast<std::uint32_t> (a) << 24) | (static_cast<std::uint32_t> (r) << 16) | (static_cast<std::uint32_t> (g) << 8) | static_cast<std::uint32_t> (b);
         memcpy (&output.data[point_offset + output.fields[rgba_index].offset], &rgb, sizeof (float));
       }
     }
