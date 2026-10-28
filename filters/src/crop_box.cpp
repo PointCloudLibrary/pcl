@@ -38,11 +38,21 @@
  */
 
 #include <pcl/filters/impl/crop_box.hpp>
+#include <array>
 
 ///////////////////////////////////////////////////////////////////////////////
 void
 pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
+  // If fields x/y/z are not present, we cannot filter
+  if (x_idx_ == UNAVAILABLE || y_idx_ == UNAVAILABLE || z_idx_ == UNAVAILABLE)
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
+    output.width = output.height = 0;
+    output.data.clear ();
+    return;
+  }
+
   Indices indices;
   if (keep_organized_)
   {
@@ -56,25 +66,17 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     output = *input_;
 
     // Get x, y, z fields. We should not just assume that they are the first fields of each point
-    std::vector<std::uint32_t> offsets;
-    for (const pcl::PCLPointField &field : input_->fields)
-    {
-      if (field.name == "x" ||
-          field.name == "y" ||
-          field.name == "z")
-        offsets.push_back (field.offset);
-    }
-    PCL_DEBUG ("[pcl::%s<pcl::PCLPointCloud2>::applyFilter] Found %lu fields called 'x', 'y', or 'z'.\n",
-               filter_name_.c_str (), offsets.size());
+    const std::array<uindex_t, 3> offsets {input_->fields[x_idx_].offset,
+                                           input_->fields[y_idx_].offset,
+                                           input_->fields[z_idx_].offset};
 
     // For every "removed" point, set the x, y, z fields to user_filter_value_
-    const static float user_filter_value = user_filter_value_;
     for (const auto ri : *removed_indices_) // ri = removed index
     {
       auto* pt_data = reinterpret_cast<std::uint8_t*> (&output.data[ri * output.point_step]);
       for (const auto &offset : offsets)
       {
-        memcpy (pt_data + offset, &user_filter_value, sizeof (float));
+        memcpy (pt_data + offset, &user_filter_value_, sizeof (float));
       }
     }
     if (!std::isfinite (user_filter_value_))
@@ -98,6 +100,15 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 void
 pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
 {
+  // If fields x/y/z are not present, we cannot filter
+  if (x_idx_ == UNAVAILABLE || y_idx_ == UNAVAILABLE || z_idx_ == UNAVAILABLE)
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
+
   indices.resize (input_->width * input_->height);
   removed_indices_->resize (input_->width * input_->height);
 
@@ -126,8 +137,9 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
   {
     // Get local point
     std::size_t point_offset = static_cast<std::size_t>(index) * input_->point_step;
-    std::size_t offset = point_offset + input_->fields[x_idx_].offset;
-    memcpy (local_pt.data (), &input_->data[offset], sizeof (float)*3);
+    memcpy (&local_pt.x (), &input_->data[point_offset + input_->fields[x_idx_].offset], sizeof (float));
+    memcpy (&local_pt.y (), &input_->data[point_offset + input_->fields[y_idx_].offset], sizeof (float));
+    memcpy (&local_pt.z (), &input_->data[point_offset + input_->fields[z_idx_].offset], sizeof (float));
 
     // Transform point to world space
     if (!transform_matrix_is_identity)

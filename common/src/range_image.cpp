@@ -37,6 +37,7 @@
 #include <cmath>
 #include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 #include <pcl/common/time.h> // for MEASURE_FUNCTION_TIME
+#include <pcl/console/print.h> // for PCL_ERROR
 #include <pcl/range_image/range_image.h>
 
 #include <algorithm>
@@ -821,6 +822,23 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
   
   if (x_idx<0 || y_idx<0 || z_idx<0 || vp_x_idx<0 || vp_y_idx<0 || vp_z_idx<0 || distance_idx<0)
   {
+    return;
+  }
+  // The fields are read as floats
+  for (const int idx : {x_idx, y_idx, z_idx, vp_x_idx, vp_y_idx, vp_z_idx, distance_idx})
+  {
+    const auto& field = point_cloud_data.fields[idx];
+    if (field.datatype != pcl::PCLPointField::FLOAT32 ||
+        static_cast<std::size_t>(field.offset) + sizeof (float) > point_cloud_data.point_step)
+    {
+      PCL_ERROR ("[RangeImage::extractFarRanges] Field %s is not a FLOAT32 value inside a point!\n", field.name.c_str ());
+      return;
+    }
+  }
+  if (point_cloud_data.data.size () <
+      static_cast<std::size_t>(point_cloud_data.width) * point_cloud_data.height * point_cloud_data.point_step)
+  {
+    PCL_ERROR ("[RangeImage::extractFarRanges] The data of the cloud is smaller than width * height * point_step!\n");
     return;
   }
   

@@ -52,6 +52,15 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     return;
   }
 
+  // If fields x/y/z are not present, we cannot project
+  if (x_idx_ == UNAVAILABLE || y_idx_ == UNAVAILABLE || z_idx_ == UNAVAILABLE)
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
+    output.width = output.height = 0;
+    output.data.clear ();
+    return;
+  }
+
   //Eigen::Map<Eigen::VectorXf, Eigen::Aligned> model_coefficients (&model_->values[0], model_->values.size ());
   // More expensive than a map but safer (32bit architectures seem to complain)
   Eigen::VectorXf model_coefficients (model_->values.size ());
@@ -83,28 +92,12 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     output.data         = input_->data;
     output.is_dense     = input_->is_dense;
 
-    // Get the distance field index
-    int x_idx = -1, y_idx = -1, z_idx = -1;
-    for (int d = 0; d < static_cast<int> (output.fields.size ()); ++d)
-    {
-      if (output.fields[d].name == "x") x_idx = d;
-      if (output.fields[d].name == "y") y_idx = d;
-      if (output.fields[d].name == "z") z_idx = d;
-    }
-    if (x_idx == -1 || y_idx == -1 || z_idx == -1)
-    {
-      PCL_ERROR ("[pcl::%s::segment] X (%d) Y (%d) Z (%d) field dimensions not found!\n", getClassName ().c_str (), x_idx, y_idx, z_idx);
-      output.width = output.height = 0;
-      output.data.clear ();
-      return;
-    }
-
     // Copy the projected points
     for (std::size_t i = 0; i < indices_->size (); ++i)
     {
-      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[x_idx].offset], &cloud_out[(*indices_)[i]].x, sizeof (float));
-      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[y_idx].offset], &cloud_out[(*indices_)[i]].y, sizeof (float));
-      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[z_idx].offset], &cloud_out[(*indices_)[i]].z, sizeof (float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step + input_->fields[x_idx_].offset], &cloud_out[(*indices_)[i]].x, sizeof (float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step + input_->fields[y_idx_].offset], &cloud_out[(*indices_)[i]].y, sizeof (float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step + input_->fields[z_idx_].offset], &cloud_out[(*indices_)[i]].z, sizeof (float));
     }
   }
   else
@@ -125,30 +118,13 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       // All projections should return valid data, so is_dense = true
       output.is_dense     = true;
 
-      // Get the distance field index
-      int x_idx = -1, y_idx = -1, z_idx = -1;
-      for (int d = 0; d < static_cast<int> (output.fields.size ()); ++d)
-      {
-        if (output.fields[d].name == "x") x_idx = d;
-        if (output.fields[d].name == "y") y_idx = d;
-        if (output.fields[d].name == "z") z_idx = d;
-      }
-
-      if (x_idx == -1 || y_idx == -1 || z_idx == -1)
-      {
-        PCL_ERROR ("[pcl::%s::segment] X (%d) Y (%d) Z (%d) field dimensions not found!\n", getClassName ().c_str (), x_idx, y_idx, z_idx);
-        output.width = output.height = 0;
-        output.data.clear ();
-        return;
-      }
-
       // Copy the projected points
       for (std::size_t i = 0; i < indices_->size (); ++i)
       {
         memcpy (&output.data[i * output.point_step], &input_->data[(*indices_)[i] * input_->point_step], output.point_step);
-        memcpy (&output.data[i * output.point_step + output.fields[x_idx].offset], &cloud_out[(*indices_)[i]].x, sizeof (float));
-        memcpy (&output.data[i * output.point_step + output.fields[y_idx].offset], &cloud_out[(*indices_)[i]].y, sizeof (float));
-        memcpy (&output.data[i * output.point_step + output.fields[z_idx].offset], &cloud_out[(*indices_)[i]].z, sizeof (float));
+        memcpy (&output.data[i * output.point_step + input_->fields[x_idx_].offset], &cloud_out[(*indices_)[i]].x, sizeof (float));
+        memcpy (&output.data[i * output.point_step + input_->fields[y_idx_].offset], &cloud_out[(*indices_)[i]].y, sizeof (float));
+        memcpy (&output.data[i * output.point_step + input_->fields[z_idx_].offset], &cloud_out[(*indices_)[i]].z, sizeof (float));
       }
     }
   }
