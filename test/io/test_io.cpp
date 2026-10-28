@@ -1264,6 +1264,70 @@ TEST(PCL, OBJReadMalformedFaceIndices)
   remove (fname.c_str ());
 }
 
+TEST(PCL, OBJReadMalformedVertexLines)
+{
+  const std::string fname = "test_obj_malformed_vertex.obj";
+
+  const std::vector<std::string> bad_files = {
+    "v 0.0 0.0 0.0\nv 1.0 0.0\n",
+    "v 0.0 0.0 0.0\nv\n",
+    "v 0.0 0.0 0.0\nvn 0.0 1.0\n",
+    "v 0.0 0.0 0.0\nv\r1.0 0.0 0.0\nv\r0.0 1.0 0.0\n",
+  };
+
+  for (const auto &bad_file : bad_files)
+  {
+    std::ofstream fs (fname);
+    fs << bad_file;
+    fs.close ();
+
+    pcl::OBJReader objreader;
+
+    pcl::PCLPointCloud2 blob;
+    EXPECT_EQ (objreader.read (fname, blob), -1) << "blob reader accepted: " << bad_file;
+
+    pcl::PolygonMesh poly_mesh;
+    EXPECT_EQ (objreader.read (fname, poly_mesh), -1) << "PolygonMesh reader accepted: " << bad_file;
+
+    pcl::TextureMesh tex_mesh;
+    EXPECT_EQ (objreader.read (fname, tex_mesh), -1) << "TextureMesh reader accepted: " << bad_file;
+  }
+
+  {
+    std::ofstream fs (fname);
+    fs << "v 0.0 0.0 0.0\n"
+          "v\t1.0 0.0 0.0\n"
+          "v\t0.0 1.0 0.0\n"
+          "vt 0.0 0.0 1.0\n"
+          "usemtl None\n"
+          "f 1/1 2/1 3/1\n";
+    fs.close ();
+
+    pcl::OBJReader objreader;
+
+    pcl::PCLPointCloud2 blob;
+    EXPECT_EQ (objreader.read (fname, blob), 0);
+    EXPECT_EQ (blob.width, 3);
+
+    pcl::TextureMesh tex_mesh;
+    EXPECT_EQ (objreader.read (fname, tex_mesh), 0);
+    EXPECT_EQ (tex_mesh.cloud.width, 3);
+  }
+
+  {
+    std::ofstream fs (fname);
+    fs << "v 0.0 0.0 0.0\n"
+          "vt 0.0 0.0 1.0 1.0\n";
+    fs.close ();
+
+    pcl::OBJReader objreader;
+    pcl::TextureMesh tex_mesh;
+    EXPECT_EQ (objreader.read (fname, tex_mesh), -1);
+  }
+
+  remove (fname.c_str ());
+}
+
 TEST(PCL, OBJReadValidRelativeIndices)
 {
   const std::string fname = "test_obj_relative.obj";
