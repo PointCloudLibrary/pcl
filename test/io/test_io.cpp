@@ -1295,7 +1295,7 @@ TEST(PCL, OBJReadMalformedVertexLines)
     fs << "v 0.0 0.0 0.0\n"
           "v\t1.0 0.0 0.0\n"
           "v\t0.0 1.0 0.0\n"
-          "vt 0.0 0.0 1.0 1.0 1.0\n"
+          "vt 0.0 0.0 1.0\n"
           "usemtl None\n"
           "f 1/1 2/1 3/1\n";
     fs.close ();
@@ -1309,6 +1309,17 @@ TEST(PCL, OBJReadMalformedVertexLines)
     pcl::TextureMesh tex_mesh;
     EXPECT_EQ (objreader.read (fname, tex_mesh), 0);
     EXPECT_EQ (tex_mesh.cloud.width, 3);
+  }
+
+  {
+    std::ofstream fs (fname);
+    fs << "v 0.0 0.0 0.0\n"
+          "vt 0.0 0.0 1.0 1.0\n";
+    fs.close ();
+
+    pcl::OBJReader objreader;
+    pcl::TextureMesh tex_mesh;
+    EXPECT_EQ (objreader.read (fname, tex_mesh), -1);
   }
 
   remove (fname.c_str ());

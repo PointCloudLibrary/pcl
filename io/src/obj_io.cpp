@@ -869,10 +869,16 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       // Texture coordinates
       if (st[0] == "vt")
       {
+        if (st.size () > 4)
+        {
+          PCL_ERROR ("[pcl::OBJReader::read] Invalid texture coordinates in line %s\n", line.c_str ());
+          fs.close ();
+          return (-1);
+        }
         try
         {
           Eigen::Vector3f c (0, 0, 0);
-          for (std::size_t i = 1; i < st.size () && i < 4; ++i)
+          for (std::size_t i = 1; i < st.size (); ++i)
             c[i-1] = boost::lexical_cast<float> (st[i]);
           if (c[2] == 0)
             coordinates.emplace_back(c[0], c[1]);
