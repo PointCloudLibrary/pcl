@@ -280,6 +280,11 @@ public:
     // amount of points to be decoded
     const index_t pointCount = endIdx_arg - beginIdx_arg;
 
+    // do not read past the color data decoded from the stream
+    if (pointAvgColorDataVector_.cend () - pointAvgColorDataVector_Iterator_ < 3 ||
+        (pointCount > 1 && (pointDiffColorDataVector_.cend () - pointDiffColorDataVector_Iterator_) / 3 < pointCount))
+      return;
+
     // get averaged color information for current voxel
     unsigned char avgRed = *(pointAvgColorDataVector_Iterator_++);
     unsigned char avgGreen = *(pointAvgColorDataVector_Iterator_++);

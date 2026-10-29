@@ -41,6 +41,7 @@
 #include <pcl/compression/compression_profiles.h>
 
 #include <exception>
+#include <sstream>
 
 int total_runs = 0;
 
@@ -155,6 +156,86 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBASameCloud)
     } // runs
   } // compression profiles
 } // TEST
+
+template<typename T> void
+writeValue(std::ostream& os, T value)
+{
+  os.write(reinterpret_cast<const char*> (&value), sizeof (value));
+}
+
+void
+writeCharVector(std::ostream& os, const std::vector<char>& data)
+{
+  pcl::StaticRangeCoder coder;
+  writeValue<std::uint64_t>(os, data.size());
+  coder.encodeCharVectorToStream(data, os);
+}
+
+void
+writeIntVector(std::ostream& os, std::vector<unsigned int> data)
+{
+  pcl::StaticRangeCoder coder;
+  writeValue<std::uint64_t>(os, data.size());
+  coder.encodeIntVectorToStream(data, os);
+}
+
+// i-frame whose octree (bounding box [0,2]^3 at resolution 1) is a single branch with
+// 8 leaves, followed by the given amount of per voxel data
+std::string
+makeCompressedFrame(bool voxel_grid, bool with_color, const std::vector<unsigned int>& point_counts,
+                    std::size_t point_diff_size, std::size_t avg_color_size, std::size_t diff_color_size)
+{
+  std::ostringstream os;
+  os << "<PCL-OCT-COMPRESSED>";
+  writeValue<std::uint32_t>(os, 0); // frame ID
+  writeValue(os, true); // i-frame
+  writeValue(os, voxel_grid);
+  writeValue(os, with_color);
+  writeValue<std::uint64_t>(os, 8); // point count
+  writeValue(os, 1.0); // octree resolution
+  writeValue<unsigned char>(os, 8); // color bit depth
+  writeValue(os, 0.01); // point resolution
+  for (const double bound : {0.0, 0.0, 0.0, 2.0, 2.0, 2.0})
+    writeValue(os, bound);
+  writeCharVector(os, {'\xFF'}); // all 8 children occupied
+  if (with_color)
+    writeCharVector(os, std::vector<char>(avg_color_size, 1));
+  if (!voxel_grid) {
+    writeIntVector(os, point_counts);
+    writeCharVector(os, std::vector<char>(point_diff_size, 1));
+    if (with_color)
+      writeCharVector(os, std::vector<char>(diff_color_size, 1));
+  }
+  return os.str();
+}
+
+template<typename PointT> std::size_t
+decodeFrame(const std::string& frame)
+{
+  pcl::io::OctreePointCloudCompression<PointT> pointcloud_decoder;
+  typename pcl::PointCloud<PointT>::Ptr cloud_out(new pcl::PointCloud<PointT>());
+  std::istringstream compressed_data(frame);
+  pointcloud_decoder.decodePointCloud(compressed_data, cloud_out);
+  return cloud_out->size();
+}
+
+TEST (PCL, OctreeDeCompressionShortDataVectors)
+{
+  // well formed frame, 8 voxels with 2 points each
+  EXPECT_EQ(decodeFrame<pcl::PointXYZRGBA>(makeCompressedFrame(false, true, std::vector<unsigned int>(8, 2), 48, 24, 48)), 16u);
+
+  // the frames below hold less per voxel data than the tree has leaves, decoding must not read past it
+  // point counts for 1 of 8 voxels
+  EXPECT_EQ(decodeFrame<pcl::PointXYZ>(makeCompressedFrame(false, false, {1}, 3, 0, 0)), 1u);
+  // differential point data for 1 of 8 points
+  EXPECT_EQ(decodeFrame<pcl::PointXYZ>(makeCompressedFrame(false, false, std::vector<unsigned int>(8, 1), 3, 0, 0)), 8u);
+  // average color for 1 of 8 voxels
+  EXPECT_EQ(decodeFrame<pcl::PointXYZRGBA>(makeCompressedFrame(false, true, std::vector<unsigned int>(8, 1), 24, 3, 0)), 8u);
+  // differential color for 1 of 16 points
+  EXPECT_EQ(decodeFrame<pcl::PointXYZRGBA>(makeCompressedFrame(false, true, std::vector<unsigned int>(8, 2), 48, 24, 3)), 16u);
+  // voxel grid frame with average color for 1 of 8 voxels
+  EXPECT_EQ(decodeFrame<pcl::PointXYZRGBA>(makeCompressedFrame(true, true, {}, 0, 3, 0)), 8u);
+}
 
 TEST(PCL, OctreeDeCompressionFile)
 {

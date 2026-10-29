@@ -157,6 +157,10 @@ class PointCoding
 
       const uindex_t pointCount = endIdx_arg - beginIdx_arg;
 
+      // do not read past the differential data decoded from the stream
+      if (static_cast<std::size_t> (pointDiffDataVector_.cend () - pointDiffDataVectorIterator_) / 3 < pointCount)
+        return;
+
       // iterate over points within current voxel
       for (uindex_t i = 0; i < pointCount; i++)
       {
