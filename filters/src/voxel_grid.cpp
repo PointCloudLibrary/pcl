@@ -85,6 +85,30 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   output.row_step     = input_->row_step;
   output.is_dense     = true;                 // we filter out invalid points
 
+  // If we don't want to process the entire cloud, the distance field has to be there and hold floats
+  int distance_idx = -1;
+  if (!filter_field_name_.empty ())
+  {
+    distance_idx = pcl::getFieldIndex (*input_, filter_field_name_);
+    if (distance_idx == -1)
+    {
+      PCL_ERROR ("[pcl::%s::applyFilter] Invalid filter field name (%s)!\n", getClassName ().c_str (), filter_field_name_.c_str ());
+      output.width = output.height = 0;
+      output.data.clear ();
+      return;
+    }
+
+    // @todo fixme
+    if (input_->fields[distance_idx].datatype != pcl::PCLPointField::FLOAT32 ||
+        static_cast<std::size_t> (input_->fields[distance_idx].offset) + sizeof (float) > input_->point_step)
+    {
+      PCL_ERROR ("[pcl::%s::applyFilter] Distance filtering requested, but distances are not floats inside a point in the dataset! Only FLOAT32 distances are supported right now.\n", getClassName ().c_str ());
+      output.width = output.height = 0;
+      output.data.clear ();
+      return;
+    }
+  }
+
   Eigen::Vector4f min_p, max_p;
   // Get the minimum and maximum dimensions
   if (!filter_field_name_.empty ()) // If we don't want to process the entire cloud...
@@ -153,18 +177,6 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
   if (!filter_field_name_.empty ())
   {
-    // Get the distance field index
-    int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_);
-
-    // @todo fixme
-    if (input_->fields[distance_idx].datatype != pcl::PCLPointField::FLOAT32)
-    {
-      PCL_ERROR ("[pcl::%s::applyFilter] Distance filtering requested, but distances are not float/double in the dataset! Only FLOAT32/FLOAT64 distances are supported right now.\n", getClassName ().c_str ());
-      output.width = output.height = 0;
-      output.data.clear ();
-      return;
-    }
-
     // First pass: go over all points and insert them into the index_vector vector
     // with calculated idx. Points with the same idx value will contribute to the
     // same point of resulting CloudPoint
