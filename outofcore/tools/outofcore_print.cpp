@@ -100,10 +100,10 @@ printNode(OctreeDiskNode *)
 }
 
 int
-outofcorePrint (boost::filesystem::path tree_root, std::size_t print_depth, bool bounding_box=false, bool pcd=false, 
+outofcorePrint (pcl_fs::path tree_root, std::size_t print_depth, bool bounding_box=false, bool pcd=false, 
 		bool point_count=false, bool breadth_first=false)
 {
-  std::cout << boost::filesystem::absolute (tree_root) << std::endl;
+  std::cout << pcl_fs::absolute (tree_root) << std::endl;
 
   OctreeDisk* octree;
   octree = new OctreeDisk (tree_root, true);
@@ -288,16 +288,16 @@ main (int argc, char* argv[])
   parse_argument (argc, argv, "-depth", depth);
 
   // Parse non-option arguments
-  boost::filesystem::path tree_root (argv[argc - 1]);
+  pcl_fs::path tree_root (argv[argc - 1]);
 
   // Check if a root directory was specified, use directory of pcd file
-  if (boost::filesystem::is_directory (tree_root))
+  if (pcl_fs::is_directory (tree_root))
   {
-    boost::filesystem::directory_iterator diterend;
-    for (boost::filesystem::directory_iterator diter (tree_root); diter != diterend; ++diter)
+    pcl_fs::directory_iterator diterend;
+    for (pcl_fs::directory_iterator diter (tree_root); diter != diterend; ++diter)
     {
-      const boost::filesystem::path& file = *diter;
-      if (!boost::filesystem::is_directory (file))
+      const pcl_fs::path& file = *diter;
+      if (!pcl_fs::is_directory (file))
       {
         if (file.extension ().string () == OctreeDiskNode::node_index_extension)
         {

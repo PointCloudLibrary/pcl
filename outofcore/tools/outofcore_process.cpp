@@ -74,7 +74,7 @@ constexpr int OCTREE_DEPTH (0);
 constexpr int OCTREE_RESOLUTION(1);
 
 PCLPointCloud2::Ptr
-getCloudFromFile (boost::filesystem::path pcd_path)
+getCloudFromFile (pcl_fs::path pcd_path)
 {
   print_info ("Reading: %s ", pcd_path.c_str ());
 
@@ -94,7 +94,7 @@ getCloudFromFile (boost::filesystem::path pcd_path)
 }
 
 int
-outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesystem::path root_dir, 
+outofcoreProcess (std::vector<pcl_fs::path> pcd_paths, pcl_fs::path root_dir, 
                   int depth, double resolution, int build_octree_with, bool gen_lod, bool overwrite, bool multiresolution)
 {
   // Bounding box min/max pts
@@ -147,15 +147,15 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
 
   //specify the directory and the root node's meta data file with a
   //".oct_idx" extension (currently it must be this extension)
-  boost::filesystem::path octree_path_on_disk (root_dir / "tree.oct_idx");
+  pcl_fs::path octree_path_on_disk (root_dir / "tree.oct_idx");
 
   print_info ("Writing: %s\n", octree_path_on_disk.c_str ());
   //make sure there isn't an octree there already
-  if (boost::filesystem::exists (octree_path_on_disk))
+  if (pcl_fs::exists (octree_path_on_disk))
   {
     if (overwrite)
     {
-      boost::filesystem::remove_all (root_dir);
+      pcl_fs::remove_all (root_dir);
     }
     else
     {
@@ -302,11 +302,11 @@ main (int argc, char* argv[])
   // Parse non-option arguments for pcd files
   std::vector<int> file_arg_indices = parse_file_extension_argument (argc, argv, ".pcd");
 
-  std::vector<boost::filesystem::path> pcd_paths;
+  std::vector<pcl_fs::path> pcd_paths;
   for (const int &file_arg_index : file_arg_indices)
   {
-    boost::filesystem::path pcd_path (argv[file_arg_index]);
-    if (!boost::filesystem::exists (pcd_path))
+    pcl_fs::path pcd_path (argv[file_arg_index]);
+    if (!pcl_fs::exists (pcd_path))
     {
       PCL_WARN ("File %s doesn't exist\n", pcd_path.string ().c_str ());
       continue;
@@ -323,7 +323,7 @@ main (int argc, char* argv[])
   }
 
   // Get root directory
-  boost::filesystem::path root_dir (argv[argc - 1]);
+  pcl_fs::path root_dir (argv[argc - 1]);
 
   // Check if a root directory was specified, use directory of pcd file
   if (root_dir.extension () == ".pcd")

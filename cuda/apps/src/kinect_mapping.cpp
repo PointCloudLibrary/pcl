@@ -53,8 +53,6 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 
-#include <boost/filesystem.hpp>
-
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
