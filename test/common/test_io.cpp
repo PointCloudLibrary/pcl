@@ -214,6 +214,134 @@ TEST (PCL, concatenatePointCloud2)
   EXPECT_FALSE (pcl::concatenate (cloud2, cloud1, cloud_out4));
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, concatenatePointCloud2FieldLayout)
+{
+  auto add_field = [](pcl::PCLPointCloud2& cloud, const std::string& name, const std::uint8_t datatype)
+  {
+    cloud.fields.emplace_back ();
+    cloud.fields.back ().name = name;
+    cloud.fields.back ().offset = cloud.point_step;
+    cloud.fields.back ().datatype = datatype;
+    cloud.fields.back ().count = 1;
+    cloud.point_step += pcl::getFieldSize (datatype);
+  };
+  auto resize = [](pcl::PCLPointCloud2& cloud, const pcl::uindex_t width)
+  {
+    cloud.width = width;
+    cloud.height = 1;
+    cloud.row_step = cloud.width * cloud.point_step;
+    cloud.data.resize (cloud.row_step);
+  };
+
+  // x, y and z without padding (point_step 12), as read from a file
+  pcl::PCLPointCloud2 cloud_packed;
+  add_field (cloud_packed, "x", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_packed, "y", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_packed, "z", pcl::PCLPointField::FLOAT32);
+  resize (cloud_packed, 3);
+  const std::vector<float> xyz_packed = {1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f};
+  memcpy (cloud_packed.data.data (), xyz_packed.data (), cloud_packed.data.size ());
+
+  // The same fields with padding (point_step 16)
+  CloudXYZ cloud_xyz;
+  cloud_xyz.emplace_back (10.f, 11.f, 12.f);
+  cloud_xyz.emplace_back (13.f, 14.f, 15.f);
+  pcl::PCLPointCloud2 cloud_padded;
+  pcl::toPCLPointCloud2 (cloud_xyz, cloud_padded);
+  ASSERT_GT (cloud_padded.point_step, cloud_packed.point_step);
+
+  // The points of cloud_xyz followed by the points of cloud_packed
+  auto expect_concatenated = [&](const pcl::PCLPointCloud2& cloud)
+  {
+    ASSERT_EQ (cloud_xyz.size () + 3, cloud.width * cloud.height);
+    ASSERT_EQ (cloud.width * cloud.height * cloud.point_step, cloud.data.size ());
+    CloudXYZ cloud_all;
+    pcl::fromPCLPointCloud2 (cloud, cloud_all);
+    for (std::size_t i = 0; i < cloud_xyz.size (); ++i)
+      EXPECT_XYZ_EQ (cloud_all[i], cloud_xyz[i]);
+    for (std::size_t i = 0; i < 3; ++i)
+    {
+      EXPECT_EQ (cloud_all[cloud_xyz.size () + i].x, xyz_packed[3 * i]);
+      EXPECT_EQ (cloud_all[cloud_xyz.size () + i].y, xyz_packed[3 * i + 1]);
+      EXPECT_EQ (cloud_all[cloud_xyz.size () + i].z, xyz_packed[3 * i + 2]);
+    }
+  };
+
+  // Same field names, different point_step
+  pcl::PCLPointCloud2 cloud_out;
+  ASSERT_TRUE (pcl::concatenate (cloud_padded, cloud_packed, cloud_out));
+  expect_concatenated (cloud_out);
+
+  // Same field names and point_step, different offsets
+  pcl::PCLPointCloud2 cloud_shifted, cloud_out_shifted;
+  cloud_shifted.point_step = 4;
+  add_field (cloud_shifted, "x", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_shifted, "y", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_shifted, "z", pcl::PCLPointField::FLOAT32);
+  ASSERT_EQ (cloud_padded.point_step, cloud_shifted.point_step);
+  resize (cloud_shifted, 3);
+  for (std::size_t i = 0; i < 3; ++i)
+    memcpy (&cloud_shifted.data[i * cloud_shifted.point_step + 4], &xyz_packed[3 * i], 3 * sizeof (float));
+  ASSERT_TRUE (pcl::concatenate (cloud_padded, cloud_shifted, cloud_out_shifted));
+  expect_concatenated (cloud_out_shifted);
+
+  // Skip field in the middle of the first cloud only
+  pcl::PCLPointCloud2 cloud_skip, cloud_out_skip;
+  add_field (cloud_skip, "x", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_skip, "y", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_skip, "_", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_skip, "z", pcl::PCLPointField::FLOAT32);
+  resize (cloud_skip, 2);
+  ASSERT_TRUE (pcl::concatenate (cloud_skip, cloud_packed, cloud_out_skip));
+  ASSERT_EQ (5u, cloud_out_skip.width * cloud_out_skip.height);
+  ASSERT_EQ (cloud_out_skip.width * cloud_out_skip.height * cloud_out_skip.point_step, cloud_out_skip.data.size ());
+  for (std::size_t i = 0; i < 3; ++i)
+  {
+    float xyz[4];
+    memcpy (xyz, &cloud_out_skip.data[(2 + i) * cloud_out_skip.point_step], sizeof (xyz));
+    EXPECT_EQ (xyz[0], xyz_packed[3 * i]);
+    EXPECT_EQ (xyz[1], xyz_packed[3 * i + 1]);
+    EXPECT_EQ (xyz[3], xyz_packed[3 * i + 2]);
+  }
+
+  // Field with a different size
+  pcl::PCLPointCloud2 cloud_double;
+  add_field (cloud_double, "x", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_double, "y", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_double, "z", pcl::PCLPointField::FLOAT64);
+  resize (cloud_double, 3);
+  EXPECT_FALSE (pcl::concatenate (cloud_padded, cloud_double, cloud_out));
+  EXPECT_FALSE (pcl::concatenate (cloud_packed, cloud_double, cloud_out));
+  cloud_double.fields[2].datatype = pcl::PCLPointField::FLOAT32;
+  cloud_double.fields[2].count = 2;
+  EXPECT_FALSE (pcl::concatenate (cloud_packed, cloud_double, cloud_out));
+
+  // Field outside of the point
+  pcl::PCLPointCloud2 cloud_short = cloud_packed;
+  cloud_short.point_step = 8;
+  resize (cloud_short, 3);
+  EXPECT_FALSE (pcl::concatenate (cloud_padded, cloud_short, cloud_out));
+  EXPECT_FALSE (pcl::concatenate (cloud_short, cloud_padded, cloud_out));
+
+  // Data smaller than width * height * point_step
+  cloud_short = cloud_packed;
+  cloud_short.data.resize (cloud_short.data.size () - 1);
+  EXPECT_FALSE (pcl::concatenate (cloud_padded, cloud_short, cloud_out));
+  EXPECT_FALSE (pcl::concatenate (cloud_packed, cloud_short, cloud_out));
+  EXPECT_FALSE (pcl::concatenate (cloud_short, cloud_packed, cloud_out));
+
+  // Different names after skip fields
+  pcl::PCLPointCloud2 cloud_skip_x, cloud_y;
+  add_field (cloud_skip_x, "_", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_skip_x, "_", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_skip_x, "x", pcl::PCLPointField::FLOAT32);
+  resize (cloud_skip_x, 2);
+  add_field (cloud_y, "y", pcl::PCLPointField::FLOAT32);
+  resize (cloud_y, 2);
+  EXPECT_FALSE (pcl::concatenate (cloud_skip_x, cloud_y, cloud_out));
+}
+
 TEST (PCL, CopyPointCloudWithIndicesAndRGBToRGBA)
 {
   CloudXYZRGB cloud_xyz_rgb;
