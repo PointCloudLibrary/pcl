@@ -8,8 +8,11 @@ steps:
     displayName: 'Install Dependencies'
   - script: |
       mkdir $BUILD_DIR && cd $BUILD_DIR
+      # Use Homebrew's libpng headers: CMake would otherwise find the libpng 1.4
+      # headers in Mono.framework, which do not match the Homebrew library
       cmake $(Build.SourcesDirectory) \
         -DCMAKE_BUILD_TYPE="MinSizeRel" \
+        -DPNG_PNG_INCLUDE_DIR="$(brew --prefix libpng)/include" \
         -DCMAKE_OSX_SYSROOT="/Library/Developer/CommandLineTools/SDKs/MacOSX$(OSX_VERSION).sdk" \
         -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
