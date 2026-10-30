@@ -270,8 +270,8 @@ namespace pcl
                                                               PointCloudPtr &cloud_arg,
                                                               bool bShowStatistics_arg)
     {
-      std::uint32_t cloud_width;
-      std::uint32_t cloud_height;
+      std::uint32_t cloud_width = 0;
+      std::uint32_t cloud_height = 0;
       float maxDepth;
       float focalLength;
       float disparityShift = 0.0f;
@@ -285,8 +285,8 @@ namespace pcl
       std::vector<std::uint8_t> compressedDisparity;
       std::vector<std::uint8_t> compressedColor;
 
-      std::uint32_t compressedDisparitySize;
-      std::uint32_t compressedColorSize;
+      std::uint32_t compressedDisparitySize = 0;
+      std::uint32_t compressedColorSize = 0;
 
       // PNG decoded parameters
       unsigned int png_channels = 1;
@@ -335,6 +335,15 @@ namespace pcl
 
         // decode PNG compressed rgb data
         decodePNGToImage (compressedColor, colorData, png_width, png_height, png_channels);
+
+        // the decoded images must hold exactly one value (or color) per point of the frame header
+        const std::uint64_t cloud_size = static_cast<std::uint64_t> (cloud_width) * cloud_height;
+        if ((disparityData.size () != cloud_size) ||
+            (!colorData.empty () && (colorData.size () != ((png_channels == 1) ? cloud_size : 3 * cloud_size))))
+        {
+          PCL_ERROR("[OrganizedPointCloudCompression::decodePointCloud] Size of the decoded images does not match the point cloud size %u x %u!\n", cloud_width, cloud_height);
+          return false;
+        }
       } else {
         PCL_ERROR("[OrganizedPointCloudCompression::decodePointCloud] Unable to find an encoded point cloud in the input stream!\n");
         return false;
