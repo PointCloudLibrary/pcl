@@ -280,7 +280,7 @@ namespace pcl
    *
    * \param value value to store
    * \param data  data pointer
-   * \param type  point field type
+   * \param type  point field type (see pcl::PCLPointField::PointFieldTypes)
    * \ingroup common
    */
   inline void storeFieldValue (const double value, std::uint8_t* data, const std::uint8_t type);

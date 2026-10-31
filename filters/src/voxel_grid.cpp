@@ -38,6 +38,7 @@
  *
  */
 
+#include <cmath>
 #include <limits>
 #include <pcl/common/io.h>
 #include <pcl/filters/impl/voxel_grid.hpp>
@@ -382,8 +383,12 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       // full extra r/g/b centroid field
       if (rgba_index >= 0)
       {
-        double r = centroid[centroid_size-4], g = centroid[centroid_size-3], b = centroid[centroid_size-2], a = centroid[centroid_size-1];
-        std::uint32_t rgb = (static_cast<std::uint32_t> (a) << 24) | (static_cast<std::uint32_t> (r) << 16) | (static_cast<std::uint32_t> (g) << 8) | static_cast<std::uint32_t> (b);
+        // round each averaged channel to the nearest value (e.g. 255, 255 and 254 give 255)
+        const auto r = static_cast<std::uint32_t> (std::round (centroid[centroid_size-4]));
+        const auto g = static_cast<std::uint32_t> (std::round (centroid[centroid_size-3]));
+        const auto b = static_cast<std::uint32_t> (std::round (centroid[centroid_size-2]));
+        const auto a = static_cast<std::uint32_t> (std::round (centroid[centroid_size-1]));
+        std::uint32_t rgb = (a << 24) | (r << 16) | (g << 8) | b;
         memcpy (&output.data[point_offset + output.fields[rgba_index].offset], &rgb, sizeof (float));
       }
     }

@@ -1291,6 +1291,37 @@ TEST(VoxelGrid, DownsampleAllDataSmallRGBField)
   EXPECT_EQ(output.at<std::uint16_t>(0, 14), 256);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(VoxelGrid, DownsampleAllDataRGBARounded)
+{
+  // Each averaged color channel is rounded to the nearest value
+  const auto pack = [](std::uint32_t a, std::uint32_t r, std::uint32_t g, std::uint32_t b) {
+    return (a << 24) | (r << 16) | (g << 8) | b;
+  };
+  auto input = pcl::make_shared<PCLPointCloud2>();
+  input->fields = {{"x", 0, PCLPointField::FLOAT32, 1},
+                   {"y", 4, PCLPointField::FLOAT32, 1},
+                   {"z", 8, PCLPointField::FLOAT32, 1},
+                   {"rgba", 12, PCLPointField::UINT32, 1}};
+  input->point_step = 16;
+  input->width = 3;
+  input->height = 1;
+  input->row_step = input->point_step * input->width;
+  input->data.resize(input->row_step); // all points at the origin
+  input->at<std::uint32_t>(0, 12) = pack(255, 255, 0, 1);
+  input->at<std::uint32_t>(1, 12) = pack(255, 255, 0, 2);
+  input->at<std::uint32_t>(2, 12) = pack(254, 254, 1, 2);
+
+  VoxelGrid<PCLPointCloud2> grid;
+  grid.setInputCloud(input);
+  grid.setLeafSize(1.0f, 1.0f, 1.0f);
+  PCLPointCloud2 output;
+  grid.filter(output);
+
+  ASSERT_EQ(output.width * output.height, 1);
+  EXPECT_EQ(output.at<std::uint32_t>(0, 12), pack(255, 255, 0, 2));
+}
+
 #if 0
 ////////////////////////////////////////////////////////////////////////////////
 float getRandomNumber (float max = 1.0, float min = 0.0)
