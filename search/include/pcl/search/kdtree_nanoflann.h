@@ -179,7 +179,11 @@ using SO3_Adaptor =
 template <typename PointT,
           std::int32_t Dim = 3,
           typename Distance =
+#if defined(DOXYGEN_ONLY)
+              L2_Simple_Adaptor, // doxygen seems to have problems parsing conditional_t with greater-equal
+#else
               std::conditional_t<Dim >= 4, L2_Adaptor, L2_Simple_Adaptor>,
+#endif
           typename Tree = nanoflann::KDTreeSingleIndexAdaptor<
               Distance,
               pcl::search::internal::PointCloudAdaptor<float>,
