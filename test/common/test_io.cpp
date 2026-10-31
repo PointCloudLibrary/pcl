@@ -40,6 +40,10 @@
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 
+#include <array>
+#include <cstring>
+#include <limits>
+
 using namespace pcl;
 
 using CloudXYZRGBA = PointCloud<PointXYZRGBA>;
@@ -370,6 +374,51 @@ TEST(PCL, fromPCLPointCloud2CastingSHOT352)
     for(std::size_t j=0; j<9; ++j)
       EXPECT_EQ(cloud[i].rf[j], (10*i+j)/10.0f);
   }
+}
+
+TEST(PCL, pointFieldAs)
+{
+  // the fields of a PCLPointCloud2 need not be aligned
+  std::array<std::uint8_t, 1 + sizeof(double)> data{};
+  const double timestamp = 1700000000.25;
+  memcpy(&data[1], &timestamp, sizeof(timestamp));
+  EXPECT_EQ(pcl::point_field_as<double>(&data[1], pcl::PCLPointField::FLOAT64), timestamp);
+  const std::int8_t tag = -5;
+  memcpy(&data[1], &tag, sizeof(tag));
+  EXPECT_EQ(pcl::point_field_as<double>(&data[1], pcl::PCLPointField::INT8), -5.0);
+  EXPECT_EQ(pcl::point_field_as<int>(&data[1], pcl::PCLPointField::INT8), -5);
+}
+
+TEST(PCL, storeFieldValue)
+{
+  std::array<std::uint8_t, 2 + sizeof(double)> data{};
+  const auto store_and_load = [&data](double value, std::uint8_t type) {
+    pcl::storeFieldValue(value, &data[1], type);
+    return pcl::point_field_as<double>(&data[1], type);
+  };
+  // floating point types keep the value, as far as their precision allows
+  EXPECT_EQ(store_and_load(1700000000.25, pcl::PCLPointField::FLOAT64), 1700000000.25);
+  EXPECT_EQ(store_and_load(0.1, pcl::PCLPointField::FLOAT32), static_cast<double>(0.1f));
+  // integer types are rounded to the nearest value
+  EXPECT_EQ(store_and_load(2.4, pcl::PCLPointField::INT32), 2.0);
+  EXPECT_EQ(store_and_load(-4.5, pcl::PCLPointField::INT8), -5.0);
+  EXPECT_EQ(store_and_load(59999.5, pcl::PCLPointField::UINT16), 60000.0);
+  EXPECT_EQ(store_and_load(0.75, pcl::PCLPointField::BOOL), 1.0);
+  EXPECT_EQ(store_and_load(0.25, pcl::PCLPointField::BOOL), 0.0);
+  // and saturated to their range
+  EXPECT_EQ(store_and_load(300.0, pcl::PCLPointField::UINT8), 255.0);
+  EXPECT_EQ(store_and_load(-1.0, pcl::PCLPointField::UINT32), 0.0);
+  EXPECT_EQ(store_and_load(-200.0, pcl::PCLPointField::INT8), -128.0);
+  EXPECT_EQ(store_and_load(-1e30, pcl::PCLPointField::INT16), -32768.0);
+  EXPECT_EQ(store_and_load(1e30, pcl::PCLPointField::INT64),
+            static_cast<double>(std::numeric_limits<std::int64_t>::max()));
+  EXPECT_EQ(store_and_load(1e30, pcl::PCLPointField::UINT64),
+            static_cast<double>(std::numeric_limits<std::uint64_t>::max()));
+  // only the bytes of the field are written
+  data.fill(0xAA);
+  pcl::storeFieldValue(1.0, &data[1], pcl::PCLPointField::UINT16);
+  EXPECT_EQ(data[0], 0xAA);
+  EXPECT_EQ(data[3], 0xAA);
 }
 
 /* ---[ */
