@@ -305,6 +305,38 @@ TEST (PCL, concatenatePointCloud2FieldLayout)
     EXPECT_EQ (xyz[3], xyz_packed[3 * i + 2]);
   }
 
+  // Skip fields at the end of both clouds, with different sizes, or of one cloud only
+  auto expect_appended_xyz = [&](const pcl::PCLPointCloud2& cloud, const std::size_t first)
+  {
+    ASSERT_EQ (first + 3, cloud.width * cloud.height);
+    ASSERT_EQ (cloud.width * cloud.height * cloud.point_step, cloud.data.size ());
+    for (std::size_t i = 0; i < 3; ++i)
+    {
+      float xyz[3];
+      memcpy (xyz, &cloud.data[(first + i) * cloud.point_step], sizeof (xyz));
+      EXPECT_EQ (xyz[0], xyz_packed[3 * i]);
+      EXPECT_EQ (xyz[1], xyz_packed[3 * i + 1]);
+      EXPECT_EQ (xyz[2], xyz_packed[3 * i + 2]);
+    }
+  };
+  pcl::PCLPointCloud2 cloud_skip_end, cloud_skip_end_double, cloud_out_skip_end;
+  add_field (cloud_skip_end, "x", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_skip_end, "y", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_skip_end, "z", pcl::PCLPointField::FLOAT32);
+  add_field (cloud_skip_end, "_", pcl::PCLPointField::FLOAT32);
+  resize (cloud_skip_end, 2);
+  cloud_skip_end_double = cloud_packed;
+  add_field (cloud_skip_end_double, "_", pcl::PCLPointField::FLOAT64);
+  resize (cloud_skip_end_double, 3);
+  for (std::size_t i = 0; i < 3; ++i)
+    memcpy (&cloud_skip_end_double.data[i * cloud_skip_end_double.point_step], &xyz_packed[3 * i], 3 * sizeof (float));
+  ASSERT_TRUE (pcl::concatenate (cloud_skip_end, cloud_skip_end_double, cloud_out_skip_end));
+  expect_appended_xyz (cloud_out_skip_end, 2);
+  ASSERT_TRUE (pcl::concatenate (cloud_skip_end, cloud_packed, cloud_out_skip_end));
+  expect_appended_xyz (cloud_out_skip_end, 2);
+  ASSERT_TRUE (pcl::concatenate (cloud_padded, cloud_skip_end_double, cloud_out_skip_end));
+  expect_concatenated (cloud_out_skip_end);
+
   // Field with a different size
   pcl::PCLPointCloud2 cloud_double;
   add_field (cloud_double, "x", pcl::PCLPointField::FLOAT32);
@@ -323,6 +355,7 @@ TEST (PCL, concatenatePointCloud2FieldLayout)
   resize (cloud_short, 3);
   EXPECT_FALSE (pcl::concatenate (cloud_padded, cloud_short, cloud_out));
   EXPECT_FALSE (pcl::concatenate (cloud_short, cloud_padded, cloud_out));
+  EXPECT_FALSE (pcl::concatenate (cloud_short, cloud_short, cloud_out));
 
   // Data smaller than width * height * point_step
   cloud_short = cloud_packed;
