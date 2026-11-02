@@ -130,9 +130,7 @@ EXCLUDE                = "@PCL_SOURCE_DIR@/cmake" \
                          "@PCL_SOURCE_DIR@/test" \
                          "@PCL_SOURCE_DIR@/apps" \
                          "@PCL_SOURCE_DIR@/tools" \
-                         "@PCL_SOURCE_DIR@/surface/include/pcl/surface/3rdparty" \
                          "@PCL_SOURCE_DIR@/surface/include/pcl/surface/on_nurbs" \
-                         "@PCL_SOURCE_DIR@/recognition/include/pcl/recognition/3rdparty" \
                          "@PCL_SOURCE_DIR@/simulation"
 EXCLUDE_SYMLINKS       = YES
 EXCLUDE_PATTERNS       =
