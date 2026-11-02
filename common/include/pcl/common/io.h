@@ -273,6 +273,18 @@ namespace pcl
    */
   template <typename T> T point_field_as (const std::uint8_t* data, const std::uint8_t type);
 
+  /**
+   * \brief   Set the value of a point field from raw data pointer and field type.
+   *
+   * Integer field types are rounded to the nearest value and saturated to their range.
+   *
+   * \param value value to store
+   * \param data  data pointer
+   * \param type  point field type (see pcl::PCLPointField::PointFieldTypes)
+   * \ingroup common
+   */
+  inline void storeFieldValue (const double value, std::uint8_t* data, const std::uint8_t type);
+
 
   enum InterpolationType
   {

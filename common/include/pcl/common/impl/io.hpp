@@ -45,6 +45,11 @@
 #include <pcl/common/copy_point.h>
 #include <pcl/common/io.h>
 
+#include <cmath> // for std::round
+#include <cstring> // for memcpy
+#include <limits>
+#include <type_traits>
+
 namespace pcl
 {
 
@@ -138,7 +143,11 @@ getFieldsList (const pcl::PointCloud<PointT> &)
  */
 template <typename DType, typename RType> RType reinterpret_and_cast (const std::uint8_t* p)
 {
-  return static_cast<RType>(*reinterpret_cast<const DType*>(p));
+  // memcpy instead of dereferencing p as a DType*: the fields of a PCLPointCloud2 need
+  // not be aligned (e.g. a double right after a 1 byte field)
+  DType value;
+  memcpy (&value, p, sizeof (DType));
+  return static_cast<RType>(value);
 }
 
 template <typename T> T point_field_as (const std::uint8_t* data, const std::uint8_t type)
@@ -146,6 +155,9 @@ template <typename T> T point_field_as (const std::uint8_t* data, const std::uin
   switch (type) {
   case pcl::PCLPointField::PointFieldTypes::FLOAT32:
     return reinterpret_and_cast<float, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::INT8:
+    return reinterpret_and_cast<std::int8_t, T>(data);
     break;
   case pcl::PCLPointField::PointFieldTypes::UINT8:
     return reinterpret_and_cast<std::uint8_t, T>(data);
@@ -176,6 +188,68 @@ template <typename T> T point_field_as (const std::uint8_t* data, const std::uin
     break;
   default:
     return 0;
+    break;
+  }
+}
+
+/**
+ * \brief convert a value to a type and store it at a pointer. Integer types are rounded
+ * to the nearest value and saturated to the range of the type (64 bit integers are not
+ * exact in double).
+ *
+ * \tparam DType Type the value is stored as
+ */
+template <typename DType> void storeFieldValueAs (const double value, std::uint8_t* p)
+{
+  DType result;
+  if constexpr (std::is_floating_point_v<DType>)
+    result = static_cast<DType>(value);
+  else if (!(value > static_cast<double>(std::numeric_limits<DType>::lowest())))
+    result = std::numeric_limits<DType>::lowest();
+  else if (value >= static_cast<double>(std::numeric_limits<DType>::max()))
+    result = std::numeric_limits<DType>::max();
+  else
+    result = static_cast<DType>(std::round(value));
+  memcpy (p, &result, sizeof (DType));
+}
+
+inline void storeFieldValue (const double value, std::uint8_t* data, const std::uint8_t type)
+{
+  switch (type) {
+  case pcl::PCLPointField::PointFieldTypes::FLOAT32:
+    storeFieldValueAs<float>(value, data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::INT8:
+    storeFieldValueAs<std::int8_t>(value, data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT8:
+    storeFieldValueAs<std::uint8_t>(value, data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT16:
+    storeFieldValueAs<std::uint16_t>(value, data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT32:
+    storeFieldValueAs<std::uint32_t>(value, data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT64:
+    storeFieldValueAs<std::uint64_t>(value, data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::BOOL:
+    storeFieldValueAs<bool>(value, data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::FLOAT64:
+    storeFieldValueAs<double>(value, data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::INT16:
+    storeFieldValueAs<std::int16_t>(value, data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::INT32:
+    storeFieldValueAs<std::int32_t>(value, data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::INT64:
+    storeFieldValueAs<std::int64_t>(value, data);
+    break;
+  default:
     break;
   }
 }
