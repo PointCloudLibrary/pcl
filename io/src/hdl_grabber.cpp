@@ -193,11 +193,11 @@ pcl::HDLGrabber::initialize (const std::string& correctionsFile)
 void
 pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
 {
+  // Lasers the file has no correction for, or all of them if it can't be read,
+  // keep the HDL-32 corrections
+  loadHDL32Corrections ();
   if (correctionsFile.empty ())
-  {
-    loadHDL32Corrections ();
     return;
-  }
 
   boost::property_tree::ptree pt;
   try
