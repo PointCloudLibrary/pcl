@@ -138,6 +138,11 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
       {
         current_azimuth -= 36000;
       }
+      // A first firing with an azimuth above 36000 makes the delta negative
+      else if (current_azimuth < 0)
+      {
+        current_azimuth += 36000;
+      }
       if (current_azimuth < HDLGrabber::last_azimuth_)
       {
         if (!current_sweep_xyz_->empty ())

@@ -38,6 +38,9 @@ PCL_ADD_TEST (io_grabbers test_grabbers
 PCL_ADD_TEST(io_hdl_grabber test_hdl_grabber
               FILES test_hdl_grabber.cpp
               LINK_WITH pcl_gtest pcl_io)
+if(PCAP_FOUND)
+  target_compile_definitions(test_hdl_grabber PRIVATE HAVE_PCAP)
+endif()
 
 PCL_ADD_TEST(io_ply_io test_ply_io
               FILES test_ply_io.cpp
