@@ -62,13 +62,27 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &
 {
   input_ = cloud;
 
+  // The x-y-z fields are read as single floats at their offset, so only use fields that
+  // hold one FLOAT32 value inside a point. Reset the indices, so that a field of a
+  // previous cloud is not used for this one.
+  x_idx_ = y_idx_ = z_idx_ = UNAVAILABLE;
   for (std::size_t d = 0; d < cloud->fields.size (); ++d)
   {
-    if (cloud->fields[d].name == x_field_name_)
+    const auto& field = cloud->fields[d];
+    if (field.name != x_field_name_ && field.name != y_field_name_ && field.name != z_field_name_)
+      continue;
+    if (field.datatype != pcl::PCLPointField::FLOAT32 || field.count > 1 ||
+        static_cast<std::size_t>(field.offset) + sizeof (float) > cloud->point_step)
+    {
+      PCL_WARN ("[PCLBase::setInputCloud] Field %s is not a single FLOAT32 value inside a point and is not used!\n",
+                field.name.c_str ());
+      continue;
+    }
+    if (field.name == x_field_name_)
       x_idx_ = d;
-    if (cloud->fields[d].name == y_field_name_)
+    if (field.name == y_field_name_)
       y_idx_ = d;
-    if (cloud->fields[d].name == z_field_name_)
+    if (field.name == z_field_name_)
       z_idx_ = d;
   }
 
@@ -105,6 +119,15 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
   // Check if input was set
   if (!input_)
     return (false);
+
+  // Check that the data holds all the points
+  const auto data_size = static_cast<std::size_t>(input_->width) * input_->height * input_->point_step;
+  if (input_->data.size () < data_size)
+  {
+    PCL_ERROR ("[initCompute] The input cloud has %zu bytes of data, but width * height * point_step is %zu!\n",
+               input_->data.size (), data_size);
+    return (false);
+  }
 
   // If no point indices have been given, construct a set of indices for the entire input point cloud
   if (!indices_)

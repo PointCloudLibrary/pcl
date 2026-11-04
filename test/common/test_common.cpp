@@ -51,6 +51,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/point_tests.h> // for isFinite
 #include <pcl/point_representation.h>
+#include <pcl/range_image/range_image.h>
 
 using namespace pcl;
 
@@ -585,6 +586,69 @@ TYPED_TEST(PointRepresentationTest, GetNormalVectorXfMap)
 {
   pcl::DefaultPointRepresentation<TypeParam> point_representation;
   EXPECT_EQ (pcl::DefaultPointRepresentation<TypeParam>::NR_DIMS, point_representation.getNumberOfDimensions());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, GetMinMaxFieldLayout)
+{
+  pcl::PCLPointCloud2 cloud;
+  cloud.width = cloud.height = 1;
+  cloud.fields.resize (1);
+  cloud.fields[0].name = "histogram";
+  cloud.fields[0].count = 3;
+
+  // A FLOAT32 field gives the minimum and maximum of its values
+  cloud.fields[0].datatype = pcl::PCLPointField::FLOAT32;
+  const std::vector<float> values {1.0f, -2.0f, 3.0f};
+  cloud.point_step = static_cast<pcl::uindex_t> (values.size () * sizeof (float));
+  cloud.data.resize (cloud.point_step);
+  memcpy (cloud.data.data (), values.data (), cloud.data.size ());
+  float min_p, max_p;
+  pcl::getMinMax (cloud, 0, "histogram", min_p, max_p);
+  EXPECT_EQ (min_p, -2.0f);
+  EXPECT_EQ (max_p, 3.0f);
+
+  // Values of other types are not read as floats
+  cloud.fields[0].datatype = pcl::PCLPointField::UINT8;
+  cloud.point_step = 3;
+  cloud.data.assign (3, 1);
+  pcl::getMinMax (cloud, 0, "histogram", min_p, max_p);
+  EXPECT_EQ (min_p, std::numeric_limits<float>::max ());
+  EXPECT_EQ (max_p, -std::numeric_limits<float>::max ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, ExtractFarRangesFieldLayout)
+{
+  pcl::PCLPointCloud2 cloud;
+  cloud.width = cloud.height = 1;
+  for (const auto& name : {"x", "y", "z", "vp_x", "vp_y", "vp_z", "distance"})
+  {
+    pcl::PCLPointField field;
+    field.name = name;
+    field.datatype = pcl::PCLPointField::FLOAT32;
+    field.count = 1;
+    field.offset = cloud.point_step;
+    cloud.point_step += sizeof (float);
+    cloud.fields.push_back (field);
+  }
+  // A far range: x is not finite, the distance is
+  std::vector<float> values {std::numeric_limits<float>::quiet_NaN (), 2.0f, 3.0f, 0.0f, 0.0f, 0.0f, 5.0f};
+  cloud.data.resize (cloud.point_step);
+  memcpy (cloud.data.data (), values.data (), cloud.data.size ());
+  pcl::PointCloud<pcl::PointWithViewpoint> far_ranges;
+  pcl::RangeImage::extractFarRanges (cloud, far_ranges);
+  ASSERT_EQ (far_ranges.size (), 1);
+  EXPECT_EQ (far_ranges[0].x, 5.0f);
+  EXPECT_EQ (far_ranges[0].y, 2.0f);
+
+  // A one byte distance is not read as a float
+  cloud.fields.back ().datatype = pcl::PCLPointField::UINT8;
+  cloud.point_step = cloud.fields.back ().offset + 1;
+  cloud.data.resize (cloud.point_step);
+  far_ranges.clear ();
+  pcl::RangeImage::extractFarRanges (cloud, far_ranges);
+  EXPECT_TRUE (far_ranges.empty ());
 }
 
 /* ---[ */

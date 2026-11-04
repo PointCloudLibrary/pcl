@@ -106,9 +106,9 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
       if (keep_organized_)
       {
           /* Set the current point to NaN. */
-          *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step])+0) = std::numeric_limits<float>::quiet_NaN();
-          *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step])+1) = std::numeric_limits<float>::quiet_NaN();
-          *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step])+2) = std::numeric_limits<float>::quiet_NaN();
+          const float nan_value = std::numeric_limits<float>::quiet_NaN ();
+          for (const auto field_idx : {x_idx_, y_idx_, z_idx_})
+            memcpy (&output.data[nr_p * output.point_step + input_->fields[field_idx].offset], &nan_value, sizeof (float));
           nr_p++;
           output.is_dense = false;
       }
