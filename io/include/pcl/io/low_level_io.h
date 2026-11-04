@@ -194,9 +194,11 @@ namespace pcl
         return 0;
 
       // posix_fallocate does not set errno
-      // EINVAL should indicate an unsupported filesystem.
+      // EINVAL should indicate an unsupported filesystem. POSIX.1-2024 uses
+      // ENOTSUP for that instead, and FreeBSD has been seen returning
+      // EOPNOTSUPP here.
       // All other errors are passed up.
-      if (res != EINVAL)
+      if (res != EINVAL && res != ENOTSUP && res != EOPNOTSUPP)
         return res;
 #  endif
 
