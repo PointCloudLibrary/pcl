@@ -15,6 +15,13 @@ enables to efficiently merge point cloud data from several sources.
 
      .. |octreeCompression| image:: images/compression_tutorial.png
 
+.. note::
+
+   The octree-based compression only encodes the point coordinates (x, y, z) and, optionally, the RGB color of
+   each point. All other point fields, such as intensity or normals, are not part of the compressed stream: after
+   decoding they hold the default values of the point type (for example, the intensity of a ``pcl::PointXYZI``
+   is 0).
+
 In the following, we explain how single point clouds as well
 as streams of points clouds can be efficiently compressed. 
 In the presented example, we capture point clouds with the OpenNIGrabber to be compressed using the PCL point cloud compression techniques.

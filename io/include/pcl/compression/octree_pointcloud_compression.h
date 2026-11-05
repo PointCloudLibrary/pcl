@@ -56,7 +56,12 @@ namespace pcl
   {
     /** \brief @b Octree pointcloud compression class
      *  \note This class enables compression and decompression of point cloud data based on octree data structures. It is a lossy compression. See also `PCDWriter` for another way to compress point cloud data.
-     *  \note
+     *  \note Only the point coordinates (x, y, z) and, if color encoding is enabled and the point type has an `rgb`/`rgba`
+     *  field, the color are encoded. All other point fields (e.g. intensity, normals, curvature, labels) are not stored
+     *  in the compressed stream; after decoding they hold the default-constructed values of `PointT` (for example,
+     *  the intensity of a `PointXYZI` is 0). If such information is needed, it has to be transmitted separately.
+     *  \note This class is precompiled for `PointXYZ`, `PointXYZRGB` and `PointXYZRGBA`. For other point types, include
+     *  `pcl/compression/impl/octree_pointcloud_compression.hpp` as well.
      *  \note typename: PointT: type of point used in pointcloud
      *  \author Julius Kammerl (julius@kammerl.de)
      */
