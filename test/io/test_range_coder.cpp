@@ -167,6 +167,27 @@ TEST (PCL, Static_Range_Coder_Test)
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, Static_Range_Coder_Malformed_Frequency_Table)
+{
+  // A crafted stream advertises a per-entry byte size larger than a
+  // cumulative frequency entry (std::uint64_t). The decoder used that value as
+  // the read length into each 8-byte table slot, writing past cFreqTable_ on
+  // the last entry. The malformed field must be rejected instead.
+  std::stringstream sstream;
+  const std::uint64_t frequencyTableSize = 131075;
+  const std::uint8_t frequencyTableByteSize = 255;
+  sstream.write (reinterpret_cast<const char*> (&frequencyTableSize), sizeof (frequencyTableSize));
+  sstream.write (reinterpret_cast<const char*> (&frequencyTableByteSize), sizeof (frequencyTableByteSize));
+  sstream << std::string (static_cast<std::size_t> (frequencyTableSize) * frequencyTableByteSize + 64, '\x41');
+
+  pcl::StaticRangeCoder rangeCoder;
+  std::vector<unsigned int> outputIntData (1);
+
+  // Must return without overflowing cFreqTable_.
+  rangeCoder.decodeStreamToIntVector (sstream, outputIntData);
+}
+
 
 /* ---[ */
 int
