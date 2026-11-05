@@ -135,9 +135,15 @@ TEST(PCL, OrganizedPointCloudCompressionDecodePointCloud)
 TEST(PCL, OrganizedPointCloudCompressionDecodePointCloudHeaderSizeMismatch)
 {
   // The header size must match the size of the encoded images, both when
-  // decoding disparity (shift 0) and raw shift values (shift != 0)
+  // decoding disparity (shift 0) and raw shift values (shift != 0), also when
+  // only the number of points matches (12 x 4 and 6 x 8 frames of 8 x 6 images)
   const std::vector<std::pair<std::uint32_t, std::uint32_t>> wrong_sizes = {
-      {2 * width, height}, {width, 2 * height}, {width / 2, height}, {65536, 65536}};
+      {2 * width, height},
+      {width, 2 * height},
+      {width / 2, height},
+      {65536, 65536},
+      {3 * width / 2, 2 * height / 3},
+      {height, width}};
   const auto disparity_png = disparityPNG(width, height);
   for (const float disparity_shift : {0.0f, 174.825f})
     for (const auto& color_png : {std::vector<std::uint8_t>(),
@@ -154,9 +160,14 @@ TEST(PCL, OrganizedPointCloudCompressionDecodePointCloudHeaderSizeMismatch)
 
 TEST(PCL, OrganizedPointCloudCompressionDecodePointCloudColorSizeMismatch)
 {
-  // The color image must have the size of the disparity image
+  // The color image must have the size of the frame, and must decode
   const auto disparity_png = disparityPNG(width, height);
-  for (const float disparity_shift : {0.0f, 174.825f})
+  for (const float disparity_shift : {0.0f, 174.825f}) {
+    EXPECT_FALSE(decode(encodeFrame(width,
+                                    height,
+                                    disparity_shift,
+                                    disparity_png,
+                                    std::vector<std::uint8_t>(16, 0x55))));
     for (const bool mono : {false, true}) {
       EXPECT_FALSE(decode(encodeFrame(width,
                                       height,
@@ -168,7 +179,27 @@ TEST(PCL, OrganizedPointCloudCompressionDecodePointCloudColorSizeMismatch)
                                       disparity_shift,
                                       disparity_png,
                                       colorPNG(width, height / 2, mono))));
+      EXPECT_FALSE(decode(encodeFrame(width,
+                                      height,
+                                      disparity_shift,
+                                      disparity_png,
+                                      colorPNG(3 * width / 2, 2 * height / 3, mono))));
     }
+  }
+}
+
+TEST(PCL, OrganizedPointCloudCompressionDecodePointCloudTruncatedFrame)
+{
+  // A frame that ends early, in its header or in either image, must not decode
+  const auto disparity_png = disparityPNG(width, height);
+  for (const auto& color_png :
+       {std::vector<std::uint8_t>(), colorPNG(width, height, false)}) {
+    const auto frame = encodeFrame(width, height, 0.0f, disparity_png, color_png);
+    EXPECT_TRUE(decode(frame));
+    for (std::size_t size = 0; size < frame.size(); ++size)
+      EXPECT_FALSE(decode(frame.substr(0, size)))
+          << "frame cut to " << size << " bytes";
+  }
 }
 
 /* ---[ */

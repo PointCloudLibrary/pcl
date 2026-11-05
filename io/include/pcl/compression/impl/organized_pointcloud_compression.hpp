@@ -327,19 +327,32 @@ namespace pcl
         compressedColor.resize (compressedColorSize);
         compressedDataIn_arg.read (reinterpret_cast<char*> (compressedColor.data()), compressedColorSize * sizeof(std::uint8_t));
 
-        std::size_t png_width = 0;
-        std::size_t png_height = 0;
+        if (!compressedDataIn_arg)
+        {
+          PCL_ERROR("[OrganizedPointCloudCompression::decodePointCloud] The input stream ended inside the encoded point cloud!\n");
+          return false;
+        }
+
+        std::size_t disparity_width = 0;
+        std::size_t disparity_height = 0;
+        std::size_t color_width = 0;
+        std::size_t color_height = 0;
 
         // decode PNG compressed disparity data
-        decodePNGToImage (compressedDisparity, disparityData, png_width, png_height, png_channels);
+        decodePNGToImage (compressedDisparity, disparityData, disparity_width, disparity_height, png_channels);
 
         // decode PNG compressed rgb data
-        decodePNGToImage (compressedColor, colorData, png_width, png_height, png_channels);
+        decodePNGToImage (compressedColor, colorData, color_width, color_height, png_channels);
 
-        // the decoded images must hold exactly one value (or color) per point of the frame header
+        // the decoded images must have the width and height of the frame header,
+        // with exactly one value (or color) per point
         const std::uint64_t cloud_size = static_cast<std::uint64_t> (cloud_width) * cloud_height;
-        if ((disparityData.size () != cloud_size) ||
-            (!colorData.empty () && (colorData.size () != ((png_channels == 1) ? cloud_size : 3 * cloud_size))))
+        const bool disparity_valid = (disparity_width == cloud_width) && (disparity_height == cloud_height) &&
+                                     (disparityData.size () == cloud_size);
+        const bool color_valid = compressedColor.empty () ||
+                                 ((color_width == cloud_width) && (color_height == cloud_height) &&
+                                  (colorData.size () == ((png_channels == 1) ? cloud_size : 3 * cloud_size)));
+        if (!disparity_valid || !color_valid)
         {
           PCL_ERROR("[OrganizedPointCloudCompression::decodePointCloud] Size of the decoded images does not match the point cloud size %u x %u!\n", cloud_width, cloud_height);
           return false;

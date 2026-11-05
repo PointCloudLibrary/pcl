@@ -232,9 +232,6 @@ namespace pcl
 
       png_bytep * volatile row_pointers = nullptr;
 
-      if (pngData_arg.empty ())
-        return;
-
       const auto clear_outputs = [&] ()
       {
         imageData_arg.clear ();
@@ -242,6 +239,12 @@ namespace pcl
         height_arg = 0;
         channels_arg = 0;
       };
+
+      if (pngData_arg.empty ())
+      {
+        clear_outputs ();
+        return;
+      }
 
       png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, nullptr,
                                         user_error_fn, user_warning_fn);
@@ -318,6 +321,9 @@ namespace pcl
         row_pointers[y] = reinterpret_cast<png_byte*> (&imageData_arg[y * png_width * png_channels]);
 
       png_read_image (png_ptr, row_pointers);
+
+      // read the rest of the PNG data up to its end chunk, so that a missing or damaged end is an error too
+      png_read_end (png_ptr, nullptr);
 
       png_destroy_read_struct (&png_ptr, &info_ptr, nullptr);
       free (row_pointers);

@@ -100,11 +100,10 @@ TEST(PCL, decodePNGToImageTruncatedData)
   std::vector<std::uint8_t> png;
   pcl::io::encodeRGBImageToPNG(image, width, height, png);
 
-  // The encoded data ends with the 12 byte IEND chunk, which the decoder does not read.
-  // Any shorter input ends inside the signature, the header or the image data.
-  constexpr std::size_t iend_size = 12;
-  ASSERT_GT(png.size(), iend_size);
-  for (std::size_t size = 1; size < png.size() - iend_size; ++size) {
+  // Every shorter input, from the empty one to the one missing only the last byte of
+  // the IEND chunk, must fail to decode
+  ASSERT_FALSE(png.empty());
+  for (std::size_t size = 0; size < png.size(); ++size) {
     std::vector<std::uint8_t> truncated(png.begin(), png.begin() + size);
     std::vector<std::uint8_t> decoded;
     std::size_t image_width, image_height;
