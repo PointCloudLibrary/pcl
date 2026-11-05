@@ -14,6 +14,7 @@
 #include <pcl/point_types.h>
 
 #include <cstdint>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -199,6 +200,30 @@ TEST(PCL, OrganizedPointCloudCompressionDecodePointCloudTruncatedFrame)
     for (std::size_t size = 0; size < frame.size(); ++size)
       EXPECT_FALSE(decode(frame.substr(0, size)))
           << "frame cut to " << size << " bytes";
+  }
+}
+
+TEST(PCL, OrganizedPointCloudCompressionDecodePointCloudOversizedImage)
+{
+  // A frame whose image declares more bytes than the stream holds must not decode
+  const auto disparity_png = disparityPNG(width, height);
+  const auto color_png = colorPNG(width, height, false);
+  const auto frame = encodeFrame(width, height, 0.0f, disparity_png, color_png);
+  ASSERT_TRUE(decode(frame));
+
+  // where encodeFrame writes the size of each image
+  const std::size_t disparity_size_pos = std::string("<PCL-ORG-COMPRESSED>").size() +
+                                         2 * sizeof(std::uint32_t) + 4 * sizeof(float);
+  const std::size_t color_size_pos =
+      disparity_size_pos + sizeof(std::uint32_t) + disparity_png.size();
+  const std::uint32_t oversized = std::numeric_limits<std::uint32_t>::max();
+  for (const std::size_t size_pos : {disparity_size_pos, color_size_pos}) {
+    std::string oversized_frame = frame;
+    oversized_frame.replace(size_pos,
+                            sizeof(oversized),
+                            reinterpret_cast<const char*>(&oversized),
+                            sizeof(oversized));
+    EXPECT_FALSE(decode(oversized_frame)) << "image size at byte " << size_pos;
   }
 }
 

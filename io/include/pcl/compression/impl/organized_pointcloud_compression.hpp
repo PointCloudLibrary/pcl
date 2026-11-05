@@ -46,6 +46,7 @@
 #include <pcl/compression/libpng_wrapper.h>
 #include <pcl/compression/organized_pointcloud_conversion.h>
 
+#include <algorithm>
 #include <vector>
 #include <cassert>
 
@@ -317,15 +318,28 @@ namespace pcl
         compressedDataIn_arg.read (reinterpret_cast<char*> (&disparityScale), sizeof (disparityScale));
         compressedDataIn_arg.read (reinterpret_cast<char*> (&disparityShift), sizeof (disparityShift));
 
+        // reads an image of the given size in chunks, so that its vector grows with the
+        // bytes the stream holds, not up front to a size the frame declares
+        const auto readImageData = [&compressedDataIn_arg] (std::vector<std::uint8_t>& imageData, std::uint32_t imageSize)
+        {
+          constexpr std::size_t chunkSize = 1 << 20;
+          imageData.clear ();
+          while (compressedDataIn_arg && (imageData.size () < imageSize))
+          {
+            const std::size_t offset = imageData.size ();
+            const std::size_t length = std::min<std::size_t> (chunkSize, imageSize - offset);
+            imageData.resize (offset + length);
+            compressedDataIn_arg.read (reinterpret_cast<char*> (imageData.data () + offset), length);
+          }
+        };
+
         // reading compressed disparity data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
-        compressedDisparity.resize (compressedDisparitySize);
-        compressedDataIn_arg.read (reinterpret_cast<char*> (compressedDisparity.data()), compressedDisparitySize * sizeof(std::uint8_t));
+        readImageData (compressedDisparity, compressedDisparitySize);
 
         // reading compressed rgb data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColorSize), sizeof (compressedColorSize));
-        compressedColor.resize (compressedColorSize);
-        compressedDataIn_arg.read (reinterpret_cast<char*> (compressedColor.data()), compressedColorSize * sizeof(std::uint8_t));
+        readImageData (compressedColor, compressedColorSize);
 
         if (!compressedDataIn_arg)
         {
