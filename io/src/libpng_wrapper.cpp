@@ -36,6 +36,7 @@
  */
 
 #include <pcl/compression/libpng_wrapper.h>
+#include <pcl/console/print.h> // for PCL_ERROR
 
 #include <png.h>
 #include <zlib.h>
@@ -209,9 +210,6 @@ namespace pcl
       png_get_IHDR (png_ptr, info_ptr, &png_width, &png_height, &png_bit_depth,
           &png_color_type, &png_interlace_type, nullptr, nullptr);
 
-      // ensure a color bit depth of 8
-      assert(png_bit_depth==sizeof(T)*8);
-
       unsigned int png_channels;
       switch (png_color_type)
       {
@@ -232,17 +230,36 @@ namespace pcl
           break;
       }
 
+      // imageData_arg is sized from these header fields and png_read_image writes
+      // one png_get_rowbytes() scanline into it per row, so a bit depth or color
+      // type that does not match the element layout overruns the buffer. The checks
+      // used to be asserts, which do nothing in release builds (NDEBUG), leaving a
+      // crafted PNG free to drive the overflow.
+      if (png_channels == 0 || static_cast<std::size_t> (png_bit_depth) != sizeof (T) * 8)
+      {
+        PCL_ERROR ("[pcl::io::decodePNGImage] unsupported PNG (bit depth %d, color type %d), "
+                   "expected %zu-bit samples\n", png_bit_depth, png_color_type, sizeof (T) * 8);
+        width_arg = height_arg = 0;
+        channels_arg = 0;
+        imageData_arg.clear ();
+        png_destroy_read_struct (&png_ptr, &info_ptr, nullptr);
+        return;
+      }
+
       width_arg = png_width;
       height_arg = png_height;
       channels_arg = png_channels;
 
+      // Compute the element count in 64 bit so the product cannot wrap before the
+      // allocation, which would leave the buffer smaller than the rows libpng writes.
+      const std::size_t row_elements = static_cast<std::size_t> (png_width) * png_channels;
       imageData_arg.clear ();
-      imageData_arg.resize (png_height * png_width * png_channels);
+      imageData_arg.resize (static_cast<std::size_t> (png_height) * row_elements);
 
       row_pointers = reinterpret_cast<png_bytep*> (malloc (sizeof(png_bytep) * png_height));
 
       for (unsigned long y = 0; y < png_height; y++)
-        row_pointers[y] = reinterpret_cast<png_byte*> (&imageData_arg[y * png_width * png_channels]);
+        row_pointers[y] = reinterpret_cast<png_byte*> (&imageData_arg[static_cast<std::size_t> (y) * row_elements]);
 
       png_read_image (png_ptr, row_pointers);
 
