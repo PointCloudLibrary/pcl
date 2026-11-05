@@ -110,6 +110,8 @@ namespace pcl
       * \param[out] width_arg image width
       * \param[out] heigh_argt image height
       * \param[out] channels_arg number of channels
+      * \note If the input is empty or cannot be decoded, the image output data is cleared
+      * and width, height and number of channels are set to 0.
       * \ingroup io
       */
     PCL_EXPORTS void
@@ -125,6 +127,8 @@ namespace pcl
       * \param[out] width_arg image width
       * \param[out] height_arg image height
       * \param[out] channels_arg number of channels
+      * \note If the input is empty or cannot be decoded, the image output data is cleared
+      * and width, height and number of channels are set to 0.
       * \ingroup io
       */
     PCL_EXPORTS void

@@ -46,6 +46,7 @@
 #include <pcl/compression/libpng_wrapper.h>
 #include <pcl/compression/organized_pointcloud_conversion.h>
 
+#include <algorithm>
 #include <vector>
 #include <cassert>
 
@@ -270,8 +271,8 @@ namespace pcl
                                                               PointCloudPtr &cloud_arg,
                                                               bool bShowStatistics_arg)
     {
-      std::uint32_t cloud_width;
-      std::uint32_t cloud_height;
+      std::uint32_t cloud_width = 0;
+      std::uint32_t cloud_height = 0;
       float maxDepth;
       float focalLength;
       float disparityShift = 0.0f;
@@ -285,8 +286,8 @@ namespace pcl
       std::vector<std::uint8_t> compressedDisparity;
       std::vector<std::uint8_t> compressedColor;
 
-      std::uint32_t compressedDisparitySize;
-      std::uint32_t compressedColorSize;
+      std::uint32_t compressedDisparitySize = 0;
+      std::uint32_t compressedColorSize = 0;
 
       // PNG decoded parameters
       unsigned int png_channels = 1;
@@ -317,24 +318,59 @@ namespace pcl
         compressedDataIn_arg.read (reinterpret_cast<char*> (&disparityScale), sizeof (disparityScale));
         compressedDataIn_arg.read (reinterpret_cast<char*> (&disparityShift), sizeof (disparityShift));
 
+        // reads an image of the given size in chunks, so that its vector grows with the
+        // bytes the stream holds, not up front to a size the frame declares
+        const auto readImageData = [&compressedDataIn_arg] (std::vector<std::uint8_t>& imageData, std::uint32_t imageSize)
+        {
+          constexpr std::size_t chunkSize = 1 << 20;
+          imageData.clear ();
+          while (compressedDataIn_arg && (imageData.size () < imageSize))
+          {
+            const std::size_t offset = imageData.size ();
+            const std::size_t length = std::min<std::size_t> (chunkSize, imageSize - offset);
+            imageData.resize (offset + length);
+            compressedDataIn_arg.read (reinterpret_cast<char*> (imageData.data () + offset), length);
+          }
+        };
+
         // reading compressed disparity data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
-        compressedDisparity.resize (compressedDisparitySize);
-        compressedDataIn_arg.read (reinterpret_cast<char*> (compressedDisparity.data()), compressedDisparitySize * sizeof(std::uint8_t));
+        readImageData (compressedDisparity, compressedDisparitySize);
 
         // reading compressed rgb data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColorSize), sizeof (compressedColorSize));
-        compressedColor.resize (compressedColorSize);
-        compressedDataIn_arg.read (reinterpret_cast<char*> (compressedColor.data()), compressedColorSize * sizeof(std::uint8_t));
+        readImageData (compressedColor, compressedColorSize);
 
-        std::size_t png_width = 0;
-        std::size_t png_height = 0;
+        if (!compressedDataIn_arg)
+        {
+          PCL_ERROR("[OrganizedPointCloudCompression::decodePointCloud] The input stream ended inside the encoded point cloud!\n");
+          return false;
+        }
+
+        std::size_t disparity_width = 0;
+        std::size_t disparity_height = 0;
+        std::size_t color_width = 0;
+        std::size_t color_height = 0;
 
         // decode PNG compressed disparity data
-        decodePNGToImage (compressedDisparity, disparityData, png_width, png_height, png_channels);
+        decodePNGToImage (compressedDisparity, disparityData, disparity_width, disparity_height, png_channels);
 
         // decode PNG compressed rgb data
-        decodePNGToImage (compressedColor, colorData, png_width, png_height, png_channels);
+        decodePNGToImage (compressedColor, colorData, color_width, color_height, png_channels);
+
+        // the decoded images must have the width and height of the frame header,
+        // with exactly one value (or color) per point
+        const std::uint64_t cloud_size = static_cast<std::uint64_t> (cloud_width) * cloud_height;
+        const bool disparity_valid = (disparity_width == cloud_width) && (disparity_height == cloud_height) &&
+                                     (disparityData.size () == cloud_size);
+        const bool color_valid = compressedColor.empty () ||
+                                 ((color_width == cloud_width) && (color_height == cloud_height) &&
+                                  (colorData.size () == ((png_channels == 1) ? cloud_size : 3 * cloud_size)));
+        if (!disparity_valid || !color_valid)
+        {
+          PCL_ERROR("[OrganizedPointCloudCompression::decodePointCloud] Size of the decoded images does not match the point cloud size %u x %u!\n", cloud_width, cloud_height);
+          return false;
+        }
       } else {
         PCL_ERROR("[OrganizedPointCloudCompression::decodePointCloud] Unable to find an encoded point cloud in the input stream!\n");
         return false;

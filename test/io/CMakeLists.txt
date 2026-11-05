@@ -60,6 +60,18 @@ PCL_ADD_TEST(io_octree_compression test_octree_compression
         LINK_WITH pcl_gtest pcl_common pcl_io pcl_octree
         ARGUMENTS "${PCL_SOURCE_DIR}/test/milk_color.pcd")
 
+if(HAVE_PNG)
+  PCL_ADD_TEST(io_libpng_wrapper test_libpng_wrapper
+               FILES test_libpng_wrapper.cpp
+               LINK_WITH pcl_gtest pcl_io)
+endif()
+
+if(HAVE_PNG AND HAVE_OPENNI)
+  PCL_ADD_TEST(io_organized_pointcloud_compression test_organized_pointcloud_compression
+               FILES test_organized_pointcloud_compression.cpp
+               LINK_WITH pcl_gtest pcl_common pcl_io)
+endif()
+
 PCL_ADD_TEST (io_tim_grabber test_tim_grabber
               FILES test_tim_grabber.cpp
               LINK_WITH pcl_gtest pcl_io
