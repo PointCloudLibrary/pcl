@@ -1,9 +1,10 @@
 set(SUBSYS_NAME benchmarks)
 set(SUBSYS_DESC "Point cloud library benchmarks")
-set(SUBSYS_DEPS common filters features search kdtree io sample_consensus)
+set(SUBSYS_DEPS common filters features search kdtree io sample_consensus gpu)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME}
+                  DEPS common filters features search kdtree io sample_consensus)
 if(NOT build)
   return()
 endif()
@@ -39,3 +40,12 @@ PCL_ADD_BENCHMARK(sample_consensus_sac_model_cylinder FILES sample_consensus/sac
 PCL_ADD_BENCHMARK(search_radius_search FILES search/radius_search.cpp
                   LINK_WITH pcl_io pcl_search pcl_filters
                   ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd")
+
+if(BUILD_GPU AND HAVE_CUDA)
+  if(TARGET pcl_gpu_filters)
+    PCL_ADD_BENCHMARK(gpu_filters_voxel_grid FILES gpu/filters/voxel_grid.cpp
+                      LINK_WITH pcl_io pcl_filters pcl_gpu_filters pcl_gpu_containers
+                      ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd"
+                                "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
+  endif()
+endif()
