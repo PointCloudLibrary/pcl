@@ -37,6 +37,8 @@
 
 #pragma once
 
+#include <pcl/console/print.h>
+
 #include <iostream>
 #include <vector>
 
@@ -283,7 +285,10 @@ public:
     // do not read past the color data decoded from the stream
     if (pointAvgColorDataVector_.cend () - pointAvgColorDataVector_Iterator_ < 3 ||
         (pointCount > 1 && (pointDiffColorDataVector_.cend () - pointDiffColorDataVector_Iterator_) / 3 < pointCount))
+    {
+      PCL_WARN ("[pcl::octree::ColorCoding::decodePoints] Not enough color data left in the stream, skipping voxel.\n");
       return;
+    }
 
     // get averaged color information for current voxel
     unsigned char avgRed = *(pointAvgColorDataVector_Iterator_++);
