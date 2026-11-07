@@ -516,6 +516,13 @@ namespace pcl
         // get current cloud size
         const auto cloudSize = output_->size ();
 
+        // the stream may hold fewer point counts than the tree has leaves
+        if (point_count_data_vector_iterator_ == point_count_data_vector_.end ())
+        {
+          PCL_WARN ("[pcl::io::OctreePointCloudCompression::deserializeTreeCallback] The stream holds fewer point counts than the octree has leaves, skipping leaf.\n");
+          return;
+        }
+
         // get amount of point to be decoded
         pointCount = *point_count_data_vector_iterator_;
         point_count_data_vector_iterator_++;

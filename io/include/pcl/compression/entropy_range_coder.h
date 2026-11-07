@@ -108,7 +108,7 @@ namespace pcl
    *  \author Julius Kammerl (julius@kammerl.de)
    */
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  class StaticRangeCoder
+  class PCL_EXPORTS StaticRangeCoder
   {
     public:
       /** \brief Constructor. */
