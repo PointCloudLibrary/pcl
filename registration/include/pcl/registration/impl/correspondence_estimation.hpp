@@ -158,8 +158,8 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
 
 #if _OPENMP >= 201511 // 201511 = OpenMP 4.5, for nonmonotonic:dynamic schedule
 #pragma omp parallel for default(none) shared(max_dist_sqr, correspondences)           \
-    firstprivate(index, distance) num_threads(num_threads_)                            \
-    schedule(nonmonotonic : dynamic, 32)
+    firstprivate(index, distance) num_threads(num_threads_) schedule(nonmonotonic      \
+                                                                     : dynamic, 32)
 #else
 #pragma omp parallel for default(none) shared(max_dist_sqr, correspondences)           \
     firstprivate(index, distance) num_threads(num_threads_) schedule(dynamic, 32)
