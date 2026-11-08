@@ -9,6 +9,7 @@ from PIL import Image
 
 class TestImageCloud(unittest.TestCase):
     def test_point_extents_and_colors(self):
+        """Check centered, aspect-preserving coordinates and packed RGB for non-white pixels."""
         cases = [
             ("L", [(1, 1, 0)], [(0.0, 0.0, 0)]),
             ("RGB", [], []),
