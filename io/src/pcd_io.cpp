@@ -111,6 +111,25 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::PCDWriter::writeHeaderComments (std::ostream &os, const pcl::PCLHeader &header)
+{
+  // The PCD file format specification does not allow new header fields, so the
+  // point cloud header (sequence number, timestamp and frame id) is stored in
+  // comments, as suggested in
+  // https://github.com/PointCloudLibrary/pcl/issues/6152
+  // Any PCD reader is free to use or ignore this information.
+  // Nothing is written if the header holds only default values, so files
+  // written from default headers stay byte-identical to before.
+  if (header.seq == 0 && header.stamp == 0 && header.frame_id.empty ())
+    return;
+
+  os << "\n# SEQ " << header.seq
+     << "\n# STAMP " << header.stamp
+     << "\n# FRAME_ID " << header.frame_id;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
                             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
@@ -124,6 +143,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
   orientation = Eigen::Quaternionf::Identity ();
   cloud.width = cloud.height = cloud.point_step = cloud.row_step = 0;
   cloud.data.clear ();
+  cloud.header = pcl::PCLHeader ();
 
   // By default, assume that there are _no_ invalid (e.g., NaN) points
   //cloud.is_dense = true;
@@ -161,9 +181,38 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
       std::string line_type;
       sstream >> line_type;
 
-      // Ignore comments
+      // Ignore comments, except for the point cloud header information
+      // stored as comments by PCDWriter (see
+      // https://github.com/PointCloudLibrary/pcl/issues/6152).
+      // Malformed header comments are ignored so that files with arbitrary
+      // comments (e.g. written by other tools) still load.
       if (line_type.substr (0, 1) == "#")
+      {
+        std::stringstream comment (line);
+        comment.imbue (std::locale::classic ());
+        std::string hash, key;
+        comment >> hash >> key;
+        if (key == "SEQ")
+        {
+          std::uint32_t seq = 0;
+          if (comment >> seq)
+            cloud.header.seq = seq;
+        }
+        else if (key == "STAMP")
+        {
+          std::uint64_t stamp = 0;
+          if (comment >> stamp)
+            cloud.header.stamp = stamp;
+        }
+        else if (key == "FRAME_ID")
+        {
+          // The frame id may contain spaces, so take the remainder of the line
+          std::string frame_id;
+          std::getline (comment >> std::ws, frame_id);
+          cloud.header.frame_id = frame_id;
+        }
         continue;
+      }
 
       // Version numbers are not needed for now, but we are checking to see if they're there
       if (line_type.substr (0, 7) == "VERSION")
@@ -855,8 +904,9 @@ pcl::PCDWriter::generateHeaderASCII (const pcl::PCLPointCloud2 &cloud,
   std::ostringstream oss;
   oss.imbue (std::locale::classic ());
 
-  oss << "# .PCD v0.7 - Point Cloud Data file format"
-         "\nVERSION 0.7"
+  oss << "# .PCD v0.7 - Point Cloud Data file format";
+  writeHeaderComments (oss, cloud.header);
+  oss << "\nVERSION 0.7"
          "\nFIELDS ";
 
   std::ostringstream stream;
@@ -965,8 +1015,9 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
   std::ostringstream oss;
   oss.imbue (std::locale::classic ());
 
-  oss << "# .PCD v0.7 - Point Cloud Data file format"
-         "\nVERSION 0.7"
+  oss << "# .PCD v0.7 - Point Cloud Data file format";
+  writeHeaderComments (oss, cloud.header);
+  oss << "\nVERSION 0.7"
          "\nFIELDS";
 
   auto fields = cloud.fields;
@@ -1053,8 +1104,9 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
 {
   os.imbue (std::locale::classic ());
 
-  os <<  "# .PCD v0.7 - Point Cloud Data file format"
-         "\nVERSION 0.7"
+  os <<  "# .PCD v0.7 - Point Cloud Data file format";
+  writeHeaderComments (os, cloud.header);
+  os << "\nVERSION 0.7"
          "\nFIELDS";
 
   // Compute the total size of the fields

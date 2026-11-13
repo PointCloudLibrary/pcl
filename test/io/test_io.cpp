@@ -881,6 +881,104 @@ TEST (PCL, EmptyCloudToPCD)
   remove ("empty_cloud_compressed.pcd");
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PCDHeaderRoundTrip)
+{
+  // The point cloud header (sequence number, timestamp and frame id) must
+  // survive a save/load round trip, see
+  // https://github.com/PointCloudLibrary/pcl/issues/6152
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  cloud.header.seq = 42;
+  cloud.header.stamp = 1234567890123456;
+  cloud.header.frame_id = "map";
+  cloud.width = 2;
+  cloud.height = 1;
+  cloud.is_dense = true;
+  cloud.points.resize (2);
+  cloud.points[0] = pcl::PointXYZ (1.0f, 2.0f, 3.0f);
+  cloud.points[1] = pcl::PointXYZ (4.0f, 5.0f, 6.0f);
+
+  // ASCII
+  int res = pcl::io::savePCDFileASCII ("header_ascii.pcd", cloud);
+  EXPECT_EQ (0, res);
+  pcl::PointCloud<pcl::PointXYZ> cloud_in_ascii;
+  res = pcl::io::loadPCDFile ("header_ascii.pcd", cloud_in_ascii);
+  EXPECT_EQ (0, res);
+  EXPECT_EQ (cloud.header.seq, cloud_in_ascii.header.seq);
+  EXPECT_EQ (cloud.header.stamp, cloud_in_ascii.header.stamp);
+  EXPECT_EQ (cloud.header.frame_id, cloud_in_ascii.header.frame_id);
+  EXPECT_EQ (cloud.points[1].x, cloud_in_ascii.points[1].x);
+  remove ("header_ascii.pcd");
+
+  // Binary
+  res = pcl::io::savePCDFileBinary ("header_binary.pcd", cloud);
+  EXPECT_EQ (0, res);
+  pcl::PointCloud<pcl::PointXYZ> cloud_in_binary;
+  res = pcl::io::loadPCDFile ("header_binary.pcd", cloud_in_binary);
+  EXPECT_EQ (0, res);
+  EXPECT_EQ (cloud.header.seq, cloud_in_binary.header.seq);
+  EXPECT_EQ (cloud.header.stamp, cloud_in_binary.header.stamp);
+  EXPECT_EQ (cloud.header.frame_id, cloud_in_binary.header.frame_id);
+  EXPECT_EQ (cloud.points[1].x, cloud_in_binary.points[1].x);
+  remove ("header_binary.pcd");
+
+  // Binary compressed
+  res = pcl::io::savePCDFileBinaryCompressed ("header_binary_compressed.pcd", cloud);
+  EXPECT_EQ (0, res);
+  pcl::PointCloud<pcl::PointXYZ> cloud_in_compressed;
+  res = pcl::io::loadPCDFile ("header_binary_compressed.pcd", cloud_in_compressed);
+  EXPECT_EQ (0, res);
+  EXPECT_EQ (cloud.header.seq, cloud_in_compressed.header.seq);
+  EXPECT_EQ (cloud.header.stamp, cloud_in_compressed.header.stamp);
+  EXPECT_EQ (cloud.header.frame_id, cloud_in_compressed.header.frame_id);
+  EXPECT_EQ (cloud.points[1].x, cloud_in_compressed.points[1].x);
+  remove ("header_binary_compressed.pcd");
+
+  // The PCLPointCloud2 interface must round-trip the header as well
+  pcl::PCLPointCloud2 cloud2;
+  pcl::toPCLPointCloud2 (cloud, cloud2);
+  res = pcl::io::savePCDFile ("header_pc2.pcd", cloud2,
+                              Eigen::Vector4f::Zero (),
+                              Eigen::Quaternionf::Identity ());
+  EXPECT_EQ (0, res);
+  pcl::PCLPointCloud2 cloud2_in;
+  res = pcl::io::loadPCDFile ("header_pc2.pcd", cloud2_in);
+  EXPECT_EQ (0, res);
+  EXPECT_EQ (cloud.header.seq, cloud2_in.header.seq);
+  EXPECT_EQ (cloud.header.stamp, cloud2_in.header.stamp);
+  EXPECT_EQ (cloud.header.frame_id, cloud2_in.header.frame_id);
+  remove ("header_pc2.pcd");
+
+  // Files without header comments (e.g. written by older PCL versions)
+  // must still load, with a default header
+  std::ofstream fs;
+  fs.open ("legacy_no_header.pcd");
+  fs << "# .PCD v0.7 - Point Cloud Data file format\n"
+        "VERSION 0.7\n"
+        "FIELDS x y z\n"
+        "SIZE 4 4 4\n"
+        "TYPE F F F\n"
+        "COUNT 1 1 1\n"
+        "WIDTH 1\n"
+        "HEIGHT 1\n"
+        "VIEWPOINT 0 0 0 1 0 0 0\n"
+        "POINTS 1\n"
+        "DATA ascii\n"
+        "1 2 3\n";
+  fs.close ();
+
+  pcl::PointCloud<pcl::PointXYZ> legacy;
+  legacy.header.seq = 7;  // must be overwritten by the (default) header
+  legacy.header.stamp = 8;
+  legacy.header.frame_id = "stale";
+  res = pcl::io::loadPCDFile ("legacy_no_header.pcd", legacy);
+  EXPECT_EQ (0, res);
+  EXPECT_EQ (0u, legacy.header.seq);
+  EXPECT_EQ (0u, legacy.header.stamp);
+  EXPECT_TRUE (legacy.header.frame_id.empty ());
+  remove ("legacy_no_header.pcd");
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PCDReaderWriter)
 {
   pcl::PCLPointCloud2 cloud_blob;
