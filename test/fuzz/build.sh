@@ -63,3 +63,21 @@ $CXX $CXXFLAGS $LIB_FUZZING_ENGINE ply_reader_fuzzer.o \
         /usr/local/lib/libboost_filesystem.a -o $OUT/ply_reader_fuzzer -lm
 
 zip $OUT/ply_reader_fuzzer_seed_corpus.zip $SRC/pcl/test/cube.ply
+
+# obj_reader_fuzzer
+$CXX $CXXFLAGS -DPCLAPI_EXPORTS \
+        -I/src/pcl/build/include -I/src/pcl/common/include \
+        -I/src/pcl/dssdk/include \
+        -I/src/pcl/io/include -isystem /usr/include/eigen3 \
+        -O2 -g -DNDEBUG -fPIC -std=c++17 \
+        -o obj_reader_fuzzer.o -c obj_reader_fuzzer.cpp
+
+$CXX $CXXFLAGS $LIB_FUZZING_ENGINE obj_reader_fuzzer.o \
+        ../../build/lib/libpcl_io.a ../../build/lib/libpcl_io_ply.a \
+        ../../build/lib/libpcl_common.a \
+        /usr/local/lib/libboost_filesystem.a -o $OUT/obj_reader_fuzzer -lm
+
+python3 gen_obj_seeds.py obj_seed_corpus
+zip $OUT/obj_reader_fuzzer_seed_corpus.zip obj_seed_corpus/*.obj
+cp obj_reader_fuzzer.dict $OUT/
+
