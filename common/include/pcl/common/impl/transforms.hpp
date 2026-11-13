@@ -43,6 +43,7 @@
 
 #if defined(__SSE2__)
 #include <xmmintrin.h>
+#include <emmintrin.h>
 #endif
 
 #if defined(__AVX__)
@@ -75,30 +76,38 @@ struct Transformer
 
   /** Apply SO3 transform (top-left corner of the transform matrix).
     * \param[in] src input 3D point (pointer to 3 floats)
-    * \param[out] tgt output 3D point (pointer to 4 floats), can be the same as input. The fourth element is set to 0. */
+    * \param[out] tgt output 3D point (pointer to 4 floats), can be the same as input. The fourth element is left unchanged. */
   void so3 (const float* src, float* tgt) const
   {
     const Scalar p[3] = { src[0], src[1], src[2] };  // need this when src == tgt
     tgt[0] = static_cast<float> (tf (0, 0) * p[0] + tf (0, 1) * p[1] + tf (0, 2) * p[2]);
     tgt[1] = static_cast<float> (tf (1, 0) * p[0] + tf (1, 1) * p[1] + tf (1, 2) * p[2]);
     tgt[2] = static_cast<float> (tf (2, 0) * p[0] + tf (2, 1) * p[1] + tf (2, 2) * p[2]);
-    tgt[3] = 0;
   }
 
   /** Apply SE3 transform.
     * \param[in] src input 3D point (pointer to 3 floats)
-    * \param[out] tgt output 3D point (pointer to 4 floats), can be the same as input. The fourth element is set to 1. */
+    * \param[out] tgt output 3D point (pointer to 4 floats), can be the same as input. The fourth element is left unchanged. */
   void se3 (const float* src, float* tgt) const
   {
     const Scalar p[3] = { src[0], src[1], src[2] };  // need this when src == tgt
     tgt[0] = static_cast<float> (tf (0, 0) * p[0] + tf (0, 1) * p[1] + tf (0, 2) * p[2] + tf (0, 3));
     tgt[1] = static_cast<float> (tf (1, 0) * p[0] + tf (1, 1) * p[1] + tf (1, 2) * p[2] + tf (1, 3));
     tgt[2] = static_cast<float> (tf (2, 0) * p[0] + tf (2, 1) * p[1] + tf (2, 2) * p[2] + tf (2, 3));
-    tgt[3] = 1;
   }
 };
 
 #if defined(__SSE2__)
+
+/** Store the first three floats of an SSE register, leaving the fourth float of the target untouched.
+  * transformPointCloud() must not overwrite the fourth component of a point (e.g. a value packed
+  * into w by a custom point type, or the curvature of a normal); see issue #5972. */
+inline void
+storeFirstThree (const __m128& v, float* tgt)
+{
+  _mm_storel_pi (reinterpret_cast<__m64*> (tgt), v);
+  _mm_store_ss (tgt + 2, _mm_shuffle_ps (v, v, _MM_SHUFFLE (2, 2, 2, 2)));
+}
 
 /** Optimized version for single-precision transforms using SSE2 intrinsics. */
 template<>
@@ -118,7 +127,7 @@ struct Transformer<float>
     __m128 p0 = _mm_mul_ps (_mm_load_ps1 (&src[0]), c[0]);
     __m128 p1 = _mm_mul_ps (_mm_load_ps1 (&src[1]), c[1]);
     __m128 p2 = _mm_mul_ps (_mm_load_ps1 (&src[2]), c[2]);
-    _mm_store_ps (tgt, _mm_add_ps(p0, _mm_add_ps(p1, p2)));
+    storeFirstThree (_mm_add_ps (p0, _mm_add_ps (p1, p2)), tgt);
   }
 
   void se3 (const float* src, float* tgt) const
@@ -126,7 +135,7 @@ struct Transformer<float>
     __m128 p0 = _mm_mul_ps (_mm_load_ps1 (&src[0]), c[0]);
     __m128 p1 = _mm_mul_ps (_mm_load_ps1 (&src[1]), c[1]);
     __m128 p2 = _mm_mul_ps (_mm_load_ps1 (&src[2]), c[2]);
-    _mm_store_ps (tgt, _mm_add_ps(p0, _mm_add_ps(p1, _mm_add_ps(p2, c[3]))));
+    storeFirstThree (_mm_add_ps (p0, _mm_add_ps (p1, _mm_add_ps (p2, c[3]))), tgt);
   }
 };
 
@@ -161,7 +170,7 @@ struct Transformer<double>
       p1 = _mm_add_pd (_mm_mul_pd (vv, c[i][1]), p1);
     }
 
-    _mm_store_ps (tgt, _mm_movelh_ps (_mm_cvtpd_ps (p0), _mm_cvtpd_ps (p1)));
+    storeFirstThree (_mm_movelh_ps (_mm_cvtpd_ps (p0), _mm_cvtpd_ps (p1)), tgt);
   }
 
   void se3 (const float* src, float* tgt) const
@@ -176,7 +185,7 @@ struct Transformer<double>
       p1 = _mm_add_pd (_mm_mul_pd (vv, c[i][1]), p1);
     }
 
-    _mm_store_ps (tgt, _mm_movelh_ps (_mm_cvtpd_ps (p0), _mm_cvtpd_ps (p1)));
+    storeFirstThree (_mm_movelh_ps (_mm_cvtpd_ps (p0), _mm_cvtpd_ps (p1)), tgt);
   }
 };
 
@@ -199,7 +208,7 @@ struct Transformer<double>
     __m256d p0 = _mm256_mul_pd (_mm256_cvtps_pd (_mm_load_ps1 (&src[0])), c[0]);
     __m256d p1 = _mm256_mul_pd (_mm256_cvtps_pd (_mm_load_ps1 (&src[1])), c[1]);
     __m256d p2 = _mm256_mul_pd (_mm256_cvtps_pd (_mm_load_ps1 (&src[2])), c[2]);
-    _mm_store_ps (tgt, _mm256_cvtpd_ps (_mm256_add_pd(p0, _mm256_add_pd(p1, p2))));
+    storeFirstThree (_mm256_cvtpd_ps (_mm256_add_pd (p0, _mm256_add_pd (p1, p2))), tgt);
   }
 
   void se3 (const float* src, float* tgt) const
@@ -207,7 +216,7 @@ struct Transformer<double>
     __m256d p0 = _mm256_mul_pd (_mm256_cvtps_pd (_mm_load_ps1 (&src[0])), c[0]);
     __m256d p1 = _mm256_mul_pd (_mm256_cvtps_pd (_mm_load_ps1 (&src[1])), c[1]);
     __m256d p2 = _mm256_mul_pd (_mm256_cvtps_pd (_mm_load_ps1 (&src[2])), c[2]);
-    _mm_store_ps (tgt, _mm256_cvtpd_ps (_mm256_add_pd(p0, _mm256_add_pd(p1, _mm256_add_pd(p2, c[3])))));
+    storeFirstThree (_mm256_cvtpd_ps (_mm256_add_pd (p0, _mm256_add_pd (p1, _mm256_add_pd (p2, c[3])))), tgt);
   }
 };
 
