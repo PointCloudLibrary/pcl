@@ -902,10 +902,11 @@ TEST (PCL, PCDHeaderRoundTrip)
   EXPECT_EQ (0, res);
   pcl::PointCloud<pcl::PointXYZ> cloud_in_ascii;
   res = pcl::io::loadPCDFile ("header_ascii.pcd", cloud_in_ascii);
-  EXPECT_EQ (0, res);
+  ASSERT_EQ (0, res);
   EXPECT_EQ (cloud.header.seq, cloud_in_ascii.header.seq);
   EXPECT_EQ (cloud.header.stamp, cloud_in_ascii.header.stamp);
   EXPECT_EQ (cloud.header.frame_id, cloud_in_ascii.header.frame_id);
+  ASSERT_EQ (cloud.points.size (), cloud_in_ascii.points.size ());
   EXPECT_EQ (cloud.points[1].x, cloud_in_ascii.points[1].x);
   remove ("header_ascii.pcd");
 
@@ -914,10 +915,11 @@ TEST (PCL, PCDHeaderRoundTrip)
   EXPECT_EQ (0, res);
   pcl::PointCloud<pcl::PointXYZ> cloud_in_binary;
   res = pcl::io::loadPCDFile ("header_binary.pcd", cloud_in_binary);
-  EXPECT_EQ (0, res);
+  ASSERT_EQ (0, res);
   EXPECT_EQ (cloud.header.seq, cloud_in_binary.header.seq);
   EXPECT_EQ (cloud.header.stamp, cloud_in_binary.header.stamp);
   EXPECT_EQ (cloud.header.frame_id, cloud_in_binary.header.frame_id);
+  ASSERT_EQ (cloud.points.size (), cloud_in_binary.points.size ());
   EXPECT_EQ (cloud.points[1].x, cloud_in_binary.points[1].x);
   remove ("header_binary.pcd");
 
@@ -926,12 +928,65 @@ TEST (PCL, PCDHeaderRoundTrip)
   EXPECT_EQ (0, res);
   pcl::PointCloud<pcl::PointXYZ> cloud_in_compressed;
   res = pcl::io::loadPCDFile ("header_binary_compressed.pcd", cloud_in_compressed);
-  EXPECT_EQ (0, res);
+  ASSERT_EQ (0, res);
   EXPECT_EQ (cloud.header.seq, cloud_in_compressed.header.seq);
   EXPECT_EQ (cloud.header.stamp, cloud_in_compressed.header.stamp);
   EXPECT_EQ (cloud.header.frame_id, cloud_in_compressed.header.frame_id);
+  ASSERT_EQ (cloud.points.size (), cloud_in_compressed.points.size ());
   EXPECT_EQ (cloud.points[1].x, cloud_in_compressed.points[1].x);
   remove ("header_binary_compressed.pcd");
+
+  // A frame id with an embedded newline must round-trip: the writer escapes
+  // the line break, so it cannot split the header comment into two lines
+  pcl::PointCloud<pcl::PointXYZ> cloud_newline (cloud);
+  cloud_newline.header.frame_id = "map\nextra";
+  res = pcl::io::savePCDFileASCII ("header_newline.pcd", cloud_newline);
+  EXPECT_EQ (0, res);
+  pcl::PointCloud<pcl::PointXYZ> cloud_in_newline;
+  res = pcl::io::loadPCDFile ("header_newline.pcd", cloud_in_newline);
+  ASSERT_EQ (0, res);
+  EXPECT_EQ (cloud_newline.header.frame_id, cloud_in_newline.header.frame_id);
+  remove ("header_newline.pcd");
+
+  // A frame id with a leading space must round-trip verbatim
+  pcl::PointCloud<pcl::PointXYZ> cloud_space (cloud);
+  cloud_space.header.frame_id = " map";
+  res = pcl::io::savePCDFileASCII ("header_space.pcd", cloud_space);
+  EXPECT_EQ (0, res);
+  pcl::PointCloud<pcl::PointXYZ> cloud_in_space;
+  res = pcl::io::loadPCDFile ("header_space.pcd", cloud_in_space);
+  ASSERT_EQ (0, res);
+  EXPECT_EQ (cloud_space.header.frame_id, cloud_in_space.header.frame_id);
+  remove ("header_space.pcd");
+
+  // A CRLF-terminated file must load the frame id without a trailing
+  // carriage return
+  res = pcl::io::savePCDFileASCII ("header_crlf.pcd", cloud);
+  EXPECT_EQ (0, res);
+  {
+    std::ifstream in ("header_crlf.pcd", std::ios::binary);
+    std::string content;
+    char c;
+    while (in.get (c))
+      content += c;
+    in.close ();
+    std::string crlf;
+    crlf.reserve (content.size () * 2);
+    for (const char ch : content)
+    {
+      if (ch == '\n')
+        crlf += '\r';
+      crlf += ch;
+    }
+    std::ofstream out ("header_crlf.pcd", std::ios::binary | std::ios::trunc);
+    out << crlf;
+    out.close ();
+  }
+  pcl::PointCloud<pcl::PointXYZ> cloud_in_crlf;
+  res = pcl::io::loadPCDFile ("header_crlf.pcd", cloud_in_crlf);
+  ASSERT_EQ (0, res);
+  EXPECT_EQ (cloud.header.frame_id, cloud_in_crlf.header.frame_id);
+  remove ("header_crlf.pcd");
 
   // The PCLPointCloud2 interface must round-trip the header as well
   pcl::PCLPointCloud2 cloud2;

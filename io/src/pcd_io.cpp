@@ -111,6 +111,70 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+// Escape characters that would break the one-line `# FRAME_ID ...` header
+// comment: a backslash, a line feed or a carriage return inside the frame id
+// is written as `\\`, `\n` or `\r`, and decoded back when reading, so the
+// frame id round-trips reversibly. Unknown escape sequences are kept
+// verbatim, so files written by other tools still load.
+static std::string
+escapeFrameId (const std::string &frame_id)
+{
+  std::string escaped;
+  escaped.reserve (frame_id.size ());
+  for (const char c : frame_id)
+  {
+    switch (c)
+    {
+      case '\\':
+        escaped += "\\\\";
+        break;
+      case '\n':
+        escaped += "\\n";
+        break;
+      case '\r':
+        escaped += "\\r";
+        break;
+      default:
+        escaped += c;
+        break;
+    }
+  }
+  return escaped;
+}
+
+static std::string
+unescapeFrameId (const std::string &escaped)
+{
+  std::string frame_id;
+  frame_id.reserve (escaped.size ());
+  for (std::size_t i = 0; i < escaped.size (); ++i)
+  {
+    if (escaped[i] == '\\' && i + 1 < escaped.size ())
+    {
+      switch (escaped[i + 1])
+      {
+        case '\\':
+          frame_id += '\\';
+          ++i;
+          continue;
+        case 'n':
+          frame_id += '\n';
+          ++i;
+          continue;
+        case 'r':
+          frame_id += '\r';
+          ++i;
+          continue;
+        default:
+          break;
+      }
+    }
+    frame_id += escaped[i];
+  }
+  return frame_id;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::PCDWriter::writeHeaderComments (std::ostream &os, const pcl::PCLHeader &header)
 {
@@ -126,7 +190,7 @@ pcl::PCDWriter::writeHeaderComments (std::ostream &os, const pcl::PCLHeader &hea
 
   os << "\n# SEQ " << header.seq
      << "\n# STAMP " << header.stamp
-     << "\n# FRAME_ID " << header.frame_id;
+     << "\n# FRAME_ID " << escapeFrameId (header.frame_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -206,10 +270,19 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
         }
         else if (key == "FRAME_ID")
         {
-          // The frame id may contain spaces, so take the remainder of the line
+          // The frame id may contain spaces, so take the remainder of the
+          // line verbatim: consume exactly the single separator space
+          // written by writeHeaderComments, keep any leading spaces of the
+          // frame id itself, and strip one trailing carriage return from
+          // CRLF-terminated files. Escape sequences written by
+          // writeHeaderComments are decoded back.
           std::string frame_id;
-          std::getline (comment >> std::ws, frame_id);
-          cloud.header.frame_id = frame_id;
+          if (comment.peek () == ' ')
+            comment.get ();
+          std::getline (comment, frame_id);
+          if (!frame_id.empty () && frame_id.back () == '\r')
+            frame_id.pop_back ();
+          cloud.header.frame_id = unescapeFrameId (frame_id);
         }
         continue;
       }
