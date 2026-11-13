@@ -344,6 +344,14 @@ function(find_external_library _component _lib _is_optional)
       list(APPEND PCL_${COMPONENT}_LINK_LIBRARIES "${${LIB}_LIBRARIES}")
       set(PCL_${COMPONENT}_LINK_LIBRARIES ${PCL_${COMPONENT}_LINK_LIBRARIES} PARENT_SCOPE)
       set(PCL_${LIB}_LIBRARIES ${${LIB}_LIBRARIES} PARENT_SCOPE) # Later appended to PCL_LIBRARIES
+    elseif(TARGET ${LIB}::${LIB})
+      # Some find modules (e.g. FindQhull, FindFLANN) only provide an
+      # imported target and never set ${LIB}_LIBRARIES. Attach the target
+      # to the component link interface, otherwise $<TARGET_RUNTIME_DLLS>
+      # omits its DLLs when only a single component is linked (see #6522).
+      list(APPEND PCL_${COMPONENT}_LINK_LIBRARIES ${LIB}::${LIB})
+      set(PCL_${COMPONENT}_LINK_LIBRARIES ${PCL_${COMPONENT}_LINK_LIBRARIES} PARENT_SCOPE)
+      set(PCL_${LIB}_LIBRARIES ${LIB}::${LIB} PARENT_SCOPE) # Later appended to PCL_LIBRARIES
     endif()
     if(${LIB}_DEFINITIONS AND NOT ${LIB} STREQUAL "VTK")
       list(APPEND PCL_${COMPONENT}_DEFINITIONS ${${LIB}_DEFINITIONS})
