@@ -1,0 +1,5 @@
+# IFS binary format tokens (the keyword strings are length-prefixed in the file;
+# the plain tokens still help the mutator rebuild valid blocks)
+"IFS"
+"VERTICES"
+"TRIANGLES"
