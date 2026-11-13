@@ -38,9 +38,15 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/compression/octree_pointcloud_compression.h>
+// PointXYZI is not precompiled (only PointXYZ, PointXYZRGB and PointXYZRGBA
+// are), so the implementation header is needed to instantiate the codec for
+// it; see also #4516.
+#include <pcl/compression/impl/octree_pointcloud_compression.hpp>
 #include <pcl/compression/compression_profiles.h>
 
+#include <algorithm>
 #include <exception>
+#include <vector>
 
 int total_runs = 0;
 
@@ -68,6 +74,13 @@ template<> inline pcl::PointXYZ generateRandomPoint(const float MAX_XYZ) {
                        static_cast<float> (MAX_XYZ * rand() / RAND_MAX)};
 }
 
+template<> inline pcl::PointXYZI generateRandomPoint(const float MAX_XYZ) {
+  return {static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+                       static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+                       static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+                       static_cast<float> (50000.0 * rand() / RAND_MAX)};
+}
+
 template<typename PointT> inline
 typename pcl::PointCloud<PointT>::Ptr generateRandomCloud(const float MAX_XYZ) {
   // empty point cloud hangs decoder
@@ -83,7 +96,7 @@ typename pcl::PointCloud<PointT>::Ptr generateRandomCloud(const float MAX_XYZ) {
 template<typename PointT>
 class OctreeDeCompressionTest : public testing::Test {};
 
-using TestTypes = ::testing::Types<pcl::PointXYZ, pcl::PointXYZRGBA>;
+using TestTypes = ::testing::Types<pcl::PointXYZ, pcl::PointXYZRGBA, pcl::PointXYZI>;
 TYPED_TEST_SUITE(OctreeDeCompressionTest, TestTypes);
 
 TYPED_TEST (OctreeDeCompressionTest, RandomClouds)
@@ -152,6 +165,136 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBASameCloud)
         EXPECT_EQ(cloud_out->width, cloud->width) << "cloud width after encoding and decoding not the same. Profile: " << compression_profile;
       }
       EXPECT_EQ(cloud_out->height, 1) << "cloud height after encoding and decoding should be 1 (as before). Profile: " << compression_profile;
+    } // runs
+  } // compression profiles
+} // TEST
+
+TEST(PCL, OctreeDeCompressionPointXYZIIntensity)
+{
+  // Regression test for #6272: the intensity of pcl::PointXYZI points was
+  // lost on decompression (decoded as 0). The intensity is encoded
+  // losslessly, so the decoded intensities must match exactly.
+  // The cloud uses the reporter-like coordinates and intensities from #6272;
+  // the points are far enough apart to occupy distinct voxels in every
+  // compression profile, so every decoded point carries its own intensity.
+  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI> ());
+  const float points[][4] = {
+      {345678.33f, 7027198.37f, 0.37f, 29512.0f},
+      {345678.65f, 7027188.83f, 0.45f, 29206.0f},
+      {345679.22f, 7027188.36f, 0.31f, 34296.0f},
+      {345698.41f, 7027190.22f, 0.36f, 45830.0f},
+      {345699.26f, 7027193.52f, 0.43f, 35847.0f},
+      {347698.84f, 7027198.09f, 0.38f, 28070.0f},
+      {345768.38f, 7027197.18f, 0.32f, 28005.0f},
+      {345987.83f, 7027198.26f, 0.34f, 31260.0f},
+      {345984.69f, 7027195.44f, 0.34f, 34471.0f},
+      {345678.90f, 7027190.00f, 0.40f, 0.5f},
+      {345678.95f, 7027191.00f, 0.41f, 0.0f},
+  };
+  for (const auto& row : points) {
+    pcl::PointXYZI p;
+    p.x = row[0];
+    p.y = row[1];
+    p.z = row[2];
+    p.intensity = row[3];
+    cloud->push_back (p);
+  }
+
+  // iterate over all pre-defined compression profiles
+  for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
+       compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
+    // instantiate point cloud compression encoder/decoder
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZI> pointcloud_encoder (static_cast<pcl::io::compression_Profiles_e> (compression_profile), false);
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZI> pointcloud_decoder;
+
+    // encode the same cloud several times: the first frame is an I-frame,
+    // the following frames are P-frames
+    for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
+    {
+      std::stringstream compressed_data;
+      pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZI> ());
+      pointcloud_encoder.encodePointCloud (cloud, compressed_data);
+      pointcloud_decoder.decodePointCloud (compressed_data, cloud_out);
+      ASSERT_EQ (cloud_out->width, cloud->width) << "cloud width after encoding and decoding not the same. Profile: " << compression_profile;
+      ASSERT_EQ (cloud_out->height, 1) << "cloud height after encoding and decoding should be 1 (as before). Profile: " << compression_profile;
+
+      // match decoded points to input points by nearest xyz (the decode
+      // order may differ from the input order) and compare intensities
+      std::vector<bool> used (cloud_out->size (), false);
+      for (std::size_t i = 0; i < cloud->size (); ++i) {
+        std::size_t best = cloud_out->size ();
+        float best_d2 = 1e30f;
+        for (std::size_t j = 0; j < cloud_out->size (); ++j) {
+          if (used[j])
+            continue;
+          const float dx = (*cloud)[i].x - (*cloud_out)[j].x;
+          const float dy = (*cloud)[i].y - (*cloud_out)[j].y;
+          const float dz = (*cloud)[i].z - (*cloud_out)[j].z;
+          const float d2 = dx * dx + dy * dy + dz * dz;
+          if (d2 < best_d2) {
+            best_d2 = d2;
+            best = j;
+          }
+        }
+        ASSERT_LT (best, cloud_out->size ()) << "no decoded point found for input point " << i << ". Profile: " << compression_profile;
+        ASSERT_LT (best_d2, 0.05f * 0.05f) << "decoded point too far from input point " << i << ". Profile: " << compression_profile;
+        used[best] = true;
+        EXPECT_EQ ((*cloud_out)[best].intensity, (*cloud)[i].intensity)
+            << "intensity of point " << i << " not preserved. Profile: " << compression_profile << ", run: " << test_idx;
+      }
+    } // runs
+  } // compression profiles
+} // TEST
+
+TEST(PCL, OctreeDeCompressionPointXYZIIntensityDenseCloud)
+{
+  // Regression test for #6272, dense cloud: many points share voxels, so
+  // the differential (XOR) intensity coding path is exercised. The intensity
+  // is encoded losslessly, so the multiset of decoded intensities must match
+  // the input multiset exactly. Voxel-grid downsampling profiles merge
+  // points within a voxel and are covered by OctreeDeCompressionPointXYZIIntensity.
+  srand (42);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI> ());
+  for (int i = 0; i < 2000; ++i) {
+    pcl::PointXYZI p;
+    p.x = static_cast<float> (0.1 * rand () / RAND_MAX);
+    p.y = static_cast<float> (0.1 * rand () / RAND_MAX);
+    p.z = static_cast<float> (0.1 * rand () / RAND_MAX);
+    p.intensity = static_cast<float> (50000.0 * rand () / RAND_MAX);
+    cloud->push_back (p);
+  }
+  std::vector<float> intensities_in;
+  for (const auto& p : *cloud)
+    intensities_in.push_back (p.intensity);
+  std::sort (intensities_in.begin (), intensities_in.end ());
+
+  // iterate over all pre-defined compression profiles without voxel grid
+  // downsampling
+  for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
+       compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
+    if (pcl::io::compressionProfiles_[compression_profile].doVoxelGridDownSampling)
+      continue;
+    // instantiate point cloud compression encoder/decoder
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZI> pointcloud_encoder (static_cast<pcl::io::compression_Profiles_e> (compression_profile), false);
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZI> pointcloud_decoder;
+
+    // encode the same cloud several times: the first frame is an I-frame,
+    // the following frames are P-frames
+    for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
+    {
+      std::stringstream compressed_data;
+      pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZI> ());
+      pointcloud_encoder.encodePointCloud (cloud, compressed_data);
+      pointcloud_decoder.decodePointCloud (compressed_data, cloud_out);
+      ASSERT_EQ (cloud_out->width, cloud->width) << "cloud width after encoding and decoding not the same. Profile: " << compression_profile;
+      std::vector<float> intensities_out;
+      for (const auto& p : *cloud_out)
+        intensities_out.push_back (p.intensity);
+      std::sort (intensities_out.begin (), intensities_out.end ());
+      ASSERT_EQ (intensities_out.size (), intensities_in.size ());
+      for (std::size_t i = 0; i < intensities_in.size (); ++i)
+        EXPECT_EQ (intensities_out[i], intensities_in[i])
+            << "intensity mismatch at sorted position " << i << ". Profile: " << compression_profile << ", run: " << test_idx;
     } // runs
   } // compression profiles
 } // TEST

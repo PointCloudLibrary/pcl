@@ -41,6 +41,7 @@
 #include <pcl/octree/octree_pointcloud.h>
 #include "entropy_range_coder.h"
 #include "color_coding.h"
+#include "intensity_coding.h"
 #include "point_coding.h"
 
 #include "compression_profiles.h"
@@ -56,7 +57,12 @@ namespace pcl
   {
     /** \brief @b Octree pointcloud compression class
      *  \note This class enables compression and decompression of point cloud data based on octree data structures. It is a lossy compression. See also `PCDWriter` for another way to compress point cloud data.
-     *  \note
+     *  \note Besides the point coordinates (x, y, z), the RGB color is encoded if color encoding is enabled and the
+     *  point type has an `rgb`/`rgba` field, and the intensity is encoded if the point type has an `intensity` field
+     *  (e.g. `pcl::PointXYZI`). All other point fields (e.g. normals, curvature, labels) are not stored in the
+     *  compressed stream; after decoding they hold the default-constructed values of `PointT`.
+     *  \note This class is precompiled for `PointXYZ`, `PointXYZRGB` and `PointXYZRGBA`. For other point types, include
+     *  `pcl/compression/impl/octree_pointcloud_compression.hpp` as well.
      *  \note typename: PointT: type of point used in pointcloud
      *  \author Julius Kammerl (julius@kammerl.de)
      */
@@ -104,6 +110,7 @@ namespace pcl
           OctreePointCloud<PointT, LeafT, BranchT, OctreeT> (octreeResolution_arg),
           output_ (PointCloudPtr ()),
           color_coder_ (),
+          intensity_coder_ (),
           point_coder_ (),
           do_voxel_grid_enDecoding_ (doVoxelGridDownDownSampling_arg), i_frame_rate_ (iFrameRate_arg),
           
@@ -258,6 +265,9 @@ namespace pcl
         /** \brief Color coding instance */
         ColorCoding<PointT> color_coder_;
 
+        /** \brief Intensity coding instance */
+        IntensityCoding<PointT> intensity_coder_;
+
         /** \brief Point coding instance */
         PointCoding<PointT> point_coder_;
 
@@ -276,13 +286,26 @@ namespace pcl
         bool data_with_color_{false};
         unsigned char point_color_offset_{0};
 
+        bool cloud_with_intensity_{false};
+        bool data_with_intensity_{false};
+        std::size_t point_intensity_offset_{0};
+
+        // true if the frame header currently being decoded uses the format
+        // introduced with intensity coding (see frame_header_identifier_v2_)
+        bool frame_header_is_v2_{false};
+
         //bool activating statistics
         bool b_show_statistics_{false};
         std::uint64_t compressed_point_data_len_{0};
         std::uint64_t compressed_color_data_len_{0};
+        std::uint64_t compressed_intensity_data_len_{0};
 
-        // frame header identifier
+        // frame header identifier (format without intensity coding)
         static const char* frame_header_identifier_;
+
+        // frame header identifier (format with intensity coding, written by
+        // this version; streams with the old identifier are still decoded)
+        static const char* frame_header_identifier_v2_;
 
         const compression_Profiles_e selected_profile_;
         const double point_resolution_;
@@ -296,6 +319,10 @@ namespace pcl
     // define frame identifier
     template<typename PointT, typename LeafT, typename BranchT, typename OctreeT>
       const char* OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::frame_header_identifier_ = "<PCL-OCT-COMPRESSED>";
+
+    // define frame identifier for the format with intensity coding
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT>
+      const char* OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::frame_header_identifier_v2_ = "<PCL-OCT-COMPRESSED-V2>";
   }
 
 }
