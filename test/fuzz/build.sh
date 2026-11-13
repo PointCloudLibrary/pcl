@@ -63,3 +63,33 @@ $CXX $CXXFLAGS $LIB_FUZZING_ENGINE ply_reader_fuzzer.o \
         /usr/local/lib/libboost_filesystem.a -o $OUT/ply_reader_fuzzer -lm
 
 zip $OUT/ply_reader_fuzzer_seed_corpus.zip $SRC/pcl/test/cube.ply
+
+# octree_compression_fuzzer
+$CXX $CXXFLAGS -DPCLAPI_EXPORTS \
+        -I/src/pcl/build/include -I/src/pcl/common/include \
+        -I/src/pcl/dssdk/include \
+        -I/src/pcl/io/include -I/src/pcl/octree/include -isystem /usr/include/eigen3 \
+        -O2 -g -DNDEBUG -fPIC -std=c++17 \
+        -o octree_compression_fuzzer.o -c octree_compression_fuzzer.cpp
+
+$CXX $CXXFLAGS $LIB_FUZZING_ENGINE octree_compression_fuzzer.o \
+        ../../build/lib/libpcl_io.a ../../build/lib/libpcl_io_ply.a \
+        ../../build/lib/libpcl_common.a \
+        /usr/local/lib/libboost_filesystem.a -o $OUT/octree_compression_fuzzer -lm
+
+# Seed generator: encode real clouds with several compression profiles.
+$CXX $CXXFLAGS \
+        -I/src/pcl/build/include -I/src/pcl/common/include \
+        -I/src/pcl/io/include -I/src/pcl/octree/include -isystem /usr/include/eigen3 \
+        -O2 -g -DNDEBUG -std=c++17 \
+        -o gen_octree_seeds gen_octree_seeds.cpp \
+        ../../build/lib/libpcl_io_ply.a ../../build/lib/libpcl_io.a \
+        ../../build/lib/libpcl_common.a \
+        /usr/local/lib/libboost_filesystem.a -lm
+
+mkdir -p octree_seed_corpus
+./gen_octree_seeds octree_seed_corpus \
+        $SRC/pcl/test/octants.pcd $SRC/pcl/test/pcl_logo.pcd
+zip $OUT/octree_compression_fuzzer_seed_corpus.zip octree_seed_corpus/*
+cp octree_compression_fuzzer.dict $OUT/
+
