@@ -207,6 +207,82 @@ TYPED_TEST (Transforms, PointCloudXYZRGBNormalDenseIndexed)
   }
 }
 
+template <typename Scalar> void
+testTransformPreservesFourthComponent ()
+{
+  // Regression test for issue #5972: transformPointCloud() must not change the
+  // fourth entry of a point. A custom point type may pack a value (e.g. intensity)
+  // into w, and the curvature of a normal lives in data_n[3]. Before 1.9.0 the old
+  // code left the fourth entry untouched; the SSE2/AVX rewrite overwrote it with
+  // 0 (SO3) or 1 (SE3).
+  Eigen::Matrix<Scalar, 4, 4> tf = Eigen::Matrix<Scalar, 4, 4>::Identity ();
+  tf (0, 0) = 0; tf (0, 1) = -1; tf (1, 0) = 1; tf (1, 1) = 0;
+  tf (0, 3) = 10; tf (1, 3) = 20; tf (2, 3) = 30;
+
+  pcl::PointCloud<pcl::PointXYZ> cloud_in, cloud_out;
+  cloud_in.width = 2; cloud_in.height = 1; cloud_in.is_dense = true;
+  cloud_in.points.resize (2);
+  cloud_in.points[0] = pcl::PointXYZ (1.0f, 0.0f, 0.0f);
+  cloud_in.points[1] = pcl::PointXYZ (0.0f, 2.0f, 0.0f);
+  cloud_in.points[0].data[3] = 42.0f;
+  cloud_in.points[1].data[3] = 7.5f;
+
+  // Out-of-place transform, copy all fields
+  pcl::transformPointCloud (cloud_in, cloud_out, tf, true);
+  EXPECT_FLOAT_EQ (cloud_out.points[0].x, 10.0f);
+  EXPECT_FLOAT_EQ (cloud_out.points[0].y, 21.0f);
+  EXPECT_FLOAT_EQ (cloud_out.points[0].z, 30.0f);
+  EXPECT_FLOAT_EQ (cloud_out.points[0].data[3], 42.0f);
+  EXPECT_FLOAT_EQ (cloud_out.points[1].x, 8.0f);
+  EXPECT_FLOAT_EQ (cloud_out.points[1].y, 20.0f);
+  EXPECT_FLOAT_EQ (cloud_out.points[1].z, 30.0f);
+  EXPECT_FLOAT_EQ (cloud_out.points[1].data[3], 7.5f);
+
+  // In-place transform
+  pcl::PointCloud<pcl::PointXYZ> cloud_inplace = cloud_in;
+  pcl::transformPointCloud (cloud_inplace, cloud_inplace, tf);
+  EXPECT_FLOAT_EQ (cloud_inplace.points[0].data[3], 42.0f);
+  EXPECT_FLOAT_EQ (cloud_inplace.points[1].data[3], 7.5f);
+
+  // Indexed overload
+  pcl::PointCloud<pcl::PointXYZ> cloud_indexed;
+  pcl::Indices indices{1};
+  pcl::transformPointCloud (cloud_in, indices, cloud_indexed, tf, true);
+  EXPECT_FLOAT_EQ (cloud_indexed.points[0].data[3], 7.5f);
+
+  // Single point
+  pcl::PointXYZ p (1.0f, 0.0f, 0.0f);
+  p.data[3] = 42.0f;
+  pcl::PointXYZ pt = pcl::transformPoint (p, Eigen::Transform<Scalar, 3, Eigen::Affine> (tf));
+  EXPECT_FLOAT_EQ (pt.data[3], 42.0f);
+
+  // transformPointCloudWithNormals: the curvature stored in data_n[3] must survive
+  // the SO3 transform of the normal, and w must survive the SE3 transform
+  pcl::PointCloud<pcl::PointNormal> normals_in, normals_out;
+  normals_in.width = 1; normals_in.height = 1; normals_in.is_dense = true;
+  normals_in.points.resize (1);
+  normals_in.points[0].getVector3fMap () = Eigen::Vector3f (1.0f, 0.0f, 0.0f);
+  normals_in.points[0].getNormalVector3fMap () = Eigen::Vector3f (0.0f, 0.0f, 1.0f);
+  normals_in.points[0].data[3] = 42.0f;
+  normals_in.points[0].data_n[3] = 3.25f;
+  pcl::transformPointCloudWithNormals (normals_in, normals_out, tf, true);
+  EXPECT_FLOAT_EQ (normals_out.points[0].data[3], 42.0f);
+  EXPECT_FLOAT_EQ (normals_out.points[0].data_n[3], 3.25f);
+  EXPECT_FLOAT_EQ (normals_out.points[0].normal_z, 1.0f);
+
+  // transformPointWithNormal
+  pcl::PointNormal pn = normals_in.points[0];
+  pcl::PointNormal pnt = pcl::transformPointWithNormal (pn, Eigen::Transform<Scalar, 3, Eigen::Affine> (tf));
+  EXPECT_FLOAT_EQ (pnt.data[3], 42.0f);
+  EXPECT_FLOAT_EQ (pnt.data_n[3], 3.25f);
+}
+
+TEST (PCL, TransformPreservesFourthComponent)
+{
+  testTransformPreservesFourthComponent<float> ();
+  testTransformPreservesFourthComponent<double> ();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Matrix4Affine3Transform)
 {
