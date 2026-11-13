@@ -86,6 +86,18 @@ namespace pcl
         // apply encoding configuration
         cloud_with_color_ &= do_color_encoding_;
 
+        // intensity field analysis
+        // Intensity coding reads/writes the field as float, so enable it only
+        // for a scalar FLOAT32 field; other types keep the previous skip behavior.
+        cloud_with_intensity_ = false;
+        int intensity_index = pcl::getFieldIndex<PointT> ("intensity", fields);
+        if (intensity_index >= 0 && fields[intensity_index].datatype == pcl::PCLPointField::FLOAT32 &&
+            fields[intensity_index].count == 1)
+        {
+          point_intensity_offset_ = static_cast<std::size_t> (fields[intensity_index].offset);
+          cloud_with_intensity_ = true;
+        }
+
 
         // if octree depth changed, we enforce I-frame encoding
         i_frame_ |= (recent_tree_depth != this->getTreeDepth ());// | !(iFrameCounter%10);
@@ -111,6 +123,14 @@ namespace pcl
         color_coder_.initializeEncoding ();
         color_coder_.setPointCount (static_cast<unsigned int> (cloud_arg->size ()));
         color_coder_.setVoxelCount (static_cast<unsigned int> (this->leaf_count_));
+
+        // initialize intensity encoding
+        intensity_coder_.initializeEncoding ();
+        if (cloud_with_intensity_)
+        {
+          intensity_coder_.setPointCount (static_cast<unsigned int> (cloud_arg->size ()));
+          intensity_coder_.setVoxelCount (static_cast<unsigned int> (this->leaf_count_));
+        }
 
         // initialize point encoding
         point_coder_.initializeEncoding ();
@@ -141,6 +161,7 @@ namespace pcl
         {
           float bytes_per_XYZ = static_cast<float> (compressed_point_data_len_) / static_cast<float> (point_count_);
           float bytes_per_color = static_cast<float> (compressed_color_data_len_) / static_cast<float> (point_count_);
+          float bytes_per_intensity = static_cast<float> (compressed_intensity_data_len_) / static_cast<float> (point_count_);
 
           PCL_INFO ("*** POINTCLOUD ENCODING ***\n");
           PCL_INFO ("Frame ID: %d\n", frame_ID_);
@@ -153,11 +174,13 @@ namespace pcl
           PCL_INFO ("XYZ bytes per point: %f bytes\n", bytes_per_XYZ);
           PCL_INFO ("Color compression percentage: %f%%\n", bytes_per_color / (sizeof (int)) * 100.0f);
           PCL_INFO ("Color bytes per point: %f bytes\n", bytes_per_color);
+          PCL_INFO ("Intensity compression percentage: %f%%\n", bytes_per_intensity / (sizeof (float)) * 100.0f);
+          PCL_INFO ("Intensity bytes per point: %f bytes\n", bytes_per_intensity);
           PCL_INFO ("Size of uncompressed point cloud: %f kBytes\n", static_cast<float> (point_count_) * (sizeof (int) + 3.0f * sizeof (float)) / 1024.0f);
-          PCL_INFO ("Size of compressed point cloud: %f kBytes\n", static_cast<float> (compressed_point_data_len_ + compressed_color_data_len_) / 1024.0f);
-          PCL_INFO ("Total bytes per point: %f bytes\n", bytes_per_XYZ + bytes_per_color);
-          PCL_INFO ("Total compression percentage: %f%%\n", (bytes_per_XYZ + bytes_per_color) / (sizeof (int) + 3.0f * sizeof (float)) * 100.0f);
-          PCL_INFO ("Compression ratio: %f\n\n", static_cast<float> (sizeof (int) + 3.0f * sizeof (float)) / static_cast<float> (bytes_per_XYZ + bytes_per_color));
+          PCL_INFO ("Size of compressed point cloud: %f kBytes\n", static_cast<float> (compressed_point_data_len_ + compressed_color_data_len_ + compressed_intensity_data_len_) / 1024.0f);
+          PCL_INFO ("Total bytes per point: %f bytes\n", bytes_per_XYZ + bytes_per_color + bytes_per_intensity);
+          PCL_INFO ("Total compression percentage: %f%%\n", (bytes_per_XYZ + bytes_per_color + bytes_per_intensity) / (sizeof (int) + 3.0f * sizeof (float)) * 100.0f);
+          PCL_INFO ("Compression ratio: %f\n\n", static_cast<float> (sizeof (int) + 3.0f * sizeof (float)) / static_cast<float> (bytes_per_XYZ + bytes_per_color + bytes_per_intensity));
         }
         
         i_frame_ = false;
@@ -197,6 +220,18 @@ namespace pcl
         cloud_with_color_ = true;
       }
 
+      // intensity field analysis
+      // Intensity coding reads/writes the field as float, so enable it only
+      // for a scalar FLOAT32 field; other types keep the previous skip behavior.
+      cloud_with_intensity_ = false;
+      int intensity_index = pcl::getFieldIndex<PointT> ("intensity", fields);
+      if (intensity_index >= 0 && fields[intensity_index].datatype == pcl::PCLPointField::FLOAT32 &&
+          fields[intensity_index].count == 1)
+      {
+        point_intensity_offset_ = static_cast<std::size_t> (fields[intensity_index].offset);
+        cloud_with_intensity_ = true;
+      }
+
       // read header from input stream
       this->readFrameHeader (compressed_tree_data_in_arg);
 
@@ -205,6 +240,7 @@ namespace pcl
 
       // initialize color and point encoding
       color_coder_.initializeDecoding ();
+      intensity_coder_.initializeDecoding ();
       point_coder_.initializeDecoding ();
 
       // initialize output cloud
@@ -227,6 +263,7 @@ namespace pcl
       {
         float bytes_per_XYZ = static_cast<float> (compressed_point_data_len_) / static_cast<float> (point_count_);
         float bytes_per_color = static_cast<float> (compressed_color_data_len_) / static_cast<float> (point_count_);
+        float bytes_per_intensity = static_cast<float> (compressed_intensity_data_len_) / static_cast<float> (point_count_);
 
         PCL_INFO ("*** POINTCLOUD DECODING ***\n");
         PCL_INFO ("Frame ID: %d\n", frame_ID_);
@@ -239,11 +276,13 @@ namespace pcl
         PCL_INFO ("XYZ bytes per point: %f bytes\n", bytes_per_XYZ);
         PCL_INFO ("Color compression percentage: %f%%\n", bytes_per_color / (sizeof (int)) * 100.0f);
         PCL_INFO ("Color bytes per point: %f bytes\n", bytes_per_color);
+        PCL_INFO ("Intensity compression percentage: %f%%\n", bytes_per_intensity / (sizeof (float)) * 100.0f);
+        PCL_INFO ("Intensity bytes per point: %f bytes\n", bytes_per_intensity);
         PCL_INFO ("Size of uncompressed point cloud: %f kBytes\n", static_cast<float> (point_count_) * (sizeof (int) + 3.0f * sizeof (float)) / 1024.0f);
-        PCL_INFO ("Size of compressed point cloud: %f kBytes\n", static_cast<float> (compressed_point_data_len_ + compressed_color_data_len_) / 1024.0f);
-        PCL_INFO ("Total bytes per point: %f bytes\n", bytes_per_XYZ + bytes_per_color);
-        PCL_INFO ("Total compression percentage: %f%%\n", (bytes_per_XYZ + bytes_per_color) / (sizeof (int) + 3.0f * sizeof (float)) * 100.0f);
-        PCL_INFO ("Compression ratio: %f\n\n", static_cast<float> (sizeof (int) + 3.0f * sizeof (float)) / static_cast<float> (bytes_per_XYZ + bytes_per_color));
+        PCL_INFO ("Size of compressed point cloud: %f kBytes\n", static_cast<float> (compressed_point_data_len_ + compressed_color_data_len_ + compressed_intensity_data_len_) / 1024.0f);
+        PCL_INFO ("Total bytes per point: %f bytes\n", bytes_per_XYZ + bytes_per_color + bytes_per_intensity);
+        PCL_INFO ("Total compression percentage: %f%%\n", (bytes_per_XYZ + bytes_per_color + bytes_per_intensity) / (sizeof (int) + 3.0f * sizeof (float)) * 100.0f);
+        PCL_INFO ("Compression ratio: %f\n\n", static_cast<float> (sizeof (int) + 3.0f * sizeof (float)) / static_cast<float> (bytes_per_XYZ + bytes_per_color + bytes_per_intensity));
       }
     }
 
@@ -253,9 +292,11 @@ namespace pcl
     {
       std::uint64_t binary_tree_data_vector_size;
       std::uint64_t point_avg_color_data_vector_size;
+      std::uint64_t point_avg_intensity_data_vector_size;
 
       compressed_point_data_len_ = 0;
       compressed_color_data_len_ = 0;
+      compressed_intensity_data_len_ = 0;
 
       // encode binary octree structure
       binary_tree_data_vector_size = binary_tree_data_vector_.size ();
@@ -274,11 +315,23 @@ namespace pcl
                                                                                compressed_tree_data_out_arg);
       }
 
+      if (cloud_with_intensity_)
+      {
+        // encode averaged voxel intensity information
+        std::vector<char>& pointAvgIntensityDataVector = intensity_coder_.getAverageDataVector ();
+        point_avg_intensity_data_vector_size = pointAvgIntensityDataVector.size ();
+        compressed_tree_data_out_arg.write (reinterpret_cast<const char*> (&point_avg_intensity_data_vector_size),
+                                            sizeof (point_avg_intensity_data_vector_size));
+        compressed_intensity_data_len_ += entropy_coder_.encodeCharVectorToStream (pointAvgIntensityDataVector,
+                                                                                   compressed_tree_data_out_arg);
+      }
+
       if (!do_voxel_grid_enDecoding_)
       {
         std::uint64_t pointCountDataVector_size;
         std::uint64_t point_diff_data_vector_size;
         std::uint64_t point_diff_color_data_vector_size;
+        std::uint64_t point_diff_intensity_data_vector_size;
 
         // encode amount of points per voxel
         pointCountDataVector_size = point_count_data_vector_.size ();
@@ -302,6 +355,16 @@ namespace pcl
           compressed_color_data_len_ += entropy_coder_.encodeCharVectorToStream (point_diff_color_data_vector,
                                                                                  compressed_tree_data_out_arg);
         }
+        if (cloud_with_intensity_)
+        {
+          // encode differential intensity information
+          std::vector<char>& point_diff_intensity_data_vector = intensity_coder_.getDifferentialDataVector ();
+          point_diff_intensity_data_vector_size = point_diff_intensity_data_vector.size ();
+          compressed_tree_data_out_arg.write (reinterpret_cast<const char*> (&point_diff_intensity_data_vector_size),
+                                           sizeof (point_diff_intensity_data_vector_size));
+          compressed_intensity_data_len_ += entropy_coder_.encodeCharVectorToStream (point_diff_intensity_data_vector,
+                                                                                     compressed_tree_data_out_arg);
+        }
       }
       // flush output stream
       compressed_tree_data_out_arg.flush ();
@@ -313,9 +376,11 @@ namespace pcl
     {
       std::uint64_t binary_tree_data_vector_size;
       std::uint64_t point_avg_color_data_vector_size;
+      std::uint64_t point_avg_intensity_data_vector_size = 0;
 
       compressed_point_data_len_ = 0;
       compressed_color_data_len_ = 0;
+      compressed_intensity_data_len_ = 0;
 
       // decode binary octree structure
       compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&binary_tree_data_vector_size), sizeof (binary_tree_data_vector_size));
@@ -333,11 +398,22 @@ namespace pcl
                                                                            point_avg_color_data_vector);
       }
 
+      if (data_with_intensity_)
+      {
+        // decode averaged voxel intensity information
+        std::vector<char>& point_avg_intensity_data_vector = intensity_coder_.getAverageDataVector ();
+        compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&point_avg_intensity_data_vector_size), sizeof (point_avg_intensity_data_vector_size));
+        point_avg_intensity_data_vector.resize (static_cast<std::size_t> (point_avg_intensity_data_vector_size));
+        compressed_intensity_data_len_ += entropy_coder_.decodeStreamToCharVector (compressed_tree_data_in_arg,
+                                                                               point_avg_intensity_data_vector);
+      }
+
       if (!do_voxel_grid_enDecoding_)
       {
         std::uint64_t point_count_data_vector_size;
         std::uint64_t point_diff_data_vector_size;
         std::uint64_t point_diff_color_data_vector_size;
+        std::uint64_t point_diff_intensity_data_vector_size = 0;
 
         // decode amount of points per voxel
         compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&point_count_data_vector_size), sizeof (point_count_data_vector_size));
@@ -361,6 +437,16 @@ namespace pcl
           compressed_color_data_len_ += entropy_coder_.decodeStreamToCharVector (compressed_tree_data_in_arg,
                                                                              pointDiffColorDataVector);
         }
+
+        if (data_with_intensity_)
+        {
+          // decode differential intensity information
+          std::vector<char>& pointDiffIntensityDataVector = intensity_coder_.getDifferentialDataVector ();
+          compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&point_diff_intensity_data_vector_size), sizeof (point_diff_intensity_data_vector_size));
+          pointDiffIntensityDataVector.resize (static_cast<std::size_t> (point_diff_intensity_data_vector_size));
+          compressed_intensity_data_len_ += entropy_coder_.decodeStreamToCharVector (compressed_tree_data_in_arg,
+                                                                                 pointDiffIntensityDataVector);
+        }
       }
     }
 
@@ -368,8 +454,8 @@ namespace pcl
     template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
     OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::writeFrameHeader (std::ostream& compressed_tree_data_out_arg)
     {
-      // encode header identifier
-      compressed_tree_data_out_arg.write (reinterpret_cast<const char*> (frame_header_identifier_), strlen (frame_header_identifier_));
+      // encode header identifier (format with intensity coding)
+      compressed_tree_data_out_arg.write (reinterpret_cast<const char*> (frame_header_identifier_v2_), strlen (frame_header_identifier_v2_));
       // encode point cloud header id
       compressed_tree_data_out_arg.write (reinterpret_cast<const char*> (&frame_ID_), sizeof (frame_ID_));
       // encode frame type (I/P-frame)
@@ -396,6 +482,7 @@ namespace pcl
         // encode coding configuration
         compressed_tree_data_out_arg.write (reinterpret_cast<const char*> (&do_voxel_grid_enDecoding_), sizeof (do_voxel_grid_enDecoding_));
         compressed_tree_data_out_arg.write (reinterpret_cast<const char*> (&cloud_with_color_), sizeof (cloud_with_color_));
+        compressed_tree_data_out_arg.write (reinterpret_cast<const char*> (&cloud_with_intensity_), sizeof (cloud_with_intensity_));
         compressed_tree_data_out_arg.write (reinterpret_cast<const char*> (&point_count_), sizeof (point_count_));
         compressed_tree_data_out_arg.write (reinterpret_cast<const char*> (&octree_resolution), sizeof (octree_resolution));
         compressed_tree_data_out_arg.write (reinterpret_cast<const char*> (&color_bit_depth), sizeof (color_bit_depth));
@@ -416,13 +503,35 @@ namespace pcl
     OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::syncToHeader ( std::istream& compressed_tree_data_in_arg)
     {
       // sync to frame header
-      unsigned int header_id_pos = 0;
-      while (header_id_pos < strlen (frame_header_identifier_))
+      // Two frame header identifiers exist: "<PCL-OCT-COMPRESSED>" for
+      // streams written before intensity coding and "<PCL-OCT-COMPRESSED-V2>"
+      // for streams with intensity coding. Match both in parallel (as the
+      // original implementation matched the single identifier), so streams
+      // of either format are found, and garbage between frames is skipped.
+      const std::size_t identifier_v1_len = strlen (frame_header_identifier_);
+      const std::size_t identifier_v2_len = strlen (frame_header_identifier_v2_);
+      unsigned int header_id_pos_v1 = 0;
+      unsigned int header_id_pos_v2 = 0;
+      for (;;)
       {
         char readChar;
         compressed_tree_data_in_arg.read (static_cast<char*> (&readChar), sizeof (readChar));
-        if (readChar != frame_header_identifier_[header_id_pos++])
-          header_id_pos = (frame_header_identifier_[0]==readChar)?1:0;
+        if (readChar != frame_header_identifier_[header_id_pos_v1++])
+          header_id_pos_v1 = (frame_header_identifier_[0]==readChar)?1:0;
+        if (readChar != frame_header_identifier_v2_[header_id_pos_v2++])
+          header_id_pos_v2 = (frame_header_identifier_v2_[0]==readChar)?1:0;
+        if (header_id_pos_v1 == identifier_v1_len)
+        {
+          // format without intensity coding
+          frame_header_is_v2_ = false;
+          return;
+        }
+        if (header_id_pos_v2 == identifier_v2_len)
+        {
+          // format with intensity coding
+          frame_header_is_v2_ = true;
+          return;
+        }
       }
     }
 
@@ -443,6 +552,16 @@ namespace pcl
         // read coder configuration
         compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&do_voxel_grid_enDecoding_), sizeof (do_voxel_grid_enDecoding_));
         compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&data_with_color_), sizeof (data_with_color_));
+        if (frame_header_is_v2_)
+        {
+          // format with intensity coding carries the intensity flag
+          compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&data_with_intensity_), sizeof (data_with_intensity_));
+        }
+        else
+        {
+          // streams written before intensity coding contain no intensity data
+          data_with_intensity_ = false;
+        }
         compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&point_count_), sizeof (point_count_));
         compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&octree_resolution), sizeof (octree_resolution));
         compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&color_bit_depth), sizeof (color_bit_depth));
@@ -493,12 +612,20 @@ namespace pcl
         if (cloud_with_color_)
           // encode color of points
           color_coder_.encodePoints (leafIdx, point_color_offset_, this->input_);
+
+        if (cloud_with_intensity_)
+          // encode intensity of points
+          intensity_coder_.encodePoints (leafIdx, point_intensity_offset_, this->input_);
       }
       else
       {
         if (cloud_with_color_)
           // encode average color of all points within voxel
           color_coder_.encodeAverageOfPoints (leafIdx, point_color_offset_, this->input_);
+
+        if (cloud_with_intensity_)
+          // encode average intensity of all points within voxel
+          intensity_coder_.encodeAverageOfPoints (leafIdx, point_intensity_offset_, this->input_);
       }
     }
 
@@ -554,6 +681,18 @@ namespace pcl
           // set default color information
           color_coder_.setDefaultColor (output_, output_->size () - pointCount,
                                        output_->size (), point_color_offset_);
+      }
+
+      if (cloud_with_intensity_)
+      {
+        if (data_with_intensity_)
+          // decode intensity information
+          intensity_coder_.decodePoints (output_, output_->size () - pointCount,
+                                        output_->size (), point_intensity_offset_);
+        else
+          // set default intensity information
+          intensity_coder_.setDefaultIntensity (output_, output_->size () - pointCount,
+                                               output_->size (), point_intensity_offset_);
       }
     }
   }

@@ -299,6 +299,7 @@ set(compression_incs
   include/pcl/compression/color_coding.h
   include/pcl/compression/compression_profiles.h
   include/pcl/compression/entropy_range_coder.h
+  include/pcl/compression/intensity_coding.h
   include/pcl/compression/point_coding.h
 )
 
