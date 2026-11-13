@@ -41,6 +41,7 @@
 
 #include <pcl/compression/entropy_range_coder.h>
 #include <pcl/compression/impl/entropy_range_coder.hpp>
+#include <pcl/exceptions.h>
 
 #include <pcl/test/gtest.h>
 #include <vector>
@@ -163,6 +164,50 @@ TEST (PCL, Static_Range_Coder_Test)
     {
       EXPECT_EQ (inputIntData[i], outputIntData[i]);
     }
+  }
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, Static_Range_Coder_Truncated_Payload_Test)
+{
+  // A truncated payload must fail cleanly instead of decoding from
+  // uninitialized data. Regression test for the follow-up of
+  // PointCloudLibrary/pcl#6525: StaticRangeCoder::decodeStreamToCharVector
+  // never checked its stream reads, so a truncated payload could leave the
+  // frequency table and the code byte uninitialized.
+  constexpr unsigned int vectorSize = 1000;
+
+  std::vector<char> inputData (vectorSize);
+  for (std::size_t i = 0; i < vectorSize; i++)
+  {
+    inputData[i] = static_cast<char> (rand () & 0xFF);
+  }
+
+  pcl::StaticRangeCoder rangeCoder;
+
+  std::stringstream encodedStream;
+  rangeCoder.encodeCharVectorToStream (inputData, encodedStream);
+  const std::string payload = encodedStream.str ();
+
+  // The encoded stream starts with the 257-entry frequency table
+  // (1028 bytes), followed by 4 code bytes and the payload.
+  constexpr std::size_t freqTableBytes = 257 * sizeof (std::uint32_t);
+  const std::size_t payloadBytes = payload.size () - freqTableBytes - 4;
+
+  // Truncate inside the frequency table, inside the code bytes, inside the
+  // payload, and by a single trailing byte: every case must be rejected.
+  for (std::size_t truncatedSize : { freqTableBytes / 2,
+                                     freqTableBytes + 2,
+                                     freqTableBytes + 4 + payloadBytes / 2,
+                                     payload.size () - 1 })
+  {
+    ASSERT_LT (truncatedSize, payload.size ());
+    std::stringstream truncatedStream (payload.substr (0, truncatedSize));
+    std::vector<char> outputData (vectorSize);
+    EXPECT_THROW (rangeCoder.decodeStreamToCharVector (truncatedStream, outputData),
+                  pcl::IOException);
   }
 }
 

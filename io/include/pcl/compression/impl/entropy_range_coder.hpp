@@ -41,6 +41,7 @@
 #pragma once
 
 #include <pcl/compression/entropy_range_coder.h>
+#include <pcl/exceptions.h>
 #include <iostream>
 #include <vector>
 #include <cstring>
@@ -562,7 +563,19 @@ pcl::StaticRangeCoder::decodeStreamToCharVector (std::istream& inputByteStream_a
 
   // read cumulative frequency table
   inputByteStream_arg.read (reinterpret_cast<char*> (&freq[0]), sizeof(freq));
+  if (inputByteStream_arg.gcount () != static_cast<std::streamsize> (sizeof (freq)))
+  {
+    PCL_THROW_EXCEPTION (pcl::IOException,
+                         "[pcl::StaticRangeCoder::decodeStreamToCharVector] Truncated input stream: failed to read frequency table.");
+  }
   streamByteCount += sizeof(freq);
+
+  // the total frequency must be non-zero, otherwise the symbol lookup below divides by zero
+  if (freq[256] == 0)
+  {
+    PCL_THROW_EXCEPTION (pcl::IOException,
+                         "[pcl::StaticRangeCoder::decodeStreamToCharVector] Invalid frequency table: total frequency is zero.");
+  }
 
   code = 0;
   low = 0;
@@ -573,6 +586,11 @@ pcl::StaticRangeCoder::decodeStreamToCharVector (std::istream& inputByteStream_a
   {
     std::uint8_t ch;
     inputByteStream_arg.read (reinterpret_cast<char*> (&ch), sizeof(char));
+    if (inputByteStream_arg.gcount () != static_cast<std::streamsize> (sizeof (char)))
+    {
+      PCL_THROW_EXCEPTION (pcl::IOException,
+                           "[pcl::StaticRangeCoder::decodeStreamToCharVector] Truncated input stream: failed to read initial code bytes.");
+    }
     streamByteCount += sizeof(char);
     code = (code << 8) | ch;
   }
@@ -606,6 +624,11 @@ pcl::StaticRangeCoder::decodeStreamToCharVector (std::istream& inputByteStream_a
     {
       std::uint8_t ch;
       inputByteStream_arg.read (reinterpret_cast<char*> (&ch), sizeof(char));
+      if (inputByteStream_arg.gcount () != static_cast<std::streamsize> (sizeof (char)))
+      {
+        PCL_THROW_EXCEPTION (pcl::IOException,
+                             "[pcl::StaticRangeCoder::decodeStreamToCharVector] Truncated input stream: failed to read code bytes during decoding.");
+      }
       streamByteCount += sizeof(char);
       code = code << 8 | ch;
       range <<= 8;
