@@ -63,3 +63,28 @@ $CXX $CXXFLAGS $LIB_FUZZING_ENGINE ply_reader_fuzzer.o \
         /usr/local/lib/libboost_filesystem.a -o $OUT/ply_reader_fuzzer -lm
 
 zip $OUT/ply_reader_fuzzer_seed_corpus.zip $SRC/pcl/test/cube.ply
+
+# pcd_reader_fuzzer
+$CXX $CXXFLAGS -DPCLAPI_EXPORTS \
+        -I/src/pcl/build/include -I/src/pcl/common/include \
+        -I/src/pcl/dssdk/include \
+        -I/src/pcl/io/include -isystem /usr/include/eigen3 \
+        -O2 -g -DNDEBUG -fPIC -std=c++17 \
+        -o pcd_reader_fuzzer.o -c pcd_reader_fuzzer.cpp
+
+$CXX $CXXFLAGS $LIB_FUZZING_ENGINE pcd_reader_fuzzer.o \
+        ../../build/lib/libpcl_io_ply.a \
+        ../../build/lib/libpcl_io.a ../../build/lib/libpcl_common.a \
+        /usr/local/lib/libboost_filesystem.a -o $OUT/pcd_reader_fuzzer -lm
+
+python3 gen_pcd_seeds.py pcd_seed_corpus
+zip $OUT/pcd_reader_fuzzer_seed_corpus.zip \
+        pcd_seed_corpus/*.pcd \
+        $SRC/pcl/test/octants.pcd \
+        $SRC/pcl/test/curve2d.pcd \
+        $SRC/pcl/test/bun0.pcd \
+        $SRC/pcl/test/colored_cloud.pcd \
+        $SRC/pcl/test/milk.pcd \
+        $SRC/pcl/test/pcl_logo.pcd
+cp pcd_reader_fuzzer.dict $OUT/
+
