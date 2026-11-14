@@ -57,25 +57,22 @@ pcl::RandomSample<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     output = *input_;
 
     // Get x, y, z fields. We should not just assume that they are the first fields of each point
-    std::vector<std::uint32_t> offsets;
-    for (const pcl::PCLPointField &field : input_->fields)
+    std::vector<uindex_t> offsets;
+    for (const auto field_idx : {x_idx_, y_idx_, z_idx_})
     {
-      if (field.name == "x" ||
-          field.name == "y" ||
-          field.name == "z")
-        offsets.push_back (field.offset);
+      if (field_idx != UNAVAILABLE)
+        offsets.push_back (input_->fields[field_idx].offset);
     }
-    PCL_DEBUG ("[pcl::%s<pcl::PCLPointCloud2>::applyFilter] Found %lu fields called 'x', 'y', or 'z'.\n",
+    PCL_DEBUG ("[pcl::%s<pcl::PCLPointCloud2>::applyFilter] Found %zu FLOAT32 fields called 'x', 'y', or 'z'.\n",
                filter_name_.c_str (), offsets.size());
 
     // For every "removed" point, set the x, y, z fields to user_filter_value_
-    const static float user_filter_value = user_filter_value_;
     for (const auto ri : *removed_indices_) // ri = removed index
     {
       auto* pt_data = reinterpret_cast<std::uint8_t*> (&output.data[ri * output.point_step]);
       for (const auto &offset : offsets)
       {
-        memcpy (pt_data + offset, &user_filter_value, sizeof (float));
+        memcpy (pt_data + offset, &user_filter_value_, sizeof (float));
       }
     }
     if (!std::isfinite (user_filter_value_))

@@ -117,9 +117,10 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     }
 
     // @todo fixme
-    if (input_->fields[distance_idx].datatype != pcl::PCLPointField::FLOAT32)
+    if (input_->fields[distance_idx].datatype != pcl::PCLPointField::FLOAT32 ||
+        static_cast<std::size_t> (input_->fields[distance_idx].offset) + sizeof (float) > input_->point_step)
     {
-      PCL_ERROR ("[pcl::%s::downsample] Distance filtering requested, but distances are not float/double in the dataset! Only FLOAT32/FLOAT64 distances are supported right now.\n", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::applyFilter] Filtering requested, but the field is not a float inside a point in the dataset! Only FLOAT32 fields are supported right now.\n", getClassName ().c_str ());
       output.width = output.height = 0;
       output.data.clear ();
       return;
@@ -332,6 +333,16 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
     if (distance_idx == -1)
     {
       PCL_WARN ("[pcl::%s::applyFilter] Unable to find field name in point type.\n", getClassName ().c_str ());
+      indices.clear ();
+      removed_indices_->clear ();
+      return;
+    }
+
+    // The field value is read as a float
+    if (input_->fields[distance_idx].datatype != pcl::PCLPointField::FLOAT32 ||
+        static_cast<std::size_t> (input_->fields[distance_idx].offset) + sizeof (float) > input_->point_step)
+    {
+      PCL_ERROR ("[pcl::%s::applyFilter] Filtering requested, but the field is not a float inside a point in the dataset! Only FLOAT32 fields are supported right now.\n", getClassName ().c_str ());
       indices.clear ();
       removed_indices_->clear ();
       return;

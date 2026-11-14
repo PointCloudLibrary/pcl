@@ -47,12 +47,20 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   if (keep_organized_)
   {
     output = *input_;
+    // The fields that can hold user_filter_value_ (a float)
+    std::vector<uindex_t> offsets;
+    for (const auto& field : output.fields)
+    {
+      if (static_cast<std::size_t> (pcl::getFieldSize (field.datatype)) >= sizeof (float) &&
+          static_cast<std::size_t>(field.offset) + sizeof (float) <= output.point_step)
+        offsets.push_back (field.offset);
+    }
     if (negative_)
     {
       // Prepare the output and copy the data
       for (std::size_t i = 0; i < indices_->size (); ++i)
-        for (std::size_t j = 0; j < output.fields.size(); ++j)
-          memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[j].offset],
+        for (const auto& offset : offsets)
+          memcpy (&output.data[(*indices_)[i] * output.point_step + offset],
                   &user_filter_value_, sizeof(float));
     }
     else
@@ -72,8 +80,8 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
       // Prepare the output and copy the data
       for (const auto &remaining_index : remaining_indices)
-        for (std::size_t j = 0; j < output.fields.size(); ++j)
-          memcpy (&output.data[remaining_index * output.point_step + output.fields[j].offset],
+        for (const auto& offset : offsets)
+          memcpy (&output.data[remaining_index * output.point_step + offset],
                   &user_filter_value_, sizeof(float));
     }
     if (!std::isfinite (user_filter_value_))

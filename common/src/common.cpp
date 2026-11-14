@@ -58,13 +58,24 @@ pcl::getMinMax (const pcl::PCLPointCloud2 &cloud, int,
     PCL_ERROR ("[getMinMax] Invalid field (%s) given!\n", field_name.c_str ());
     return;
   }
-  const auto field_idx = std::distance(cloud.fields.begin (), result);
+  const auto& field = *result;
 
-  for (uindex_t i = 0; i < cloud.fields[field_idx].count; ++i)
+  // TODO: support the other data types
+  if (field.datatype != pcl::PCLPointField::FLOAT32)
+  {
+    PCL_ERROR ("[getMinMax] Field (%s) is not FLOAT32!\n", field_name.c_str ());
+    return;
+  }
+  if (static_cast<std::size_t>(field.offset) + field.count * sizeof (float) > cloud.data.size ())
+  {
+    PCL_ERROR ("[getMinMax] Field (%s) is outside the data of the cloud!\n", field_name.c_str ());
+    return;
+  }
+
+  for (uindex_t i = 0; i < field.count; ++i)
   {
     float data;
-    // TODO: replace float with the real data type
-    memcpy (&data, &cloud.data[cloud.fields[field_idx].offset + i * sizeof (float)], sizeof (float));
+    memcpy (&data, &cloud.data[field.offset + i * sizeof (float)], sizeof (float));
     min_p = (data > min_p) ? min_p : data; 
     max_p = (data < max_p) ? max_p : data; 
   }
