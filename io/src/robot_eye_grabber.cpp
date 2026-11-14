@@ -154,10 +154,10 @@ pcl::RobotEyeGrabber::consumerThreadLoop ()
 {
   while (true)
   {
-    boost::shared_array<unsigned char> data;
+    std::vector<unsigned char> data;
     if (!packet_queue_.dequeue (data))
       return;
-    convertPacketData (data.get(), data_size_);
+    convertPacketData (data.data (), data.size ());
   }
 }
 
@@ -165,6 +165,9 @@ pcl::RobotEyeGrabber::consumerThreadLoop ()
 void
 pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, std::size_t length)
 {
+  if (length == 0)
+    return;
+
   //Check for the presence of the header
   std::size_t offset = 0;
   //The old packet data format does not start with an E since it just starts with laser data
@@ -180,6 +183,11 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, std::size_t
     //std::uint32_t Timestamp // counts of a 66 MHz clock since power-on of eye.
     const std::string PACKET_HEADER("EBRBEP");
     constexpr std::size_t RESPONSE_SIZE = 6; //"EBRBEP"
+    if (length < RESPONSE_SIZE + sizeof(std::uint32_t))
+    {
+      //Too short to hold the header and the timestamp, ignore it.
+      return;
+    }
     std::string packet(reinterpret_cast<const char*>(data_packet), RESPONSE_SIZE);
     if(packet == PACKET_HEADER)
     {
@@ -294,10 +302,7 @@ pcl::RobotEyeGrabber::socketCallback (const boost::system::error_code&, std::siz
   if (sensor_address_ == boost::asio::ip::address_v4::any ()
     || sensor_address_ == sender_endpoint_.address ())
   {
-    data_size_ = number_of_bytes;
-    auto *dup = new unsigned char[number_of_bytes];
-    memcpy (dup, receive_buffer_, number_of_bytes);
-    packet_queue_.enqueue (boost::shared_array<unsigned char>(dup));
+    packet_queue_.enqueue (std::vector<unsigned char> (receive_buffer_, receive_buffer_ + number_of_bytes));
   }
 
   asyncSocketReceive ();

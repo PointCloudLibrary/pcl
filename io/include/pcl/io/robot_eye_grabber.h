@@ -45,10 +45,10 @@
 #include <pcl/point_cloud.h>
 #include <pcl/memory.h>
 #include <boost/asio.hpp>
-#include <boost/shared_array.hpp> // for shared_array
 
 #include <memory>
 #include <thread>
+#include <vector>
 
 namespace pcl
 {
@@ -127,7 +127,6 @@ namespace pcl
       unsigned short data_port_;
       enum { MAX_LENGTH = 65535 };
       unsigned char receive_buffer_[MAX_LENGTH];
-      unsigned int data_size_;
 
       boost::asio::ip::address sensor_address_;
       boost::asio::ip::udp::endpoint sender_endpoint_;
@@ -136,7 +135,7 @@ namespace pcl
       std::shared_ptr<std::thread> socket_thread_;
       std::shared_ptr<std::thread> consumer_thread_;
 
-      pcl::SynchronizedQueue<boost::shared_array<unsigned char> > packet_queue_;
+      pcl::SynchronizedQueue<std::vector<unsigned char> > packet_queue_;
       pcl::PointCloud<pcl::PointXYZI>::Ptr point_cloud_xyzi_;
       boost::signals2::signal<sig_cb_robot_eye_point_cloud_xyzi>* point_cloud_signal_;
 
