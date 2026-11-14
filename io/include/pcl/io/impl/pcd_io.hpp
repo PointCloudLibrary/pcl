@@ -59,8 +59,9 @@ pcl::PCDWriter::generateHeader (const pcl::PointCloud<PointT> &cloud, const int 
   std::ostringstream oss;
   oss.imbue (std::locale::classic ());
 
-  oss << "# .PCD v0.7 - Point Cloud Data file format"
-         "\nVERSION 0.7"
+  oss << "# .PCD v0.7 - Point Cloud Data file format";
+  writeHeaderComments (oss, cloud.header);
+  oss << "\nVERSION 0.7"
          "\nFIELDS";
 
   const auto fields = pcl::getFields<PointT> ();

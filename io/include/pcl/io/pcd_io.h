@@ -370,6 +370,22 @@ namespace pcl
       generateHeader (const pcl::PointCloud<PointT> &cloud,
                       const int nr_points = std::numeric_limits<int>::max ());
 
+      /** \brief Write the point cloud header (sequence number, timestamp and
+        * frame id) as comments into a PCD file header.
+        *
+        * The PCD file format specification does not allow new header fields,
+        * so the header information is stored in comments (e.g.
+        * `# SEQ 42`), as suggested in
+        * https://github.com/PointCloudLibrary/pcl/issues/6152
+        * Any PCD reader is free to use or ignore this information.
+        * Nothing is written if the header holds only default values, so
+        * files written from default headers stay byte-identical to before.
+        * \param[out] os the stream into which to write the comments
+        * \param[in] header the point cloud header to store
+        */
+      static void
+      writeHeaderComments (std::ostream &os, const pcl::PCLHeader &header);
+
       /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message
