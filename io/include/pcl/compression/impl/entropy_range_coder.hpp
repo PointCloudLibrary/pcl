@@ -41,6 +41,7 @@
 #pragma once
 
 #include <pcl/compression/entropy_range_coder.h>
+#include <pcl/console/print.h>
 #include <iostream>
 #include <vector>
 #include <cstring>
