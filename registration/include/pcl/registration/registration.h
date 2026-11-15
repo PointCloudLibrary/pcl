@@ -391,11 +391,22 @@ public:
     return (transformation_rotation_epsilon_);
   }
 
-  /** \brief Set the maximum allowed Euclidean error between two consecutive steps in
-   * the ICP loop, before the algorithm is considered to have converged. The error is
-   * estimated as the sum of the differences between correspondences in an Euclidean
-   * sense, divided by the number of correspondences. \param[in] epsilon the maximum
-   * allowed distance error before the algorithm will be considered to have converged
+  /** \brief Set the convergence threshold on the relative change of the mean
+   * squared error (MSE) of the correspondences between two consecutive iterations.
+   *
+   * IterativeClosestPoint (and the classes that use its loop, such as
+   * IterativeClosestPointNonLinear) and JointIterativeClosestPoint pass this value to
+   * DefaultConvergenceCriteria::setRelativeMSE. The algorithm is then considered to
+   * have converged when |MSE_current - MSE_previous| / MSE_previous < epsilon. The MSE
+   * is the mean of the correspondence distances, which are squared Euclidean
+   * distances with the default correspondence estimation.
+   *
+   * The value is relative, not an absolute error: e.g. 0.01 means that the MSE
+   * changed by less than 1% of its previous value. Other registration methods may
+   * use it differently or ignore it.
+   *
+   * \param[in] epsilon the relative MSE change below which the algorithm is
+   * considered to have converged
    */
   inline void
   setEuclideanFitnessEpsilon(double epsilon)
@@ -403,9 +414,8 @@ public:
     euclidean_fitness_epsilon_ = epsilon;
   }
 
-  /** \brief Get the maximum allowed distance error before the algorithm will be
-   * considered to have converged, as set by the user. See \ref
-   * setEuclideanFitnessEpsilon
+  /** \brief Get the relative MSE change threshold used to detect convergence, as set
+   * by the user. See \ref setEuclideanFitnessEpsilon
    */
   inline double
   getEuclideanFitnessEpsilon()

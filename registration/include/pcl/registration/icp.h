@@ -61,8 +61,9 @@ namespace pcl {
  * <li>Number of iterations has reached the maximum user imposed number of iterations
  * (via \ref setMaximumIterations)</li> <li>The epsilon (difference) between the
  * previous transformation and the current estimated transformation is smaller than an
- * user imposed value (via \ref setTransformationEpsilon)</li> <li>The sum of Euclidean
- * squared errors is smaller than a user defined threshold (via \ref
+ * user imposed value (via \ref setTransformationEpsilon)</li> <li>The relative change
+ * of the mean squared error of the correspondences between two consecutive
+ * iterations is smaller than a user defined threshold (via \ref
  * setEuclideanFitnessEpsilon)</li>
  * </ol>
  *
@@ -81,7 +82,7 @@ namespace pcl {
  * icp.setMaximumIterations (50);
  * // Set the transformation epsilon (criterion 2)
  * icp.setTransformationEpsilon (1e-8);
- * // Set the euclidean distance difference epsilon (criterion 3)
+ * // Set the relative MSE change epsilon (criterion 3)
  * icp.setEuclideanFitnessEpsilon (1);
  *
  * // Perform the alignment
