@@ -41,6 +41,7 @@
 #pragma once
 
 #include <pcl/compression/entropy_range_coder.h>
+#include <pcl/console/print.h>
 #include <iostream>
 #include <vector>
 #include <cstring>
@@ -367,6 +368,15 @@ pcl::StaticRangeCoder::decodeStreamToIntVector (std::istream& inputByteStream_ar
   inputByteStream_arg.read (reinterpret_cast<char*> (&frequencyTableByteSize), sizeof(frequencyTableByteSize));
 
   unsigned long streamByteCount = sizeof(frequencyTableSize) + sizeof(frequencyTableByteSize);
+
+  // each entry is a std::uint64_t, so the stream must not claim more bytes per
+  // entry than that; the encoder never writes more than sizeof(std::uint64_t)
+  if (frequencyTableByteSize > sizeof (std::uint64_t))
+  {
+    PCL_ERROR ("[pcl::StaticRangeCoder::decodeStreamToIntVector] invalid frequency table entry size (%u)!\n",
+               static_cast<unsigned int> (frequencyTableByteSize));
+    return (streamByteCount);
+  }
 
   // check size of frequency table vector
   if (cFreqTable_.size () < frequencyTableSize)
