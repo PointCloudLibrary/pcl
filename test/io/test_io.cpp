@@ -1796,6 +1796,42 @@ TEST (PCL, LZFBinaryCompressedCorruptedSize)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PCDReaderFieldLayoutOutsidePoint)
+{
+  // Each header describes a field that does not fit into the final point_step:
+  // a negative COUNT or SIZE shrinks point_step below an earlier field, and a
+  // COUNT listed after POINTS grows point_step after the data was sized.
+  const std::vector<std::string> headers = {
+    "VERSION .7\nFIELDS x pad\nSIZE 4 4\nTYPE F F\nCOUNT 4 -2\nWIDTH 2\nHEIGHT 1\nPOINTS 2\nDATA binary\n",
+    "VERSION .7\nFIELDS x y\nSIZE 4 -4\nTYPE F F\nCOUNT 2 1\nWIDTH 2\nHEIGHT 1\nPOINTS 2\nDATA ascii\n",
+  };
+  PCDReader reader;
+  for (const auto &header : headers)
+  {
+    std::istringstream iss (header);
+    pcl::PCLPointCloud2 blob;
+    Eigen::Vector4f origin;
+    Eigen::Quaternionf orientation;
+    int pcd_version = -1, data_type = -1;
+    unsigned int data_idx = 0;
+    EXPECT_EQ (reader.readHeader (iss, blob, origin, orientation, pcd_version, data_type, data_idx), -1);
+  }
+
+  // COUNT after POINTS: the data has to be sized for the final point_step
+  std::istringstream iss ("VERSION .7\nFIELDS x\nSIZE 4\nTYPE F\nPOINTS 2\nCOUNT 4\nWIDTH 2\nHEIGHT 1\nDATA ascii\n1 2 3 4\n5 6 7 8\n");
+  pcl::PCLPointCloud2 blob;
+  Eigen::Vector4f origin;
+  Eigen::Quaternionf orientation;
+  int pcd_version = -1, data_type = -1;
+  unsigned int data_idx = 0;
+  ASSERT_EQ (reader.readHeader (iss, blob, origin, orientation, pcd_version, data_type, data_idx), 0);
+  EXPECT_EQ (blob.point_step, 16u);
+  EXPECT_EQ (blob.data.size (), 32u);
+  ASSERT_EQ (reader.readBodyASCII (iss, blob, pcd_version), 0);
+  EXPECT_EQ (blob.at<float> (1, 3 * sizeof (float)), 8.0f);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, LZFImageWrappedDimensions)
 {
   // The PCLZF header stores the image width and height as 32 bit values. Their
