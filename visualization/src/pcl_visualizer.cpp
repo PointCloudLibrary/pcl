@@ -699,7 +699,7 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std:
   // Save the ID and actor pair to the global actor map
   (*coordinate_actor_map_) [id] = axes_actor;
 
-  addActorToRenderer (axes_actor, viewport);
+  addCustomActorToRenderer (axes_actor, viewport);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -745,7 +745,7 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, f
   // Save the ID and actor pair to the global actor map
   (*coordinate_actor_map_) [id] = axes_actor;
 
-  addActorToRenderer (axes_actor, viewport);
+  addCustomActorToRenderer (axes_actor, viewport);
 }
 
 int
@@ -833,7 +833,7 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eige
 
   // Save the ID and actor pair to the global actor map
   (*coordinate_actor_map_) [id] = axes_actor;
-  addActorToRenderer (axes_actor, viewport);
+  addCustomActorToRenderer (axes_actor, viewport);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -847,7 +847,7 @@ pcl::visualization::PCLVisualizer::removeCoordinateSystem (const std::string& id
     return (false);
 
   // Remove it from all renderers
-  if (removeActorFromRenderer (am_it->second, viewport))
+  if (removeCustomActorFromRenderer (am_it->second, viewport))
   {
     // Remove the ID pair to the global actor map
     coordinate_actor_map_->erase (am_it);
@@ -867,7 +867,7 @@ pcl::visualization::PCLVisualizer::removePointCloud (const std::string &id, int 
     return (false);
 
   // Remove it from all renderers
-  if (removeActorFromRenderer (am_it->second.actor, viewport))
+  if (removeCustomActorFromRenderer (am_it->second.actor, viewport))
   {
     // Remove the pointer/ID pair to the global actor map
     cloud_actor_map_->erase (am_it);
@@ -899,7 +899,7 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
   // Remove the pointer/ID pair to the global actor map
   if (shape)
   {
-    if (removeActorFromRenderer (am_it->second, viewport))
+    if (removeCustomActorFromRenderer (am_it->second, viewport))
     {
       bool update_LUT (true);
       if (!style_->lut_actor_id_.empty() && am_it->first != style_->lut_actor_id_)
@@ -912,7 +912,7 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
   }
   else
   {
-    if (removeActorFromRenderer (ca_it->second.actor, viewport))
+    if (removeCustomActorFromRenderer (ca_it->second.actor, viewport))
     {
       bool update_LUT (true);
       if (!style_->lut_actor_id_.empty() && ca_it->first != style_->lut_actor_id_)
@@ -961,7 +961,7 @@ pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int view
     }
 
     // Remove it from all renderers
-    if (removeActorFromRenderer (am_it->second, i))
+    if (removeCustomActorFromRenderer (am_it->second, i))
     {
       // Remove the pointer/ID pair to the global actor map
       shape_actor_map_->erase (am_it);
@@ -1036,7 +1036,7 @@ pcl::visualization::PCLVisualizer::removeAllCoordinateSystems (int viewport)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointer<vtkLODActor> &actor, int viewport)
+pcl::visualization::PCLVisualizer::removeCustomActorFromRenderer (const vtkSmartPointer<vtkLODActor> &actor, int viewport)
 {
   vtkLODActor* actor_to_remove = vtkLODActor::SafeDownCast (actor);
 
@@ -1074,7 +1074,7 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointer<vtkActor> &actor, int viewport)
+pcl::visualization::PCLVisualizer::removeCustomActorFromRenderer (const vtkSmartPointer<vtkActor> &actor, int viewport)
 {
   vtkActor* actor_to_remove = vtkActor::SafeDownCast (actor);
 
@@ -1112,7 +1112,7 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::addActorToRenderer (const vtkSmartPointer<vtkProp> &actor, int viewport)
+pcl::visualization::PCLVisualizer::addCustomActorToRenderer (const vtkSmartPointer<vtkProp> &actor, int viewport)
 {
   // Add it to all renderers
   rens_->InitTraversal ();
@@ -1135,7 +1135,7 @@ pcl::visualization::PCLVisualizer::addActorToRenderer (const vtkSmartPointer<vtk
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointer<vtkProp> &actor, int viewport)
+pcl::visualization::PCLVisualizer::removeCustomActorFromRenderer (const vtkSmartPointer<vtkProp> &actor, int viewport)
 {
   vtkProp* actor_to_remove = vtkProp::SafeDownCast (actor);
 
@@ -2284,7 +2284,7 @@ pcl::visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &co
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2316,7 +2316,7 @@ pcl::visualization::PCLVisualizer::addCube (const pcl::ModelCoefficients &coeffi
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2344,7 +2344,7 @@ pcl::visualization::PCLVisualizer::addCube (
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2374,7 +2374,7 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetColor (r, g, b);
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2434,7 +2434,7 @@ pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coef
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2458,7 +2458,7 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (polydata, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2488,7 +2488,7 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
   vtkSmartPointer <vtkLODActor> actor;
   createActorFromVTKDataSet (trans_filter->GetOutput (), actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2516,7 +2516,7 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (reader->GetOutput (), actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2550,7 +2550,7 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
   vtkSmartPointer <vtkLODActor> actor;
   createActorFromVTKDataSet (trans_filter->GetOutput (), actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2581,7 +2581,7 @@ pcl::visualization::PCLVisualizer::addLine (const pcl::ModelCoefficients &coeffi
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2617,7 +2617,7 @@ bool
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2647,7 +2647,7 @@ bool
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2678,7 +2678,7 @@ pcl::visualization::PCLVisualizer::addCircle (const pcl::ModelCoefficients &coef
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2709,7 +2709,7 @@ pcl::visualization::PCLVisualizer::addCone (const pcl::ModelCoefficients &coeffi
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -2790,7 +2790,7 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
   tprop->SetJustificationToLeft ();
   tprop->BoldOn ();
   tprop->SetColor (1, 1, 1);
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[tid] = actor;
@@ -2826,7 +2826,7 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
   tprop->SetJustificationToLeft ();
   tprop->BoldOn ();
   tprop->SetColor (r, g, b);
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[tid] = actor;
@@ -2862,7 +2862,7 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
   tprop->SetJustificationToLeft ();
   tprop->BoldOn ();
   tprop->SetColor (r, g, b);
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[tid] = actor;
@@ -3102,7 +3102,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   }
 
   actor->GetProperty ()->SetRepresentationToSurface ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
@@ -3255,7 +3255,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   actor->SetMapper (mapper);
 
 
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -3441,7 +3441,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
 
   // set mapper
   actor->SetMapper (mapper);
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
@@ -4082,7 +4082,7 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
     actor->GetMapper ()->SetScalarRange (minmax);
 
   // Add it to all renderers
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   CloudActor& cloud_actor = (*cloud_actor_map_)[id];
