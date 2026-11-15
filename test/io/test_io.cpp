@@ -51,6 +51,9 @@
 #include <pcl/io/lzf.h>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/PolygonMesh.h>
+#ifdef HAVE_PNG
+#include <pcl/compression/libpng_wrapper.h>
+#endif
 #include <cstdint>
 #include <cstring> // for memcpy
 #include <fstream>
@@ -2096,6 +2099,56 @@ TEST (PCL, IFSUnterminatedStrings)
 
   remove ("test_ifs_unterminated.ifs");
 }
+
+#ifdef HAVE_PNG
+// decodePNGToImage sizes its output buffer from the (untrusted) PNG header and
+// lets libpng write one scanline per row into it. A PNG whose bit depth or color
+// type does not match the decoder's element type used to overrun that buffer; it
+// should now be rejected instead.
+TEST (PCL, PNGDecodeBitDepthMismatch)
+{
+  // A 16-bit RGB image fed through the 8-bit (std::uint8_t) decode overload.
+  std::vector<std::uint16_t> source (8 * 8 * 3);
+  for (std::size_t i = 0; i < source.size (); ++i)
+    source[i] = static_cast<std::uint16_t> (i * 257);
+
+  std::vector<std::uint8_t> png;
+  pcl::io::encodeRGBImageToPNG (source, 8, 8, png, -1);
+  ASSERT_FALSE (png.empty ());
+
+  std::vector<std::uint8_t> decoded (16, 0xAB);
+  std::size_t width = 42, height = 42;
+  unsigned int channels = 42;
+  pcl::io::decodePNGToImage (png, decoded, width, height, channels);
+
+  EXPECT_TRUE (decoded.empty ());
+  EXPECT_EQ (width, 0u);
+  EXPECT_EQ (height, 0u);
+  EXPECT_EQ (channels, 0u);
+}
+
+// An 8-bit RGB round trip through the matching overload must be unaffected.
+TEST (PCL, PNGDecodeRGBRoundTrip)
+{
+  std::vector<std::uint8_t> source (6 * 4 * 3);
+  for (std::size_t i = 0; i < source.size (); ++i)
+    source[i] = static_cast<std::uint8_t> (i * 7 + 1);
+
+  std::vector<std::uint8_t> png;
+  pcl::io::encodeRGBImageToPNG (source, 6, 4, png, -1);
+  ASSERT_FALSE (png.empty ());
+
+  std::vector<std::uint8_t> decoded;
+  std::size_t width = 0, height = 0;
+  unsigned int channels = 0;
+  pcl::io::decodePNGToImage (png, decoded, width, height, channels);
+
+  EXPECT_EQ (width, 6u);
+  EXPECT_EQ (height, 4u);
+  EXPECT_EQ (channels, 3u);
+  EXPECT_EQ (decoded, source);
+}
+#endif // HAVE_PNG
 
 /* ---[ */
 int
