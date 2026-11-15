@@ -317,8 +317,6 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
         if (!cloud.point_step)
           throw "Number of POINTS specified before COUNT in header!";
         sstream >> nr_points;
-        // Need to allocate: N * point_step
-        cloud.data.resize (nr_points * cloud.point_step);
         continue;
       }
 
@@ -385,6 +383,21 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
     PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT (%d) x WIDTH (%d) != number of points (%d)\n", cloud.height, cloud.width, nr_points);
     return (-1);
   }
+
+  // The body readers index cloud.data with point_step and the field offsets, so
+  // every field has to lie within point_step (a negative SIZE or COUNT shrinks it).
+  for (const auto &field : cloud.fields)
+  {
+    if (static_cast<std::size_t> (field.offset) + static_cast<std::size_t> (field.count) * pcl::getFieldSize (field.datatype) > cloud.point_step)
+    {
+      PCL_ERROR ("[pcl::PCDReader::readHeader] Field %s (offset %u, count %u) does not fit into a point of %u bytes!\n",
+                 field.name.c_str (), field.offset, field.count, cloud.point_step);
+      return (-1);
+    }
+  }
+
+  // Allocate only now that point_step is final, the header may list COUNT after POINTS
+  cloud.data.resize (nr_points * cloud.point_step);
 
   return (0);
 }
