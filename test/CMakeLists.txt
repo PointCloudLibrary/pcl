@@ -47,6 +47,7 @@ add_custom_target(tests "${CMAKE_CTEST_COMMAND}" ${PCL_CTEST_ARGUMENTS} -V -T Te
 set_target_properties(tests PROPERTIES FOLDER "Tests")
 
 add_subdirectory(2d)
+add_subdirectory(cmake)
 add_subdirectory(common)
 add_subdirectory(features)
 add_subdirectory(filters)
