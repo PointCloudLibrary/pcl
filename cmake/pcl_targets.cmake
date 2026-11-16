@@ -585,6 +585,15 @@ function(PCL_MAKE_PKGCONFIG _name)
     string(APPEND PKG_INTERNAL_DEPS " -l${_dep}")
   endforeach()
 
+  if(IS_ABSOLUTE "${PKGCFG_INSTALL_DIR}")
+    set(PKGCONFIG_PREFIX "${CMAKE_INSTALL_PREFIX}")
+  else()
+    file(RELATIVE_PATH _pkgconfig_to_prefix
+         "${CMAKE_INSTALL_PREFIX}/${PKGCFG_INSTALL_DIR}"
+         "${CMAKE_INSTALL_PREFIX}")
+    set(PKGCONFIG_PREFIX "\${pcfiledir}/${_pkgconfig_to_prefix}")
+  endif()
+
   set(_pc_file ${CMAKE_CURRENT_BINARY_DIR}/${_name}.pc)
   if(ARGS_HEADER_ONLY)
     configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig-headeronly.cmake.in ${_pc_file} @ONLY)
