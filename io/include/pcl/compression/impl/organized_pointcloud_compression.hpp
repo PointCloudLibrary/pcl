@@ -335,6 +335,17 @@ namespace pcl
 
         // decode PNG compressed rgb data
         decodePNGToImage (compressedColor, colorData, png_width, png_height, png_channels);
+
+        // the cloud size comes from the frame header, the image sizes from the
+        // PNG headers; the conversion below indexes the images by cloud size
+        const std::uint64_t cloud_size = static_cast<std::uint64_t> (cloud_width) * cloud_height;
+        if (disparityData.size () != cloud_size ||
+            (!colorData.empty () && ((png_channels != 1 && png_channels != 3) ||
+                                     colorData.size () != cloud_size * png_channels)))
+        {
+          PCL_ERROR("[OrganizedPointCloudCompression::decodePointCloud] Decoded image size does not match the cloud size in the frame header!\n");
+          return false;
+        }
       } else {
         PCL_ERROR("[OrganizedPointCloudCompression::decodePointCloud] Unable to find an encoded point cloud in the input stream!\n");
         return false;

@@ -39,7 +39,12 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/compression/octree_pointcloud_compression.h>
 #include <pcl/compression/compression_profiles.h>
+#include <pcl/pcl_config.h>
+#if defined(HAVE_PNG) && defined(HAVE_OPENNI)
+#include <pcl/compression/organized_pointcloud_compression.h>
+#endif
 
+#include <cstring>
 #include <exception>
 #include <sstream>
 
@@ -236,6 +241,57 @@ TEST (PCL, OctreeDeCompressionShortDataVectors)
   // voxel grid frame with average color for 1 of 8 voxels
   EXPECT_EQ(decodeFrame<pcl::PointXYZRGBA>(makeCompressedFrame(true, true, {}, 0, 3, 0)), 8u);
 }
+
+#if defined(HAVE_PNG) && defined(HAVE_OPENNI)
+pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
+makeOrganizedCloud(std::uint32_t width, std::uint32_t height)
+{
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>(width, height));
+  for (std::uint32_t y = 0; y < height; ++y)
+    for (std::uint32_t x = 0; x < width; ++x) {
+      auto& point = cloud->at(x, y);
+      point.x = (static_cast<float>(x) - width / 2.0f) * 0.01f + 0.001f;
+      point.y = (static_cast<float>(y) - height / 2.0f) * 0.01f + 0.001f;
+      point.z = 1.0f;
+      point.r = point.g = point.b = 100;
+    }
+  return cloud;
+}
+
+TEST (PCL, OrganizedDeCompressionImageSizeMismatch)
+{
+  pcl::io::OrganizedPointCloudCompression<pcl::PointXYZRGBA> coder;
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZRGBA>);
+  const std::size_t header_size = std::strlen("<PCL-ORG-COMPRESSED>");
+
+  std::stringstream small_stream;
+  coder.encodePointCloud(makeOrganizedCloud(4, 4), small_stream, true, false, false);
+  const std::string small_frame = small_stream.str();
+  std::istringstream valid(small_frame);
+  EXPECT_TRUE(coder.decodePointCloud(valid, cloud_out, false));
+  EXPECT_EQ(cloud_out->size(), 16u);
+
+  // frame header claims 64x64, disparity and color images are 4x4
+  std::string frame = small_frame;
+  const std::uint32_t size = 64;
+  std::memcpy(&frame[header_size], &size, sizeof(size));
+  std::memcpy(&frame[header_size + sizeof(size)], &size, sizeof(size));
+  std::istringstream wrong_header(frame);
+  EXPECT_FALSE(coder.decodePointCloud(wrong_header, cloud_out, false));
+
+  // 8x8 frame without color followed by the 4x4 color image of the small frame
+  std::stringstream large_stream;
+  coder.encodePointCloud(makeOrganizedCloud(8, 8), large_stream, false, false, false);
+  frame = large_stream.str();
+  frame.resize(frame.size() - sizeof(std::uint32_t));
+  std::uint32_t disparity_size;
+  // the disparity size follows width, height and four floats of the frame header
+  std::memcpy(&disparity_size, &small_frame[header_size + 24], sizeof(disparity_size));
+  frame += small_frame.substr(header_size + 24 + sizeof(disparity_size) + disparity_size);
+  std::istringstream wrong_color(frame);
+  EXPECT_FALSE(coder.decodePointCloud(wrong_color, cloud_out, false));
+}
+#endif
 
 TEST(PCL, OctreeDeCompressionFile)
 {
