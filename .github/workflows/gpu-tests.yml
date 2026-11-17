@@ -1,0 +1,88 @@
+name: GPU tests on a simulated GPU
+
+# The Azure pipelines build the GPU modules but configure with
+# PCL_DISABLE_GPU_TESTS=ON, because their agents have no GPU. This job runs
+# the gpu_octree tests on a simulated NVIDIA T4 (PantheonSim) on a plain
+# GitHub runner instead. The simulator runs the kernels from their PTX and
+# has no timing model, so the performance test is left out.
+
+on:
+  pull_request:
+    paths:
+      - 'common/**'
+      - 'octree/**'
+      - 'gpu/containers/**'
+      - 'gpu/utils/**'
+      - 'gpu/octree/**'
+      - 'test/gpu/octree/**'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/gpu-tests.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'common/**'
+      - 'octree/**'
+      - 'gpu/containers/**'
+      - 'gpu/utils/**'
+      - 'gpu/octree/**'
+      - 'test/gpu/octree/**'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/gpu-tests.yml'
+
+# The job reads the repository and nothing else. The simulator's action uses
+# no token or secrets, and installs packages only from Ubuntu and NVIDIA.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gpu-octree:
+    name: gpu_octree tests / simulated T4
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up CUDA and a simulated GPU
+        uses: pantheongpu/setup-pantheonsim@052a0ac31bf6ec72a471d51aae29b7cbd090c6bf # v0.1.1
+        with:
+          gpu: nvidia/t4
+          cuda-toolkit: '12.8'
+
+      - name: Install dependencies
+        run: sudo apt-get install -y libeigen3-dev libflann-dev libboost-filesystem-dev libboost-iostreams-dev libgtest-dev ninja-build
+
+      # Only the modules the gpu_octree tests need. CUDA_ARCH_BIN=75 embeds
+      # PTX, which the simulator runs; the shared CUDA runtime lets it stand
+      # in for libcudart.
+      - name: Configure
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.8/bin/nvcc \
+            -DCUDA_ARCH_BIN=75 -DCMAKE_CUDA_RUNTIME_LIBRARY=Shared \
+            -DBUILD_global_tests=ON -DBUILD_GPU=ON -DBUILD_CUDA=OFF \
+            -DWITH_OPENGL=OFF -DWITH_VTK=OFF -DWITH_QT=NO -DWITH_PCAP=OFF \
+            -DWITH_OPENNI=OFF -DWITH_OPENNI2=OFF -DWITH_ENSENSO=OFF -DWITH_DAVIDSDK=OFF \
+            -DWITH_DSSDK=OFF -DWITH_RSSDK=OFF -DWITH_RSSDK2=OFF -DWITH_LIBUSB=OFF \
+            -DWITH_PNG=OFF -DWITH_QHULL=OFF \
+            -DBUILD_2d=OFF -DBUILD_features=OFF -DBUILD_filters=OFF -DBUILD_geometry=OFF \
+            -DBUILD_io=OFF -DBUILD_kdtree=OFF -DBUILD_keypoints=OFF -DBUILD_ml=OFF \
+            -DBUILD_outofcore=OFF -DBUILD_people=OFF -DBUILD_recognition=OFF \
+            -DBUILD_registration=OFF -DBUILD_sample_consensus=OFF -DBUILD_search=OFF \
+            -DBUILD_segmentation=OFF -DBUILD_stereo=OFF -DBUILD_surface=OFF \
+            -DBUILD_tracking=OFF -DBUILD_visualization=OFF -DBUILD_tools=OFF \
+            -DBUILD_gpu_features=OFF -DBUILD_gpu_kinfu=OFF -DBUILD_gpu_kinfu_large_scale=OFF \
+            -DBUILD_gpu_people=OFF -DBUILD_gpu_segmentation=OFF -DBUILD_gpu_surface=OFF \
+            -DBUILD_gpu_tracking=OFF
+
+      - name: Build
+        run: |
+          cmake --build build --target test_gpu_approx_nearest test_gpu_bfrs \
+            test_gpu_host_radius_search test_gpu_knn_search test_gpu_radius_search
+
+      - name: Run the gpu_octree tests
+        run: ctest --test-dir build/test -R '^gpu_octree_' -E performance --output-on-failure --timeout 1200
