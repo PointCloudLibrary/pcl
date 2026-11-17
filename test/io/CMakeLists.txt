@@ -64,3 +64,7 @@ PCL_ADD_TEST (io_tim_grabber test_tim_grabber
               FILES test_tim_grabber.cpp
               LINK_WITH pcl_gtest pcl_io
               ARGUMENTS "${PCL_SOURCE_DIR}/test/io/tim_sequences")
+
+PCL_ADD_TEST (io_hdl_grabber test_hdl_grabber
+              FILES test_hdl_grabber.cpp
+              LINK_WITH pcl_gtest pcl_io)

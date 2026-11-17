@@ -238,7 +238,12 @@ pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
             if (item.first == "horizOffsetCorrection_")
               horiz_offset_correction = atof (item.second.data ().c_str ());
           }
-          if (index != -1)
+          if (index < -1 || index >= HDL_MAX_NUM_LASERS)
+          {
+            PCL_WARN ("[pcl::HDLGrabber::loadCorrectionsFile] Ignoring correction for invalid laser id %d in %s\n",
+                      index, correctionsFile.c_str ());
+          }
+          else if (index != -1)
           {
             laser_corrections_[index].azimuthCorrection = azimuth;
             laser_corrections_[index].verticalCorrection = vert_correction;
