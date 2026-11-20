@@ -78,7 +78,6 @@ $CXX $CXXFLAGS $LIB_FUZZING_ENGINE ifs_reader_fuzzer.o \
         /usr/local/lib/libboost_filesystem.a /usr/local/lib/libboost_iostreams.a \
         -o $OUT/ifs_reader_fuzzer -lm
 
-python3 gen_ifs_seeds.py ifs_seed_corpus
 zip $OUT/ifs_reader_fuzzer_seed_corpus.zip ifs_seed_corpus/*.ifs
 cp ifs_reader_fuzzer.dict $OUT/
 
