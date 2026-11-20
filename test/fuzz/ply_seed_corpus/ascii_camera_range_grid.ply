@@ -1,0 +1,27 @@
+ply
+format ascii 1.0
+element vertex 2
+property float x
+property float y
+property float z
+element camera 1
+property float view_px
+property float view_py
+property float view_pz
+property float x_axisx
+property float x_axisy
+property float x_axisz
+property float y_axisx
+property float y_axisy
+property float y_axisz
+property float z_axisx
+property float z_axisy
+property float z_axisz
+element range_grid 2
+property list uchar int vertex_indices
+end_header
+0 0 0
+1 1 0
+0 0 0 1 0 0 0 1 0 0 0 1
+1 0
+1 1
