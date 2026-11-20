@@ -1,0 +1,15 @@
+mtllib seed.mtl
+o mesh_a
+g red_part
+v 0 0 0
+v 1 0 0
+v 0 1 0
+usemtl red
+f 1 2 3
+g blue_part
+v 0 0 1
+v 1 0 1
+v 0 1 1
+usemtl blue
+s off
+f 4 5 6

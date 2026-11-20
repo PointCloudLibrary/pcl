@@ -77,7 +77,6 @@ $CXX $CXXFLAGS $LIB_FUZZING_ENGINE obj_reader_fuzzer.o \
         ../../build/lib/libpcl_common.a \
         /usr/local/lib/libboost_filesystem.a -o $OUT/obj_reader_fuzzer -lm
 
-python3 gen_obj_seeds.py obj_seed_corpus
 zip $OUT/obj_reader_fuzzer_seed_corpus.zip obj_seed_corpus/*.obj
 cp obj_reader_fuzzer.dict $OUT/
 
