@@ -77,7 +77,6 @@ $CXX $CXXFLAGS $LIB_FUZZING_ENGINE ply_mesh_fuzzer.o \
         ../../build/lib/libpcl_common.a \
         /usr/local/lib/libboost_filesystem.a -o $OUT/ply_mesh_fuzzer -lm
 
-python3 gen_ply_seeds.py ply_seed_corpus
 zip $OUT/ply_mesh_fuzzer_seed_corpus.zip \
         ply_seed_corpus/*.ply \
         $SRC/pcl/test/cube.ply
