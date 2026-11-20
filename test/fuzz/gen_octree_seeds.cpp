@@ -44,15 +44,18 @@ main (int argc, char** argv)
     return 1;
   }
   const std::string dir = argv[1];
-  encode<pcl::PointXYZ> (argv[2], (dir + "/xyz_low_offline").c_str (),
-                         pcl::io::LOW_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR, false, false, 0);
-  encode<pcl::PointXYZ> (argv[2], (dir + "/xyz_med_online").c_str (),
-                         pcl::io::MED_RES_ONLINE_COMPRESSION_WITHOUT_COLOR, false, false, 0);
-  encode<pcl::PointXYZRGB> (argv[3], (dir + "/rgb_med_online").c_str (),
-                            pcl::io::MED_RES_ONLINE_COMPRESSION_WITH_COLOR, true, false, 1);
-  encode<pcl::PointXYZRGB> (argv[3], (dir + "/rgb_high_offline").c_str (),
-                            pcl::io::HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR, true, false, 1);
-  encode<pcl::PointXYZRGBA> (argv[3], (dir + "/rgba_manual_voxel").c_str (),
-                             pcl::io::MANUAL_CONFIGURATION, true, true, 2);
-  return 0;
+  bool ok = true;
+  ok &= encode<pcl::PointXYZ> (argv[2], (dir + "/xyz_low_offline").c_str (),
+                               pcl::io::LOW_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR, false, false, 0);
+  ok &= encode<pcl::PointXYZ> (argv[2], (dir + "/xyz_med_online").c_str (),
+                               pcl::io::MED_RES_ONLINE_COMPRESSION_WITHOUT_COLOR, false, false, 0);
+  ok &= encode<pcl::PointXYZRGB> (argv[3], (dir + "/rgb_med_online").c_str (),
+                                  pcl::io::MED_RES_ONLINE_COMPRESSION_WITH_COLOR, true, false, 1);
+  ok &= encode<pcl::PointXYZRGB> (argv[3], (dir + "/rgb_high_offline").c_str (),
+                                  pcl::io::HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR, true, false, 1);
+  ok &= encode<pcl::PointXYZRGBA> (argv[3], (dir + "/rgba_manual_voxel").c_str (),
+                                   pcl::io::MANUAL_CONFIGURATION, true, true, 2);
+  if (!ok)
+    fprintf (stderr, "one or more seeds failed to encode\n");
+  return ok ? 0 : 1;
 }
