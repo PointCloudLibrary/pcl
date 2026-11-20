@@ -982,6 +982,15 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
             tex_indices.vertices.push_back(vt);
           }
         }
+        if (mesh.tex_polygons.empty ())
+        {
+          // Faces before any usemtl belong to an unnamed default material.
+          mesh.tex_polygons.emplace_back ();
+          mesh.tex_coord_indices.emplace_back ();
+          mesh.tex_materials.emplace_back ();
+          mesh.tex_coordinates.push_back (coordinates);
+          coordinates.clear ();
+        }
         mesh.tex_polygons.back ().push_back (face_vertices);
         mesh.tex_coord_indices.back ().push_back (tex_indices);
         ++f_idx;
