@@ -180,6 +180,11 @@ namespace pcl
       // synchronize to frame header
       syncToHeader(compressed_tree_data_in_arg);
 
+      // stream exhausted before a complete frame header: nothing was
+      // decoded and the output cloud is left untouched
+      if (!compressed_tree_data_in_arg.good ())
+        return;
+
       // initialize octree
       this->switchBuffers ();
       this->setOutputCloud (cloud_arg);
@@ -421,6 +426,9 @@ namespace pcl
       {
         char readChar;
         compressed_tree_data_in_arg.read (static_cast<char*> (&readChar), sizeof (readChar));
+        if (!compressed_tree_data_in_arg.good ())
+          // stream exhausted before finding the frame header identifier
+          return;
         if (readChar != frame_header_identifier_[header_id_pos++])
           header_id_pos = (frame_header_identifier_[0]==readChar)?1:0;
       }
