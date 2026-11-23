@@ -135,6 +135,57 @@ TEST (PCL, PLYReaderWriter)
   remove ("test_pcl_io.ply");
 }
 
+TEST(PCL, PLYCameraPosePrecision)
+{
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  cloud.resize(1);
+  cloud.sensor_origin_ =
+      Eigen::Vector4f(0.10000002384185791f, 5527515.847f, 0.0f, 0.0f);
+  cloud.sensor_orientation_ = Eigen::Quaternionf(
+      Eigen::AngleAxisf(0.026f, Eigen::Vector3f(1.0f, 2.0f, 3.0f).normalized()));
+  const Eigen::Quaternionf expected_orientation(
+      cloud.sensor_orientation_.toRotationMatrix());
+  const char* file_name = "test_ply_camera_pose_precision.ply";
+
+  ASSERT_EQ(pcl::io::savePLYFileASCII(file_name, cloud), 0);
+  pcl::PointCloud<pcl::PointXYZ> round_trip;
+  const int result = pcl::io::loadPLYFile(file_name, round_trip);
+  remove(file_name);
+  ASSERT_EQ(result, 0);
+  EXPECT_EQ(round_trip.sensor_origin_.head<3>(), cloud.sensor_origin_.head<3>());
+  EXPECT_EQ(round_trip.sensor_orientation_.coeffs(), expected_orientation.coeffs());
+}
+
+TEST(PCL, PLYOriginPrecisionWithoutCamera)
+{
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  cloud.resize(4, 2);
+  pcl::PCLPointCloud2 blob;
+  pcl::toPCLPointCloud2(cloud, blob);
+
+  const Eigen::Vector4f origin(492818.039f, 5527515.847f, -0.48321134f, 0.0f);
+  const char* file_name = "test_ply_origin_precision.ply";
+  pcl::PLYWriter writer;
+  pcl::PLYReader reader;
+
+  for (const bool binary : {false, true}) {
+    SCOPED_TRACE(binary);
+    ASSERT_EQ(
+        writer.write(
+            file_name, blob, origin, Eigen::Quaternionf::Identity(), binary, false),
+        0);
+    pcl::PCLPointCloud2 round_trip;
+    Eigen::Vector4f read_origin;
+    Eigen::Quaternionf read_orientation;
+    int version;
+    const int result =
+        reader.read(file_name, round_trip, read_origin, read_orientation, version);
+    remove(file_name);
+    ASSERT_EQ(result, 0);
+    EXPECT_EQ(read_origin.head<3>(), origin.head<3>());
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST(PCL, PLYPolygonMeshFaceListSize)
 {
