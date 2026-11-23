@@ -996,6 +996,57 @@ TEST (PCL, PCDReaderWriterASCIIColorPrecision)
   remove ("temp_ascii_color.pcd");
 }
 
+TEST(PCL, PCDViewpointPrecision)
+{
+  PointCloud<PointXYZ> cloud;
+  cloud.resize(16);
+  cloud.sensor_origin_ = Eigen::Vector4f(492818.039f, 5527515.847f, -0.48321134f, 0.0f);
+  cloud.sensor_orientation_ =
+      Eigen::Quaternionf(Eigen::AngleAxisf(0.123456789f, Eigen::Vector3f::UnitZ()));
+
+  PCLPointCloud2 blob;
+  toPCLPointCloud2(cloud, blob);
+  PCDWriter writer;
+
+  const auto check_viewpoint = [&](const std::string& file_name) {
+    SCOPED_TRACE(file_name);
+    PointCloud<PointXYZ> round_trip;
+    const int result = loadPCDFile(file_name, round_trip);
+    remove(file_name.c_str());
+    ASSERT_EQ(result, 0);
+    EXPECT_EQ(round_trip.sensor_origin_, cloud.sensor_origin_);
+    EXPECT_EQ(round_trip.sensor_orientation_.coeffs(),
+              cloud.sensor_orientation_.coeffs());
+  };
+
+  ASSERT_EQ(writer.writeASCII("viewpoint_typed_ascii.pcd", cloud, 3), 0);
+  check_viewpoint("viewpoint_typed_ascii.pcd");
+  ASSERT_EQ(writer.writeBinary("viewpoint_typed_binary.pcd", cloud), 0);
+  check_viewpoint("viewpoint_typed_binary.pcd");
+  ASSERT_EQ(writer.writeBinaryCompressed("viewpoint_typed_compressed.pcd", cloud), 0);
+  check_viewpoint("viewpoint_typed_compressed.pcd");
+
+  ASSERT_EQ(writer.writeASCII("viewpoint_blob_ascii.pcd",
+                              blob,
+                              cloud.sensor_origin_,
+                              cloud.sensor_orientation_,
+                              3),
+            0);
+  check_viewpoint("viewpoint_blob_ascii.pcd");
+  ASSERT_EQ(writer.writeBinary("viewpoint_blob_binary.pcd",
+                               blob,
+                               cloud.sensor_origin_,
+                               cloud.sensor_orientation_),
+            0);
+  check_viewpoint("viewpoint_blob_binary.pcd");
+  ASSERT_EQ(writer.writeBinaryCompressed("viewpoint_blob_compressed.pcd",
+                                         blob,
+                                         cloud.sensor_origin_,
+                                         cloud.sensor_orientation_),
+            0);
+  check_viewpoint("viewpoint_blob_compressed.pcd");
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ASCIIRead)
 {

@@ -949,8 +949,7 @@ pcl::PCDWriter::generateHeaderASCII (const pcl::PCLPointCloud2 &cloud,
   boost::trim (result);
   oss << result << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
-  oss << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " <<
-                         orientation.x () << " " << orientation.y () << " " << orientation.z () << "\n";
+  oss << pcl::io::detail::formatPCDViewpoint(origin, orientation);
 
   oss << "POINTS " << cloud.width * cloud.height << "\n";
 
@@ -1036,8 +1035,7 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
       << "\nCOUNT" << field_counts.str ();
   oss << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
-  oss << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
-                         orientation.x () << " " << orientation.y () << " " << orientation.z () << "\n";
+  oss << pcl::io::detail::formatPCDViewpoint(origin, orientation);
   
   oss << "POINTS " << cloud.width * cloud.height << "\n";
 
@@ -1089,8 +1087,7 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
       << "\nCOUNT" << field_counts.str ();
   os  << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
-  os  << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
-                         orientation.x () << " " << orientation.y () << " " << orientation.z () << "\n";
+  os << pcl::io::detail::formatPCDViewpoint(origin, orientation);
 
   os  << "POINTS " << cloud.width * cloud.height << "\n";
 

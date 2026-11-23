@@ -44,6 +44,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <functional>
+#include <limits>
 #include <string>
 #include <tuple>
 
@@ -827,6 +828,7 @@ pcl::PLYWriter::generateHeader (const pcl::PCLPointCloud2 &cloud,
       "\nobj_info is_interlaced 0";
     oss << "\nobj_info num_cols " << cloud.width;
     oss << "\nobj_info num_rows " << cloud.height;
+    oss.precision(std::numeric_limits<float>::max_digits10);
     oss << "\nobj_info echo_rgb_offset_x " << origin[0];
     oss << "\nobj_info echo_rgb_offset_y " << origin[1];
     oss << "\nobj_info echo_rgb_offset_z " << origin[2];
@@ -1069,6 +1071,8 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
     fs << '\n';
   }
   // Append sensor information
+  fs.precision(std::max<std::streamsize>(fs.precision(),
+                                         std::numeric_limits<float>::max_digits10));
   if (origin[3] != 0)
     fs << origin[0]/origin[3] << " " << origin[1]/origin[3] << " " << origin[2]/origin[3] << " ";
   else

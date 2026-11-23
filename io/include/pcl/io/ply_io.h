@@ -584,6 +584,7 @@ namespace pcl
         * \param[in] origin the sensor data acquisition origin (translation)
         * \param[in] orientation the sensor data acquisition origin (rotation)
         * \param[in] precision the specified output numeric stream precision (default: 8)
+        * Camera pose fields use at least enough digits to round-trip float values.
         * \param[in] use_camera if set to true then PLY file will use element camera else
         * element range_grid will be used.
         */

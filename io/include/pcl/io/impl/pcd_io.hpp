@@ -42,6 +42,8 @@
 
 #include <boost/algorithm/string/trim.hpp> // for trim
 #include <fstream>
+#include <limits>
+#include <sstream>
 #include <fcntl.h>
 #include <string>
 #include <cstdlib>
@@ -51,6 +53,20 @@
 #include <pcl/io/pcd_io.h>
 
 #include <pcl/io/lzf.h>
+
+namespace pcl::io::detail {
+inline std::string
+formatPCDViewpoint(const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation)
+{
+  std::ostringstream viewpoint;
+  viewpoint.imbue(std::locale::classic());
+  viewpoint.precision(std::numeric_limits<float>::max_digits10);
+  viewpoint << "VIEWPOINT " << origin[0] << ' ' << origin[1] << ' ' << origin[2] << ' '
+            << orientation.w() << ' ' << orientation.x() << ' ' << orientation.y()
+            << ' ' << orientation.z() << '\n';
+  return viewpoint.str();
+}
+} // namespace pcl::io::detail
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> std::string
@@ -91,11 +107,8 @@ pcl::PCDWriter::generateHeader (const pcl::PointCloud<PointT> &cloud, const int 
   else
     oss << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
-  oss << "VIEWPOINT " << cloud.sensor_origin_[0] << " " << cloud.sensor_origin_[1] << " " << cloud.sensor_origin_[2] << " " << 
-                         cloud.sensor_orientation_.w () << " " << 
-                         cloud.sensor_orientation_.x () << " " << 
-                         cloud.sensor_orientation_.y () << " " << 
-                         cloud.sensor_orientation_.z () << "\n";
+  oss << pcl::io::detail::formatPCDViewpoint(cloud.sensor_origin_,
+                                             cloud.sensor_orientation_);
   
   // If the user passes in a number of points value, use that instead
   if (nr_points != std::numeric_limits<int>::max ())
