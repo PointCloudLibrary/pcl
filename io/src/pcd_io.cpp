@@ -52,6 +52,7 @@
 
 #include <cstring>
 #include <cerrno>
+#include <limits>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -133,6 +134,9 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
   bool height_read = false;
 
   std::size_t nr_points = 0;
+  // Upper bound for point_step, so that accumulating the SIZE and COUNT values
+  // of the header can never overflow
+  constexpr std::int64_t max_point_step = std::numeric_limits<std::int32_t>::max ();
   std::string line;
 
   // field_sizes represents the size of one element in a field (e.g., float = 4, char = 1)
@@ -206,18 +210,20 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
         // Resize to accommodate the number of values
         field_sizes.resize (specified_channel_count);
 
-        int offset = 0;
+        std::int64_t offset = 0;
         for (int i = 0; i < specified_channel_count; ++i)
         {
           int col_type ;
           sstream >> col_type;
-          cloud.fields[i].offset = offset;                // estimate and save the data offsets
+          if (sstream.fail () || col_type < 1)
+            throw "Invalid SIZE value specified (should be larger than 0).";
+          cloud.fields[i].offset = static_cast<uindex_t> (offset);   // estimate and save the data offsets
           offset += col_type;
+          if (offset > max_point_step)
+            throw "Point size specified by <SIZE> is too large!";
           field_sizes[i] = col_type;                      // save a temporary copy
         }
-        cloud.point_step = offset;
-        //if (cloud.width != 0)
-          //cloud.row_step   = cloud.point_step * cloud.width;
+        cloud.point_step = static_cast<uindex_t> (offset);
         continue;
       }
 
@@ -258,19 +264,25 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
 
         field_counts.resize (specified_channel_count);
 
-        int offset = 0;
+        std::int64_t offset = 0;
         for (int i = 0; i < specified_channel_count; ++i)
         {
-          cloud.fields[i].offset = offset;
+          cloud.fields[i].offset = static_cast<uindex_t> (offset);
           int col_count;
           sstream >> col_count;
+          // count is unsigned, so a negative value has to be caught here: it would
+          // otherwise shrink point_step below the extent of an earlier field
+          if (sstream.fail () || col_count < 0)
+            throw "Invalid COUNT value specified (should not be negative).";
           if (col_count < 1)
             PCL_WARN("[pcl::PCDReader::readHeader] Invalid COUNT value specified (%i, should be larger than 0). This field will be removed.\n", col_count);
           cloud.fields[i].count = col_count;
-          offset += col_count * field_sizes[i];
+          offset += static_cast<std::int64_t> (col_count) * field_sizes[i];
+          if (offset > max_point_step)
+            throw "Point size specified by <COUNT> is too large!";
         }
         // Adjust the offset for count (number of elements)
-        cloud.point_step = offset;
+        cloud.point_step = static_cast<uindex_t> (offset);
         continue;
       }
 
@@ -281,8 +293,6 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
         if (sstream.fail ())
           throw "Invalid WIDTH value specified.";
         width_read = true;
-        if (cloud.point_step != 0)
-          cloud.row_step = cloud.point_step * cloud.width;      // row_step only makes sense for organized datasets
         continue;
       }
 
@@ -343,6 +353,28 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
     PCL_ERROR ("[pcl::PCDReader::readHeader] %s\n", exception);
     return (-1);
   }
+
+  // The body readers index cloud.data with point_step and the field offsets, so every
+  // field has to lie within point_step. A field takes up whichever is larger: the SIZE
+  // the header reserved for it, or what its datatype makes the body readers write. Those
+  // differ for the padding fields PCL writes, whose SIZE and TYPE have no matching
+  // datatype, so getFieldSize alone would report them as empty. The sum is taken in
+  // 64 bit, where the bounded SIZE and COUNT values cannot make it wrap.
+  for (std::size_t i = 0; i < cloud.fields.size (); ++i)
+  {
+    const auto &field = cloud.fields[i];
+    const std::int64_t declared_size = (i < field_sizes.size ()) ? field_sizes[i] : 0;
+    const std::int64_t datatype_size = pcl::getFieldSize (field.datatype);
+    const std::int64_t field_size = (declared_size > datatype_size) ? declared_size : datatype_size;
+    if (static_cast<std::int64_t> (field.offset) + static_cast<std::int64_t> (field.count) * field_size >
+        static_cast<std::int64_t> (cloud.point_step))
+    {
+      PCL_ERROR ("[pcl::PCDReader::readHeader] Field %s (offset %u, count %u) does not fit into a point of %u bytes!\n",
+                 field.name.c_str (), field.offset, field.count, cloud.point_step);
+      return (-1);
+    }
+  }
+
   cloud.fields.erase(std::remove_if(cloud.fields.begin(), cloud.fields.end(),
                                     [](const pcl::PCLPointField& field)->bool { return field.count < 1; }),
                      cloud.fields.end());
@@ -357,7 +389,6 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
   {
     cloud.width  = nr_points;
     cloud.height = 1;
-    cloud.row_step = cloud.point_step * cloud.width;      // row_step only makes sense for organized datasets
   }
   //assert (cloud.row_step != 0);       // If row_step = 0, either point_step was not set or width is 0
 
@@ -384,19 +415,9 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
     return (-1);
   }
 
-  // The body readers index cloud.data with point_step and the field offsets, so
-  // every field has to lie within point_step (a negative SIZE or COUNT shrinks it).
-  for (const auto &field : cloud.fields)
-  {
-    if (static_cast<std::size_t> (field.offset) + static_cast<std::size_t> (field.count) * pcl::getFieldSize (field.datatype) > cloud.point_step)
-    {
-      PCL_ERROR ("[pcl::PCDReader::readHeader] Field %s (offset %u, count %u) does not fit into a point of %u bytes!\n",
-                 field.name.c_str (), field.offset, field.count, cloud.point_step);
-      return (-1);
-    }
-  }
-
-  // Allocate only now that point_step is final, the header may list COUNT after POINTS
+  // row_step and the data size both follow from the final point_step, which a COUNT
+  // line is allowed to change after WIDTH and POINTS have already been read
+  cloud.row_step = cloud.point_step * cloud.width;
   cloud.data.resize (nr_points * cloud.point_step);
 
   return (0);

@@ -1804,6 +1804,15 @@ TEST (PCL, PCDReaderFieldLayoutOutsidePoint)
   const std::vector<std::string> headers = {
     "VERSION .7\nFIELDS x pad\nSIZE 4 4\nTYPE F F\nCOUNT 4 -2\nWIDTH 2\nHEIGHT 1\nPOINTS 2\nDATA binary\n",
     "VERSION .7\nFIELDS x y\nSIZE 4 -4\nTYPE F F\nCOUNT 2 1\nWIDTH 2\nHEIGHT 1\nPOINTS 2\nDATA ascii\n",
+    // a negative COUNT on a later field: the first field still fits, so the layout
+    // has to be rejected for the negative value itself and not for its extent
+    "VERSION .7\nFIELDS x _ y\nSIZE 4 4 4\nTYPE F F F\nCOUNT 1 -1 2\nWIDTH 1\nHEIGHT 1\nPOINTS 1\nDATA binary\n",
+    // a negative SIZE puts x and y at the same offset, and leaves the middle field
+    // with a SIZE/TYPE pair that no datatype can represent
+    "VERSION .7\nFIELDS x _ y\nSIZE 4 -4 4\nTYPE F F F\nCOUNT 1 1 1\nWIDTH 1\nHEIGHT 1\nPOINTS 1\nDATA binary_compressed\n",
+    // without a TYPE line the fields keep the default float32 datatype, so each one
+    // writes four bytes into the single byte that SIZE reserved for it
+    "VERSION .7\nFIELDS x y\nSIZE 1 1\nWIDTH 1\nHEIGHT 1\nPOINTS 1\nDATA ascii\n",
   };
   PCDReader reader;
   for (const auto &header : headers)
@@ -1829,6 +1838,19 @@ TEST (PCL, PCDReaderFieldLayoutOutsidePoint)
   EXPECT_EQ (blob.data.size (), 32u);
   ASSERT_EQ (reader.readBodyASCII (iss, blob, pcd_version), 0);
   EXPECT_EQ (blob.at<float> (1, 3 * sizeof (float)), 8.0f);
+
+  // COUNT after WIDTH: row_step has to follow the final point_step as well, it is
+  // what fromPCLPointCloud2 uses to find the start of every row
+  std::istringstream iss_organized ("VERSION .7\nFIELDS x y\nSIZE 4 4\nTYPE F F\nWIDTH 2\nHEIGHT 2\nPOINTS 4\nCOUNT 1 2\nDATA ascii\n"
+                                    "1 2 3\n4 5 6\n7 8 9\n10 11 12\n");
+  pcl::PCLPointCloud2 organized;
+  ASSERT_EQ (reader.readHeader (iss_organized, organized, origin, orientation, pcd_version, data_type, data_idx), 0);
+  EXPECT_EQ (organized.point_step, 12u);
+  EXPECT_EQ (organized.row_step, 24u);
+  EXPECT_EQ (organized.data.size (), 48u);
+  ASSERT_EQ (reader.readBodyASCII (iss_organized, organized, pcd_version), 0);
+  // first point of the second row, i.e. the one row_step bytes into the data
+  EXPECT_EQ (organized.at<float> (2, 0), 7.0f);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
