@@ -45,9 +45,6 @@ set(PCL_QHULL_REQUIRED_TYPE "DONTCARE" CACHE STRING "Select build type to use ST
 set_property(CACHE PCL_QHULL_REQUIRED_TYPE PROPERTY STRINGS DONTCARE SHARED STATIC)
 mark_as_advanced(PCL_QHULL_REQUIRED_TYPE)
 
-option(PCL_PREFER_BOOST_FILESYSTEM "Prefer boost::filesystem over std::filesystem (if compiled as C++17 or higher, std::filesystem is chosen by default)" OFF)
-mark_as_advanced(PCL_PREFER_BOOST_FILESYSTEM)
-
 set(PCL_XYZ_POINT_TYPES "(pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZL)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBL)(pcl::PointXYZLAB)(pcl::PointXYZHSV)(pcl::InterestPoint)(pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal)(pcl::PointXYZLNormal)(pcl::PointWithRange)(pcl::PointWithViewpoint)(pcl::PointWithScale)(pcl::PointSurfel)(pcl::PointDEM)" CACHE STRING "Point types with xyz information for which PCL classes will be instantiated. Alternative to PCL_ONLY_CORE_POINT_TYPES. You can remove unneeded types to reduce compile time and library size.")
 mark_as_advanced(PCL_XYZ_POINT_TYPES)
 
