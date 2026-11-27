@@ -415,8 +415,8 @@ if(WIN32 AND NOT MINGW)
     set(PCL_ALL_IN_ONE_INSTALLER ON)
   endif()
 else()
-# PCLConfig.cmake is installed to PCL_ROOT/share/pcl-x.y
-  get_filename_component(PCL_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+# PCLConfig.cmake is installed to PCL_ROOT/lib*/cmake/pcl-x.y
+  get_filename_component(PCL_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
 endif()
 
 # check whether PCLConfig.cmake is found into a PCL installation or in a build tree
