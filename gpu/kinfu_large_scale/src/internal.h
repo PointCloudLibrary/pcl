@@ -434,7 +434,7 @@ namespace pcl
         * \return number of voxels in the buffer
         */
       int
-      getOccupiedVoxels(const PtrStep<short2>& volume, DeviceArray2D<int>& occupied_voxels);
+      getOccupiedVoxels(const PtrStep<short2>& volume, DeviceArray2D<int>& occupied_voxels, bool estimate_back=false);
 
       /** \brief Computes total number of vertices for all voxels and offsets of vertices in final triangle array
         * \param[out] occupied_voxels buffer with occupied voxels. The function fulfills 3nd only with offsets      
@@ -450,7 +450,7 @@ namespace pcl
         * \param[out] output triangle array            
         */
       void
-      generateTriangles(const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output);
+      generateTriangles(const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output, bool estimate_back=false);
     }
   }
 }
