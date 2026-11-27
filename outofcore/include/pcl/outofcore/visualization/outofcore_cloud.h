@@ -5,6 +5,7 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <queue>
 
 // PCL
 #include <pcl/memory.h>
@@ -55,7 +56,6 @@ class OutofcoreCloud : public Object
 
 
     static std::shared_ptr<std::thread> pcd_reader_thread;
-    //static MonitorQueue<std::string> pcd_queue;
 
     struct PcdQueueItem
     {
