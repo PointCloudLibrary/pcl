@@ -505,14 +505,11 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
             weights[ii] *= 0.5f - wz * 0.5f;
         }
 
-        int h_index = (d <= 0) ? 0 : std::ceil (size_hists * (d / distance_normalization_factor)) - 1;
-        /* from http://www.pcl-users.org/OUR-CVFH-problem-td4028436.html
-           h_index will be 13 when d is computed on the farthest away point.
-
-          adding the following after computing h_index fixes the problem:
-        */
-        if(h_index > 12)
-          h_index = 12;
+        const int raw_index = static_cast<int>(std::floor (size_hists * (d / distance_normalization_factor)));
+        // d/distance_normalization_factor \in [0, 1]
+        // h_index \in [0, size_hists)
+        // max added for numerical instability
+        const int h_index = std::max(std::min(raw_index, size_hists - 1), 0);
         for (int j = 0; j < num_hists; j++)
           quadrants[j][h_index] += hist_incr * weights[j];
 
