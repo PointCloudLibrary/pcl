@@ -32,6 +32,10 @@ PCL_ADD_BENCHMARK(filters_radius_outlier_removal FILES filters/radius_outlier_re
                   ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd"
                             "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
 
+PCL_ADD_BENCHMARK(io_pcd_io FILES io/pcd_io.cpp
+                  LINK_WITH pcl_io
+                  ARGUMENTS "${CMAKE_CURRENT_BINARY_DIR}/benchmark_pcd_io.pcd")
+
 PCL_ADD_BENCHMARK(sample_consensus_sac_model_cylinder FILES sample_consensus/sac_model_cylinder.cpp
                   LINK_WITH pcl_io pcl_search pcl_filters pcl_sample_consensus pcl_segmentation
                   ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd")
