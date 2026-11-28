@@ -50,6 +50,7 @@
 #  define NOMINMAX
 # endif
 # include <io.h>
+# include <fcntl.h> // _O_BINARY
 # include <windows.h>
 # ifdef _MSC_VER
 // ssize_t is already defined in MinGW and its definition conflicts with that of
@@ -72,14 +73,17 @@ namespace pcl
   namespace io
   {
 #ifdef _WIN32
+    // Always open in binary mode. The Windows C runtime defaults to text mode,
+    // where raw_read() collapses CR LF to LF and stops at a 0x1A byte, so the
+    // bytes read would differ from those on POSIX (which has no text mode).
     inline int raw_open(const char * pathname, int flags, int mode)
     {
-      return ::_open(pathname, flags, mode);
+      return ::_open(pathname, flags | _O_BINARY, mode);
     }
 
     inline int raw_open(const char * pathname, int flags)
     {
-      return ::_open(pathname, flags);
+      return ::_open(pathname, flags | _O_BINARY);
     }
 
     inline int raw_close(int fd)

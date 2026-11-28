@@ -50,10 +50,13 @@
 #include <pcl/io/obj_io.h>
 #include <pcl/io/lzf.h>
 #include <pcl/io/lzf_image_io.h>
+#include <pcl/io/low_level_io.h>
 #include <pcl/PolygonMesh.h>
+#include <algorithm>
 #include <cstdint>
 #include <cstring> // for memcpy
 #include <fstream>
+#include <iterator>
 #include <iomanip> // for setprecision
 #include <limits>
 #include <locale>
@@ -2095,6 +2098,30 @@ TEST (PCL, IFSUnterminatedStrings)
   ASSERT_EQ (mesh.polygons.size (), 1);
 
   remove ("test_ifs_unterminated.ifs");
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, RawReadReturnsBytesUnchanged)
+{
+  // raw_open/raw_read must not translate the bytes. On Windows the C runtime
+  // opens files in text mode by default, which collapses CR LF to LF and treats
+  // 0x1A as the end of the file.
+  const unsigned char bytes[] = {0x0D, 0x0A, 0x00, 0x1A, 0x01, 0x0D, 0x0A};
+  const char* file_name = "test_raw_read_binary.bin";
+  {
+    std::ofstream fs (file_name, std::ios::binary);
+    fs.write (reinterpret_cast<const char*> (bytes), sizeof (bytes));
+  }
+
+  const int fd = raw_open (file_name, O_RDONLY);
+  ASSERT_GE (fd, 0);
+  unsigned char buffer[sizeof (bytes)] = {};
+  const auto num_read = raw_read (fd, buffer, sizeof (bytes));
+  raw_close (fd);
+  remove (file_name);
+
+  ASSERT_EQ (static_cast<std::size_t> (num_read), sizeof (bytes));
+  EXPECT_TRUE (std::equal (std::begin (bytes), std::end (bytes), std::begin (buffer)));
 }
 
 /* ---[ */
