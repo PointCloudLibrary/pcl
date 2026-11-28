@@ -55,9 +55,12 @@
 #include <cstring> // for memcpy
 #include <fstream>
 #include <iomanip> // for setprecision
+#include <iterator> // for istreambuf_iterator
 #include <limits>
 #include <locale>
+#include <numeric> // for iota
 #include <stdexcept>
+#include <string>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -1406,6 +1409,110 @@ TEST (PCL, ExtendedIO)
   remove ("v.pcd");
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Fields that are not registered in memory order: "a" directly precedes "b" in memory,
+// but comes after "b" and "c" in the field list. Also an array field and padding.
+struct PointUnorderedFields
+{
+  float a;
+  float b[2];
+  std::uint8_t c;
+  float d;
+};
+POINT_CLOUD_REGISTER_POINT_STRUCT (PointUnorderedFields,
+    (float[2], b, b) (std::uint8_t, c, c) (float, a, a) (float, d, d))
+
+// A padding field "_", which is not written to the file
+struct PointSkippedField
+{
+  float x;
+  float padding;
+  float y;
+  float z;
+};
+POINT_CLOUD_REGISTER_POINT_STRUCT (PointSkippedField,
+    (float, x, x) (float, padding, _) (float, y, y) (float, z, z))
+
+// The binary data section must contain, for every point, the fields in the order of
+// the field list, without the "_" fields and without any padding
+template <typename PointT> std::string
+expectedBinaryData (const PointCloud<PointT> &cloud, const Indices &indices)
+{
+  std::string data;
+  for (const auto &index : indices)
+  {
+    for (const auto &field : getFields<PointT> ())
+    {
+      if (field.name == "_")
+        continue;
+      data.append (reinterpret_cast<const char*> (&cloud[index]) + field.offset,
+                   field.count * getFieldSize (field.datatype));
+    }
+  }
+  return data;
+}
+
+// Returns the data section of a file written by writeBinary
+std::string
+readBinaryData (const std::string &file_name)
+{
+  PCDReader reader;
+  PCLPointCloud2 blob;
+  Eigen::Vector4f origin;
+  Eigen::Quaternionf orientation;
+  int pcd_version = -1;
+  int data_type = -1;
+  unsigned int data_idx = 0;
+  if (reader.readHeader (file_name, blob, origin, orientation, pcd_version, data_type, data_idx) != 0 ||
+      data_type != 1)
+  {
+    ADD_FAILURE () << "Could not read the header of " << file_name;
+    return "";
+  }
+  std::ifstream file (file_name, std::ios::binary);
+  const std::string content ((std::istreambuf_iterator<char> (file)), std::istreambuf_iterator<char> ());
+  if (data_idx > content.size ())
+  {
+    ADD_FAILURE () << "The data section of " << file_name << " starts after the end of the file";
+    return "";
+  }
+  return content.substr (data_idx);
+}
+
+template <typename PointT> void
+checkWriteBinaryData ()
+{
+  PointCloud<PointT> cloud (5, 1);
+  // Give every byte of the points a value that depends on its position
+  auto *bytes = reinterpret_cast<unsigned char*> (cloud.data ());
+  for (std::size_t i = 0; i < cloud.size () * sizeof (PointT); ++i)
+    bytes[i] = static_cast<unsigned char> (i * 7 + 1);
+
+  const std::string file_name = "test_pcl_io_binary_data.pcd";
+  PCDWriter writer;
+  Indices indices (cloud.size ());
+  std::iota (indices.begin (), indices.end (), 0);
+  ASSERT_EQ (writer.writeBinary (file_name, cloud), 0);
+  EXPECT_EQ (readBinaryData (file_name), expectedBinaryData (cloud, indices));
+
+  indices = {3, 0, 4, 4};
+  ASSERT_EQ (writer.writeBinary (file_name, cloud, indices), 0);
+  EXPECT_EQ (readBinaryData (file_name), expectedBinaryData (cloud, indices));
+
+  remove (file_name.c_str ());
+}
+
+TEST (PCL, WriteBinaryData)
+{
+  checkWriteBinaryData<PointXYZ> ();
+  checkWriteBinaryData<PointXYZI> ();
+  checkWriteBinaryData<PointXYZRGBA> ();
+  checkWriteBinaryData<PointNormal> ();
+  checkWriteBinaryData<PointXYZRGBNormal> ();
+  checkWriteBinaryData<PointXYZFPFH33> ();
+  checkWriteBinaryData<PointUnorderedFields> ();
+  checkWriteBinaryData<PointSkippedField> ();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, EigenConversions)

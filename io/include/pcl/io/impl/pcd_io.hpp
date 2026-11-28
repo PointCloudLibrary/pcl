@@ -142,7 +142,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   std::size_t fsize = 0;
   std::size_t data_size = 0;
   std::size_t nri = 0;
-  // Compute the total size of the fields
+  // Compute the total size of the fields and merge adjacent ones
   for (const auto &field : fields)
   {
     if (field.name == "_")
@@ -150,6 +150,14 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     
     int fs = field.count * getFieldSize (field.datatype);
     fsize += fs;
+    // A field that starts where the previous field in the list ends in memory is
+    // merged with it, so that both are copied with one memcpy call per point. The
+    // bytes that are written do not change.
+    if (nri > 0 && fields[nri - 1].offset + fields_sizes[nri - 1] == field.offset)
+    {
+      fields_sizes[nri - 1] += fs;
+      continue;
+    }
     fields_sizes.push_back (fs);
     fields[nri++] = field;
   }
@@ -642,7 +650,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   std::size_t fsize = 0;
   std::size_t data_size = 0;
   std::size_t nri = 0;
-  // Compute the total size of the fields
+  // Compute the total size of the fields and merge adjacent ones
   for (const auto &field : fields)
   {
     if (field.name == "_")
@@ -650,6 +658,14 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     
     int fs = field.count * getFieldSize (field.datatype);
     fsize += fs;
+    // A field that starts where the previous field in the list ends in memory is
+    // merged with it, so that both are copied with one memcpy call per point. The
+    // bytes that are written do not change.
+    if (nri > 0 && fields[nri - 1].offset + fields_sizes[nri - 1] == field.offset)
+    {
+      fields_sizes[nri - 1] += fs;
+      continue;
+    }
     fields_sizes.push_back (fs);
     fields[nri++] = field;
   }
